@@ -4,6 +4,7 @@
 
 #include "SplashScreen.h"
 #include "managers/SceneManager.cpp"
+#include "os/GetExecutionDirectory.h"
 
 SplashScreen::SplashScreen() {
     // Constructor
@@ -11,13 +12,15 @@ SplashScreen::SplashScreen() {
 
 void SplashScreen::Update(GameTime gameTime) {
 
+    std::string exeDir = getExecutableDirectory();
+
     if (!gameTime.TimeElapsed(1))
         return;
 
     if (assetManager.Robes.empty()) {
-        assetManager.Robes.push_back(TextureLibrary("resources/RobeBlue.lib"));
-        assetManager.Robes.push_back(TextureLibrary("resources/RobeGreen.lib"));
-        assetManager.Robes.push_back(TextureLibrary("resources/RobePurple.lib"));
+        assetManager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobeBlue.lib"));
+        assetManager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobeGreen.lib"));
+        assetManager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobePurple.lib"));
 
         CurrentValue+=3;
         text.setString("Loading Staff Textures...");
@@ -26,9 +29,9 @@ void SplashScreen::Update(GameTime gameTime) {
     }
 
     if (assetManager.Staffs.empty()) {
-        assetManager.Staffs.push_back(TextureLibrary("resources/Staff1.lib"));
-        assetManager.Staffs.push_back(TextureLibrary("resources/Staff2.lib"));
-        assetManager.Staffs.push_back(TextureLibrary("resources/Staff3.lib"));
+        assetManager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff1.lib"));
+        assetManager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff2.lib"));
+        assetManager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff3.lib"));
 
         CurrentValue+=3;
         text.setString("Loading Chest Monster Textures...");
@@ -37,7 +40,7 @@ void SplashScreen::Update(GameTime gameTime) {
     }
 
     if (assetManager.ChestMonster.entries.empty()) {
-        assetManager.ChestMonster = TextureLibrary("resources/ChestMonster.lib");
+        assetManager.ChestMonster = TextureLibrary(exeDir + "/resources/ChestMonster.lib");
         CurrentValue++;
         text.setString("Loading Heart Textures...");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
@@ -45,7 +48,7 @@ void SplashScreen::Update(GameTime gameTime) {
     }
 
     if (assetManager.Hearts.entries.empty()) {
-        assetManager.Hearts = TextureLibrary("resources/Hearts.lib");
+        assetManager.Hearts = TextureLibrary(exeDir + "/resources/Hearts.lib");
         CurrentValue++;
         text.setString("Loading Background Islands Textures...");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
@@ -53,7 +56,7 @@ void SplashScreen::Update(GameTime gameTime) {
     }
 
     if (assetManager.BackgroundIslands.entries.empty()) {
-        assetManager.BackgroundIslands = TextureLibrary("resources/BackgroundIslands.lib");
+        assetManager.BackgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
         CurrentValue++;
         text.setString("Loading Complete!");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
@@ -89,7 +92,10 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
 }
 
 void SplashScreen::Scene_Init() {
-    if (!font.loadFromFile("resources/fonts/Simple Santa.otf")) {
+
+    std::string exeDir = getExecutableDirectory();
+
+    if (!font.loadFromFile(exeDir + "/resources/fonts/Simple Santa.otf")) {
         // Handle error
     }
 
@@ -100,7 +106,7 @@ void SplashScreen::Scene_Init() {
     text.setFillColor(sf::Color::White);
     text.setStyle(sf::Text::Regular);
 
-    copyrightFont.loadFromFile("resources/fonts/OpenSans-Bold.ttf");
+    copyrightFont.loadFromFile(exeDir + "/resources/fonts/OpenSans-Bold.ttf");
 
     copyRightText.setFont(copyrightFont);
     copyRightText.setString("Created by Paul McGinley on 08/10/2024.");
@@ -109,9 +115,9 @@ void SplashScreen::Scene_Init() {
     copyRightText.setFillColor(sf::Color::White);
 
 
-    background.loadFromFile("resources/loader/background.png");
-    frame.loadFromFile("resources/loader/frame.png");
-    progress.loadFromFile("resources/loader/progressbar.png");
+    background.loadFromFile(exeDir + "/resources/loader/background.png");
+    frame.loadFromFile(exeDir + "/resources/loader/frame.png");
+    progress.loadFromFile(exeDir + "/resources/loader/progressbar.png");
 
     backgroundQuad[0].position = {0, 0};
     backgroundQuad[1].position = {1920, 0};

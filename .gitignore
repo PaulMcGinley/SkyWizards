@@ -5,6 +5,7 @@
 # Build dirs
 Patch Files/
 Tools/
+Test Clients/
 
 # AutoPatcherAdmin
 src/Utils/AutoPatcherAdmin/.*/
@@ -25,4 +26,5 @@ src/Utils/qdLibBuilder/[Oo]bj/
 src/Utils/qdLibBuilder/qdLibBuilder.sln.DotSettings.user
 
 # SFML Game
+src/2D/.*/
 src/2D/cmake-build-*/

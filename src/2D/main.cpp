@@ -3,6 +3,7 @@
 
 #include "Game.h"
 #include "managers/AssetManager.cpp"
+#include "os/GetExecutionDirectory.h"
 
 int main(int argc, char* argv[]) {
     // // Example of using command-line arguments
@@ -43,6 +44,8 @@ int main(int argc, char* argv[]) {
     // }
     // Load it here to stop frozen window
     // TODO : Load libraries as required or with a background worker
+
+    std::cout << "Exe: " << getExecutableDirectory() << std::endl;
     AssetManager& am =  AssetManager::getInstance();
 
     Game game;

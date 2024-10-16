@@ -5,6 +5,8 @@
 #pragma once // Inclusion sguard to prevent multiple includes
 
 #include "models/TextureLibrary.h"
+#include <filesystem>
+#include <iostream>
 
 class AssetManager {
 public:
@@ -28,7 +30,6 @@ public:
     TextureEntry* GetChestMonsterFrame_ptr(int cell) {
         return &ChestMonster.entries[cell];
     }
-
     TextureEntry* GetHeartImage_ptr(int cell) {
         return &Hearts.entries[cell];
     }
