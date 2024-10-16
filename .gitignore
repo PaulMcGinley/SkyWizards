@@ -1,0 +1,28 @@
+# OS Rubbish
+**/*.DS_Store
+**/*Thumbs.db
+
+# Build dirs
+Patch Files/
+Tools/
+
+# AutoPatcherAdmin
+src/Utils/AutoPatcherAdmin/.*/
+src/Utils/AutoPatcherAdmin/[Bb]in/
+src/Utils/AutoPatcherAdmin/[Ob]bj/
+src/Utils/AutoPatcherAdmin/AutoPatcherAdmin.sln.DotSettings.user
+
+# Patcher
+src/Utils/Patcher/.*/
+src/Utils/Patcher/[Bb]in/
+src/Utils/Patcher/[Oo]bj/
+src/Utils/Patcher/Patcher.sln.DotSettings.user
+
+# qdLibBuilder (Quick and Dirty Library Builder - macOS cli lib manager)
+src/Utils/qdLibBuilder/.*/
+src/Utils/qdLibBuilder/[Bb]in/
+src/Utils/qdLibBuilder/[Oo]bj/
+src/Utils/qdLibBuilder/qdLibBuilder.sln.DotSettings.user
+
+# SFML Game
+src/2D/cmake-build-*/

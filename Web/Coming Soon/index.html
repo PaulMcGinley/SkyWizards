@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legend of Sky Wizards - Coming Soon</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .background {
+            background-image: url('1.webp');
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+
+        .particle {
+            position: absolute;
+            bottom: -20px;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(0, 150, 255, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(0, 150, 255, 1), 0 0 60px rgba(0, 150, 255, 0.9);
+            animation: rise 3s linear infinite;
+        }
+
+        /* Particle rising animation */
+        @keyframes rise {
+            0% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0, -150vh); /* Move upwards out of the viewport */
+                opacity: 0;
+            }
+        }
+
+        /*  Particles with varying speeds and positions */
+        .particle:nth-child(2) {
+            animation-duration: 3.5s;
+            width: 12px;
+            height: 12px;
+            left: 10%;
+        }
+
+        .particle:nth-child(3) {
+            animation-duration: 2.8s;
+            width: 15px;
+            height: 15px;
+            left: 20%;
+        }
+
+        .particle:nth-child(4) {
+            animation-duration: 3s;
+            width: 8px;
+            height: 8px;
+            left: 30%;
+        }
+
+        .particle:nth-child(5) {
+            animation-duration: 2.5s;
+            width: 20px;
+            height: 20px;
+            left: 40%;
+        }
+
+        .particle:nth-child(6) {
+            animation-duration: 2.2s;
+            width: 10px;
+            height: 10px;
+            left: 50%;
+        }
+
+        .particle:nth-child(7) {
+            animation-duration: 3s;
+            width: 14px;
+            height: 14px;
+            left: 60%;
+        }
+
+        .particle:nth-child(8) {
+            animation-duration: 2.7s;
+            width: 18px;
+            height: 18px;
+            left: 70%;
+        }
+
+        .particle:nth-child(9) {
+            animation-duration: 3.2s;
+            width: 22px;
+            height: 22px;
+            left: 80%;
+        }
+
+        .particle:nth-child(10) {
+            animation-duration: 3.8s;
+            width: 12px;
+            height: 12px;
+            left: 90%;
+        }
+
+        .particle:nth-child(11) {
+            animation-duration: 2.6s;
+            width: 25px;
+            height: 25px;
+            left: 5%;
+        }
+
+        .particle:nth-child(12) {
+            animation-duration: 2.9s;
+            width: 10px;
+            height: 10px;
+            left: 15%;
+        }
+
+        .particle:nth-child(13) {
+            animation-duration: 3s;
+            width: 16px;
+            height: 16px;
+            left: 25%;
+        }
+
+        .particle:nth-child(14) {
+            animation-duration: 2.7s;
+            width: 12px;
+            height: 12px;
+            left: 35%;
+        }
+
+        .particle:nth-child(15) {
+            animation-duration: 3.1s;
+            width: 18px;
+            height: 18px;
+            left: 45%;
+        }
+
+        .particle:nth-child(16) {
+            animation-duration: 2.4s;
+            width: 20px;
+            height: 20px;
+            left: 55%;
+        }
+
+        .particle:nth-child(17) {
+            animation-duration: 2.8s;
+            width: 14px;
+            height: 14px;
+            left: 65%;
+        }
+
+        .particle:nth-child(18) {
+            animation-duration: 2.6s;
+            width: 16px;
+            height: 16px;
+            left: 75%;
+        }
+
+        .particle:nth-child(19) {
+            animation-duration: 2.9s;
+            width: 22px;
+            height: 22px;
+            left: 85%;
+        }
+
+        .particle:nth-child(20) {
+            animation-duration: 2.7s;
+            width: 12px;
+            height: 12px;
+            left: 95%;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+</body>
+</html>

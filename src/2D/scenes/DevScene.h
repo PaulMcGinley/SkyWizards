@@ -1,0 +1,31 @@
+//
+// Created by Paul McGinley on 10/10/2024.
+//
+
+#ifndef DEVSCENE_H
+#define DEVSCENE_H
+
+#include "interfaces/IScene.h"
+#include "models/BackgroundSceneryObject.h"
+#include "objects/Player.h"
+
+#include <SFML/Graphics/Shader.hpp>
+
+class DevScene : public IScene {
+
+public:
+  void Update(GameTime gameTime) override;
+  void LateUpdate(GameTime gameTime) override;
+  void Draw(sf::RenderWindow& window, GameTime gameTime) override;
+  void Scene_Init() override;
+  void Scene_Destroy() override;
+  void OnScene_Active() override;
+  void OnScene_Deactive() override;
+
+private:
+  TextureLibrary& floatingIslandLibrary = AssetManager::getInstance().BackgroundIslands;
+  BackgroundSceneryObject floatingIsland = BackgroundSceneryObject(floatingIslandLibrary, 0, 36, 50, sf::Vector2f(0, -500));
+  Player player = Player();
+};
+
+#endif //DEVSCENE_H

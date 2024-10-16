@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoPatcherAdmin", "AutoPatcherAdmin.csproj", "{DFC376D1-A43A-4F36-A764-CAFFE668E9C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DFC376D1-A43A-4F36-A764-CAFFE668E9C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFC376D1-A43A-4F36-A764-CAFFE668E9C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFC376D1-A43A-4F36-A764-CAFFE668E9C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFC376D1-A43A-4F36-A764-CAFFE668E9C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
