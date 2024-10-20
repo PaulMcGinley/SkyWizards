@@ -6,7 +6,10 @@ namespace AutoPatcherAdmin;
 
 public partial class ConfigWindow : Window
 {
-
+    /// <summary>
+    /// Constructor for the ConfigWindow
+    /// </summary>
+    /// <param name="file">Provide filename if editing a job, leave blank for new</param>
     public ConfigWindow(string file)
     {
         InitializeComponent();
@@ -31,7 +34,7 @@ public partial class ConfigWindow : Window
             Title = "Select Folder"
         };
 
-        string result = await dialog.ShowAsync(this);
+        string? result = await dialog.ShowAsync(this);
         if (!string.IsNullOrEmpty(result))
         {
             LocalFilesDir.Text = result;

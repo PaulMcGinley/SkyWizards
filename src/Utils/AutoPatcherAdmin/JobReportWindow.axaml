@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="AutoPatcherAdmin.JobReportWindow"
+        Width="400"
+        Height="350"
+        Title="Job Report">
+    <StackPanel Margin="15">
+
+        <TextBlock Text="File:" FontWeight="Bold"/>
+        <TextBlock Name="lbFile" Text="..." Margin="0,0,0,10"/>
+
+        <TextBlock Text="Status:" FontWeight="Bold"/>
+        <TextBlock Name="lbStatus" Text="..." Margin="0,0,0,10"/>
+
+        <TextBlock Text="Speed:" FontWeight="Bold"/>
+        <TextBlock Name="lbSpeed" Text="0 KB/s" Margin="0,0,0,10"/>
+
+        <TextBlock Text="File Progress:" FontWeight="Bold"/>
+        <ProgressBar Name="fileProgressBar" Minimum="0" Maximum="100" Value="0" Height="20" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Total Progress:" FontWeight="Bold"/>
+        <ProgressBar Name="totalProgressBar" Minimum="0" Maximum="100" Value="0" Height="20" Margin="0,0,0,10"/>
+
+    </StackPanel>
+</Window>

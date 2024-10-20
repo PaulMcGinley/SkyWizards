@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AutoPatcherAdmin")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+48ea81e08398edb62569f721f6080fe8c16c343d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a3d92a74fc6d2eb93ddd6830408a732371598448")]
 [assembly: System.Reflection.AssemblyProductAttribute("AutoPatcherAdmin")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AutoPatcherAdmin")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

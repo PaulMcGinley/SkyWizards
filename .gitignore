@@ -7,10 +7,13 @@ Patch Files/
 Tools/
 Test Clients/
 
+# Dev dirs
+Libraries/
+
 # AutoPatcherAdmin
 src/Utils/AutoPatcherAdmin/.*/
 src/Utils/AutoPatcherAdmin/[Bb]in/
-src/Utils/AutoPatcherAdmin/[Ob]bj/
+src/Utils/AutoPatcherAdmin/[Oo]bj/
 src/Utils/AutoPatcherAdmin/AutoPatcherAdmin.sln.DotSettings.user
 
 # Patcher

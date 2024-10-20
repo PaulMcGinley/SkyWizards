@@ -20,7 +20,7 @@ mkdir -p "${RESOURCES_FOLDER}"
 # Copy the source folder contents to the MacOS folder
 cp -R "${SOURCE_FOLDER}/" "${MACOS_FOLDER}/"
 
-# Create the Info.plist file 
+# Create the Info.plist file
 cat <<EOL > "${CONTENTS_FOLDER}/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -29,13 +29,15 @@ cat <<EOL > "${CONTENTS_FOLDER}/Info.plist"
     <key>CFBundleExecutable</key>
     <string>${APP_NAME}</string>
     <key>CFBundleIdentifier</key>
-    <string>com.example.${APP_NAME}</string>
+    <string>co.uk.skywizards.${APP_NAME}</string>
     <key>CFBundleName</key>
     <string>${APP_NAME}</string>
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>LSBackgroundOnly</key>
+    <true/>
 </dict>
 </plist>
 EOL

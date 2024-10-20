@@ -543,6 +543,19 @@
           }
         }
       },
+      "SSH.NET/2024.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Renci.SshNet.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Renci.SshNet.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "System.IO.Pipelines/6.0.0": {
         "type": "package",
         "compile": {
@@ -1375,6 +1388,31 @@
         "skiasharp.nativeassets.win32.nuspec"
       ]
     },
+    "SSH.NET/2024.1.0": {
+      "sha512": "pyOea9czgC+OwMoetuWtMuwRebOyskKkqTZtODgyEZ5K6JwV+Hh/GFiyYubl93YnEvmvNZeuyWyUDsb3LvBDYA==",
+      "type": "package",
+      "path": "ssh.net/2024.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "SS-NET-icon-h500.png",
+        "lib/net462/Renci.SshNet.dll",
+        "lib/net462/Renci.SshNet.xml",
+        "lib/net6.0/Renci.SshNet.dll",
+        "lib/net6.0/Renci.SshNet.xml",
+        "lib/net7.0/Renci.SshNet.dll",
+        "lib/net7.0/Renci.SshNet.xml",
+        "lib/net8.0/Renci.SshNet.dll",
+        "lib/net8.0/Renci.SshNet.xml",
+        "lib/netstandard2.0/Renci.SshNet.dll",
+        "lib/netstandard2.0/Renci.SshNet.xml",
+        "lib/netstandard2.1/Renci.SshNet.dll",
+        "lib/netstandard2.1/Renci.SshNet.xml",
+        "ssh.net.2024.1.0.nupkg.sha512",
+        "ssh.net.nuspec"
+      ]
+    },
     "System.IO.Pipelines/6.0.0": {
       "sha512": "mXX66shZ4xLlI3vNLaJ0lt8OIZdmXTvIqXRdQX5HLVGSkLhINLsVhyZuX2UdRFnOGkqnwmMUs40pIIQ7mna4+A==",
       "type": "package",
@@ -1468,7 +1506,8 @@
       "Avalonia.Desktop >= 11.1.0",
       "Avalonia.Diagnostics >= 11.1.0",
       "Avalonia.Fonts.Inter >= 11.1.0",
-      "Avalonia.Themes.Fluent >= 11.1.0"
+      "Avalonia.Themes.Fluent >= 11.1.0",
+      "SSH.NET >= 2024.1.0"
     ]
   },
   "packageFolders": {
@@ -1477,11 +1516,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/paul/Desktop/GU2/Tools/AutoPatcherAdmin/AutoPatcherAdmin.csproj",
+      "projectUniqueName": "/Users/paul/Documents/GitHub/SkyWizards/src/Utils/AutoPatcherAdmin/AutoPatcherAdmin.csproj",
       "projectName": "AutoPatcherAdmin",
-      "projectPath": "/Users/paul/Desktop/GU2/Tools/AutoPatcherAdmin/AutoPatcherAdmin.csproj",
+      "projectPath": "/Users/paul/Documents/GitHub/SkyWizards/src/Utils/AutoPatcherAdmin/AutoPatcherAdmin.csproj",
       "packagesPath": "/Users/paul/.nuget/packages/",
-      "outputPath": "/Users/paul/Desktop/GU2/Tools/AutoPatcherAdmin/obj/",
+      "outputPath": "/Users/paul/Documents/GitHub/SkyWizards/src/Utils/AutoPatcherAdmin/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/paul/.nuget/NuGet/NuGet.Config"
@@ -1533,6 +1572,10 @@
           "Avalonia.Themes.Fluent": {
             "target": "Package",
             "version": "[11.1.0, )"
+          },
+          "SSH.NET": {
+            "target": "Package",
+            "version": "[2024.1.0, )"
           }
         },
         "imports": [

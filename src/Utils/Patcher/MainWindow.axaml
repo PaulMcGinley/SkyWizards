@@ -12,7 +12,7 @@
     <Window.Background>
         <ImageBrush Source="avares://Patcher/Assets/bg.png"/>
     </Window.Background>
-    
+
     <!-- Outer Grid to structure top and bottom -->
     <Grid>
         <Grid.RowDefinitions>
@@ -25,7 +25,7 @@
         <Canvas Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
             <Image Source="avares://Patcher/Assets/restriction.png" Width="120" Height="120"/>
         </Canvas>
-        
+
         <!-- Row 2: Bottom section -->
         <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="10">
             <Grid.RowDefinitions>

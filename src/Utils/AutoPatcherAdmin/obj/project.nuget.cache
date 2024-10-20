@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "MkDAZffk4uk=",
+  "dgSpecHash": "bVUQbbhZ+0M=",
   "success": true,
-  "projectFilePath": "/Users/paul/Desktop/GU2/Tools/AutoPatcherAdmin/AutoPatcherAdmin.csproj",
+  "projectFilePath": "/Users/paul/Documents/GitHub/SkyWizards/src/Utils/AutoPatcherAdmin/AutoPatcherAdmin.csproj",
   "expectedPackageFiles": [
     "/Users/paul/.nuget/packages/avalonia/11.1.0/avalonia.11.1.0.nupkg.sha512",
     "/Users/paul/.nuget/packages/avalonia.angle.windows.natives/2.1.22045.20230930/avalonia.angle.windows.natives.2.1.22045.20230930.nupkg.sha512",
@@ -31,6 +31,7 @@
     "/Users/paul/.nuget/packages/skiasharp.nativeassets.macos/2.88.8/skiasharp.nativeassets.macos.2.88.8.nupkg.sha512",
     "/Users/paul/.nuget/packages/skiasharp.nativeassets.webassembly/2.88.8/skiasharp.nativeassets.webassembly.2.88.8.nupkg.sha512",
     "/Users/paul/.nuget/packages/skiasharp.nativeassets.win32/2.88.8/skiasharp.nativeassets.win32.2.88.8.nupkg.sha512",
+    "/Users/paul/.nuget/packages/ssh.net/2024.1.0/ssh.net.2024.1.0.nupkg.sha512",
     "/Users/paul/.nuget/packages/system.io.pipelines/6.0.0/system.io.pipelines.6.0.0.nupkg.sha512",
     "/Users/paul/.nuget/packages/system.numerics.vectors/4.5.0/system.numerics.vectors.4.5.0.nupkg.sha512",
     "/Users/paul/.nuget/packages/tmds.dbus.protocol/0.16.0/tmds.dbus.protocol.0.16.0.nupkg.sha512"

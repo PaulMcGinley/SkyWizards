@@ -4,15 +4,27 @@
         Title="AutoPatcherAdmin"
         Width="400"
         Height="400">
-    <Grid RowDefinitions="*, Auto">
+    <Grid RowDefinitions="Auto,*, Auto">
+        <!-- Menu at the top -->
+        <!--<Menu Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Click="NewConfigButton_OnClick"/>
+                <MenuItem Header="_Edit" Click="EditButton_OnClick"/>
+                <MenuItem Header="_Exit" Click="ExitMenuItem_OnClick"/>
+            </MenuItem>
+            <MenuItem Header="_Help">a
+                <MenuItem Header="_About" Click="AboutMenuItem_OnClick"/>
+            </MenuItem>
+        </Menu>-->
+
         <!-- Checkbox List -->
-        <ListBox Name="CheckBoxList" Grid.Row="0" />
+        <ListBox Name="CheckBoxList" Grid.Row="1" />
 
         <!-- Buttons at the bottom -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,20">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,20">
             <Button Name="NewConfigButton" Content="New Job" Margin="10,0,10,0" Click="NewConfigButton_OnClick"/>
             <Button Name="EditButton" Content="Edit Job" Margin="10,0,10,0" Click="EditButton_OnClick"/>
-            <Button Name="RunSelectedButton" Content="Run Selected" Margin="10,0,10,0" />
+            <Button Name="RunSelectedButton" Content="Run Selected" Margin="10,0,10,0" Click="RunSelectedButton_OnClick"/>
         </StackPanel>
     </Grid>
 </Window>
