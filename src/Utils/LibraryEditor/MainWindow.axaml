@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LibraryEditor.MainWindow"
+        Width="800" Height="450"
+        Title="LibraryEditor">
+    <DockPanel>
+        <!-- Menu at the top -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open"/>
+                <MenuItem Header="_Save"/>
+                <MenuItem Header="_Exit"/>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo"/>
+                <MenuItem Header="_Redo"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Main content area -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/> <!-- Left column locked width -->
+                <ColumnDefinition Width="*"/>   <!-- Right column takes remaining space -->
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>    <!-- Top row takes remaining space -->
+                <RowDefinition Height="*"/>    <!-- Bottom row takes remaining space -->
+            </Grid.RowDefinitions>
+
+            <!-- ListBox in the left column -->
+            <ListBox Name="myListBox" Grid.Column="0">
+                <!-- Initial items can be defined here if needed -->
+            </ListBox>
+
+            <!-- Image in the top right -->
+            <Grid Grid.Column="1" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/> <!-- Labels column -->
+                    <ColumnDefinition Width="*"/>   <!-- Image column -->
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Labels on the left -->
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="X Offset:" Margin="5"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="Y Offset:" Margin="5"/>
+
+                <!-- Image on the right -->
+                <Image Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="5"/>
+            </Grid>
+
+            <!-- Image tile list in the bottom right -->
+            <ListBox Grid.Column="1" Grid.Row="1">
+                <!-- ListBox items go here -->
+            </ListBox>
+        </Grid>
+    </DockPanel>
+</Window>

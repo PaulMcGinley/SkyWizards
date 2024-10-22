@@ -22,6 +22,18 @@ src/Utils/Patcher/[Bb]in/
 src/Utils/Patcher/[Oo]bj/
 src/Utils/Patcher/Patcher.sln.DotSettings.user
 
+# Library Editor
+src/Utils/LibraryEditor/.*/
+src/Utils/LibraryEditor/[Bb]in/
+src/Utils/LibraryEditor/[Oo]bj/
+src/Utils/LibraryEditor/LibraryEditor.sln.DotSettings.user
+
+# Level Editor
+src/Utils/LevelEditor/.*/
+src/Utils/LevelEditor/[Bb]in/
+src/Utils/LevelEditor/[Oo]bj/
+src/Utils/LevelEditor/LevelEditor.sln.DotSettings.user
+
 # qdLibBuilder (Quick and Dirty Library Builder - macOS cli lib manager)
 src/Utils/qdLibBuilder/.*/
 src/Utils/qdLibBuilder/[Bb]in/

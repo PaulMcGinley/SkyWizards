@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # Find SFML package
-find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
 
 add_executable(LoSW___BftS main.cpp
         Game.h
@@ -45,6 +45,7 @@ add_executable(LoSW___BftS main.cpp
         graphics/TImage.h
         os/GetExecutionDirectory.h
         os/PlatformPaths.h
+        models/Island.h
 )
 
 
