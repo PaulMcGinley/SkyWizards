@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="1920"
+        Height="1000"
+        x:Class="LevelObjectEditor.MainWindow"
+        Title="LevelObjectEditor">
+    <DockPanel>
+        <!-- Main Menu -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open"/>
+                <MenuItem Header="_Save"/>
+                <MenuItem Header="_Exit"/>
+            </MenuItem>
+        </Menu>
+
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="+ Image" />
+            <MenuItem Header="+ Bound" />
+        </Menu>
+
+        <!-- Main Content Area -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left side content -->
+            <Grid Grid.Column="0">
+                <!-- Add your image and rectangle drawing logic here -->
+            </Grid>
+
+            <!-- Right side content -->
+            <Grid Grid.Column="1">
+                <!-- Add your fixed width content here -->
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>

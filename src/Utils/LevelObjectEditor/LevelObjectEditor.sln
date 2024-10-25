@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LevelObjectEditor", "LevelObjectEditor.csproj", "{C24978A5-7FE4-432E-8AFA-4F4FBC56C45E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libType", "..\libType\libType\libType.csproj", "{E0974CD1-65E2-4435-9A15-003E48111D89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C24978A5-7FE4-432E-8AFA-4F4FBC56C45E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C24978A5-7FE4-432E-8AFA-4F4FBC56C45E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C24978A5-7FE4-432E-8AFA-4F4FBC56C45E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C24978A5-7FE4-432E-8AFA-4F4FBC56C45E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0974CD1-65E2-4435-9A15-003E48111D89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0974CD1-65E2-4435-9A15-003E48111D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0974CD1-65E2-4435-9A15-003E48111D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0974CD1-65E2-4435-9A15-003E48111D89}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

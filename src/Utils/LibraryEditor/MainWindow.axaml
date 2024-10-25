@@ -9,56 +9,71 @@
     <DockPanel>
         <!-- Menu at the top -->
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Open"/>
-                <MenuItem Header="_Save"/>
-                <MenuItem Header="_Exit"/>
+            <MenuItem Header="Library">
+                <MenuItem Header="New" Click="mnuNew_OnClick"/>
+                <Separator/>
+                <MenuItem Header="Open" Click="mnuOpen_Click"/>
+                <Separator/>
+                <MenuItem Header="Save" Click="mnuSave_Click"/>
+                <MenuItem Header="Save As" Click="mnuSaveAs_Click"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="mnuExit_Click"/>
             </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Header="_Undo"/>
-                <MenuItem Header="_Redo"/>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Insert Images" Click="mnuInsertImages_Click"/>
+                <Separator/>
+                <MenuItem Header="Trim Whitespace" Click="mnuTrimWhitespace_Click"/>
+                <MenuItem Header="Remove EXIF data" Click="mnuRemoveEXIFData_Click"/>
             </MenuItem>
         </Menu>
 
         <!-- Main content area -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/> <!-- Left column locked width -->
+                <ColumnDefinition Width="150"/> <!-- Left column locked width -->
                 <ColumnDefinition Width="*"/>   <!-- Right column takes remaining space -->
             </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>    <!-- Top row takes remaining space -->
-                <RowDefinition Height="*"/>    <!-- Bottom row takes remaining space -->
-            </Grid.RowDefinitions>
 
-            <!-- ListBox in the left column -->
-            <ListBox Name="myListBox" Grid.Column="0">
-                <!-- Initial items can be defined here if needed -->
-            </ListBox>
+            <!-- List of text in the left column -->
+            <StackPanel Grid.Column="0" Margin="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Width:" Margin="5" Grid.Column="0" Grid.Row="0"/>
+                    <TextBlock Text="1024" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"/>
+                    <TextBlock Text="Height:" Margin="5" Grid.Column="0" Grid.Row="1"/>
+                    <TextBlock Text="1024" Margin="5" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right"/>
+                    <TextBlock Text="XOffset:" Margin="5" Grid.Column="0" Grid.Row="2"/>
+                    <TextBlock Text="-1024" Margin="5" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right"/>
+                    <TextBlock Text="YOffset:" Margin="5" Grid.Column="0" Grid.Row="3"/>
+                    <TextBlock Text="-1024" Margin="5" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right"/>
+                </Grid>
+            </StackPanel>
 
-            <!-- Image in the top right -->
-            <Grid Grid.Column="1" Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/> <!-- Labels column -->
-                    <ColumnDefinition Width="*"/>   <!-- Image column -->
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <!-- Labels on the left -->
-                <TextBlock Grid.Column="0" Grid.Row="0" Text="X Offset:" Margin="5"/>
-                <TextBlock Grid.Column="0" Grid.Row="1" Text="Y Offset:" Margin="5"/>
-
-                <!-- Image on the right -->
-                <Image Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="5"/>
-            </Grid>
-
-            <!-- Image tile list in the bottom right -->
-            <ListBox Grid.Column="1" Grid.Row="1">
-                <!-- ListBox items go here -->
-            </ListBox>
+            <!-- Image column with white background and menu at the top -->
+            <Border Grid.Column="1" Margin="5">
+                <DockPanel>
+                    <Menu DockPanel.Dock="Top">
+                        <MenuItem Header="_Options">
+                            <MenuItem Header="_Settings"/>
+                            <MenuItem Header="_Help"/>
+                        </MenuItem>
+                        <MenuItem Header="First"/>
+                        <MenuItem Header="Previous"/>
+                        <MenuItem Header="Next"/>
+                        <MenuItem Header="Last"/>
+                    </Menu>
+                    <Image Margin="5"/>
+                </DockPanel>
+            </Border>
         </Grid>
     </DockPanel>
 </Window>

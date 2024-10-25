@@ -1,3 +1,6 @@
+# IDE files
+.vscode/
+
 # OS Rubbish
 **/*.DS_Store
 **/*Thumbs.db
@@ -6,9 +9,20 @@
 Patch Files/
 Tools/
 Test Clients/
+Utilities/
 
 # Dev dirs
 Libraries/
+
+# Library Format Type (C#) (Tools)
+src/Utils/libType/.*/
+src/Utils/libType/libType/[Bb]in/
+src/Utils/libType/libType/[Oo]bj/
+src/Utils/libType/libType/libType.sln.DotSettings.user
+
+# Library Format Type (C++) (Game)
+src/Utils/libTypepp/.*/
+src/Utils/libTypepp/cmake-build-*/
 
 # AutoPatcherAdmin
 src/Utils/AutoPatcherAdmin/.*/
@@ -34,7 +48,14 @@ src/Utils/LevelEditor/[Bb]in/
 src/Utils/LevelEditor/[Oo]bj/
 src/Utils/LevelEditor/LevelEditor.sln.DotSettings.user
 
+# Level Object Editor
+src/Utils/LevelObjectEditor/.*/
+src/Utils/LevelObjectEditor/[Bb]in/
+src/Utils/LevelObjectEditor/[Oo]bj/
+src/Utils/LevelObjectEditor/LevelObjectEditor.sln.DotSettings.user
+
 # qdLibBuilder (Quick and Dirty Library Builder - macOS cli lib manager)
+# This tool will be deprecated when the new library manager is finished
 src/Utils/qdLibBuilder/.*/
 src/Utils/qdLibBuilder/[Bb]in/
 src/Utils/qdLibBuilder/[Oo]bj/
