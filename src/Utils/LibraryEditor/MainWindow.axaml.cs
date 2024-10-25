@@ -9,15 +9,40 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using LibraryEditor.Processors;
 using libType; // PFM Library Compiler
 
 namespace LibraryEditor
 {
     public partial class MainWindow : Window
     {
-        PLibrary library;
-        bool needsSave = false;
-        
+        private PLibrary library;
+
+        private int _selectedImageIndex = -1;
+        private int SelectedImageIndex
+        {
+            get => _selectedImageIndex;
+            set
+            {
+                if (library == null)
+                    return;
+                
+                if (library.Images.Count == 0)
+                    return;
+
+                _selectedImageIndex = value;
+                if (_selectedImageIndex < 0)
+                {
+                    _selectedImageIndex = 0;
+                }
+                else if (_selectedImageIndex >= library.Images.Count)
+                {
+                    _selectedImageIndex = library.Images.Count - 1;
+                }
+            }
+        }
+
+        private bool needsSave = false;
         
         public MainWindow()
         {
@@ -37,6 +62,7 @@ namespace LibraryEditor
             }
             
             library = new PLibrary(string.Empty);
+            SelectedImageIndex = -1;
             needsSave = false;
         }
 
@@ -69,6 +95,12 @@ namespace LibraryEditor
             // Open the library
             library = new PLibrary(result[0].Path.LocalPath);
             library.Open(out err);
+            
+            if (library.Images.Count > 0)
+            {
+                SelectedImageIndex = 0;
+                UpdateUI();
+            }
 
             if (err == null)
             {
@@ -80,6 +112,11 @@ namespace LibraryEditor
             needsSave = false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mnuSave_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -87,10 +124,18 @@ namespace LibraryEditor
             if (library == null)
             {
                 err = "No library to save!";
+                Console.WriteLine(err);
+                return;
+            }
+            
+            if (library.FilePath == string.Empty)
+            {
+                mnuSaveAs_Click(sender, e);
+                return;
             }
             
             // Save the library
-            library?.Save(out err);
+            library?.Save(out err, overwrite: true);
             
             if (err != null)
             {
@@ -98,6 +143,11 @@ namespace LibraryEditor
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void mnuSaveAs_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -136,6 +186,11 @@ namespace LibraryEditor
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mnuExit_Click(object? sender, RoutedEventArgs e)
         {
             if (needsSave)
@@ -146,6 +201,11 @@ namespace LibraryEditor
             Close();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void mnuInsertImages_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -198,24 +258,119 @@ namespace LibraryEditor
                 {
                     err = $"Error reading file {file.Name}: {ex.Message}";
                 }
-            }
-            
-            if (err != null)
-            {
-                Console.WriteLine(err);
+                
+                if (err != null)
+                {
+                    Console.WriteLine(err);
+                }
             }
 
             needsSave = true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mnuTrimWhitespace_Click(object? sender, RoutedEventArgs e)
+        {
+            if (SelectedImageIndex < 0 || SelectedImageIndex >= library.Images.Count)
+            {
+                return;
+            }
+
+            var image = library.Images[SelectedImageIndex];
+            WhiteSpaceRemoval.TrimTransparentEdges(ref image);
+            library.Images[SelectedImageIndex] = image;
+            needsSave = true;
+            UpdateUI();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void mnuRemoveEXIFData_Click(object? sender, RoutedEventArgs e)
         {
             //throw new System.NotImplementedException();
         }
 
-        private void mnuRemoveEXIFData_Click(object? sender, RoutedEventArgs e)
+        /// <summary>
+        /// 
+        /// </summary>
+        private void UpdateUI()
         {
-            //throw new System.NotImplementedException();
+            if (library == null)
+            {
+                lbWidth.Text = "";
+                lbHeight.Text = "";
+                lbOffsetX.Text = "";
+                lbOffsetY.Text = "";
+                Preview.Source = null;
+                return;
+            }
+
+            if (SelectedImageIndex < 0 || SelectedImageIndex >= library.Images.Count)
+                return;
+
+            using var stream = new MemoryStream(library.Images[SelectedImageIndex].Data);
+            var bitmap = new Bitmap(stream);
+            lbWidth.Text = bitmap.PixelSize.Width.ToString();
+            lbHeight.Text = bitmap.PixelSize.Height.ToString();
+            lbOffsetX.Text = library.Images[SelectedImageIndex].OffsetX.ToString();
+            lbOffsetY.Text = library.Images[SelectedImageIndex].OffsetY.ToString();
+            Preview.Source = bitmap;
+
+            // Set the position of the image
+            bool drawWithOffset = cbDrawWithOffset.IsChecked ?? false;
+
+            if (drawWithOffset)
+            {
+                Canvas.SetLeft(Preview, library.Images[SelectedImageIndex].OffsetX);
+                Canvas.SetTop(Preview, library.Images[SelectedImageIndex].OffsetY);
+            }
+            else
+            {
+                Canvas.SetLeft(Preview, 0);
+                Canvas.SetTop(Preview, 0);
+            }
+            // Canvas.SetLeft(Preview, library.Images[SelectedImageIndex].OffsetX);
+            // Canvas.SetTop(Preview, library.Images[SelectedImageIndex].OffsetY);
+        }
+
+        private void mnuFirst_Click(object? sender, RoutedEventArgs e)
+        {
+            SelectedImageIndex = 0;
+            
+            UpdateUI();
+        }
+
+        private void mnuPrevious_Click(object? sender, RoutedEventArgs e)
+        {
+            SelectedImageIndex--;
+            
+            UpdateUI();
+        }
+
+        private void mnuNext_Click(object? sender, RoutedEventArgs e)
+        {
+            SelectedImageIndex++;
+            
+            UpdateUI();
+        }
+
+        private void mnuLast_Click(object? sender, RoutedEventArgs e)
+        {
+            SelectedImageIndex = int.MaxValue;
+            
+            UpdateUI();
+        }
+
+        private void cbDrawWithOffset_Click(object? sender, RoutedEventArgs e)
+        {
+            UpdateUI();
         }
     }
 }

@@ -54,9 +54,9 @@ public class PLibrary
         // --- Image count
         var count = reader.ReadInt32();
 
-        // --- Create the list of images with the correct size to avoid resizing
+        // --- Create the list of images
         Images = new List<LImage>(count);
-
+        
         // --- Read the library
         for (var index = 0; index < count; index++)
         {
@@ -72,7 +72,7 @@ public class PLibrary
                 image.Data = reader.ReadBytes(dataLength);
 
                 // Assign the image to the list
-                Images[index] = image;
+                Images.Add(image);
             }
             catch (TimeoutException)
             {
@@ -94,9 +94,9 @@ public class PLibrary
                 err = "Unexpected end of file";
                 return;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                err = "Unhandled error reading library";
+                err = "Unhandled error reading library: " + e.Message;
                 return;
             }
         }
