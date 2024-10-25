@@ -17,7 +17,7 @@ namespace LibraryEditor
     public partial class MainWindow : Window
     {
         private PLibrary library;
-
+        private bool needsSave = false;
         private int _selectedImageIndex = -1;
         private int SelectedImageIndex
         {
@@ -41,19 +41,16 @@ namespace LibraryEditor
                 }
             }
         }
-
-        private bool needsSave = false;
         
         public MainWindow()
         {
             InitializeComponent();
+            UpdateUI();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        #region Library Menu
+        
+        // Library
         private void mnuNew_OnClick(object? sender, RoutedEventArgs e)
         {
             if (needsSave)
@@ -65,12 +62,6 @@ namespace LibraryEditor
             SelectedImageIndex = -1;
             needsSave = false;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private async void mnuOpen_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -111,12 +102,6 @@ namespace LibraryEditor
             library = null;
             needsSave = false;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void mnuSave_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -142,12 +127,6 @@ namespace LibraryEditor
                 Console.WriteLine(err);
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private async void mnuSaveAs_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -185,12 +164,17 @@ namespace LibraryEditor
                 Console.WriteLine(err);
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        private void mnuClose_Click(object? sender, RoutedEventArgs e)
+        {
+            if (needsSave)
+            {
+                // Ask user if they want to save changes
+            }
+            
+            library = null;
+            needsSave = false;
+            UpdateUI();
+        }
         private void mnuExit_Click(object? sender, RoutedEventArgs e)
         {
             if (needsSave)
@@ -201,11 +185,7 @@ namespace LibraryEditor
             Close();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        // Edit
         private async void mnuInsertImages_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -267,12 +247,6 @@ namespace LibraryEditor
 
             needsSave = true;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void mnuTrimWhitespace_Click(object? sender, RoutedEventArgs e)
         {
             if (SelectedImageIndex < 0 || SelectedImageIndex >= library.Images.Count)
@@ -286,17 +260,47 @@ namespace LibraryEditor
             needsSave = true;
             UpdateUI();
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void mnuRemoveEXIFData_Click(object? sender, RoutedEventArgs e)
         {
             //throw new System.NotImplementedException();
         }
+        #endregion
+        
+        #region Image Menu
 
+        private void mnuFirst_Click(object? sender, RoutedEventArgs e)
+        {
+            SelectedImageIndex = 0;
+            
+            UpdateUI();
+        }
+        private void mnuPrevious_Click(object? sender, RoutedEventArgs e)
+        {
+            SelectedImageIndex--;
+            
+            UpdateUI();
+        }
+        private void mnuNext_Click(object? sender, RoutedEventArgs e)
+        {
+            SelectedImageIndex++;
+            
+            UpdateUI();
+        }
+        private void mnuLast_Click(object? sender, RoutedEventArgs e)
+        {
+            SelectedImageIndex = int.MaxValue;
+            
+            UpdateUI();
+        }
+
+        // Draw
+        private void cbDrawWithOffset_Click(object? sender, RoutedEventArgs e)
+        {
+            UpdateUI();
+        }
+
+        #endregion
+        
         /// <summary>
         /// 
         /// </summary>
@@ -304,13 +308,19 @@ namespace LibraryEditor
         {
             if (library == null)
             {
+                Title = "Library Editor";
+                
                 lbWidth.Text = "";
                 lbHeight.Text = "";
                 lbOffsetX.Text = "";
                 lbOffsetY.Text = "";
+                lbImage.Text = "";
+                lbTotal.Text = "";
                 Preview.Source = null;
                 return;
             }
+            
+            Title = $"Library Editor - {library.FilePath}";
 
             if (SelectedImageIndex < 0 || SelectedImageIndex >= library.Images.Count)
                 return;
@@ -321,11 +331,12 @@ namespace LibraryEditor
             lbHeight.Text = bitmap.PixelSize.Height.ToString();
             lbOffsetX.Text = library.Images[SelectedImageIndex].OffsetX.ToString();
             lbOffsetY.Text = library.Images[SelectedImageIndex].OffsetY.ToString();
+            lbImage.Text = SelectedImageIndex.ToString();
+            lbTotal.Text = (library.Images.Count-1).ToString();
             Preview.Source = bitmap;
 
-            // Set the position of the image
+            // Draw with offset or in the top-left corner
             bool drawWithOffset = cbDrawWithOffset.IsChecked ?? false;
-
             if (drawWithOffset)
             {
                 Canvas.SetLeft(Preview, library.Images[SelectedImageIndex].OffsetX);
@@ -336,41 +347,6 @@ namespace LibraryEditor
                 Canvas.SetLeft(Preview, 0);
                 Canvas.SetTop(Preview, 0);
             }
-            // Canvas.SetLeft(Preview, library.Images[SelectedImageIndex].OffsetX);
-            // Canvas.SetTop(Preview, library.Images[SelectedImageIndex].OffsetY);
-        }
-
-        private void mnuFirst_Click(object? sender, RoutedEventArgs e)
-        {
-            SelectedImageIndex = 0;
-            
-            UpdateUI();
-        }
-
-        private void mnuPrevious_Click(object? sender, RoutedEventArgs e)
-        {
-            SelectedImageIndex--;
-            
-            UpdateUI();
-        }
-
-        private void mnuNext_Click(object? sender, RoutedEventArgs e)
-        {
-            SelectedImageIndex++;
-            
-            UpdateUI();
-        }
-
-        private void mnuLast_Click(object? sender, RoutedEventArgs e)
-        {
-            SelectedImageIndex = int.MaxValue;
-            
-            UpdateUI();
-        }
-
-        private void cbDrawWithOffset_Click(object? sender, RoutedEventArgs e)
-        {
-            UpdateUI();
         }
     }
 }
