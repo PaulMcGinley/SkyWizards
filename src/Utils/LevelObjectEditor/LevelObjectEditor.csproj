@@ -21,4 +21,8 @@
     <ItemGroup>
       <ProjectReference Include="..\libType\libType\libType.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="LObject\" />
+    </ItemGroup>
 </Project>

@@ -9,7 +9,7 @@
     <DockPanel>
         <!-- Menu at the top -->
         <Menu DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="0,0,0,1">
-            <MenuItem Header="Library">
+            <MenuItem Header="Library" FontWeight="Bold">
                 <MenuItem Header="New" Click="mnuNew_OnClick"/>
                 <Separator/>
                 <MenuItem Header="Open" Click="mnuOpen_Click"/>
@@ -72,7 +72,7 @@
             <Border Grid.Column="1" Margin="0">
                 <DockPanel>
                     <Menu DockPanel.Dock="Top"  BorderBrush="Gray" BorderThickness="1,0,0,1">
-                        <MenuItem Header="Image" IsEnabled="False">
+                        <MenuItem Header="Image" FontWeight="Bold" IsEnabled="False">
                             <MenuItem Header="Move"/>
                             <MenuItem Header="Remove"/>
                             <MenuItem Header="Replace"/>
