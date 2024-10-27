@@ -5,16 +5,15 @@ namespace libType;
 public class OLibrary
 {
     [XmlIgnore]
-    private string _filePath;
+    private string _filePath = string.Empty;
     public string FilePath => _filePath;
+    public void SetFilePath(string filePath) => _filePath = filePath;
+
+    public List<Graphic> Images;
+    public List<Boundry> Boundaries;
     
-    public List<Graphic> Images { get; set; }
-    public List<Boundry> Boundaries { get; set; }
-    
-    public OLibrary(string filePath)
+    public OLibrary()
     {
-        _filePath = filePath;
-        
         Images = [];
         Boundaries = [];
     }

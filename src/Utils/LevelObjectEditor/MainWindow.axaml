@@ -9,20 +9,20 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="0,0,0,1">
             <MenuItem Header="Object" FontWeight="Bold">
-                <MenuItem Header="New"/>
+                <MenuItem Header="New" Click="mnuNew_Click"/>
                 <Separator/>
-                <MenuItem Header="Open"/>
+                <MenuItem Header="Open" Click="mnuOpen_Click"/>
                 <Separator/>
-                <MenuItem Header="Save"/>
-                <MenuItem Header="Save As"/>
+                <MenuItem Header="Save" Click="mnuSave_Click"/>
+                <MenuItem Header="Save As" Click="mnuSaveAs_Click"/>
                 <Separator/>
-                <MenuItem Header="Close"/>
+                <MenuItem Header="Close" Click="mnuClose_Click"/>
                 <Separator/>
-                <MenuItem Header="Exit"/>
+                <MenuItem Header="Exit" Click="mnuExit_Click"/>
             </MenuItem>
             <MenuItem Header="Change Library" Click="mnuFind_Click">
             </MenuItem>
-            <MenuItem Name="lbLibraryPath" Header="No library selected" Click="LbLibraryPath_OnClick"/>
+            <MenuItem Name="lbLibraryPath" Header="No library selected" Click="LbLibraryPath_Click"/>
         </Menu>
 
         <!-- Main content area -->
@@ -56,7 +56,7 @@
                     <TextBlock Text="Height" Margin="5" Grid.Column="0" Grid.Row="3"/>
                     <TextBlock Name="lbHeight" Text="" Margin="5" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right"/>
                     <Button Content="Image" Margin="0" Grid.Column="0" Grid.Row="4" Click="btnSelectImage_Click"/>
-                    <TextBlock Name="lbImageIndex" Text="0" Margin="5" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right"/>
+                    <TextBlock Name="lbImageIndex" Text="-1" Margin="5" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right"/>
                 </Grid>
             </StackPanel>
 
@@ -88,12 +88,16 @@
                             <Menu DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="0,1,0,0">
                                 <MenuItem Header="+" ToolTip.Tip="Add new layer" Click="mnuNewGraphicsLayer_Click" />
                                 <MenuItem Header="-" ToolTip.Tip="Remove selected layer" Click="mnuRemoveGraphicsLayer_Click"/>
-                                <!-- <MenuItem Header="▲" ToolTip.Tip="Move selected layer up"/> -->
-                                <!-- <MenuItem Header="▼" ToolTip.Tip="Move selected layer down"/> -->
+                                <MenuItem Header="▲" ToolTip.Tip="Move selected layer up" Click="mnuMoveGraphicsLayerUp_Click"/>
+                                <MenuItem Header="▼" ToolTip.Tip="Move selected layer down" Click="mnuMoveGraphicsLayerDown_Click"/>
                             </Menu>
                             <ScrollViewer DockPanel.Dock="Top">
-                                <ListBox Name="LayersList">
-                                    <!-- Entries appear here: -->
+                                <ListBox Name="LayersList" SelectionChanged="LayersList_SelectionChanged">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <ContentPresenter Content="{Binding}"/>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
                                 </ListBox>
                             </ScrollViewer>
                         </DockPanel>

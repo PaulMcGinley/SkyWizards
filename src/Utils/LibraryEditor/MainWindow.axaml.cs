@@ -60,7 +60,9 @@ namespace LibraryEditor
             
             library = new PLibrary(string.Empty);
             SelectedImageIndex = -1;
-            needsSave = false;
+            needsSave = false; // False because we just created an empty object
+            
+            UpdateUI();
         }
         private async void mnuOpen_Click(object? sender, RoutedEventArgs e)
         {
@@ -90,8 +92,9 @@ namespace LibraryEditor
             if (library.Images.Count > 0)
             {
                 SelectedImageIndex = 0;
-                UpdateUI();
             }
+            
+            UpdateUI();
 
             if (err == null)
             {
@@ -101,6 +104,8 @@ namespace LibraryEditor
             Console.WriteLine(err);
             library = null;
             needsSave = false;
+            
+            UpdateUI();
         }
         private void mnuSave_Click(object? sender, RoutedEventArgs e)
         {
@@ -143,10 +148,9 @@ namespace LibraryEditor
             {
                 Title = "Save Library",
                 DefaultExtension = "lib",
-                SuggestedFileName = "library",
                 FileTypeChoices = new List<FilePickerFileType>
                 {
-                    new FilePickerFileType("PFM Library") { Patterns = new[] { "*.lib" } }
+                    new FilePickerFileType("PFM Library") { Patterns = ["*.lib"] }
                 }
             });
 
@@ -158,6 +162,7 @@ namespace LibraryEditor
 
             // Save the library
             library.SaveNew(result.Path.LocalPath, out err);
+            needsSave = false;
 
             if (err != null)
             {
@@ -173,6 +178,7 @@ namespace LibraryEditor
             
             library = null;
             needsSave = false;
+            
             UpdateUI();
         }
         private void mnuExit_Click(object? sender, RoutedEventArgs e)
