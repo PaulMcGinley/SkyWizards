@@ -1,180 +1,191 @@
-namespace libType;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
-public class PLibrary
+namespace libType
 {
-    // Location of the library file
-    private string _filePath;
-    public string FilePath => _filePath;
-    
-    // Headers
-    private const byte Version = 1;
-    private const string Validation = "Sky Wizard Asset Library";
-    private const byte Type = (byte)LType.Image;
-
-    // Content
-    public List<LImage> Images = [];
-    
-    public PLibrary(string filePath)
+    public class PLibrary : IDisposable
     {
-        _filePath = filePath;
-    }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="err"></param>
-    public void Open(out string? err)
-    {
-        using var reader = new BinaryReader(File.Open(FilePath, FileMode.Open));
-        
-        // --- Version check
-        var version = reader.ReadByte();
-        if (version != Version)
+        // Location of the library file
+        private string _filePath;
+        public string FilePath => _filePath;
+
+        // Headers
+        private const byte Version = 1;
+        private const string Validation = "Sky Wizard Asset Library";
+        private const byte Type = (byte)LType.Image;
+
+        // Content
+        public List<LImage> Images = [];
+
+        // Flag to detect redundant calls
+        private bool _disposed = false;
+
+        public PLibrary(string filePath)
         {
-            err = "Invalid library version";
-            return;
-        }
-        
-        // --- Validation check
-        var val = new string(reader.ReadChars(Validation.Length));
-        if (val != Validation)
-        {
-            err = "Invalid library file";
-            return;
+            _filePath = filePath;
         }
 
-        // --- Type check
-        var type = reader.ReadByte();
-        if (type != Type)
+        /// <summary>
+        /// Opens the library file and reads its content.
+        /// </summary>
+        /// <param name="err">Error message if any.</param>
+        public void Open(out string? err)
         {
-            err = "Invalid library type";
-            return;
-        }
-        
-        // --- Image count
-        var count = reader.ReadInt32();
+            using var reader = new BinaryReader(File.Open(FilePath, FileMode.Open));
 
-        // --- Create the list of images
-        Images = new List<LImage>(count);
-        
-        // --- Read the library
-        for (var index = 0; index < count; index++)
+            // --- Version check
+            var version = reader.ReadByte();
+            if (version != Version)
+            {
+                err = "Invalid library version";
+                return;
+            }
+
+            // --- Validation check
+            var val = new string(reader.ReadChars(Validation.Length));
+            if (val != Validation)
+            {
+                err = "Invalid library file";
+                return;
+            }
+
+            // --- Type check
+            var type = reader.ReadByte();
+            if (type != Type)
+            {
+                err = "Invalid library type";
+                return;
+            }
+
+            // --- Image count
+            var count = reader.ReadInt32();
+
+            // --- Create the list of images
+            Images = new List<LImage>(count);
+
+            // --- Read the library
+            for (var index = 0; index < count; index++)
+            {
+                try
+                {
+                    // Create new image
+                    var image = new LImage();
+
+                    // Populate the data
+                    image.OffsetX = reader.ReadInt32();
+                    image.OffsetY = reader.ReadInt32();
+                    var dataLength = reader.ReadInt32();
+                    image.Data = reader.ReadBytes(dataLength);
+
+                    // Assign the image to the list
+                    Images.Add(image);
+                }
+                catch (Exception e) when (e is TimeoutException or AccessViolationException or InsufficientMemoryException or EndOfStreamException)
+                {
+                    err = e.Message;
+                    return;
+                }
+                catch (Exception e)
+                {
+                    err = "Unhandled error reading library: " + e.Message;
+                    return;
+                }
+            }
+
+            err = null;
+        }
+
+        /// <summary>
+        /// Saves the library content to the file.
+        /// </summary>
+        /// <param name="err">Error message if any.</param>
+        /// <param name="overwrite">Whether to overwrite the file if it exists.</param>
+        public void Save(out string? err, bool overwrite = false)
         {
-            try
+            if (File.Exists(FilePath) && !overwrite)
             {
-                // Create new image
-                var image = new LImage();
-                
-                // Populate the data
-                image.OffsetX = reader.ReadInt32();
-                image.OffsetY = reader.ReadInt32();
-                var dataLength = reader.ReadInt32();
-                image.Data = reader.ReadBytes(dataLength);
+                err = "File already exists";
+                return;
+            }
 
-                // Assign the image to the list
-                Images.Add(image);
-            }
-            catch (TimeoutException)
+            using var writer = new BinaryWriter(File.Open(FilePath, FileMode.Create));
+
+            // Write headers
+            writer.Write(Version);
+            writer.Write(Validation.ToCharArray());
+            writer.Write(Type);
+
+            // Write the image count
+            writer.Write(Images.Count);
+
+            // Write the library
+            foreach (var image in Images)
             {
-                err = "Timeout reading library";
-                return;
+                try
+                {
+                    writer.Write(image.OffsetX);
+                    writer.Write(image.OffsetY);
+                    writer.Write(image.Data.Length);
+                    writer.Write(image.Data);
+                }
+                catch (Exception e) when (e is TimeoutException or AccessViolationException or InsufficientMemoryException or EndOfStreamException)
+                {
+                    err = e.Message;
+                    return;
+                }
+                catch (Exception e)
+                {
+                    err = "Unhandled error writing library: " + e.Message;
+                    return;
+                }
             }
-            catch (AccessViolationException)
-            {
-                err = "Access violation reading library";
-                return;
-            }
-            catch (InsufficientMemoryException)
-            {
-                err = "Insufficient memory reading library";
-                return;
-            }
-            catch (EndOfStreamException)
-            {
-                err = "Unexpected end of file";
-                return;
-            }
-            catch (Exception e)
-            {
-                err = "Unhandled error reading library: " + e.Message;
-                return;
-            }
+
+            err = null;
         }
 
-        err = null;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="images"></param>
-    /// <returns>Save successful</returns>
-    public void Save(out string? err, bool overwrite = false)
-    {
-        if (File.Exists(FilePath) && !overwrite)
+        /// <summary>
+        /// Saves the library content to a new file.
+        /// </summary>
+        /// <param name="newPath">New file path.</param>
+        /// <param name="err">Error message if any.</param>
+        /// <param name="overwrite">Whether to overwrite the file if it exists.</param>
+        public void SaveNew(string newPath, out string? err, bool overwrite = false)
         {
-            err = "File already exists";
-            return;
+            _filePath = newPath;
+            Save(out err, overwrite);
         }
-        
-        using var writer = new BinaryWriter(File.Open(FilePath, FileMode.Create));
 
-        // Write headers
-        writer.Write(Version);
-        writer.Write(Validation.ToCharArray());
-        writer.Write(Type);
-
-        // Write the image count
-        writer.Write(Images.Count);
-
-        // Write the library
-        foreach (var image in Images)
+        // Implement IDisposable
+        public void Dispose()
         {
-            try
-            {
-                writer.Write(image.OffsetX);
-                writer.Write(image.OffsetY);
-                writer.Write(image.Data.Length);
-                writer.Write(image.Data);
-            }
-            catch (TimeoutException)
-            {
-                err = "Timeout writing library";
-                return;
-            }
-            catch (AccessViolationException)
-            {
-                err = "Access violation writing library";
-                return;
-            }
-            catch (InsufficientMemoryException)
-            {
-                err = "Insufficient memory writing library";
-                return;
-            }
-            catch (EndOfStreamException)
-            {
-                err = "Unexpected end of file";
-                return;
-            }
-            catch (Exception)
-            {
-                err = "Unhandled error writing library";
-                return;
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
-        
-        err = null;
-    }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="images"></param>
-    /// <param name="newPath"></param>
-    public void SaveNew(string newPath, out string? err, bool overwrite = false)
-    {
-        _filePath = newPath;
-        Save(out err, overwrite);
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {       
+                // Clear the image data
+                foreach (var image in Images)
+                {
+                    var img = image;
+                    img.Data = null;
+                }
+                Images.Clear();
+            }
+
+            
+            _disposed = true;
+        }
+
+        ~PLibrary()
+        {
+            Dispose(false);
+        }
     }
 }

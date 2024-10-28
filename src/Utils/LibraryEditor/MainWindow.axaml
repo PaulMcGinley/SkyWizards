@@ -71,19 +71,18 @@
             <Border Grid.Column="1" Margin="0">
                 <DockPanel>
                     <Menu DockPanel.Dock="Top"  BorderBrush="Gray" BorderThickness="1,0,0,1">
-                        <MenuItem Header="Image" FontWeight="Bold" IsEnabled="False">
-                            <MenuItem Header="Move"/>
-                            <MenuItem Header="Remove"/>
-                            <MenuItem Header="Replace"/>
+                        <MenuItem Header="Image" FontWeight="Bold" IsEnabled="True">
+                            <MenuItem Header="Remove" Click="mnuImageRemove_Click"/>
+                            <MenuItem Header="Replace" Click="mnuImageReplace_Click"/>
                             <Separator/>
-                            <MenuItem Header="Trim Whitespace"/>
-                            <MenuItem Header="Remove Exif Data"/>
-                            <TextBox Text="Remove Exif Data"/>
+                            <!-- <MenuItem Header="Trim Whitespace"/> -->
+                            <!-- <MenuItem Header="Remove Exif Data"/> -->
+                            <TextBox Name="tbImage_Command" Width="150" KeyDown="ImageCommand_Enter"/>
                         </MenuItem>
-                        <MenuItem Header="First" Click="mnuFirst_Click"/>
-                        <MenuItem Header="Previous" Click="mnuPrevious_Click"/>
-                        <MenuItem Header="Next" Click="mnuNext_Click"/>
-                        <MenuItem Header="Last" Click="mnuLast_Click"/>
+                        <MenuItem Header="|◄" Click="mnuFirst_Click"/>
+                        <MenuItem Header="◄" Click="mnuPrevious_Click"/>
+                        <MenuItem Header="►" Click="mnuNext_Click"/>
+                        <MenuItem Header="►|" Click="mnuLast_Click"/>
                         <MenuItem Header="Draw">
                             <CheckBox Content="Draw with offset" Name="cbDrawWithOffset" Margin="5" IsChecked="False" Click="cbDrawWithOffset_Click"/>
                         </MenuItem>
@@ -94,7 +93,7 @@
                             <RowDefinition Height="0.5*"/>
                         </Grid.RowDefinitions>
                         <Canvas Name="ImageCanvas" Background="Silver" Grid.Row="0" SizeChanged="Preview_SizeChanged">
-                            <Image Name="Preview" Margin="0" >
+                            <Image Name="Preview" Margin="0">
                                 <Image.Clip>
                                     <RectangleGeometry Rect="0,0,100,100"/>
                                 </Image.Clip>
@@ -102,7 +101,7 @@
                         </Canvas>
                         <ScrollViewer HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1">
                             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <ItemsControl Name="ImageGrid">
+                                <ItemsControl Name="ImageGrid" Margin="0">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel/>
@@ -111,7 +110,7 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Border BorderBrush="Gray" BorderThickness="1" Margin="5">
-                                                <Image Source="{Binding}" Width="100" Height="100" PointerPressed="Image_Click"/>
+                                                <Image Source="{Binding}" Width="100" Height="100" PointerPressed="Image_Click" Margin="0"/>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
