@@ -3,8 +3,11 @@ using Avalonia.Controls;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Avalonia;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Media.Imaging;
+using Avalonia.Input;
 using libType;
 
 namespace LevelObjectEditor;
@@ -24,7 +27,13 @@ public partial class MainWindow : Window
         Loaded += MainWindow_Loaded;
     }
 
-    private void MainWindow_Loaded(object? sender, RoutedEventArgs e) => OpenLibrary();
+    private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
+    {
+        OpenLibrary();
+        
+        // Default to starting a new object library
+        mnuNew_Click(sender, e);
+    }
 
     private async void OpenLibrary()
     {
@@ -62,6 +71,106 @@ public partial class MainWindow : Window
         lbLibraryPath.Header = library.FilePath;
     }
 
+    private void LoadImages()
+    {
+        if (library?.Images == null)
+            return;
+        
+        if (objectLibrary?.Images == null)
+            return;
+
+        ImageCanvas.Children.Clear();
+
+        foreach (var graphic in objectLibrary.Images)
+        {
+            if (graphic.BackIndex < 0 || graphic.BackIndex >= library.Images.Count)
+                continue;
+            
+            var image = new Image
+            {
+                Source = LoadImage(library.Images[graphic.BackIndex].Data),
+            };
+
+            Canvas.SetLeft(image, graphic.X);
+            Canvas.SetTop(image, graphic.Y);
+
+            image.PointerPressed += Image_MouseLeftButtonDown;
+            image.PointerMoved += Image_MouseMove;
+            image.PointerReleased += Image_MouseLeftButtonUp;
+
+            ImageCanvas.Children.Add(image);
+        }
+    }
+
+    private Bitmap LoadImage(byte[] imageData)
+    {
+        using var stream = new MemoryStream(imageData);
+        
+        return new Bitmap(stream);
+    }
+
+    #region Object Manipulation
+    
+    private bool isDragging = false;
+    private Point clickPosition;
+
+    private void Image_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
+    {
+        if (sender is not Image image)
+            return;
+        
+        isDragging = true;
+        clickPosition = e.GetPosition(ImageCanvas);
+        e.Pointer.Capture(image);
+    }
+
+    private void Image_MouseMove(object sender, PointerEventArgs e)
+    {
+        if (!isDragging)
+            return;
+
+        if (sender is not Image image)
+            return;
+        
+        var currentPosition = e.GetPosition(ImageCanvas);
+        var offsetX = currentPosition.X - clickPosition.X;
+        var offsetY = currentPosition.Y - clickPosition.Y;
+
+        var newLeft = Canvas.GetLeft(image) + offsetX;
+        var newTop = Canvas.GetTop(image) + offsetY;
+
+        Canvas.SetLeft(image, newLeft);
+        Canvas.SetTop(image, newTop);
+
+        clickPosition = currentPosition;
+        
+        needsSave = true;
+    }
+
+    private void Image_MouseLeftButtonUp(object sender, PointerReleasedEventArgs e)
+    {
+        if (sender is not Image image)
+            return;
+        
+        isDragging = false;
+        e.Pointer.Capture(null);
+
+        var index = ImageCanvas.Children.IndexOf(image);
+        if (index < 0 || index >= objectLibrary.Images.Count)
+            return;
+        
+        var img = objectLibrary.Images[index];
+        img.X = (int)Canvas.GetLeft(image);
+        img.Y = (int)Canvas.GetTop(image);
+        objectLibrary.Images[index] = img;
+        
+        needsSave = true;
+        
+        UpdateUI();
+    }
+
+    #endregion
+    
     #region Menu Bar
 
     private void mnuNew_Click(object? sender, RoutedEventArgs e)
@@ -229,8 +338,7 @@ public partial class MainWindow : Window
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = directoryPath,
-                    UseShellExecute = true,
-                    Verb = "open"
+                    UseShellExecute = true
                 });
             }
         }
@@ -285,7 +393,7 @@ public partial class MainWindow : Window
     {
         if (objectLibrary == null)
             return;
-        
+
         var newLayer = new Graphic
         {
             BackIndex = -1,
@@ -296,7 +404,7 @@ public partial class MainWindow : Window
         objectLibrary.Images.Add(newLayer);
 
         UpdateUI(updateLayers: true);
-        
+
         var itemToSelect = LayersList.Items[objectLibrary.Images.Count - 1];
         LayersList.SelectedItem = itemToSelect;
     }
@@ -305,7 +413,7 @@ public partial class MainWindow : Window
     {
         if (objectLibrary == null)
             return;
-        
+
         if (LayersList.SelectedItem == null)
             return;
 
@@ -313,14 +421,14 @@ public partial class MainWindow : Window
         objectLibrary.Images.RemoveAt(index);
 
         UpdateUI(updateLayers: true);
-        
+
         LayersList.SelectedIndex = Math.Min((int)index, objectLibrary.Images.Count - 1);
     }
 
     private void mnuMoveGraphicsLayerUp_Click(object? sender, RoutedEventArgs e)
     {
         var index = LayersList.SelectedIndex;
-        
+
         if (index <= 0)
             return;
 
@@ -329,7 +437,7 @@ public partial class MainWindow : Window
         objectLibrary.Images.Insert(index - 1, layer);
 
         UpdateUI(updateLayers: true);
-        
+
         LayersList.SelectedIndex = index - 1;
     }
 
@@ -337,7 +445,7 @@ public partial class MainWindow : Window
     {
         if (objectLibrary == null)
             return;
-        
+
         var index = LayersList.SelectedIndex;
         if (index >= objectLibrary.Images.Count - 1)
             return;
@@ -347,7 +455,7 @@ public partial class MainWindow : Window
         objectLibrary.Images.Insert(index + 1, layer);
 
         UpdateUI(updateLayers: true);
-        
+
         LayersList.SelectedIndex = index + 1;
     }
 
@@ -359,7 +467,7 @@ public partial class MainWindow : Window
     {
         if (objectLibrary == null)
             return;
-        
+
         var newLayer = new Boundry
         {
             X = 0,
@@ -379,7 +487,7 @@ public partial class MainWindow : Window
     {
         if (objectLibrary == null)
             return;
-        
+
         if (BoundaryLayersList.SelectedItem == null)
             return;
 
@@ -387,7 +495,7 @@ public partial class MainWindow : Window
         objectLibrary.Boundaries.RemoveAt(index);
 
         UpdateUI(updateLayers: true);
-        
+
         BoundaryLayersList.SelectedIndex = Math.Min((int)index, objectLibrary.Boundaries.Count - 1);
     }
 
@@ -421,6 +529,8 @@ public partial class MainWindow : Window
                 lbY.Text = layer.Y.ToString();
             }
         }
+        
+        LoadImages(); 
 
         if (updateLayers)
         {

@@ -1,8 +1,6 @@
-using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using System.IO;
 
@@ -14,7 +12,7 @@ namespace LevelObjectEditor
 
         public LibraryImageSelector(ref libType.PLibrary library)
         {
-            InitializeComponent(); // Ensure this method is called to initialize XAML components
+            InitializeComponent();
 
             LoadImagesFromLibrary(ref library);
         }
@@ -54,7 +52,7 @@ namespace LevelObjectEditor
 
         private void Image_Click(object? sender, PointerPressedEventArgs e)
         {
-            if (sender is not Border { Child: Image  } border) 
+            if (sender is not Border { Child: Image } border) 
                 return;
             
             var index = ImageGrid.Items.IndexOf(border);

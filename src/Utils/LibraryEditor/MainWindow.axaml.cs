@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using LibraryEditor.Processors;
@@ -45,7 +46,13 @@ namespace LibraryEditor
         public MainWindow()
         {
             InitializeComponent();
+            
             UpdateUI();
+        }
+        private void Preview_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var bounds = ImageCanvas.Bounds;
+            Preview.Clip = new RectangleGeometry(new Rect(0, 0, bounds.Width, bounds.Height));
         }
 
         #region Library Menu
@@ -93,6 +100,8 @@ namespace LibraryEditor
             {
                 SelectedImageIndex = 0;
             }
+            
+            LoadImagesFromLibrary();
             
             UpdateUI();
 
@@ -251,6 +260,7 @@ namespace LibraryEditor
                 }
             }
 
+            LoadImagesFromLibrary();
             needsSave = true;
         }
         private void mnuTrimWhitespace_Click(object? sender, RoutedEventArgs e)
@@ -312,7 +322,7 @@ namespace LibraryEditor
         /// </summary>
         private void UpdateUI()
         {
-            if (library == null)
+            if (library == null || library.Images.Count == 0)
             {
                 Title = "Library Editor";
                 
@@ -323,6 +333,7 @@ namespace LibraryEditor
                 lbImage.Text = "";
                 lbTotal.Text = "";
                 Preview.Source = null;
+                ImageGrid.Items.Clear();
                 return;
             }
             
@@ -353,6 +364,54 @@ namespace LibraryEditor
                 Canvas.SetLeft(Preview, 0);
                 Canvas.SetTop(Preview, 0);
             }
+        }
+        
+        
+        
+        private void LoadImagesFromLibrary()
+        {
+            ImageGrid.Items.Clear();
+            
+            if (library == null)
+                return;
+            
+            foreach (var image in library.Images)
+            {
+                using var stream = new MemoryStream(image.Data);
+                var bitmap = new Bitmap(stream);
+                
+                var border = new Border
+                {
+                    BorderBrush = Avalonia.Media.Brushes.Gray,
+                    BorderThickness = new Thickness(1),
+                    Margin = new Thickness(5),
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    Child = new Image
+                    {
+                        Source = bitmap,
+                        Width = 100,
+                        Height = 100,
+                        Stretch = Avalonia.Media.Stretch.Uniform,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                    }
+                };
+                
+                border.PointerPressed += Image_Click;
+                ImageGrid.Items.Add(border);
+            }
+        }
+
+        private void Image_Click(object? sender, PointerPressedEventArgs e)
+        {
+            if (sender is not Border { Child: Image } border) 
+                return;
+            
+            var index = ImageGrid.Items.IndexOf(border);
+            SelectedImageIndex = index;
+            
+            UpdateUI();
         }
     }
 }
