@@ -2,18 +2,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        Width="400" Height="200"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="200"
+        Width="400" Height="150"
         x:Class="LibraryEditor.MessageBox"
-        Title="MessageBox">
-    <StackPanel HorizontalAlignment="Center">
-        <TextBlock HorizontalAlignment="Center" Name="Text"/>
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
+        Title="MessageBox"
+        SystemDecorations="BorderOnly"
+        CanResize="False">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Name="Text" Margin="25" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal" Name="Buttons" Margin="25">
             <StackPanel.Styles>
                 <Style Selector="Button">
                     <Setter Property="Margin" Value="5"/>
                 </Style>
             </StackPanel.Styles>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

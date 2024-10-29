@@ -777,6 +777,9 @@ namespace LibraryEditor
 
                 // Update the UI after adding each image
                 await Task.Yield();
+                
+                // Need this do allow default to 0 for the library image grid
+                SelectedImageIndex = SelectedImageIndex;
             }
         }
 

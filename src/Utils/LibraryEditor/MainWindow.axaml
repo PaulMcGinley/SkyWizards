@@ -90,6 +90,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/> <!-- GridSplitter row -->
                             <RowDefinition Height="0.5*"/>
                         </Grid.RowDefinitions>
                         <Canvas Name="ImageCanvas" Background="Silver" Grid.Row="0" SizeChanged="Preview_SizeChanged">
@@ -99,7 +100,8 @@
                                 </Image.Clip>
                             </Image>
                         </Canvas>
-                        <ScrollViewer HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1">
+                        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="Gray"/>
+                        <ScrollViewer HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="2">
                             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
                                 <ItemsControl Name="ImageGrid" Margin="0">
                                     <ItemsControl.ItemsPanel>

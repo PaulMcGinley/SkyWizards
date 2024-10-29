@@ -31,8 +31,10 @@ public partial class MessageBox : Window
     {
         var messageBox = new MessageBox()
         {
-            Title = title
+            Title = title,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
         };
+
         messageBox.FindControl<TextBlock>("Text")!.Text = text;
         var buttonPanel = messageBox.FindControl<StackPanel>("Buttons");
 
@@ -62,7 +64,6 @@ public partial class MessageBox : Window
         if (buttons == MessageBoxButtons.OkCancel || buttons == MessageBoxButtons.YesNoCancel)
             AddButton("Cancel", MessageBoxResult.Cancel, true);
 
-
         var tcs = new TaskCompletionSource<MessageBoxResult>();
         messageBox.Closed += delegate { tcs.TrySetResult(res); };
         if (parent != null)
@@ -70,6 +71,4 @@ public partial class MessageBox : Window
         else messageBox.Show();
         return tcs.Task;
     }
-
-
 }
