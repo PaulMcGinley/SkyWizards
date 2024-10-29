@@ -19,28 +19,52 @@ namespace LibraryEditor
     {
         private PLibrary library;
         private bool needsSave = false;
-        private int _selectedImageIndex = -1;
+        private int _selectedImageIndex = int.MinValue;
 
         private int SelectedImageIndex
         {
             get => _selectedImageIndex;
             set
             {
-                if (library == null)
-                    return;
-
-                if (library.Images.Count == 0)
-                    return;
-
-                _selectedImageIndex = value;
-                if (_selectedImageIndex < 0)
+                int oldIndex = _selectedImageIndex;
+                try
                 {
-                    _selectedImageIndex = 0;
+                    if (library == null || library.Images.Count == 0)
+                    {
+                        _selectedImageIndex = int.MinValue;
+                        return;
+                    }
+
+                    _selectedImageIndex = value;
+
+                    if (_selectedImageIndex < 0)
+                    {
+                        _selectedImageIndex = 0;
+                    }
+                    else if (_selectedImageIndex >= library.Images.Count)
+                    {
+                        _selectedImageIndex = library.Images.Count - 1;
+                    }
                 }
-                else if (_selectedImageIndex >= library.Images.Count)
+                finally
                 {
-                    _selectedImageIndex = library.Images.Count - 1;
+                    UpdateUI();
+
+                    UpdateBorderColor(oldIndex, Brushes.Gray); // Reset previous border color
+                    UpdateBorderColor(_selectedImageIndex, Brushes.Green, 1); // Set new border color
                 }
+            }
+        }
+
+        private void UpdateBorderColor(int index, IBrush color, int width = 1)
+        {
+            if (index < 0 || index >= ImageGrid.Items.Count)
+                return;
+
+            if (ImageGrid.Items[index] is Border border)
+            {
+                border.BorderBrush = color;
+                border.BorderThickness = new Thickness(width);
             }
         }
 
@@ -49,6 +73,7 @@ namespace LibraryEditor
             InitializeComponent();
 
             Loaded += MainWindow_Loaded;
+           // Closing += MainWindow_Closing; // this locks the user into the app due to cancelling th argument and prompting user to save
         }
 
         #region Events
@@ -57,6 +82,32 @@ namespace LibraryEditor
         {
             mnuNew_OnClick(null, null); // Create a new library
             UpdateUI();
+        }
+
+        // TODO: Fix this so it doesn't lock the user into the app
+        private async void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true; // Cancel the closing event
+            if (needsSave)
+            {
+                var result = await MessageBox.Show(this, "Do you want to save changes?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
+
+                switch (result)
+                {
+                    case MessageBox.MessageBoxResult.Yes:
+                        mnuSave_Click(null, null);
+                        break;
+                    case MessageBox.MessageBoxResult.No:
+                        // Proceed without saving
+                        e.Cancel = false;
+                        break;
+                    case MessageBox.MessageBoxResult.Cancel:
+                        e.Cancel = true; // Cancel the closing event
+                        return;
+                }
+            }
+
+            // Allow the window to close
         }
 
         private void Preview_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -70,15 +121,28 @@ namespace LibraryEditor
         #region Library Menu
 
         // Library
-        private void mnuNew_OnClick(object? sender, RoutedEventArgs e)
+        private async void mnuNew_OnClick(object? sender, RoutedEventArgs e)
         {
             if (needsSave)
             {
-                // Ask user if they want to save changes
+                var result = await MessageBox.Show(this, "Do you want to save changes?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
+
+                switch (result)
+                {
+                    case MessageBox.MessageBoxResult.Yes:
+                        mnuSave_Click(null, null);
+                        break;
+                    case MessageBox.MessageBoxResult.No:
+                        // Proceed without saving
+                        break;
+                    case MessageBox.MessageBoxResult.Cancel:
+                    default:
+                        return ;
+                }
             }
 
             library = new PLibrary(string.Empty);
-            SelectedImageIndex = -1;
+            SelectedImageIndex = int.MinValue;
             needsSave = false; // False because we just created an empty object
 
             UpdateUI();
@@ -111,7 +175,7 @@ namespace LibraryEditor
 
             if (library.Images.Count > 0)
             {
-                SelectedImageIndex = 0;
+                SelectedImageIndex = int.MinValue;
             }
             
             await LoadImagesFromLibrary();
@@ -194,11 +258,24 @@ namespace LibraryEditor
             }
         }
 
-        private void mnuClose_Click(object? sender, RoutedEventArgs e)
+        private async void mnuClose_Click(object? sender, RoutedEventArgs e)
         {
             if (needsSave)
             {
-                // Ask user if they want to save changes
+                var result = await MessageBox.Show(this, "Do you want to save changes?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
+
+                switch (result)
+                {
+                    case MessageBox.MessageBoxResult.Yes:
+                        mnuSave_Click(null, null);
+                        break;
+                    case MessageBox.MessageBoxResult.No:
+                        // Proceed without saving
+                        break;
+                    case MessageBox.MessageBoxResult.Cancel:
+                    default:
+                        return ;
+                }
             }
 
             library?.Dispose();
@@ -209,11 +286,24 @@ namespace LibraryEditor
             UpdateUI();
         }
 
-        private void mnuExit_Click(object? sender, RoutedEventArgs e)
+        private async void mnuExit_Click(object? sender, RoutedEventArgs e)
         {
             if (needsSave)
             {
-                // Ask user if they want to save changes
+                var result = await MessageBox.Show(this, "Do you want to save changes?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
+
+                switch (result)
+                {
+                    case MessageBox.MessageBoxResult.Yes:
+                        mnuSave_Click(null, null);
+                        break;
+                    case MessageBox.MessageBoxResult.No:
+                        // Proceed without saving
+                        break;
+                    case MessageBox.MessageBoxResult.Cancel:
+                    default:
+                        return ;
+                }
             }
 
             Close();
@@ -408,6 +498,7 @@ namespace LibraryEditor
                     Move_Command(args);
                     break;
                 case "copy":
+                case "duplicate":
                     Copy_Command(args);
                     Console.WriteLine("Copy command executed");
                     break;
@@ -415,6 +506,12 @@ namespace LibraryEditor
                 case "remove":
                     Delete_Command(args);
                     Console.WriteLine("Delete command executed");
+                    break;
+                case "jump":
+                case "goto":
+                case "select":
+                case "focus":
+                    Focus_Command(args);
                     break;
                 default:
                     Console.WriteLine("Unknown command");
@@ -523,7 +620,26 @@ namespace LibraryEditor
             UpdateUI();
             await LoadImagesFromLibrary();
         }
+       
+        private void Focus_Command(string[] args)
+        {
+            if (args.Length < 2)
+            {
+                Console.WriteLine("Invalid focus command");
+                return;
+            }
 
+            if (!int.TryParse(args[1], out int index))
+            {
+                Console.WriteLine("Invalid index");
+                return;
+            }
+
+            SelectedImageIndex = index;
+
+            UpdateUI();
+        }
+        
         #endregion
 
         private void mnuFirst_Click(object? sender, RoutedEventArgs e)
@@ -568,8 +684,7 @@ namespace LibraryEditor
         {
             if (library == null || library.Images.Count == 0)
             {
-                Title = "Library Editor";
-
+                Title = "Library Editor - No Library";
                 lbWidth.Text = "";
                 lbHeight.Text = "";
                 lbOffsetX.Text = "";
@@ -581,7 +696,14 @@ namespace LibraryEditor
                 return;
             }
 
-            Title = $"Library Editor - {library.FilePath}";
+            if (library.FilePath == string.Empty)
+            {
+                Title = "Library Editor - New*";
+            }
+            else
+            {
+                Title = $"Library Editor - {library.FilePath}{(needsSave ? "*" : "")}";
+            }
 
             if (SelectedImageIndex < 0 || SelectedImageIndex >= library.Images.Count)
                 return;
@@ -607,6 +729,16 @@ namespace LibraryEditor
             {
                 Canvas.SetLeft(Preview, 0);
                 Canvas.SetTop(Preview, 0);
+            }
+            
+            if (library.Images.Count == 0)
+            {
+                SelectedImageIndex = int.MinValue;
+            }
+            
+            if (SelectedImageIndex < 0 && library.Images.Count > 0)
+            {
+                SelectedImageIndex = 0;
             }
         }
 
@@ -642,6 +774,9 @@ namespace LibraryEditor
 
                 border.PointerPressed += Image_Click;
                 ImageGrid.Items.Add(border);
+
+                // Update the UI after adding each image
+                await Task.Yield();
             }
         }
 
