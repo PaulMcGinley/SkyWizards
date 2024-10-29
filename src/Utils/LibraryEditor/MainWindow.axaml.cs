@@ -113,8 +113,8 @@ namespace LibraryEditor
             {
                 SelectedImageIndex = 0;
             }
-
-            LoadImagesFromLibrary();
+            
+            await LoadImagesFromLibrary();
 
             UpdateUI();
 
@@ -222,6 +222,8 @@ namespace LibraryEditor
         // Edit
         private async void mnuInsertImages_Click(object? sender, RoutedEventArgs e)
         {
+            int startingCount = library?.Images.Count ?? 0;
+
             string? err = null;
 
             if (library == null)
@@ -251,42 +253,45 @@ namespace LibraryEditor
             // Sort the selected files alphabetically
             var sortedFiles = result.OrderBy(file => file.Name).ToList();
 
-            await Task.Run(async () =>
+            var tasks = sortedFiles.Select(async file =>
             {
-                // Add the sorted files to the library.Images list
-                foreach (var file in sortedFiles)
+                try
                 {
-                    try
-                    {
-                        await using var stream = await file.OpenReadAsync();
-                        using var memoryStream = new MemoryStream();
-                        await stream.CopyToAsync(memoryStream);
-                        var imageData = memoryStream.ToArray();
+                    await using var stream = await file.OpenReadAsync();
+                    using var memoryStream = new MemoryStream();
+                    await stream.CopyToAsync(memoryStream);
+                    var imageData = memoryStream.ToArray();
 
-                        var image = new LImage
-                        {
-                            Data = imageData
-                        };
-
-                        library.Images.Add(image);
-                    }
-                    catch (Exception ex)
+                    var image = new LImage
                     {
-                        err = $"Error reading file {file.Name}: {ex.Message}";
-                    }
+                        Data = imageData
+                    };
 
-                    if (err != null)
-                    {
-                        Console.WriteLine(err);
-                    }
+                    library.Images.Add(image);
+                }
+                catch (Exception ex)
+                {
+                    err = $"Error reading file {file.Name}: {ex.Message}";
+                    Console.WriteLine(err);
                 }
             });
 
-            SelectedImageIndex = library.Images.Count - 1;
-            UpdateUI();
-            LoadImagesFromLibrary();
+            await Task.WhenAll(tasks);
+
+            if (startingCount == 0 && library.Images.Count > 0)
+            {
+                SelectedImageIndex = 0;
+            }
+            else
+            {
+                // Do I want to select the last image?
+                //SelectedImageIndex = library.Images.Count - 1;
+            }
 
             needsSave = true;
+
+            UpdateUI();
+            await LoadImagesFromLibrary();
         }
 
         private async void mnuTrimWhitespace_Click(object? sender, RoutedEventArgs e)
@@ -307,7 +312,7 @@ namespace LibraryEditor
             needsSave = true;
 
             UpdateUI();
-            LoadImagesFromLibrary();
+            await LoadImagesFromLibrary();
         }
 
         private void mnuRemoveEXIFData_Click(object? sender, RoutedEventArgs e)
@@ -319,7 +324,7 @@ namespace LibraryEditor
 
         #region Image Menu
 
-        private void mnuImageRemove_Click(object? sender, RoutedEventArgs e)
+        private async void mnuImageRemove_Click(object? sender, RoutedEventArgs e)
         {
             if (library == null)
                 return;
@@ -339,7 +344,7 @@ namespace LibraryEditor
             }
 
             UpdateUI();
-            LoadImagesFromLibrary();
+            await LoadImagesFromLibrary();
         }
 
         private async void mnuImageReplace_Click(object? sender, RoutedEventArgs e)
@@ -381,9 +386,14 @@ namespace LibraryEditor
             needsSave = true;
 
             UpdateUI();
-            LoadImagesFromLibrary();
+            await LoadImagesFromLibrary();
         }
 
+        /// <summary>
+        /// Takes a command from the user and executes it.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ImageCommand_Enter(object? sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter)
@@ -391,10 +401,10 @@ namespace LibraryEditor
 
             string[] args = tbImage_Command.Text.Split(' ');
 
-            // Move, Copy, Delete, etc. 
             switch (args[0].ToLower())
             {
                 case "move":
+                case "swap":
                     Move_Command(args);
                     break;
                 case "copy":
@@ -421,7 +431,7 @@ namespace LibraryEditor
 
         #region Image > Command Bar
 
-        void Move_Command(string[] args)
+        private async void Move_Command(string[] args)
         {
             if (args.Length < 2)
             {
@@ -455,10 +465,10 @@ namespace LibraryEditor
             needsSave = true;
 
             UpdateUI();
-            LoadImagesFromLibrary();
+            await LoadImagesFromLibrary();
         }
 
-        void Copy_Command(string[] args)
+        private async void Copy_Command(string[] args)
         {
             if (args.Length < 2)
             {
@@ -484,10 +494,10 @@ namespace LibraryEditor
             needsSave = true;
 
             UpdateUI();
-            LoadImagesFromLibrary();
+            await LoadImagesFromLibrary();
         }
 
-        void Delete_Command(string[] args)
+        private async void Delete_Command(string[] args)
         {
             if (args.Length < 2)
             {
@@ -511,7 +521,7 @@ namespace LibraryEditor
             needsSave = true;
 
             UpdateUI();
-            LoadImagesFromLibrary();
+            await LoadImagesFromLibrary();
         }
 
         #endregion
@@ -600,7 +610,7 @@ namespace LibraryEditor
             }
         }
 
-        private void LoadImagesFromLibrary()
+        private async Task LoadImagesFromLibrary()
         {
             ImageGrid.Items.Clear();
 
@@ -609,7 +619,7 @@ namespace LibraryEditor
 
             foreach (var image in library.Images)
             {
-                using var stream = new MemoryStream(image.Data);
+                await using var stream = new MemoryStream(image.Data);
                 var bitmap = new Bitmap(stream);
 
                 var border = new Border
