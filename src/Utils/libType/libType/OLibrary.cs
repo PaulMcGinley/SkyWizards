@@ -9,8 +9,8 @@ public class OLibrary
     public string FilePath => _filePath;
     public void SetFilePath(string filePath) => _filePath = filePath;
 
-    public List<Graphic> Images;
-    public List<Boundry> Boundaries;
+    public List<Graphic>? Images;
+    public List<Boundry>? Boundaries;
     
     public OLibrary()
     {

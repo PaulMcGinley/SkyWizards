@@ -383,6 +383,49 @@ namespace LibraryEditor
             UpdateUI();
             await LoadImagesFromLibrary();
         }
+        
+        private async void mnuInsertFolder_Click(object? sender, RoutedEventArgs e)
+        {
+            // Open a folder dialog using StorageProvider
+            var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                Title = "Insert Folder",
+                AllowMultiple = false
+            });
+
+            // Check if the user cancelled
+            if (result.Count == 0)
+            {
+                return;
+            }
+
+            // Get the folder path
+            var folderPath = result[0].Path.LocalPath;
+
+            // Get all the files in the folder
+            var files = Directory.GetFiles(folderPath, "*.png");
+
+            // Sort the files alphabetically
+            Array.Sort(files);
+
+            // Insert the images
+            foreach (var file in files)
+            {
+                var imageData = await File.ReadAllBytesAsync(file);
+
+                var image = new LImage
+                {
+                    Data = imageData
+                };
+
+                library.Images.Add(image);
+            }
+
+            needsSave = true;
+
+            UpdateUI();
+            await LoadImagesFromLibrary();
+        }
 
         private async void mnuTrimWhitespace_Click(object? sender, RoutedEventArgs e)
         {
@@ -394,7 +437,7 @@ namespace LibraryEditor
                 for (int i = 0; i < library.Images.Count; i++)
                 {
                     var image = library.Images[i];
-                    WhiteSpaceRemoval.TrimTransparentEdges(ref image);
+                    ImageOptimizer.TrimTransparentEdges(ref image);
                     library.Images[i] = image;
                 }
             });
@@ -405,9 +448,25 @@ namespace LibraryEditor
             await LoadImagesFromLibrary();
         }
 
-        private void mnuRemoveEXIFData_Click(object? sender, RoutedEventArgs e)
+        private async void mnuRemoveMetadata_Click(object? sender, RoutedEventArgs e)
         {
-            // ...
+            if (library == null)
+                return;
+
+            await Task.Run(() =>
+            {
+                for (int i = 0; i < library.Images.Count; i++)
+                {
+                    var image = library.Images[i];
+                    ImageOptimizer.RemoveMetadata(ref image);
+                    library.Images[i] = image;
+                }
+            });
+
+            needsSave = true;
+
+            UpdateUI();
+            await LoadImagesFromLibrary();
         }
 
         #endregion
