@@ -30,142 +30,73 @@ namespace AutoPatcherAdmin
             _stopwatch = new Stopwatch();
             _cancellationTokenSource = new CancellationTokenSource();
         }
-        
+
         public void StopUpload()
         {
             _cancellationTokenSource.Cancel();
         }
 
         /// <summary>
-        /// Uploads files to the server using SFTP
-        /// </summary>
-        public void UploadFiles()
-        {
-            var remotePlistPath = Path.Combine(_config.RemoteFolder, "plist.dat").Replace('\\', '/');
-            Dictionary<string, string> remotePlist = new Dictionary<string, string>();
-
-            using var sftp = new SftpClient(_config.FTPAddress, int.Parse(_config.FTPPort), _config.FTPUsername, _config.FTPPassword);
-            sftp.Connect();
-
-            // Download plist.dat from the server, or assume first upload if it doesn't exist
-            try
-            {
-                remotePlist = DownloadPlist(sftp, remotePlistPath);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Plist not found, assuming first upload: {ex.Message}");
-            }
-
-            var files = Directory.GetFiles(_config.LocalFilesDir, "*.*", SearchOption.AllDirectories)
-                .Where(file => !_ignoreManager.ShouldIgnore(file))
-                .ToArray();
-            
-            // Print the list of files to be uploaded
-                string baseDir = Path.GetFileName(_config.LocalFilesDir);
-                Console.WriteLine($"Files to upload in {baseDir}:");
-            foreach (var file in files)
-            {
-                string outln = $"{file}   |   {_ignoreManager.ShouldIgnore(file)}";
-                Console.WriteLine(outln);
-            }
-            
-           
-
-
-            long totalBytes = files.Sum(file => new FileInfo(file).Length);
-            long uploadedBytes = 0;
-            var updatedPlist = new Dictionary<string, string>(remotePlist);
-
-            // Upload only new or changed files
-            foreach (var file in files)
-            {
-                var relativePath = file.Replace(_config.LocalFilesDir, "").TrimStart('\\').Replace('\\', '/');
-                var hash = ComputeFileHash(file);
-
-                // Upload if the file is new or has changed
-                if (!remotePlist.ContainsKey(relativePath) || remotePlist[relativePath] != hash)
-                {
-                    UploadFile(sftp, file, relativePath, ref uploadedBytes, totalBytes);
-                    updatedPlist[relativePath] = hash;  // Update the plist with new file hash
-                }
-                else
-                {
-                    uploadedBytes += new FileInfo(file).Length; // Skip the file but add its size to the total
-                }
-            }
-
-            // After uploading files, update and upload plist.dat on the server
-            UploadUpdatedPlist(sftp, updatedPlist, remotePlistPath);
-
-            sftp.Disconnect();
-        }
-
-        /// <summary>
         /// Uploads files to the server using SFTP asynchronously
         /// </summary>
-public async Task UploadFilesAsync()
-{
-    await Task.Run(() =>
-    {
-        var remotePlistPath = Path.Combine(_config.RemoteFolder, "plist.dat").Replace('\\', '/');
-        Dictionary<string, string> remotePlist = new Dictionary<string, string>();
-
-        using var sftp = new SftpClient(_config.FTPAddress, int.Parse(_config.FTPPort), _config.FTPUsername, _config.FTPPassword);
-        sftp.Connect();
-
-        // Download plist.dat from the server, or assume first upload if it doesn't exist
-        try
+        public async Task UploadFilesAsync()
         {
-            remotePlist = DownloadPlist(sftp, remotePlistPath);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Plist not found, assuming first upload: {ex.Message}");
-        }
-
-        var files = Directory.GetFiles(_config.LocalFilesDir, "*.*", SearchOption.AllDirectories)
-            .Where(file => !_ignoreManager.ShouldIgnore(file))
-            .ToArray();
-
-        _totalFiles = files.Length;
-
-        long totalBytes = files.Sum(file => new FileInfo(file).Length);
-        long uploadedBytes = 0;
-        var updatedPlist = new Dictionary<string, string>(remotePlist);
-
-        // Upload only new or changed files
-        foreach (var file in files)
-        {
-            var relativePath = file.Replace(_config.LocalFilesDir, "").TrimStart('\\').Replace('\\', '/');
-            var hash = ComputeFileHash(file);
-
-            // Upload if the file is new or has changed
-            if (!remotePlist.ContainsKey(relativePath) || remotePlist[relativePath] != hash)
+            await Task.Run(() =>
             {
-                UploadFile(sftp, file, relativePath, ref uploadedBytes, totalBytes);
-                updatedPlist[relativePath] = hash; // Update the plist with new file hash
-            }
-            else
-            {
-                uploadedBytes += new FileInfo(file).Length; // Skip the file but add its size to the total
-            }
+                var remotePlistPath = Path.Combine(_config.RemoteFolder, "plist.dat").Replace('\\', '/');
+                var remotePlist = new Dictionary<string, string>();
+
+                using var sftp = new SftpClient(_config.FTPAddress, int.Parse(_config.FTPPort), _config.FTPUsername,
+                    _config.FTPPassword);
+                sftp.Connect();
+
+                // Download plist.dat from the server, or assume first upload if it doesn't exist
+                try
+                {
+                    remotePlist = DownloadPlist(sftp, remotePlistPath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Plist not found, assuming first upload: {ex.Message}");
+                }
+
+                var files = Directory.GetFiles(_config.LocalFilesDir, "*.*", SearchOption.AllDirectories)
+                    .Where(file => !_ignoreManager.ShouldIgnore(file))
+                    .ToArray();
+
+                _totalFiles = files.Length;
+
+                long totalBytes = files.Sum(file => new FileInfo(file).Length);
+                long uploadedBytes = 0;
+                var updatedPlist = new Dictionary<string, string>(remotePlist);
+
+                // Upload only new or changed files
+                foreach (var file in files)
+                {
+                    var relativePath = file.Replace(_config.LocalFilesDir, "").TrimStart('\\').Replace('\\', '/');
+                    var hash = ComputeFileHash(file);
+
+                    // Upload if the file is new or has changed
+                    if (!remotePlist.ContainsKey(relativePath) || remotePlist[relativePath] != hash)
+                    {
+                        UploadFile(sftp, file, relativePath, ref uploadedBytes, totalBytes);
+                        updatedPlist[relativePath] = hash; // Update the plist with new file hash
+                    }
+                    else
+                    {
+                        uploadedBytes += new FileInfo(file).Length; // Skip the file but add its size to the total
+                    }
+                }
+
+                // After uploading files, update and upload plist.dat on the server
+                UploadUpdatedPlist(sftp, updatedPlist, remotePlistPath);
+
+                sftp.Disconnect();
+            });
+
+            // Report completion
+            Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => { _jobReportWindow.ReportCompletion(); });
         }
-
-        // After uploading files, update and upload plist.dat on the server
-        UploadUpdatedPlist(sftp, updatedPlist, remotePlistPath);
-
-        sftp.Disconnect();
-    });
-
-    // Report completion
-    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-    {
-        _jobReportWindow.ReportCompletion();
-    });
-}
-
-
 
         /// <summary>
         /// Computes the SHA256 hash of a file
@@ -176,7 +107,7 @@ public async Task UploadFilesAsync()
         {
             using var sha256 = SHA256.Create();
             using var stream = File.OpenRead(filePath);
-            
+
             var hashBytes = sha256.ComputeHash(stream);
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
@@ -201,7 +132,7 @@ public async Task UploadFilesAsync()
             // Open the file to read
             using var fileStream = File.OpenRead(localPath);
             using var gzipStream = new MemoryStream();
-            
+
             // Compress the file in memory
             using (var gz = new GZipStream(gzipStream, CompressionMode.Compress, leaveOpen: true))
             {
@@ -212,7 +143,8 @@ public async Task UploadFilesAsync()
 
             // Upload the file with progress reporting
             Console.WriteLine($"Uploading {relativePath} to {remoteFullPath}");
-            UploadWithProgress(sftp, gzipStream, remoteFullPath, new FileInfo(localPath).Length, ref uploadedBytes, totalBytes);
+            UploadWithProgress(sftp, gzipStream, remoteFullPath, new FileInfo(localPath).Length, ref uploadedBytes,
+                totalBytes);
         }
 
         /// <summary>
@@ -257,31 +189,30 @@ public async Task UploadFilesAsync()
             byte[] buffer = new byte[8192];
             int bytesRead;
 
-            using (var uploadStream = sftp.Open(remoteFullPath, FileMode.Create))
+            using var uploadStream = sftp.Open(remoteFullPath, FileMode.Create);
+            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
             {
-                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                uploadStream.Write(buffer, 0, bytesRead);
+                bytesUploadedForFile += bytesRead;
+                uploadedBytes += bytesRead;
+
+                // Calculate progress for the file and total
+                int filePercent = (int)((bytesUploadedForFile / (double)fileSize) * 100);
+                int totalPercent = (int)((uploadedBytes / (double)totalBytes) * 100);
+
+                // Calculate speed (bytes per second)
+                double elapsedSeconds = _stopwatch.Elapsed.TotalSeconds;
+                double speed = bytesUploadedForFile / elapsedSeconds;
+                double remainingTime = (fileSize - bytesUploadedForFile) / speed;
+
+                string currentFile = Path.GetFileName(remoteFullPath);
+
+                // Update the UI
+                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    uploadStream.Write(buffer, 0, bytesRead);
-                    bytesUploadedForFile += bytesRead;
-                    uploadedBytes += bytesRead;
-
-                    // Calculate progress for the file and total
-                    int filePercent = (int)((bytesUploadedForFile / (double)fileSize) * 100);
-                    int totalPercent = (int)((uploadedBytes / (double)totalBytes) * 100);
-
-                    // Calculate speed (bytes per second)
-                    double elapsedSeconds = _stopwatch.Elapsed.TotalSeconds;
-                    double speed = bytesUploadedForFile / elapsedSeconds;
-                    double remainingTime = (fileSize - bytesUploadedForFile) / speed;
-
-                    string currentFile = Path.GetFileName(remoteFullPath);
-
-                    // Update the UI
-                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        _jobReportWindow.UpdateProgress(filePercent, totalPercent, _currentFile, _totalFiles, currentFile, speed,remainingTime);
-                    });
-                }
+                    _jobReportWindow.UpdateProgress(filePercent, totalPercent, _currentFile, _totalFiles,
+                        currentFile, speed, remainingTime);
+                });
             }
         }
 
@@ -333,20 +264,20 @@ public async Task UploadFilesAsync()
         private void UploadUpdatedPlist(SftpClient sftp, Dictionary<string, string> updatedPlist, string remotePlistPath)
         {
             // Create plist content
-            using (var memoryStream = new MemoryStream())
-            using (var writer = new StreamWriter(memoryStream))
+            using var memoryStream = new MemoryStream();
+            using var writer = new StreamWriter(memoryStream);
+            
+            foreach (var entry in updatedPlist)
             {
-                foreach (var entry in updatedPlist)
-                {
-                    writer.WriteLine($"{entry.Key};{entry.Value}");
-                }
-                writer.Flush();
-                memoryStream.Position = 0;
-
-                // Upload updated plist.dat
-                Console.WriteLine("Uploading updated plist.dat");
-                sftp.UploadFile(memoryStream, remotePlistPath);
+                writer.WriteLine($"{entry.Key};{entry.Value}");
             }
+
+            writer.Flush();
+            memoryStream.Position = 0;
+
+            // Upload updated plist.dat
+            Console.WriteLine("Uploading updated plist.dat");
+            sftp.UploadFile(memoryStream, remotePlistPath);
         }
     }
 }

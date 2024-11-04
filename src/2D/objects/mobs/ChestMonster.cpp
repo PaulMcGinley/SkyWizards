@@ -61,9 +61,6 @@ void ChestMonster::Update(GameTime gameTime) {
         }
     }
 
-
-
-    //AssetManager& assetManager = AssetManager::getInstance();
     TextureEntry* entry = assetManager.GetChestMonsterFrame_ptr(frame());
 
     texQuad[0].texCoords = entry->texQuad[0].texCoords;

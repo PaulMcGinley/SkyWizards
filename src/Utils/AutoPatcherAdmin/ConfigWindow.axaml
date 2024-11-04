@@ -12,7 +12,7 @@
         <TextBlock Text="Local Directory" Margin="0,10,0,2" />
         <StackPanel Orientation="Horizontal">
             <TextBox Name="LocalFilesDir" Width="320" Margin="0,0,0,0"/>
-            <!--<Button Name="BrowseButton" Content="..." Margin="10,0,0,0" Click="BrowseButton_Click"/>-->
+            <Button Name="BrowseButton" Content="..." Margin="10,0,0,0" Click="BrowseButton_Click"/>
         </StackPanel>
 
         <TextBlock Text="FTP Address" Margin="0,10,0,2" />
@@ -31,7 +31,7 @@
         <TextBox Name="PasswordTextBox" PasswordChar="*" />
 
         <StackPanel Orientation="Horizontal" Margin="0,15,0,0" HorizontalAlignment="Right">
-           <!-- <Button Name="SaveButton" Content="Save Configuration" Click="SaveButton_OnClick"/> -->
+           <Button Name="SaveButton" Content="Save Configuration" Click="SaveButton_OnClick"/>
         </StackPanel>
     </StackPanel>
     </Grid>
