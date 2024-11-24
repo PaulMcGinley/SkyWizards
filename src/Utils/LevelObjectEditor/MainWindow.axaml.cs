@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Avalonia;
+using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Media.Imaging;
 using Avalonia.Input;
+using Avalonia.Media;
 using libType;
+using Path = System.IO.Path;
 
 namespace LevelObjectEditor;
 
@@ -99,6 +102,11 @@ public partial class MainWindow : Window
             image.PointerReleased += Image_MouseLeftButtonUp;
 
             ImageCanvas.Children.Add(image);
+        }
+        
+        foreach (var boundary in objectLibrary.Boundaries)
+        {
+            DrawBoundary(boundary);
         }
     }
 
@@ -300,6 +308,7 @@ public partial class MainWindow : Window
             // Ask the user if they want to save the current object
         }
 
+        ImageCanvas.Children.Clear();
         objectLibrary = null;
         needsSave = false;
 
@@ -472,10 +481,12 @@ public partial class MainWindow : Window
         {
             X = 0,
             Y = 0,
-            Width = 0,
-            Height = 0
+            Width = 100,
+            Height = 25
         };
         objectLibrary.Boundaries.Add(newLayer);
+
+        //DrawBoundary(newLayer);
 
         UpdateUI(updateLayers: true);
 
@@ -498,6 +509,67 @@ public partial class MainWindow : Window
 
         BoundaryLayersList.SelectedIndex = Math.Min((int)index, objectLibrary.Boundaries.Count - 1);
     }
+    
+    private void DrawBoundary(Boundry boundary)
+    {
+        var rectangle = new Rectangle
+        {
+            Width = boundary.Width,
+            Height = boundary.Height,
+            Fill = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
+            Stroke = Brushes.Red,
+            StrokeThickness = 2
+        };
+
+        Canvas.SetLeft(rectangle, boundary.X);
+        Canvas.SetTop(rectangle, boundary.Y);
+
+        rectangle.PointerPressed += Rectangle_PointerPressed;
+        rectangle.PointerMoved += Rectangle_PointerMoved;
+        rectangle.PointerReleased += Rectangle_PointerReleased;
+
+        ImageCanvas.Children.Add(rectangle);
+    }
+    
+    private void Rectangle_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (isDragging && sender is Rectangle rectangle)
+        {
+            var position = e.GetPosition(ImageCanvas);
+            var offsetX = position.X - clickPosition.X;
+            var offsetY = position.Y - clickPosition.Y;
+
+            var left = Canvas.GetLeft(rectangle) + offsetX;
+            var top = Canvas.GetTop(rectangle) + offsetY;
+
+            Canvas.SetLeft(rectangle, left);
+            Canvas.SetTop(rectangle, top);
+
+            clickPosition = position;
+        }
+    }
+    private void Rectangle_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is Rectangle rectangle)
+        {
+            isDragging = true;
+            clickPosition = e.GetPosition(ImageCanvas);
+            // Manually handle pointer capture
+            rectangle.PointerPressed += (s, args) => { isDragging = true; };
+        }
+    }
+
+    private void Rectangle_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (sender is Rectangle rectangle)
+        {
+            isDragging = false;
+            // Manually handle pointer release
+            rectangle.PointerReleased += (s, args) => { isDragging = false; };
+        }
+    }
+    
+    
 
     #endregion
 

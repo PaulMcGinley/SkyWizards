@@ -21,9 +21,27 @@ public:
         if (!file.is_open())
             throw std::runtime_error("Could not open file: " + path); // Throw an exception
 
+        // Read and validate the version byte
+        uint8_t version;
+        file.read(reinterpret_cast<char*>(&version), sizeof(version));
+        if (version != 1)
+            throw std::runtime_error("Invalid version: " + std::to_string(version));
+
+        // Read and validate the character array
+        char header[25];
+        file.read(header, sizeof(header) - 1);
+        header[24] = '\0'; // Null-terminate the string
+        if (std::string(header) != "Sky Wizard Asset Library")
+            throw std::runtime_error("Invalid header: " + std::string(header));
+
+        // Read and validate the type byte
+        uint8_t type;
+        file.read(reinterpret_cast<char*>(&type), sizeof(type));
+        if (type != 1)
+            throw std::runtime_error("Invalid type: " + std::to_string(type));
+
         int entryCount; // Store the number of cells in the file
         file.read(reinterpret_cast<char*>(&entryCount), sizeof(entryCount)); // Read the number of cells from the file
-        // retinterpret_cast is used to convert the pointer type to another pointer type
 
         // Loop through the cells in the file
         for (int i = 0; i < entryCount; ++i) {
@@ -40,16 +58,6 @@ public:
             entry.texture.loadFromMemory(entry.data.data(), entry.data.size()); // Load the texture from the image data
 
             entry.CalculateQuads();
-            // entry.texQuad[0].position = {static_cast<float>(entry.xOffset), static_cast<float>(entry.yOffset)};
-            // entry.texQuad[1].position = {static_cast<float>(entry.xOffset + entry.texture.getSize().x), static_cast<float>(entry.yOffset)};
-            // entry.texQuad[2].position = {static_cast<float>(entry.xOffset + entry.texture.getSize().x), static_cast<float>(entry.yOffset + entry.texture.getSize().y)};
-            // entry.texQuad[3].position = {static_cast<float>(entry.xOffset), static_cast<float>(entry.yOffset + entry.texture.getSize().y)};
-            //
-            // entry.texQuad[0].texCoords = {0, 0};
-            // entry.texQuad[1].texCoords = {static_cast<float>(entry.texture.getSize().x), 0};
-            // entry.texQuad[2].texCoords = {static_cast<float>(entry.texture.getSize().x), static_cast<float>(entry.texture.getSize().y)};
-            // entry.texQuad[3].texCoords = {0, static_cast<float>(entry.texture.getSize().y)};
-
             entry.data.clear();
             entries.push_back(entry); // Add the cell to the Cells vector
         }

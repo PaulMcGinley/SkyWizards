@@ -11,7 +11,8 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using LibraryEditor.Processors;
-using libType; // PFM Library Compiler
+using libType;
+using libType.Converters;
 
 namespace LibraryEditor
 {
@@ -115,12 +116,27 @@ namespace LibraryEditor
             var bounds = ImageCanvas.Bounds;
             Preview.Clip = new RectangleGeometry(new Rect(0, 0, bounds.Width, bounds.Height));
         }
+        
+        private void Image_Click(object? sender, PointerPressedEventArgs e)
+        {
+            if (sender is not Border { Child: Image } border)
+                return;
+
+            var index = ImageGrid.Items.IndexOf(border);
+            SelectedImageIndex = index;
+
+            UpdateUI();
+        }
 
         #endregion
         
         #region Library Menu
 
-        // Library
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void mnuNew_OnClick(object? sender, RoutedEventArgs e)
         {
             if (needsSave)
@@ -148,6 +164,11 @@ namespace LibraryEditor
             UpdateUI();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void mnuOpen_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -193,7 +214,51 @@ namespace LibraryEditor
 
             UpdateUI();
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void mnuConvert_Click(object? sender, RoutedEventArgs e)
+        {
+            // Open a file dialog using StorageProvider
+            var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Open Library",
+                FileTypeFilter = new List<FilePickerFileType>
+                {
+                    new FilePickerFileType("PFM Library") { Patterns = new[] { "*.lib" } }
+                },
+                AllowMultiple = true
+            });
 
+            // Check if the user cancelled
+            if (result.Count == 0)
+            {
+                return;
+            }
+
+            var files = new string[result.Count];
+            for (int i = 0; i < result.Count; i++)
+                files[i] = result[i].Path.LocalPath;
+            
+            PLibType0.Upgrade(files, out var err);
+
+            if (err != null)
+            {
+                Console.WriteLine(err);
+                await MessageBox.Show(this, err, "Error", MessageBox.MessageBoxButtons.Ok);
+            }
+            
+            await MessageBox.Show(this, "Conversion complete", "Conversion", MessageBox.MessageBoxButtons.Ok);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mnuSave_Click(object? sender, RoutedEventArgs e)
         {
             string? err = null;
@@ -843,16 +908,5 @@ namespace LibraryEditor
         }
 
         #endregion
-
-        private void Image_Click(object? sender, PointerPressedEventArgs e)
-        {
-            if (sender is not Border { Child: Image } border)
-                return;
-
-            var index = ImageGrid.Items.IndexOf(border);
-            SelectedImageIndex = index;
-
-            UpdateUI();
-        }
     }
 }

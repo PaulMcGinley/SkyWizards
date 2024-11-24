@@ -7,8 +7,7 @@ namespace libType
     public class PLibrary : IDisposable
     {
         // Location of the library file
-        private string _filePath;
-        public string FilePath => _filePath;
+        public string FilePath { get; private set; }
 
         // Headers
         private const byte Version = 1;
@@ -19,11 +18,11 @@ namespace libType
         public List<LImage> Images = [];
 
         // Flag to detect redundant calls
-        private bool _disposed = false;
+        private bool disposed = false;
 
         public PLibrary(string filePath)
         {
-            _filePath = filePath;
+            FilePath = filePath;
         }
 
         /// <summary>
@@ -152,7 +151,7 @@ namespace libType
         /// <param name="overwrite">Whether to overwrite the file if it exists.</param>
         public void SaveNew(string newPath, out string? err, bool overwrite = false)
         {
-            _filePath = newPath;
+            FilePath = newPath;
             Save(out err, overwrite);
         }
 
@@ -165,7 +164,7 @@ namespace libType
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed)
+            if (disposed)
                 return;
 
             if (disposing)
@@ -178,9 +177,8 @@ namespace libType
                 }
                 Images.Clear();
             }
-
             
-            _disposed = true;
+            disposed = true;
         }
 
         ~PLibrary()

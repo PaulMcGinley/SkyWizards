@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="LibraryEditor.MainWindow"
-        Width="800" Height="450"
+        Width="1000" Height="700"
         Title="LibraryEditor">
     <DockPanel>
         <!-- Menu at the top -->
@@ -13,6 +13,8 @@
                 <MenuItem Header="New" Click="mnuNew_OnClick"/>
                 <Separator/>
                 <MenuItem Header="Open" Click="mnuOpen_Click"/>
+                <Separator/>
+                <MenuItem Header="Convert" Click="mnuConvert_Click"/>
                 <Separator/>
                 <MenuItem Header="Save" Click="mnuSave_Click"/>
                 <MenuItem Header="Save As" Click="mnuSaveAs_Click"/>

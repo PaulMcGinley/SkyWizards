@@ -79,6 +79,7 @@ public:
         // The `heartIndex` is set based on the current health, where each heart represents 4 health points.
         // If the current health is greater than or equal to the value of the heart's position (i * 4 + n),
         // the `heartIndex` is set to the corresponding value (4, 3, 2, or 1).
+        // TODO: Maybe there is a better way to do this
         for (int i = hearts - 1; i >= 0; i--) {
             int heartIndex = 0;
             if (i * 4 + 4 <= currentHealth)
