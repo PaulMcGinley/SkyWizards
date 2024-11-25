@@ -9,6 +9,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Media.Imaging;
 using Avalonia.Input;
+using Avalonia.Layout;
 using Avalonia.Media;
 using libType;
 using Path = System.IO.Path;
@@ -20,7 +21,15 @@ public partial class MainWindow : Window
     private PLibrary library;
     private OLibrary objectLibrary;
     private bool needsSave = false;
-
+    
+    private bool isDragging = false;
+    private Point clickPosition;
+    
+    // Boundary layer constants
+    private const double HandleSize = 10;
+    private const double MinWidth = 100;
+    private const double MinHeight = 25;
+    
     public MainWindow()
     {
         InitializeComponent();
@@ -119,9 +128,6 @@ public partial class MainWindow : Window
 
     #region Object Manipulation
     
-    private bool isDragging = false;
-    private Point clickPosition;
-
     private void Image_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
     {
         if (sender is not Image image)
@@ -131,7 +137,6 @@ public partial class MainWindow : Window
         clickPosition = e.GetPosition(ImageCanvas);
         e.Pointer.Capture(image);
     }
-
     private void Image_MouseMove(object sender, PointerEventArgs e)
     {
         if (!isDragging)
@@ -154,7 +159,6 @@ public partial class MainWindow : Window
         
         needsSave = true;
     }
-
     private void Image_MouseLeftButtonUp(object sender, PointerReleasedEventArgs e)
     {
         if (sender is not Image image)
@@ -364,6 +368,8 @@ public partial class MainWindow : Window
     private async void btnSelectImage_Click(object? sender, RoutedEventArgs e)
     {
         var index = -1;
+        
+        // If Graphics list item is selected, get its index
         if (LayersList.SelectedItem != null)
         {
             index = LayersList.SelectedIndex;
@@ -384,8 +390,7 @@ public partial class MainWindow : Window
         objectLibrary.Images[index] = image;
 
         UpdateUI();
-
-
+        
         // No dispose needed, Avalonia will handle it
     }
 
@@ -427,6 +432,12 @@ public partial class MainWindow : Window
             return;
 
         var index = LayersList.SelectedIndex;
+        
+        //Check if the index is valid
+        if (index < 0 || index >= objectLibrary.Images.Count)
+            return;
+        
+        // Remove the layer
         objectLibrary.Images.RemoveAt(index);
 
         UpdateUI(updateLayers: true);
@@ -516,8 +527,8 @@ public partial class MainWindow : Window
         {
             Width = boundary.Width,
             Height = boundary.Height,
-            Fill = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
-            Stroke = Brushes.Red,
+            Fill = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0)), // 75% opacity red
+            //Stroke = Brushes.Red,
             StrokeThickness = 2
         };
 
@@ -529,47 +540,175 @@ public partial class MainWindow : Window
         rectangle.PointerReleased += Rectangle_PointerReleased;
 
         ImageCanvas.Children.Add(rectangle);
+
+        // Add resize handles
+        AddResizeHandles(rectangle);
+    }
+    
+    private void AddResizeHandles(Rectangle rectangle)
+    {
+        // Top-left handle
+        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Top);
+
+        // // Top-right handle
+        // AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Top);
+        //
+        // // Bottom-left handle
+        // AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Bottom);
+        //
+        // // Bottom-right handle
+        // AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom);
+    }
+    
+    // Redundant after deciding to stick with only one handle
+    private void AddHandle(Rectangle rectangle, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+    {
+        var handle = new Rectangle
+        {
+            Width = HandleSize,
+            Height = HandleSize,
+            Fill = Brushes.Blue
+        };
+
+        // Position the handle relative to the boundary rectangle
+        UpdateHandlePosition(handle, rectangle, horizontalAlignment, verticalAlignment);
+
+        handle.PointerPressed += (s, e) => Handle_PointerPressed(s, e, rectangle);
+        handle.PointerMoved += (s, e) => Handle_PointerMoved(s, e, rectangle);
+        handle.PointerReleased += Handle_PointerReleased;
+
+        ImageCanvas.Children.Add(handle);
+    }
+    
+    private void UpdateHandlePosition(Rectangle handle, Rectangle rectangle, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+    {
+        double left = Canvas.GetLeft(rectangle);
+        double top = Canvas.GetTop(rectangle);
+
+        if (horizontalAlignment == HorizontalAlignment.Right)
+        {
+            left += rectangle.Width - HandleSize / 2;
+        }
+        else
+        {
+            left -= HandleSize / 2;
+        }
+
+        if (verticalAlignment == VerticalAlignment.Bottom)
+        {
+            top += rectangle.Height - HandleSize / 2;
+        }
+        else
+        {
+            top -= HandleSize / 2;
+        }
+
+        Canvas.SetLeft(handle, left);
+        Canvas.SetTop(handle, top);
     }
     
     private void Rectangle_PointerMoved(object? sender, PointerEventArgs e)
     {
-        if (isDragging && sender is Rectangle rectangle)
+        if (!isDragging || sender is not Rectangle rectangle)
+            return;
+        
+        var position = e.GetPosition(ImageCanvas);
+        var offsetX = position.X - clickPosition.X;
+        var offsetY = position.Y - clickPosition.Y;
+
+        var left = Canvas.GetLeft(rectangle) + offsetX;
+        var top = Canvas.GetTop(rectangle) + offsetY;
+
+        Canvas.SetLeft(rectangle, left);
+        Canvas.SetTop(rectangle, top);
+
+        // Update handle positions
+        foreach (var child in ImageCanvas.Children)
         {
-            var position = e.GetPosition(ImageCanvas);
-            var offsetX = position.X - clickPosition.X;
-            var offsetY = position.Y - clickPosition.Y;
-
-            var left = Canvas.GetLeft(rectangle) + offsetX;
-            var top = Canvas.GetTop(rectangle) + offsetY;
-
-            Canvas.SetLeft(rectangle, left);
-            Canvas.SetTop(rectangle, top);
-
-            clickPosition = position;
+            if (child is Rectangle handle && Equals(handle.Fill, Brushes.Blue))
+            {
+                UpdateHandlePosition(handle, rectangle, handle.HorizontalAlignment, handle.VerticalAlignment);
+            }
         }
+
+        // Update the boundary in the object library
+        var index = ImageCanvas.Children.IndexOf(rectangle);
+        if (index >= 0 && index < objectLibrary.Boundaries.Count)
+        {
+            var boundary = objectLibrary.Boundaries[index];
+            boundary.X = (int)left;
+            boundary.Y = (int)top;
+            objectLibrary.Boundaries[index] = boundary;
+        }
+
+        clickPosition = position;
     }
     private void Rectangle_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (sender is Rectangle rectangle)
-        {
-            isDragging = true;
-            clickPosition = e.GetPosition(ImageCanvas);
-            // Manually handle pointer capture
-            rectangle.PointerPressed += (s, args) => { isDragging = true; };
-        }
+        if (sender is not Rectangle rectangle)
+            return;
+        
+        isDragging = true;
+        clickPosition = e.GetPosition(ImageCanvas);
+        // Manually handle pointer capture
+        rectangle.PointerPressed += (s, args) => { isDragging = true; };
     }
-
     private void Rectangle_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (sender is Rectangle rectangle)
-        {
-            isDragging = false;
-            // Manually handle pointer release
-            rectangle.PointerReleased += (s, args) => { isDragging = false; };
-        }
+        if (sender is not Rectangle rectangle)
+            return;
+        
+        isDragging = false;
+        
+        // Manually handle pointer release
+        rectangle.PointerReleased += (s, args) => { isDragging = false; };
     }
     
-    
+    private void Handle_PointerPressed(object? sender, PointerPressedEventArgs e, Rectangle rectangle)
+    {
+        isDragging = true;
+        clickPosition = e.GetPosition(ImageCanvas);
+    }
+    private void Handle_PointerMoved(object? sender, PointerEventArgs e, Rectangle rectangle)
+    {
+        if (!isDragging)
+            return;
+        
+        var position = e.GetPosition(ImageCanvas);
+        var offsetX = position.X - clickPosition.X;
+        var offsetY = position.Y - clickPosition.Y;
+
+        var newWidth = Math.Max(rectangle.Width + offsetX, MinWidth);
+        var newHeight = Math.Max(rectangle.Height + offsetY, MinHeight);
+
+        rectangle.Width = newWidth;
+        rectangle.Height = newHeight;
+
+        // Update handle positions
+        foreach (var child in ImageCanvas.Children)
+        {
+            if (child is Rectangle handle && Equals(handle.Fill, Brushes.Blue))
+            {
+                UpdateHandlePosition(handle, rectangle, handle.HorizontalAlignment, handle.VerticalAlignment);
+            }
+        }
+
+        // Update the boundary in the object library
+        var index = ImageCanvas.Children.IndexOf(rectangle);
+        if (index >= 0 && index < objectLibrary.Boundaries.Count)
+        {
+            var boundary = objectLibrary.Boundaries[index];
+            boundary.Width = (int)newWidth;
+            boundary.Height = (int)newHeight;
+            objectLibrary.Boundaries[index] = boundary;
+        }
+
+        clickPosition = position;
+    }
+    private void Handle_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        isDragging = false;
+    }
 
     #endregion
 
