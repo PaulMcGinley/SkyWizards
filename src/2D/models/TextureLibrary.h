@@ -67,7 +67,7 @@ public:
         std::chrono::duration<double> duration = end - start;
 
         // Output the duration
-        std::cout << "Time taken to load the library: " << duration.count() << " seconds" << std::endl;
+        std::cout << "Time taken to load the library: " << path << " " << duration.count() << " seconds" << std::endl;
     }
 
     std::vector<TextureEntry> entries;

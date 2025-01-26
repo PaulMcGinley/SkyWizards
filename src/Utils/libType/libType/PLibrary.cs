@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-
 namespace libType
 {
     public class PLibrary : IDisposable
@@ -31,6 +27,12 @@ namespace libType
         /// <param name="err">Error message if any.</param>
         public void Open(out string? err)
         {
+            if (!File.Exists(FilePath))
+            {
+                err = "File does not exist";
+                return;
+            }
+            
             using var reader = new BinaryReader(File.Open(FilePath, FileMode.Open));
 
             // --- Version check
@@ -70,6 +72,7 @@ namespace libType
                 {
                     // Create new image
                     var image = new LImage();
+                    
 
                     // Populate the data
                     image.OffsetX = reader.ReadInt32();
@@ -167,6 +170,7 @@ namespace libType
             if (disposed)
                 return;
 
+            // TODO: Fix this so it actually disposes the images
             if (disposing)
             {       
                 // Clear the image data

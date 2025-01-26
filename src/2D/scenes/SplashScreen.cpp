@@ -14,7 +14,8 @@ void SplashScreen::Update(GameTime gameTime) {
 
     std::string exeDir = getExecutableDirectory();
 
-    if (!gameTime.TimeElapsed(1))
+        // Small delay before starting the game
+    if (!gameTime.TimeElapsed(1)) // 1 second
         return;
 
     if (assetManager.Robes.empty()) {
@@ -58,10 +59,16 @@ void SplashScreen::Update(GameTime gameTime) {
     if (assetManager.BackgroundIslands.entries.empty()) {
         assetManager.BackgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
         CurrentValue++;
-        text.setString("Loading Complete!");
+        text.setString("Loading Game UI Elements!");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
         return;
     }
+
+        if (assetManager.ProgramUsage.entries.empty()) {
+                assetManager.ProgramUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
+                CurrentValue++;
+                text.setString("Loading Complete!");
+        }
 
     // Track when loaded finished so we can add a small delay before starting the game
     if (loadCompltionTime < 0) {
@@ -78,7 +85,7 @@ void SplashScreen::LateUpdate(GameTime gameTime) {
     if (gameTime.TimeElapsed(loadCompltionTime)) {
         // Load the next scene
         std::cout << "Loading Complete" << std::endl;
-        SceneManager::getInstance().changeScene(SceneType::Dev);
+        SceneManager::getInstance().changeScene(SceneType::FirstMenu);
     }
 
 }
@@ -91,7 +98,7 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
     window.draw(copyRightText); // Draw the copy right text
 }
 
-void SplashScreen::Scene_Init() {
+void SplashScreen::Scene_Init(sf::RenderWindow& window) {
 
     std::string exeDir = getExecutableDirectory();
 

@@ -23,11 +23,14 @@ public:
   void operator=(const SceneManager&) = delete;
 
   // Method to add a scene
-  void addScene(const SceneType name, std::shared_ptr<IScene> scene) {
+  void addScene(const SceneType name, std::shared_ptr<IScene> scene, sf::RenderWindow& window) {
     scenes[name] = std::move(scene); // Move the scene into the container
 
-    scenes[name]->Scene_Init();
+    scenes[name]->Scene_Init(window);
   }
+        void initScene(const SceneType name, sf::RenderWindow& window) {
+                scenes[name]->Scene_Init(window);
+        }
 
   // Method to get a scene
   std::shared_ptr<IScene> getScene(const SceneType name) {
@@ -49,6 +52,12 @@ public:
       currentScene->OnScene_Deactive();
 
     currentScene = scenes[name];
+
+          // TODO: Make window a global or pass it to here
+          // if (currentScene->Initialized == false) {
+          //         currentScene->Scene_Init(/* window here */);
+          //         currentScene->Initialized = true;
+          // }
     currentScene->OnScene_Active();
   }
 

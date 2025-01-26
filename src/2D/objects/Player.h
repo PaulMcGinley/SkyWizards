@@ -10,9 +10,10 @@
 
 #include "enums/FaceDirection.h"
 #include "interfaces/IAnimate.h"
-#include "interfaces/IUpdate.h"
 #include "interfaces/IDraw.h"
+#include "interfaces/IUpdate.h"
 #include "models/GameTime.h"
+#include "models/Health.h"
 #include "models/TextureEntry.h"
 
 class AssetManager;
@@ -33,6 +34,8 @@ public:
     int frame() {
         return sequences[currentAni].StartFrame + currentFrame + faceDirection;
     }
+
+        Health health = Health(2.0f, {25, 25});
 
     void TickAnimation(GameTime gameTime) override;
 };

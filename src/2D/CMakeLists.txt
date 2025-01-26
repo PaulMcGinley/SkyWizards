@@ -46,6 +46,11 @@ add_executable(LoSW___BftS main.cpp
         os/GetExecutionDirectory.h
         os/PlatformPaths.h
         models/Island.h
+        managers/Random.cpp
+        managers/InputManager.cpp
+        scenes/MainMenu.cpp
+        scenes/MainMenu.h
+        managers/GameManager.cpp
 )
 
 

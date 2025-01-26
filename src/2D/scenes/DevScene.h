@@ -14,18 +14,19 @@
 class DevScene : public IScene {
 
 public:
-  void Update(GameTime gameTime) override;
-  void LateUpdate(GameTime gameTime) override;
-  void Draw(sf::RenderWindow& window, GameTime gameTime) override;
-  void Scene_Init() override;
-  void Scene_Destroy() override;
-  void OnScene_Active() override;
-  void OnScene_Deactive() override;
+        void Update(GameTime gameTime) override;
+        void LateUpdate(GameTime gameTime) override;
+        void Draw(sf::RenderWindow& window, GameTime gameTime) override;
+        void Scene_Init(sf::RenderWindow& window) override;
+        void Scene_Destroy() override;
+        void OnScene_Active() override;
+        void OnScene_Deactive() override;
 
 private:
-  TextureLibrary& floatingIslandLibrary = AssetManager::getInstance().BackgroundIslands;
-  BackgroundSceneryObject floatingIsland = BackgroundSceneryObject(floatingIslandLibrary, 0, 36, 50, sf::Vector2f(0, -500));
-  Player player = Player();
+        TextureLibrary& floatingIslandLibrary = AssetManager::getInstance().BackgroundIslands;
+        BackgroundSceneryObject floatingIsland = BackgroundSceneryObject(floatingIslandLibrary, 0, 36, 50, sf::Vector2f(0, -500));
+        Player player = Player();
+        sf::View viewport;
 };
 
 #endif //DEVSCENE_H

@@ -1,0 +1,30 @@
+//
+// Created by Paul McGinley on 25/01/2025.
+//
+
+#ifndef MAINMENU_H
+#define MAINMENU_H
+
+
+#include "interfaces/IScene.h"
+
+
+class MainMenu : public IScene {
+public:
+        // MainMenu();
+
+        void Update(GameTime gameTime) override;
+        void LateUpdate(GameTime gameTime) override;
+        void Draw(sf::RenderWindow& window, GameTime gameTime) override;
+        void Scene_Init(sf::RenderWindow& window) override;
+        void Scene_Destroy() override;
+        void OnScene_Active() override;
+        void OnScene_Deactive() override;
+
+private:
+        sf::VertexArray backgroundQuad{sf::Quads, 4};
+};
+
+
+
+#endif //MAINMENU_H

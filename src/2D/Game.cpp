@@ -8,6 +8,7 @@
 
 #include "managers/SceneManager.cpp"
 #include "scenes/DevScene.h"
+#include "scenes/MainMenu.h"
 #include "scenes/SplashScreen.h"
 
 Game::Game() {
@@ -17,18 +18,19 @@ Game::Game() {
 }
 
 void Game::Run() {
-    // Add scenes to the scene manager
-    sceneManager.addScene(SceneType::Splash, std::make_shared<SplashScreen>());
-    sceneManager.addScene(SceneType::Dev, std::make_shared<DevScene>());
-    sceneManager.changeScene(SceneType::Splash);
-
-
     // Set the window properties
     int screenWidth = 1920;
     int screenHeight = 1080;
     std::string title = "Legend of Sky Wizards - But from the side!";
     int style = sf::Style::Close | sf::Style::Titlebar;
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), title, style);
+
+
+    // Add scenes to the scene manager
+    sceneManager.addScene(SceneType::Splash, std::make_shared<SplashScreen>(), window );
+    sceneManager.addScene(SceneType::Dev, std::make_shared<DevScene>(), window);
+    sceneManager.addScene(SceneType::FirstMenu, std::make_shared<MainMenu>(), window);
+    sceneManager.changeScene(SceneType::Splash);
 
 
     // Main game loop

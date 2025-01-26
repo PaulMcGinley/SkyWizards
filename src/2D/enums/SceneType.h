@@ -9,7 +9,7 @@ enum SceneType {
   Loader = 0,
   Splash = 1,
   Video = 2,
-  MainMenu = 3,
+  FirstMenu = 3, // MainMenu
   Options = 4,
   Credits = 5,
   Playing = 6,

@@ -23,7 +23,7 @@ public:
         return static_cast<int>(std::ceil(static_cast<float>(maxHealth) / 4));
     }
     int currentHealth = 80;     // Current health
-    int targetHealth = 0;       // Target health to animate to
+    int targetHealth = 80;       // Target health to animate to
     float nextUpdateTime = 0;   // Next time the health should be updated
 
     void Damage(const int amount) {
@@ -56,11 +56,11 @@ public:
 
     void LateUpdate(GameTime gameTime) override {
         // DEV CODE
-        if (currentHealth == 0)
-            targetHealth = maxHealth;
-
-        if (currentHealth == maxHealth)
-            targetHealth = 0;
+        // if (currentHealth == 0)
+        //     targetHealth = maxHealth;
+        //
+        // if (currentHealth == maxHealth)
+        //     targetHealth = 0;
     }
 
     void Draw(sf::RenderWindow &window, GameTime gameTime) override {
@@ -99,7 +99,7 @@ public:
             if (heartIndex == 0) {
                 // Calculate opacity gradient
                 float opacityPercentage = minOpacity + (maxOpacity - minOpacity) * (float(i) / (hearts - 1));
-                int alphaValue = static_cast<int>((opacityPercentage / 100.0f * 255.0f));  // Convert to alpha (0-255)
+                int alphaValue = static_cast<int>((opacityPercentage / 100.0f) * 255.0f);  // Convert to alpha (0-255)
 
                 heartSprite.setColor(sf::Color(255, 255, 255, 255 - alphaValue));  // Set gradient opacity
             } else {
@@ -120,11 +120,11 @@ private:
     const int heartsPerRow = 10;        // Limit to 10 hearts per row
 
     // Define opacity range for gradient
-    const float minOpacity = 5.0f;      // 5% opacity
-    const float maxOpacity = 90.0f;     // 20% opacity
+    const float minOpacity = 5.0f;
+    const float maxOpacity = 90.0f;
 
     float scale = 1;
-    sf::Vector2f position = {0, 0};
+    sf::Vector2f position = {0, 0};// Screen position of the health bar
 };
 
 #endif //HEALTH_H

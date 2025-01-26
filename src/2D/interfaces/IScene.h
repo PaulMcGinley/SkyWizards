@@ -15,11 +15,13 @@ public:
     IScene() = default;
     virtual ~IScene() = default;
 
+        bool Initialized = false;
+
     void Update(GameTime gameTime) override = 0;
     void LateUpdate(GameTime gameTime) override = 0;
     void Draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
 
-    virtual void Scene_Init() = 0;
+    virtual void Scene_Init(sf::RenderWindow& window) = 0;
     virtual void Scene_Destroy() = 0;
     virtual void OnScene_Active() = 0;
     virtual void OnScene_Deactive() = 0;
