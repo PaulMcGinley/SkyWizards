@@ -18,21 +18,21 @@ Player::Player() {
         // Once one part of the animation is complete, it can change the ani to the next part of the animation
         // .OnComplete [](){currentAni = AniType::JumpEnd;}
         sequences = {
-                {AniType::Consume, {0, 32, 100, nullptr, nullptr, nullptr}},
-                {AniType::Damaged, {32, 13, 100, nullptr, nullptr, nullptr}},
-                {AniType::Death, {45, 11, 100 , nullptr, nullptr, nullptr}},
-                {AniType::Dizzy, {56, 20, 100, nullptr, nullptr, nullptr}},
-                {AniType::Fire, {76, 16, 100, nullptr, nullptr, nullptr}},
-                {AniType::Idle, {92, 16, 100, nullptr, nullptr, nullptr}},
-                {AniType::Idle2, {108, 64, 100, nullptr, nullptr, nullptr}},
-                {AniType::Interact, {172, 21, 100, nullptr, nullptr, nullptr}},
-                {AniType::JumpAir, {193, 14, 100, nullptr, nullptr, nullptr}},
-                {AniType::JumpEnd, {207, 10, 100, nullptr, nullptr, nullptr}},
-                {AniType::JumpStart, {217, 8, 100, nullptr, nullptr, nullptr}},
-                {AniType::JumpUp, {225, 4, 100, nullptr, nullptr, nullptr}},
-                {AniType::Pickup, {229, 20, 100, nullptr, nullptr, nullptr}},
-                {AniType::Run, {249, 10, 80, nullptr, nullptr, nullptr}},
-                {AniType::Walk, {259, 16, 65, nullptr, nullptr, [&](int _frame){std::cout << "Walking frame: " << _frame << std::endl;}}} // Debug output
+                {AnimationType::ANIMATION_CONSUME, {0, 32, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_DAMAGED, {32, 13, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_DEATH, {45, 11, 100 , nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_DIZZY, {56, 20, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_FIRE, {76, 16, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_IDLE, {92, 16, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_IDLE2, {108, 64, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_INTERACT, {172, 21, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_JUMP_AIR, {193, 14, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_JUMP_END, {207, 10, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_JUMP_START, {217, 8, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_JUMP_UP, {225, 4, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_PICKUP, {229, 20, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_RUN, {249, 10, 80, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_WALK, {259, 16, 65, nullptr, nullptr, [&](int _frame){std::cout << "Walking frame: " << _frame << std::endl;}}} // Debug output
         };
 }
 
@@ -59,10 +59,10 @@ void Player::Update(GameTime gameTime) {
                 faceDirection = FaceDirection::Left;
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                    ChangeAni(AniType::Run, gameTime);
+                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                     position.x -= 0.1f;
                 } else {
-                    ChangeAni(AniType::Walk, gameTime);
+                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                     position.x -= 0.06f;
                 }
         }
@@ -71,19 +71,19 @@ void Player::Update(GameTime gameTime) {
                 faceDirection = FaceDirection::Right;
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                    ChangeAni(AniType::Run, gameTime);
+                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                     position.x += 0.1f;
                 } else {
-                    ChangeAni(AniType::Walk, gameTime);
+                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                     position.x += 0.04f;
                 }
         }
 
         else {
-                ChangeAni(AniType::Idle2, gameTime);
+                ChangeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
         }
 
-        TextureEntry& robe = *assetManager.GetRobeFrame_ptr(robeLibrary, frame());
+        TextureEntry& robe = *asset_manager.GetRobeFrame_ptr(robeLibrary, frame());
         robeQuad[0].texCoords = robe.texQuad[0].texCoords;
         robeQuad[1].texCoords = robe.texQuad[1].texCoords;
         robeQuad[2].texCoords = robe.texQuad[2].texCoords;
@@ -94,7 +94,7 @@ void Player::Update(GameTime gameTime) {
         robeQuad[2].position = robe.texQuad[2].position + position;
         robeQuad[3].position = robe.texQuad[3].position + position;
 
-        TextureEntry& staff = *assetManager.GetStaffFrame_ptr(staffLibrary, frame());
+        TextureEntry& staff = *asset_manager.GetStaffFrame_ptr(staffLibrary, frame());
         staffQuad[0].texCoords = staff.texQuad[0].texCoords;
         staffQuad[1].texCoords = staff.texQuad[1].texCoords;
         staffQuad[2].texCoords = staff.texQuad[2].texCoords;
@@ -118,19 +118,19 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
 
         window.draw(
                 robeQuad,
-                &assetManager.GetRobeFrame_ptr(robeLibrary, frame())->texture
+                &asset_manager.GetRobeFrame_ptr(robeLibrary, frame())->texture
         );
 
         window.draw(
                 staffQuad,
-                &assetManager.GetStaffFrame_ptr(staffLibrary, frame())->texture
+                &asset_manager.GetStaffFrame_ptr(staffLibrary, frame())->texture
         );
 }
 
 void Player::TickAnimation(GameTime gameTime) {
         IAnimate::TickAnimation(gameTime);
 
-        if (sequences[currentAni].OnFrame != nullptr)
-                sequences[currentAni].OnFrame(currentFrame);
+        if (sequences[current_animation].OnFrame != nullptr)
+                sequences[current_animation].OnFrame(current_animation_frame);
 }
 

@@ -32,7 +32,7 @@ public:
     FaceDirection faceDirection = FaceDirection::Right;
     sf::Vector2f position = {0, 0};
     int frame() {
-        return sequences[currentAni].StartFrame + currentFrame + faceDirection;
+        return sequences[current_animation].StartFrame + current_animation_frame + faceDirection;
     }
 
         Health health = Health(2.0f, {25, 25});

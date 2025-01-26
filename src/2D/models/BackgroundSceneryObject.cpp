@@ -8,9 +8,9 @@ BackgroundSceneryObject::BackgroundSceneryObject(TextureLibrary& library, int st
 
     this->position = position;
     sequences =  {
-        {AniType::Idle, {startIndex, length, tick, nullptr, nullptr}}
+        {AnimationType::ANIMATION_IDLE, {startIndex, length, tick, nullptr, nullptr}}
     };
-    ChangeAni(AniType::Idle, GameTime(), true);
+    ChangeAnimation(AnimationType::ANIMATION_IDLE, GameTime(), true);
 
     // Load the shader
     if (!blurShader.loadFromFile("resources/shaders/blur.frag", sf::Shader::Fragment)) {
@@ -26,11 +26,11 @@ void BackgroundSceneryObject::Update(GameTime gameTime) {
     //blurRadius += 0.010f;
     //blurShader.setUniform("blur_radius", blurRadius); // Example blur radius
 
-    float drawX = position.x + library.entries[currentFrame].xOffset;
-    float drawY = position.y + library.entries[currentFrame].yOffset;
+    float drawX = position.x + library.entries[current_animation_frame].xOffset;
+    float drawY = position.y + library.entries[current_animation_frame].yOffset;
     sprite.setPosition(sf::Vector2f(drawX, drawY));
 
-    const int frameIndex = sequences[currentAni].StartFrame + currentFrame;
+    const int frameIndex = sequences[current_animation].StartFrame + current_animation_frame;
     sprite.setTexture(library.entries[frameIndex].texture);
 
 

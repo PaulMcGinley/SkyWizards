@@ -41,8 +41,6 @@ add_executable(LoSW___BftS main.cpp
         models/BackgroundSceneryObject.cpp
         managers/SceneManager.cpp
         enums/SceneType.h
-        graphics/TImage.cpp
-        graphics/TImage.h
         os/GetExecutionDirectory.h
         os/PlatformPaths.h
         models/Island.h

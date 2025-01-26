@@ -15,7 +15,7 @@ public:
 
     virtual void Draw(sf::RenderWindow& window, GameTime gameTime) = 0;
 
-    AssetManager& assetManager = AssetManager::getInstance();
+    AssetManager& asset_manager = AssetManager::getInstance();
 };
 
 #endif //IDRAW_H

@@ -10,38 +10,38 @@
 // If we reach the end of the sequence, loop back to the start
 void IAnimate::TickAnimation(const GameTime gameTime) {
 
-    if (!gameTime.TimeElapsed(nextFrameTime))
-        return;
+        if (!gameTime.TimeElapsed(next_frame_time))
+                return;
 
-    // Increment the current frame
-    currentFrame++;
+        // Increment the current frame
+        current_animation_frame++;
 
-    // Loop back to the start of the sequence if we reach the end
-    if (currentFrame >= sequences[currentAni].Length)
-        currentFrame = 0;
+        // Loop back to the start of the sequence if we reach the end
+        if (current_animation_frame >= sequences[current_animation].Length)
+                current_animation_frame = 0;
 
-    nextFrameTime = gameTime.NowAddMilliseconds(sequences[currentAni].Interval);
+        next_frame_time = gameTime.NowAddMilliseconds(sequences[current_animation].Interval);
 }
 
 // Change the current animation sequence
-bool IAnimate::ChangeAni(const AniType nextAni, const GameTime gameTime, const bool force) {
+bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTime game_time, const bool force_new_animation) {
 
-    if (!gameTime.TimeElapsed(nextAniTime) && !force)
-        return false;
+        if (!game_time.TimeElapsed(next_animation_time) && !force_new_animation)
+                return false;
 
-    if(currentAni == nextAni)
-        return false;
+        if(current_animation == next_animation)
+                return false;
 
-    // Change the current animation sequence
-    currentAni = nextAni;
-    currentFrame = 0;
-    nextFrameTime = 0;
+        // Change the current animation sequence
+        current_animation = next_animation;
+        current_animation_frame = 0;
+        next_frame_time = 0;
 
-    float newNextAniTime = gameTime.NowAddMilliseconds(sequences[currentAni].Interval * sequences[currentAni].Length);
+        float newNextAniTime = game_time.NowAddMilliseconds(sequences[current_animation].Interval * sequences[current_animation].Length);
 
-    if (nextAni == AniType::Attack) {
-        nextAniTime = newNextAniTime;
-    }
+        if (next_animation == AnimationType::ANIMATION_ATTACK) {
+                next_animation_time = newNextAniTime;
+        }
 
-    return true;
+        return true;
 }

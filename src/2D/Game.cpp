@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "managers/SceneManager.cpp"
+#include "managers/InputManager.cpp"
 #include "scenes/DevScene.h"
 #include "scenes/MainMenu.h"
 #include "scenes/SplashScreen.h"
@@ -35,11 +36,14 @@ void Game::Run() {
                         if (windowEvent.type == sf::Event::Closed)
                                 game_manager.window->close();
                 }
-                gameTime += (clock.restart().asSeconds());
-                scene_manager.Update(gameTime);
+
+                InputManager::getInstance().Update();
+
+                game_time += (clock.restart().asSeconds());
+                scene_manager.Update(game_time);
                 game_manager.window->clear(sf::Color(255,255,255,255));
-                scene_manager.Draw(*game_manager.window, gameTime);
+                scene_manager.Draw(*game_manager.window, game_time);
                 game_manager.window->display();
-                scene_manager.LateUpdate(gameTime);
+                scene_manager.LateUpdate(game_time);
         }
 }

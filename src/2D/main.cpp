@@ -29,15 +29,15 @@ int main(int argc, char* argv[]) {
 
         // If the game is in fullscreen mode then set the window to fullscreen
         if (GameManager::getInstance().isFullscreen()) {
-                GameManager::getInstance().window = new sf::RenderWindow(sf::VideoMode(game_manager.getResolutionWidth(), game_manager.getResolutionHeight()), game_manager.gameName, sf::Style::Fullscreen);
+                GameManager::getInstance().window = new sf::RenderWindow(sf::VideoMode(game_manager.getResolutionWidth(), game_manager.getResolutionHeight()), game_manager.game_name, sf::Style::Fullscreen);
         }
         // If the game is in exclusive fullscreen mode then set the window to exclusive fullscreen
         else if (GameManager::getInstance().isExclusiveFullscreen()) {
-                GameManager::getInstance().window->create(sf::VideoMode(game_manager.getResolutionWidth(), game_manager.getResolutionHeight()), game_manager.gameName, sf::Style::Fullscreen);
+                GameManager::getInstance().window->create(sf::VideoMode(game_manager.getResolutionWidth(), game_manager.getResolutionHeight()), game_manager.game_name, sf::Style::Fullscreen);
         }
         // Else set the window to windowed mode
         else {
-                GameManager::getInstance().window = new sf::RenderWindow(sf::VideoMode(game_manager.getResolutionWidth(), game_manager.getResolutionHeight()), game_manager.gameName, sf::Style::Default);
+                GameManager::getInstance().window = new sf::RenderWindow(sf::VideoMode(game_manager.getResolutionWidth(), game_manager.getResolutionHeight()), game_manager.game_name, sf::Style::Default);
         }
 
         // Run the game

@@ -5,31 +5,29 @@
 #ifndef ANITYPE_H
 #define ANITYPE_H
 
-enum class AniType {
-    Consume = 0,
-    Damaged = 1,
-    Death = 2,
-    Dizzy = 3,
-    Fire = 4,
-    Idle = 5,
-    Idle2 = 6,
-    Interact = 7,
-    JumpAir = 8,
-    JumpEnd = 9,
-    JumpStart = 10,
-    JumpUp = 11,
-    Pickup = 12,
-    Run = 13,
-    Walk = 14,
-    Taunt = 15,
-    BattleIdle = 16,
-    SenseSomething = 17,
-    Victory = 18,
-
-    Attack = 50,
-    Attack2 = 51,
-
-    Static = 255
+enum class AnimationType {
+        ANIMATION_CONSUME = 0,
+        ANIMATION_DAMAGED = 1,
+        ANIMATION_DEATH = 2,
+        ANIMATION_DIZZY = 3,
+        ANIMATION_FIRE = 4,
+        ANIMATION_IDLE = 5,
+        ANIMATION_IDLE2 = 6,
+        ANIMATION_INTERACT = 7,
+        ANIMATION_JUMP_AIR = 8,
+        ANIMATION_JUMP_END = 9,
+        ANIMATION_JUMP_START = 10,
+        ANIMATION_JUMP_UP = 11,
+        ANIMATION_PICKUP = 12,
+        ANIMATION_RUN = 13,
+        ANIMATION_WALK = 14,
+        ANIMATION_TAUNT = 15,
+        ANIMATION_BATTLE_IDLE = 16,
+        ANIMATION_SENSE_SOMETHING = 17,
+        ANIMATION_VICTORY = 18,
+        ANIMATION_ATTACK = 50,
+        ANIMATION_ATTACK2 = 51,
+        ANIMATION_STATIC = 255
 };
 
 #endif //ANITYPE_H

@@ -68,8 +68,8 @@ public:
         // Calculate heart texture size, used for positioning and scaling
         // TODO: Refactor this into the constructor
         const sf::Vector2f heartSize = {
-            static_cast<float> (assetManager.GetHeartImage_ptr(0)->texture.getSize().x),
-            static_cast<float> (assetManager.GetHeartImage_ptr(0)->texture.getSize().y)
+            static_cast<float> (asset_manager.GetHeartImage_ptr(0)->texture.getSize().x),
+            static_cast<float> (asset_manager.GetHeartImage_ptr(0)->texture.getSize().y)
         };
 
         // Do the math
@@ -92,7 +92,7 @@ public:
                 heartIndex = 1;
 
             sf::Sprite heartSprite;
-            heartSprite.setTexture(assetManager.GetHeartImage_ptr(heartIndex)->texture);
+            heartSprite.setTexture(asset_manager.GetHeartImage_ptr(heartIndex)->texture);
             heartSprite.setScale(scale, scale);
 
             // Apply opacity gradient only to empty hearts (heartIndex == 0)

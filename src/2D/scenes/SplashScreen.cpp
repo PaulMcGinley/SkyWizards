@@ -18,10 +18,10 @@ void SplashScreen::Update(GameTime gameTime) {
     if (!gameTime.TimeElapsed(1)) // 1 second
         return;
 
-    if (assetManager.Robes.empty()) {
-        assetManager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobeBlue.lib"));
-        assetManager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobeGreen.lib"));
-        assetManager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobePurple.lib"));
+    if (asset_manager.Robes.empty()) {
+        asset_manager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobeBlue.lib"));
+        asset_manager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobeGreen.lib"));
+        asset_manager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobePurple.lib"));
 
         CurrentValue+=3;
         text.setString("Loading Staff Textures...");
@@ -29,10 +29,10 @@ void SplashScreen::Update(GameTime gameTime) {
         return;
     }
 
-    if (assetManager.Staffs.empty()) {
-        assetManager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff1.lib"));
-        assetManager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff2.lib"));
-        assetManager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff3.lib"));
+    if (asset_manager.Staffs.empty()) {
+        asset_manager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff1.lib"));
+        asset_manager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff2.lib"));
+        asset_manager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff3.lib"));
 
         CurrentValue+=3;
         text.setString("Loading Chest Monster Textures...");
@@ -40,32 +40,32 @@ void SplashScreen::Update(GameTime gameTime) {
         return;
     }
 
-    if (assetManager.ChestMonster.entries.empty()) {
-        assetManager.ChestMonster = TextureLibrary(exeDir + "/resources/ChestMonster.lib");
+    if (asset_manager.ChestMonster.entries.empty()) {
+        asset_manager.ChestMonster = TextureLibrary(exeDir + "/resources/ChestMonster.lib");
         CurrentValue++;
         text.setString("Loading Heart Textures...");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
         return;
     }
 
-    if (assetManager.Hearts.entries.empty()) {
-        assetManager.Hearts = TextureLibrary(exeDir + "/resources/Hearts.lib");
+    if (asset_manager.Hearts.entries.empty()) {
+        asset_manager.Hearts = TextureLibrary(exeDir + "/resources/Hearts.lib");
         CurrentValue++;
         text.setString("Loading Background Islands Textures...");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
         return;
     }
 
-    if (assetManager.BackgroundIslands.entries.empty()) {
-        assetManager.BackgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
+    if (asset_manager.BackgroundIslands.entries.empty()) {
+        asset_manager.BackgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
         CurrentValue++;
         text.setString("Loading Game UI Elements!");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
         return;
     }
 
-        if (assetManager.ProgramUsage.entries.empty()) {
-                assetManager.ProgramUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
+        if (asset_manager.ProgramUsage.entries.empty()) {
+                asset_manager.ProgramUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
                 CurrentValue++;
                 text.setString("Loading Complete!");
         }

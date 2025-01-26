@@ -15,7 +15,7 @@ public:
         GameManager(const GameManager&) = delete;
         void operator=(const GameManager&) = delete;
 
-        const std::string gameName = "Legend of Sky Wizards - But from the side";
+        const std::string game_name = "Legend of Sky Wizards - But from the side";
 
         // Pointer to the window object
         sf::RenderWindow* window = nullptr;
@@ -30,7 +30,7 @@ public:
         // ********** Getters **********
 
         [[nodiscard]] bool isCustomResolution() const {
-                return customResolution;
+                return is_custom_resolution;
         }
 
         // Calculate the resolution ratio and return it as a float
@@ -56,9 +56,9 @@ public:
         // ********** Setters **********
 
         // Set the resolution
-        void setResolution(sf::Vector2<unsigned int> newResolution) {
-                resolution = newResolution;
-                customResolution = true;
+        void setResolution(const sf::Vector2<unsigned int> new_resolution) {
+                resolution = new_resolution;
+                is_custom_resolution = true;
         }
 
 
@@ -75,7 +75,7 @@ public:
         }
 
         [[nodiscard]] bool isExclusiveFullscreen() const {
-                return exclusiveFullscreen;
+                return exclusive_fullscreen;
         }
 
         // ********** Setters **********
@@ -85,7 +85,7 @@ public:
         }
 
         void toggleExclusiveFullscreen() {
-                exclusiveFullscreen = !exclusiveFullscreen;
+                exclusive_fullscreen = !exclusive_fullscreen;
         }
 
 
@@ -110,19 +110,21 @@ public:
 
 
         /* ===========================================================================================================================================================================================
-         * ===   Scalers   ===========================================================================================================================================================================
+         * ===   SCALE   =============================================================================================================================================================================
          * ===========================================================================================================================================================================================
         */
 
         // ********** Getters **********
+
         [[nodiscard]] float getUIScale() const {
-                return scaleUI;
+                return scale_ui;
         }
 
         // ********** Setters **********
+
         void setUIScale(const float scale) {
                 // Limit the scale to a minimum of 10% and a maximum of 800%
-                scaleUI = std::clamp(scale, 0.1f, 8.0f);
+                scale_ui = std::clamp(scale, 0.1f, 8.0f);
         }
 
 
@@ -131,17 +133,17 @@ private:
         // Private constructor to prevent instancing
         GameManager() = default;
 
-        bool customResolution = true;
+        bool is_custom_resolution = true;
         sf::Vector2<unsigned int> resolution = {1920, 1080};
 
         bool fullscreen = false;
-        bool exclusiveFullscreen = false;
+        bool exclusive_fullscreen = false;
         bool vsync = true;
-        bool showFPS = false;
-        bool showDebug = false;
-        bool showMemory = false;
-        bool showCursor = true;
+        bool show_fps = false;
+        bool show_debug = false;
+        bool show_memory = false;
+        bool show_cursor = true;
 
-        float scaleUI = 1.0f;
-        float scaleGame = 1.0f;
+        float scale_ui = 1.0f;
+        float scale_game = 1.0f;
 };

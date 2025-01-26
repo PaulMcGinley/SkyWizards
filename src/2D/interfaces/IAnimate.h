@@ -15,20 +15,20 @@ public:
     virtual ~IAnimate() = default;
 
     // Map of animation sequences, populated by the entity
-    std::map<AniType, AniSequence> sequences;
+    std::map<AnimationType, AniSequence> sequences;
 
     // Current animation sequence of the entity
-    AniType currentAni = AniType::Idle;
+    AnimationType current_animation = AnimationType::ANIMATION_IDLE;
 
     // Current frame of the animation sequence
-    int currentFrame = 0;
+    int current_animation_frame = 0;
 
     // Time until the next frame of the animation
-    float nextFrameTime = 0;
-    float nextAniTime = 0; // Time until the next animation can be played
+    float next_frame_time = 0;
+    float next_animation_time = 0; // Time until the next animation can be played
 
     virtual void TickAnimation(GameTime gameTime);
-    bool ChangeAni(AniType nextAni, GameTime GAME_TIME, bool force = false);
+    bool ChangeAnimation(AnimationType next_animation, GameTime GAME_TIME, bool force_new_animation = false);
 };
 
 #endif //IANIMATE_H

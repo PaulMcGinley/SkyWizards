@@ -23,7 +23,7 @@ private:
 
         // Clock and game time using for tracking the game loop time
         sf::Clock clock;        // Clock tracks delta time and feeds the data to gameTime
-        GameTime gameTime;      // gameTime tracks all time related data for the game
+        GameTime game_time;     // game_time tracks all time related data for the game
 };
 
 #endif //GAME_H

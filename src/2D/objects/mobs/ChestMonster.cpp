@@ -10,19 +10,19 @@ ChestMonster::ChestMonster() {
 
     position = {1000, 520};
     sequences = {
-        {AniType::Attack, {0, 10, 100}},
-        {AniType::Attack2, {10, 9, 100}},
-        {AniType::BattleIdle, {19, 9, 100}},
-        {AniType::Damaged, {28, 7, 100}},
-        {AniType::Death, {35, 12, 100}},
-        {AniType::Dizzy, {47, 16, 100}},
-        {AniType::Idle, {63, 16, 60}},
-        {AniType::Static, {79 , 1, 100}}, // should be length 1
-        {AniType::Run, {87, 7, 100}},
-        {AniType::SenseSomething, {95, 56, 100}},
-        {AniType::Taunt, {151, 24, 100}},
-        {AniType::Victory, {185, 12, 100}},
-        {AniType::Walk, {187, 12, 100}}
+        {AnimationType::ANIMATION_ATTACK, {0, 10, 100}},
+        {AnimationType::ANIMATION_ATTACK2, {10, 9, 100}},
+        {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
+        {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
+        {AnimationType::ANIMATION_DEATH, {35, 12, 100}},
+        {AnimationType::ANIMATION_DIZZY, {47, 16, 100}},
+        {AnimationType::ANIMATION_IDLE, {63, 16, 60}},
+        {AnimationType::ANIMATION_STATIC, {79 , 1, 100}}, // should be length 1
+        {AnimationType::ANIMATION_RUN, {87, 7, 100}},
+        {AnimationType::ANIMATION_SENSE_SOMETHING, {95, 56, 100}},
+        {AnimationType::ANIMATION_TAUNT, {151, 24, 100}},
+        {AnimationType::ANIMATION_VICTORY, {185, 12, 100}},
+        {AnimationType::ANIMATION_WALK, {187, 12, 100}}
 
     };
        // ChangeAni(AniType::Taunt, GameTime());
@@ -32,7 +32,7 @@ void ChestMonster::Update(GameTime gameTime) {
     // AI Code here
 
     // Walk AI
-    if (currentAni == AniType::Walk) {
+    if (current_animation == AnimationType::ANIMATION_WALK) {
         // Calculate how much to move
         float moveDistance =  walkSpeed * gameTime.deltaTime;
 
@@ -43,11 +43,12 @@ void ChestMonster::Update(GameTime gameTime) {
             case FaceDirection::ChestMonsterRight:
                 position.x += moveDistance;
             break;
+            default: /* */;
         }
     }
 
     // Run AI
-    if (currentAni == AniType::Run) {
+    if (current_animation == AnimationType::ANIMATION_RUN) {
         // Calculate how much to move
         float moveDistance =  runSpeed * gameTime.deltaTime;
 
@@ -58,10 +59,11 @@ void ChestMonster::Update(GameTime gameTime) {
             case FaceDirection::ChestMonsterRight:
                 position.x += moveDistance;
             break;
+            default: /* */;
         }
     }
 
-    TextureEntry* entry = assetManager.GetChestMonsterFrame_ptr(frame());
+    TextureEntry* entry = asset_manager.GetChestMonsterFrame_ptr(frame());
 
     texQuad[0].texCoords = entry->texQuad[0].texCoords;
     texQuad[1].texCoords = entry->texQuad[1].texCoords;
@@ -81,6 +83,6 @@ void ChestMonster::LateUpdate(GameTime gameTime) {
 void ChestMonster::Draw(sf::RenderWindow& window, GameTime gameTime) {
     window.draw(
         texQuad,
-        &assetManager.GetChestMonsterFrame_ptr(frame())->texture
+        &asset_manager.GetChestMonsterFrame_ptr(frame())->texture
     );
 }

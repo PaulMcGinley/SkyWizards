@@ -21,7 +21,7 @@ public:
         this->library = library;
         this->position = position;
         sequence = AniSequence(startIndex, length, tick);
-        sprite.setTexture(library.GetTexture(AniType::Island));
+        sprite.setTexture(library.GetTexture(AnimationType::Island));
         sprite.setPosition(position);
     }
     ~Island() override = default;
