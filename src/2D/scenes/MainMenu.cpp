@@ -14,7 +14,7 @@ void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
         window.draw(backgroundQuad, &AssetManager::getInstance().ProgramUsage.entries[0].texture);
 }
-void MainMenu::Scene_Init(sf::RenderWindow& window) {
+void MainMenu::Scene_Init() {
 
         // Set up the background quad to cover the entire window
         backgroundQuad[0].position = sf::Vector2f(0, 0);

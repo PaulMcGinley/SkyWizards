@@ -7,18 +7,23 @@
 
 #include "models/GameTime.h"
 #include "managers/SceneManager.cpp"
+#include "managers/GameManager.cpp"
 
 class Game {
 public:
-    // Constructor
-    Game();
+        //  Default constructor
+        Game() = default;
 
-    // Start the game loop
-    void Run();
+        // Start the game loop
+        void Run();
 private:
-    SceneManager& sceneManager = SceneManager::getInstance();
-    sf::Clock clock;
-    GameTime gameTime;
+        // Reference to the manager singletons for easy access
+        SceneManager & scene_manager = SceneManager::getInstance();
+        GameManager & game_manager = GameManager::getInstance();
+
+        // Clock and game time using for tracking the game loop time
+        sf::Clock clock;        // Clock tracks delta time and feeds the data to gameTime
+        GameTime gameTime;      // gameTime tracks all time related data for the game
 };
 
 #endif //GAME_H

@@ -98,7 +98,7 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
     window.draw(copyRightText); // Draw the copy right text
 }
 
-void SplashScreen::Scene_Init(sf::RenderWindow& window) {
+void SplashScreen::Scene_Init() {
 
     std::string exeDir = getExecutableDirectory();
 

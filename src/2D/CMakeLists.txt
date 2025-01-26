@@ -51,6 +51,10 @@ add_executable(LoSW___BftS main.cpp
         scenes/MainMenu.cpp
         scenes/MainMenu.h
         managers/GameManager.cpp
+        managers/IOManager.cpp
+        managers/IOManager.h
+        IO/GameSettingsFile.cpp
+        IO/GameSettingsFile.h
 )
 
 

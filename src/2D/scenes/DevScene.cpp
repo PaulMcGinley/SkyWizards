@@ -38,7 +38,7 @@ void DevScene::Draw(sf::RenderWindow& window, GameTime gameTime) {
         player.health.Draw(window, gameTime);
 }
 
-void DevScene::Scene_Init(sf::RenderWindow& window) {
+void DevScene::Scene_Init() {
         // Initialize the player
         player.position = sf::Vector2f(620, 590);
 

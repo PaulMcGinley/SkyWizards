@@ -11,43 +11,35 @@
 #include "scenes/MainMenu.h"
 #include "scenes/SplashScreen.h"
 
-Game::Game() {
-    // TODO: Load settings
-    // TODO: Load assets
-    // TODO: Load save data
-}
-
 void Game::Run() {
-    // Set the window properties
-    int screenWidth = 1920;
-    int screenHeight = 1080;
-    std::string title = "Legend of Sky Wizards - But from the side!";
-    int style = sf::Style::Close | sf::Style::Titlebar;
-    sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), title, style);
+        // Create a reference to the game manager for easy access
 
 
-    // Add scenes to the scene manager
-    sceneManager.addScene(SceneType::Splash, std::make_shared<SplashScreen>(), window );
-    sceneManager.addScene(SceneType::Dev, std::make_shared<DevScene>(), window);
-    sceneManager.addScene(SceneType::FirstMenu, std::make_shared<MainMenu>(), window);
-    sceneManager.changeScene(SceneType::Splash);
+
+        // All scenes are managed by the scene manager and are added here
+        scene_manager.addScene(SceneType::Splash, std::make_shared<SplashScreen>());
+        scene_manager.addScene(SceneType::Dev, std::make_shared<DevScene>());
+        scene_manager.addScene(SceneType::FirstMenu, std::make_shared<MainMenu>());
+
+        // Set the current scene
+        // This should always be the splash screen as this is scene it's purely for loading purposes
+        // The assets for this scene are kept as external files to prevent decompression delays
+        scene_manager.changeScene(SceneType::Splash);
 
 
-    // Main game loop
-    sf::Event windowEvent { };
-    while (window.isOpen()) {
-
-        while (window.pollEvent(windowEvent)) {
-            // Close window: exit
-            if (windowEvent.type == sf::Event::Closed)
-                window.close();
+        // Main game loop
+        sf::Event windowEvent { };
+        while (game_manager.window->isOpen()) {
+                while (game_manager.window->pollEvent(windowEvent)) {
+                        // Close window: exit
+                        if (windowEvent.type == sf::Event::Closed)
+                                game_manager.window->close();
+                }
+                gameTime += (clock.restart().asSeconds());
+                scene_manager.Update(gameTime);
+                game_manager.window->clear(sf::Color(255,255,255,255));
+                scene_manager.Draw(*game_manager.window, gameTime);
+                game_manager.window->display();
+                scene_manager.LateUpdate(gameTime);
         }
-        gameTime += (clock.restart().asSeconds());
-
-        sceneManager.Update(gameTime);
-        window.clear(sf::Color(255,255,255,255));
-        sceneManager.Draw(window, gameTime);
-        window.display();
-        sceneManager.LateUpdate(gameTime);
-    }
 }

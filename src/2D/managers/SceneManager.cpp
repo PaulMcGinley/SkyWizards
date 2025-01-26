@@ -23,13 +23,13 @@ public:
   void operator=(const SceneManager&) = delete;
 
   // Method to add a scene
-  void addScene(const SceneType name, std::shared_ptr<IScene> scene, sf::RenderWindow& window) {
+  void addScene(const SceneType name, std::shared_ptr<IScene> scene) {
     scenes[name] = std::move(scene); // Move the scene into the container
 
-    scenes[name]->Scene_Init(window);
+    scenes[name]->Scene_Init();
   }
-        void initScene(const SceneType name, sf::RenderWindow& window) {
-                scenes[name]->Scene_Init(window);
+        void initScene(const SceneType name) {
+                scenes[name]->Scene_Init();
         }
 
   // Method to get a scene
