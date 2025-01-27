@@ -51,18 +51,18 @@ public:
 
         // Returns a random float between min and max
         float Float(float min, float max) {
-            std::uniform_real_distribution<float> distribution(min, max);
-            return distribution(generator);
+                std::uniform_real_distribution<float> distribution(min, max);
+                return distribution(generator);
         }
 
         // Returns a random float between 0.0 and 1.0
         float Float() {
-            return Float(0.0f, 1.0f);
+                return Float(0.0f, 1.0f);
         }
 
         // Returns a random float between 0.0 and max
         float Float(float max) {
-            return Float(0.0f, max);
+                return Float(0.0f, max);
         }
 
         // Returns a random byte (unsigned char) between min and max

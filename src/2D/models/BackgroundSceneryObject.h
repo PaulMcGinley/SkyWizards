@@ -14,21 +14,22 @@
 
 class BackgroundSceneryObject : public IUpdate, public IDraw, public IAnimate {
 public:
-  sf::Vector2f position;
-  float blurRadius = 0.0f;
-  BackgroundSceneryObject(TextureLibrary &library, int startIndex, int length, int tick, sf::Vector2f position);
-  ~BackgroundSceneryObject() override = default;
+        BackgroundSceneryObject(TextureLibrary &library, int start_index, int length, int tick, sf::Vector2f position);
+        ~BackgroundSceneryObject() override = default;
 
-  void Update(GameTime gameTime) override;
-  void LateUpdate(GameTime gameTime) override;
-  void Draw(sf::RenderWindow& window, GameTime gameTime) override;
+        void update(GameTime gameTime) override;
+        void lateUpdate(GameTime gameTime) override;
+        void draw(sf::RenderWindow& window, GameTime gameTime) override;
 
 private:
-  sf::Sprite sprite;
-  TextureLibrary& library;
+        sf::Vector2f position;
+        sf::Sprite sprite;
+        TextureLibrary& library;
 
-  AniSequence sequence;
-  sf::Shader blurShader;
+        AnimationSequence sequence;
+        bool shaderLoaded = false;
+        sf::Shader blurShader;
+        float blurRadius = 5.0f;
 };
 
 #endif //BACKGROUNDSCENERYOBJECT_H

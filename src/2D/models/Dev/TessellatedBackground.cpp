@@ -18,7 +18,7 @@ TessellatedBackground::TessellatedBackground() {
    // highlightTex.CalculateQuads();
 }
 
-void TessellatedBackground::Draw(sf::RenderWindow& window, GameTime gameTime) {
+void TessellatedBackground::draw(sf::RenderWindow& window, GameTime gameTime) {
 
 
     // sf::Shader shader;
@@ -32,13 +32,13 @@ void TessellatedBackground::Draw(sf::RenderWindow& window, GameTime gameTime) {
     window.draw(highlightSprite);
 }
 
-void TessellatedBackground::Update(GameTime gameTime) {
+void TessellatedBackground::update(GameTime gameTime) {
    // auto c =  clampToPixel(mainSprite.getPosition());
    // mainSprite.setPosition(c);
    // highlightSprite.setPosition(c);
 }
 
-void TessellatedBackground::LateUpdate(GameTime gameTime) {
+void TessellatedBackground::lateUpdate(GameTime gameTime) {
 }
 
 sf::Vector2f TessellatedBackground::clampToPixel(sf::Vector2f position) {

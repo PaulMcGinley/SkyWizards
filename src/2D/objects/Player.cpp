@@ -32,11 +32,11 @@ Player::Player() {
                 {AnimationType::ANIMATION_JUMP_UP, {225, 4, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_PICKUP, {229, 20, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_RUN, {249, 10, 80, nullptr, nullptr, nullptr}},
-                {AnimationType::ANIMATION_WALK, {259, 16, 65, nullptr, nullptr, [&](int _frame){std::cout << "Walking frame: " << _frame << std::endl;}}} // Debug output
+                {AnimationType::ANIMATION_WALK, {259, 16, 65, nullptr, nullptr, [](const int _frame){std::cout << "Walking frame: " << _frame << std::endl;}}} // Debug output
         };
 }
 
-void Player::Update(GameTime gameTime) {
+void Player::update(GameTime gameTime) {
 
         // DEBUG
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
@@ -56,34 +56,34 @@ void Player::Update(GameTime gameTime) {
 
         // Check if left or right key is pressed
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                faceDirection = FaceDirection::Left;
+                faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                    changeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                     position.x -= 0.1f;
                 } else {
-                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                    changeAnimation(AnimationType::ANIMATION_WALK, gameTime);
                     position.x -= 0.06f;
                 }
         }
 
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                faceDirection = FaceDirection::Right;
+                faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                    changeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                     position.x += 0.1f;
                 } else {
-                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                    changeAnimation(AnimationType::ANIMATION_WALK, gameTime);
                     position.x += 0.04f;
                 }
         }
 
         else {
-                ChangeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
+                changeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
         }
 
-        TextureEntry& robe = *asset_manager.GetRobeFrame_ptr(robeLibrary, frame());
+        TextureEntry& robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
         robeQuad[0].texCoords = robe.texQuad[0].texCoords;
         robeQuad[1].texCoords = robe.texQuad[1].texCoords;
         robeQuad[2].texCoords = robe.texQuad[2].texCoords;
@@ -94,7 +94,7 @@ void Player::Update(GameTime gameTime) {
         robeQuad[2].position = robe.texQuad[2].position + position;
         robeQuad[3].position = robe.texQuad[3].position + position;
 
-        TextureEntry& staff = *asset_manager.GetStaffFrame_ptr(staffLibrary, frame());
+        TextureEntry& staff = *asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame());
         staffQuad[0].texCoords = staff.texQuad[0].texCoords;
         staffQuad[1].texCoords = staff.texQuad[1].texCoords;
         staffQuad[2].texCoords = staff.texQuad[2].texCoords;
@@ -105,32 +105,32 @@ void Player::Update(GameTime gameTime) {
         staffQuad[2].position = staff.texQuad[2].position + position;
         staffQuad[3].position = staff.texQuad[3].position + position;
 
-        health.Update(gameTime);
+        health.update(gameTime);
 }
 
-void Player::LateUpdate(GameTime gameTime) {
+void Player::lateUpdate(GameTime gameTime) {
 
-        health.LateUpdate(gameTime);
-        TickAnimation(gameTime);
+        health.lateUpdate(gameTime);
+        tickAnimation(gameTime);
 }
 
-void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
+void Player::draw(sf::RenderWindow& window, GameTime gameTime) {
 
         window.draw(
                 robeQuad,
-                &asset_manager.GetRobeFrame_ptr(robeLibrary, frame())->texture
+                &asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame())->texture
         );
 
         window.draw(
                 staffQuad,
-                &asset_manager.GetStaffFrame_ptr(staffLibrary, frame())->texture
+                &asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame())->texture
         );
 }
 
-void Player::TickAnimation(GameTime gameTime) {
-        IAnimate::TickAnimation(gameTime);
+void Player::tickAnimation(GameTime gameTime) {
+        IAnimate::tickAnimation(gameTime);
 
-        if (sequences[current_animation].OnFrame != nullptr)
-                sequences[current_animation].OnFrame(current_animation_frame);
+        if (sequences[current_animation].onFrame != nullptr)
+                sequences[current_animation].onFrame(current_animation_frame);
 }
 

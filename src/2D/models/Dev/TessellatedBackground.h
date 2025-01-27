@@ -23,9 +23,9 @@ public:
     sf::Vector2f position = {0, 0};
     float detailOpacity = 0;
 
-    void Draw(sf::RenderWindow& window, GameTime gameTime) override;
-    void Update(GameTime gameTime) override;
-    void LateUpdate(GameTime gameTime) override;
+    void draw(sf::RenderWindow& window, GameTime gameTime) override;
+    void update(GameTime gameTime) override;
+    void lateUpdate(GameTime gameTime) override;
     sf::Vector2f clampToPixel(sf::Vector2f position);
 
 };

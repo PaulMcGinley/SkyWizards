@@ -18,14 +18,14 @@ void Game::Run() {
 
 
         // All scenes are managed by the scene manager and are added here
-        scene_manager.addScene(SceneType::Splash, std::make_shared<SplashScreen>());
-        scene_manager.addScene(SceneType::Dev, std::make_shared<DevScene>());
-        scene_manager.addScene(SceneType::FirstMenu, std::make_shared<MainMenu>());
+        scene_manager.addScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());
+        scene_manager.addScene(SceneType::SCENE_DEV, std::make_shared<DevScene>());
+        scene_manager.addScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
 
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes
         // The assets for this scene are kept as external files to prevent decompression delays
-        scene_manager.changeScene(SceneType::Splash);
+        scene_manager.changeScene(SceneType::SCENE_SPLASH);
 
 
         // Main game loop
@@ -37,13 +37,13 @@ void Game::Run() {
                                 game_manager.window->close();
                 }
 
-                InputManager::getInstance().Update();
+                InputManager::getInstance().update();
 
                 game_time += (clock.restart().asSeconds());
-                scene_manager.Update(game_time);
+                scene_manager.update(game_time);
                 game_manager.window->clear(sf::Color(255,255,255,255));
-                scene_manager.Draw(*game_manager.window, game_time);
+                scene_manager.draw(*game_manager.window, game_time);
                 game_manager.window->display();
-                scene_manager.LateUpdate(game_time);
+                scene_manager.lateUpdate(game_time);
         }
 }

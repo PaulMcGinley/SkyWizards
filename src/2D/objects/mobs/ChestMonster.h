@@ -18,13 +18,13 @@ public:
     ChestMonster();
 
     sf::VertexArray texQuad{sf::Quads, 4};
-    void Update(GameTime gameTime) override;
-    void LateUpdate(GameTime gameTime) override;
-    void Draw(sf::RenderWindow& window, GameTime gameTime) override;
-    FaceDirection faceDirection = FaceDirection::Left;
+    void update(GameTime gameTime) override;
+    void lateUpdate(GameTime gameTime) override;
+    void draw(sf::RenderWindow& window, GameTime gameTime) override;
+    FaceDirection faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
     sf::Vector2f position = {0, 0};
     int frame() {
-        return sequences[current_animation].StartFrame + current_animation_frame + faceDirection;
+        return sequences[current_animation].startFrame + current_animation_frame + faceDirection;
     }
 
 private:

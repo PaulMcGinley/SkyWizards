@@ -12,16 +12,19 @@ public:
         IScene() = default;
         virtual ~IScene() = default;
 
-        bool Initialized = false;
+        [[nodiscard]] bool IsInitialized() const { return initialized; }
 
-        void Update(GameTime gameTime) override = 0;
-        void LateUpdate(GameTime gameTime) override = 0;
-        void Draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
+        void update(GameTime gameTime) override = 0;
+        void lateUpdate(GameTime gameTime) override = 0;
+        void draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
 
-        virtual void Scene_Init() = 0;
-        virtual void Scene_Destroy() = 0;
-        virtual void OnScene_Active() = 0;
-        virtual void OnScene_Deactive() = 0;
+        virtual void initializeScene() { initialized = true; };
+        virtual void destroyScene() = 0;
+        virtual void onScene_Active() = 0;
+        virtual void onScene_Deactivate() = 0;
+
+private:
+        bool initialized = false;
 };
 
 #endif //ISCENE_H

@@ -6,9 +6,9 @@
 #define FACEDIRECTION_H
 
 enum FaceDirection {
-    Left = 0,
-    ChestMonsterRight = 199,
-    Right = 275
+    FACE_DIRECTION_LEFT = 0,
+    FACE_DIRECTION_RIGHT_CHESTMONSTER = 199,
+    FACE_DIRECTION_RIGHT_GENERIC = 275
 };
 
 #endif //FACEDIRECTION_H

@@ -13,118 +13,131 @@
 
 class Health final : public IDraw, public IUpdate {
 public:
-    Health(const float _scale, const sf::Vector2f _position) {
-        scale = _scale;
-        position = _position;
-    }
+        Health(const float _scale, const sf::Vector2f _position)
+                : scale(_scale)
+                , position(_position) { }
 
-    int maxHealth = 80;         // Maximum health
-    int heartCount() const {
-        return static_cast<int>(std::ceil(static_cast<float>(maxHealth) / 4));
-    }
-    int currentHealth = 80;     // Current health
-    int targetHealth = 80;       // Target health to animate to
-    float nextUpdateTime = 0;   // Next time the health should be updated
-
-    void Damage(const int amount) {
-        if (targetHealth < amount)
-            targetHealth = 0;
-        else
-            targetHealth -= amount;
-    }
-
-    void Heal(const int amount) {
-        if (targetHealth + amount > maxHealth)
-            targetHealth = maxHealth;
-        else
-            targetHealth += amount;
-    }
-
-    void Update(const GameTime gameTime) override {
-        if (targetHealth == currentHealth)
-            return;
-
-        if (gameTime.TimeElapsed(nextUpdateTime)) {
-            if (targetHealth > currentHealth)
-                currentHealth++;
-            else
-                currentHealth--;
-
-            nextUpdateTime = gameTime.NowAddMilliseconds(200);
+        [[nodiscard]] int getHeartCount() const {
+                return static_cast<int>(std::ceil(static_cast<float>(maximum_health) / 4)); // Divide by 4 to get the number of hearts, ceil(ing) to round up
         }
-    }
 
-    void LateUpdate(GameTime gameTime) override {
-        // DEV CODE
-        // if (currentHealth == 0)
-        //     targetHealth = maxHealth;
-        //
-        // if (currentHealth == maxHealth)
-        //     targetHealth = 0;
-    }
+        // Apply damage
+        void damage(const int amount) {
 
-    void Draw(sf::RenderWindow &window, GameTime gameTime) override {
+                // Deduct the damage from the target health
+                target_health -= amount;
 
-        // Calculate heart texture size, used for positioning and scaling
-        // TODO: Refactor this into the constructor
-        const sf::Vector2f heartSize = {
-            static_cast<float> (asset_manager.GetHeartImage_ptr(0)->texture.getSize().x),
-            static_cast<float> (asset_manager.GetHeartImage_ptr(0)->texture.getSize().y)
-        };
-
-        // Do the math
-        const int hearts = heartCount();
-
-        // Loop through each heart in reverse order to determine its state (full, three-quarters, half, quarter, or empty).
-        // The `heartIndex` is set based on the current health, where each heart represents 4 health points.
-        // If the current health is greater than or equal to the value of the heart's position (i * 4 + n),
-        // the `heartIndex` is set to the corresponding value (4, 3, 2, or 1).
-        // TODO: Maybe there is a better way to do this
-        for (int i = hearts - 1; i >= 0; i--) {
-            int heartIndex = 0;
-            if (i * 4 + 4 <= currentHealth)
-                heartIndex = 4;
-            else if (i * 4 + 3 <= currentHealth)
-                heartIndex = 3;
-            else if (i * 4 + 2 <= currentHealth)
-                heartIndex = 2;
-            else if (i * 4 + 1 <= currentHealth)
-                heartIndex = 1;
-
-            sf::Sprite heartSprite;
-            heartSprite.setTexture(asset_manager.GetHeartImage_ptr(heartIndex)->texture);
-            heartSprite.setScale(scale, scale);
-
-            // Apply opacity gradient only to empty hearts (heartIndex == 0)
-            if (heartIndex == 0) {
-                // Calculate opacity gradient
-                float opacityPercentage = minOpacity + (maxOpacity - minOpacity) * (float(i) / (hearts - 1));
-                int alphaValue = static_cast<int>((opacityPercentage / 100.0f) * 255.0f);  // Convert to alpha (0-255)
-
-                heartSprite.setColor(sf::Color(255, 255, 255, 255 - alphaValue));  // Set gradient opacity
-            } else {
-                heartSprite.setColor(sf::Color(255, 255, 255, 255));  // Full opacity for non-empty hearts
-            }
-
-            // Position heart based on row and column (max 10 per row)
-            const int row = i / heartsPerRow;
-            const int col = i % heartsPerRow;
-            heartSprite.setPosition(position.x + col * heartSize.x * scale,
-                                    position.y - (row * 5 * scale) + row * heartSize.y * scale);
-
-            window.draw(heartSprite);
+                // Clamp the targetHealth between 0 and the maximum health
+                target_health = std::clamp(target_health, 0, maximum_health);
         }
-    }
+
+        // Apply healing
+        void heal(const int amount) {
+
+                // Add the healing to the target health
+                target_health += amount;
+
+                // Clamp the targetHealth between 0 and the maximum health
+                target_health = std::clamp(target_health, 0, maximum_health);
+        }
+
+        void update(const GameTime gameTime) override {
+
+                // If the target health is equal to the current health, return
+                if (target_health == current_health)
+                        return;
+
+                // If the time has elapsed, update the health
+                if (gameTime.TimeElapsed(next_update_time)) {
+
+                        if (target_health > current_health) {
+                                current_health++;
+                        } else {
+                                current_health--;
+                        }
+
+                        next_update_time = gameTime.NowAddMilliseconds(update_interval);
+                }
+        }
+
+        void lateUpdate(GameTime gameTime) override {
+                // DEV CODE
+                // if (current_health == 0)
+                //     target_health = maximum_health;
+                //
+                // if (current_health == maximum_health)
+                //     target_health = 0;
+        }
+
+        void draw(sf::RenderWindow &window, GameTime gameTime) override {
+
+                // Calculate heart texture size, used for positioning and scaling
+                // TODO: Refactor this into the constructor
+                const sf::Vector2f heart_size = {
+                        static_cast<float> (asset_manager.getHeartImage_ptr(0)->texture.getSize().x),
+                        static_cast<float> (asset_manager.getHeartImage_ptr(0)->texture.getSize().y)
+                    };
+
+                // Do the math
+                const int heart_count = getHeartCount();
+
+                // Loop through each heart in reverse order to determine its state (full, three-quarters, half, quarter, or empty).
+                // The `heartIndex` is set based on the current health, where each heart represents 4 health points.
+                // If the current health is greater than or equal to the value of the heart's position (i * 4 + n),
+                // the `heartIndex` is set to the corresponding value (4, 3, 2, or 1).
+                // TODO: Maybe there is a better way to do this
+                for (int i = heart_count - 1; i >= 0; i--) {
+                        int heart_index = 0;
+                        if (i * 4 + 4 <= current_health)
+                                heart_index = 4;
+                        else if (i * 4 + 3 <= current_health)
+                                heart_index = 3;
+                        else if (i * 4 + 2 <= current_health)
+                                heart_index = 2;
+                        else if (i * 4 + 1 <= current_health)
+                                heart_index = 1;
+
+                        sf::Sprite heart_sprite;
+                        heart_sprite.setTexture(asset_manager.getHeartImage_ptr(heart_index)->texture);
+                        heart_sprite.setScale(scale, scale);
+
+                        // Apply opacity gradient only to empty hearts (heartIndex == 0)
+                        if (heart_index == 0) {
+                                // Calculate opacity gradient
+                                float opacity_percentage = minimum_opacity + (maximum_opacity - minimum_opacity) * (float(i) / (heart_count - 1));
+                                int alpha_value = static_cast<int>((opacity_percentage / 100.0f) * 255.0f);  // Convert to alpha (0-255)
+
+                                heart_sprite.setColor(sf::Color(255, 255, 255, 255 - alpha_value));  // Set gradient opacity
+                        } else {
+                                heart_sprite.setColor(sf::Color(255, 255, 255, 255));  // Full opacity for non-empty hearts
+                        }
+
+                        // Position heart based on row and column (max 10 per row)
+                        const int row_count = i / hearts_per_row;
+                        const int column_count = i % hearts_per_row;
+                        heart_sprite.setPosition(position.x + column_count * heart_size.x * scale,
+                                                position.y - (row_count * 5 * scale) + row_count * heart_size.y * scale);
+
+                        window.draw(heart_sprite);
+                }
+        }
 
 private:
-    const int heartsPerRow = 10;        // Limit to 10 hearts per row
+        int maximum_health = 80;            // Maximum health
+        int current_health = 80;       // Current health
+        int target_health = 80;        // Target health to animate to
+        float next_update_time = 0;     // Next time the health should be updated
 
-    // Define opacity range for gradient
-    const float minOpacity = 5.0f;
-    const float maxOpacity = 90.0f;
+        const int hearts_per_row = 10;    // Limit to 10 hearts per row
 
-    float scale = 1;
-    sf::Vector2f position = {0, 0};// Screen position of the health bar
+        // Define opacity range for gradient
+        const float minimum_opacity = 5.0f;
+        const float maximum_opacity = 90.0f;
+
+        float scale = 1;
+        sf::Vector2f position = {0, 0}; // Screen position of the health bar
+
+        float update_interval = 25;     // Time between health updates (in ms)
 };
 
 #endif //HEALTH_H

@@ -21,28 +21,28 @@ public:
         AssetManager(const AssetManager&) = delete;
         void operator=(const AssetManager&) = delete;
 
-        TextureEntry* GetRobeFrame_ptr(const int lib, const int cell) {
-                return &Robes[lib].entries[cell];
+        TextureEntry* getRobeFrame_ptr(const int lib, const int cell) {
+                return &robes[lib].entries[cell];
         }
-        TextureEntry* GetStaffFrame_ptr(const int lib, const int cell) {
-                return &Staffs[lib].entries[cell];
+        TextureEntry* getStaffFrame_ptr(const int lib, const int cell) {
+                return &staffs[lib].entries[cell];
         }
-        TextureEntry* GetChestMonsterFrame_ptr(const int cell) {
-                return &ChestMonster.entries[cell];
+        TextureEntry* getChestMonsterFrame_ptr(const int cell) {
+                return &chestMonster.entries[cell];
         }
-        TextureEntry* GetHeartImage_ptr(const int cell) {
-                return &Hearts.entries[cell];
+        TextureEntry* getHeartImage_ptr(const int cell) {
+                return &hearts.entries[cell];
         }
-        TextureEntry* GetProgramUseImage_ptr(const int cell) {
-                return &ProgramUsage.entries[cell];
+        TextureEntry* getProgramUseImage_ptr(const int cell) {
+                return &programUsage.entries[cell];
         }
 
-        std::vector<TextureLibrary> Robes;
-        std::vector<TextureLibrary> Staffs;
-        TextureLibrary ChestMonster = TextureLibrary("");
-        TextureLibrary Hearts = TextureLibrary("");
-        TextureLibrary BackgroundIslands = TextureLibrary("");
-        TextureLibrary ProgramUsage = TextureLibrary("");
+        std::vector<TextureLibrary> robes;
+        std::vector<TextureLibrary> staffs;
+        TextureLibrary chestMonster = TextureLibrary("");
+        TextureLibrary hearts = TextureLibrary("");
+        TextureLibrary backgroundIslands = TextureLibrary("");
+        TextureLibrary programUsage = TextureLibrary("");
 
 private:
         // Private constructor to prevent instancing

@@ -11,83 +11,115 @@
 
 class SceneManager : public IUpdate, public IDraw {
 public:
-  // Method to get the instance of the singleton
-  static SceneManager& getInstance() {
-    static SceneManager instance; // Guaranteed to be destroyed.
-    // Instantiated on first use.
-    return instance;
-  }
-
-  // Delete copy constructor and assignment operator to prevent copies
-  SceneManager(const SceneManager&) = delete;
-  void operator=(const SceneManager&) = delete;
-
-  // Method to add a scene
-  void addScene(const SceneType name, std::shared_ptr<IScene> scene) {
-    scenes[name] = std::move(scene); // Move the scene into the container
-
-    scenes[name]->Scene_Init();
-  }
-        void initScene(const SceneType name) {
-                scenes[name]->Scene_Init();
+        // Method to get the instance of the singleton
+        static SceneManager& getInstance() {
+                static SceneManager instance; // Guaranteed to be destroyed.
+                // Instantiated on first use.
+                return instance;
         }
 
-  // Method to get a scene
-  std::shared_ptr<IScene> getScene(const SceneType name) {
-    return scenes[name];
-  }
+        // Delete copy constructor and assignment operator to prevent copies
+        SceneManager(const SceneManager&) = delete;
+        void operator=(const SceneManager&) = delete;
 
-  // Method to remove a scene
-  void removeScene(const SceneType name) {
-    scenes[name]->Scene_Destroy();
-    scenes.erase(name);
-  }
+        // Add scene to the scene manager map
+        void addScene(const SceneType name, std::shared_ptr<IScene> scene) {
 
-  // Method to change the current scene
-  void changeScene(const SceneType name) {
-    if (!scenes.contains(name))
-      return;
+                // Move the scene into the map
+                scenes[name] = std::move(scene);
 
-    if (currentScene)
-      currentScene->OnScene_Deactive();
+                // Initialize the scene
+                initializeScene(name);
+        }
 
-    currentScene = scenes[name];
+        // Initialize a scene by name (enum SceneType)
+        void initializeScene(const SceneType name) {
 
-          // TODO: Make window a global or pass it to here
-          // if (currentScene->Initialized == false) {
-          //         currentScene->Scene_Init(/* window here */);
-          //         currentScene->Initialized = true;
-          // }
-    currentScene->OnScene_Active();
-  }
+                // Check if the scene exists
+                if (!scenes.contains(name))
+                        return;
 
-  // Method to get the current scene
-  std::shared_ptr<IScene> getCurrentScene() {
-    return currentScene;
-  }
+                // Check if the scene is already initialized
+                if (scenes[name]->IsInitialized())
+                        return;
 
-  void Update(GameTime gameTime) override {
-    if (currentScene)
-      currentScene->Update(gameTime);
-  }
+                // Initialize the scene
+                scenes[name]->initializeScene();
+        }
 
-  void LateUpdate(GameTime gameTime) override {
-    if (currentScene)
-      currentScene->LateUpdate(gameTime);
-  }
+        // Get a scene by name (enum SceneType) as a shared pointer
+        std::shared_ptr<IScene> getScene(const SceneType name) {
+                return scenes[name];
+        }
 
-  void Draw(sf::RenderWindow& window, GameTime gameTime) override {
-    if (currentScene)
-      currentScene->Draw(window, gameTime);
-  }
+        // Remove a scene by name (enum SceneType)
+        void removeScene(const SceneType name) {
+
+                // Check if the scene exists
+                if (!scenes.contains(name))
+                        return;
+
+                // Destroy the scene
+                scenes[name]->destroyScene();
+
+                // Remove the scene from the map
+                scenes.erase(name);
+        }
+
+        // Change the current scene by name (enum SceneType)
+        void changeScene(const SceneType name) {
+
+                // Check if the scene exists
+                if (!scenes.contains(name))
+                        return;
+
+                // Check if there is an active scene, then deactivate it
+                if (currentScene)
+                        currentScene->onScene_Deactivate();
+
+                // Set the current scene to the new scene
+                currentScene = scenes[name];
+
+                // Activate the new scene
+                currentScene->onScene_Active();
+        }
+
+        // Get the current scene as a shared pointer
+        std::shared_ptr<IScene> getCurrentScene() {
+                return currentScene;
+        }
+
+        // Update the current scene
+        void update(const GameTime game_time) override {
+
+                // Check if there is a current scene, then call the update
+                if (currentScene)
+                        currentScene->update(game_time);
+        }
+
+        // Late update the current scene
+        void lateUpdate(const GameTime game_time) override {
+
+                // Check if there is a current scene, then call the late update
+                if (currentScene)
+                        currentScene->lateUpdate(game_time);
+        }
+
+        // Draw the current scene
+        void draw(sf::RenderWindow& window, const GameTime game_time) override {
+
+                // Check if there is a current scene, then call the draw
+                if (currentScene)
+                        currentScene->draw(window, game_time);
+        }
 
 private:
-  // Private constructor to prevent instancing
-  SceneManager() = default;
+        // Private constructor to prevent instancing
+        SceneManager() = default;
 
-  // Container to hold scenes
-  std::unordered_map<SceneType, std::shared_ptr<IScene>> scenes;
+        // Map to hold scenes <SceneType, IScene>
+        std::unordered_map<SceneType, std::shared_ptr<IScene>> scenes;
 
-  // Pointer to the current scene
-  std::shared_ptr<IScene> currentScene;
+        // Pointer to the current scene
+        std::shared_ptr<IScene> currentScene;
 };

@@ -13,13 +13,13 @@ class MainMenu : public IScene {
 public:
         // MainMenu();
 
-        void Update(GameTime gameTime) override;
-        void LateUpdate(GameTime gameTime) override;
-        void Draw(sf::RenderWindow& window, GameTime gameTime) override;
-        void Scene_Init() override;
-        void Scene_Destroy() override;
-        void OnScene_Active() override;
-        void OnScene_Deactive() override;
+        void update(GameTime gameTime) override;
+        void lateUpdate(GameTime gameTime) override;
+        void draw(sf::RenderWindow& window, GameTime gameTime) override;
+        void initializeScene() override;
+        void destroyScene() override;
+        void onScene_Active() override;
+        void onScene_Deactivate() override;
 
 private:
         sf::VertexArray backgroundQuad{sf::Quads, 4};

@@ -11,8 +11,8 @@ class IUpdate {
 public:
     virtual ~IUpdate() = default;
 
-    virtual void Update(GameTime gameTime) = 0;
-    virtual void LateUpdate(GameTime gameTime) = 0;
+    virtual void update(GameTime gameTime) = 0;
+    virtual void lateUpdate(GameTime gameTime) = 0;
 };
 
 #endif //IUPDATE_H

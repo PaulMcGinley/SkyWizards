@@ -15,6 +15,7 @@ public:
         GameManager(const GameManager&) = delete;
         void operator=(const GameManager&) = delete;
 
+        // Window title
         const std::string game_name = "Legend of Sky Wizards - But from the side";
 
         // Pointer to the window object
@@ -34,7 +35,7 @@ public:
         }
 
         // Calculate the resolution ratio and return it as a float
-        [[nodiscard]] float resolutionRatio() const {
+        [[nodiscard]] float getResolutionRatio() const {
                 return static_cast<float>(resolution.x) / static_cast<float>(resolution.y);
         }
 
@@ -97,7 +98,7 @@ public:
 
         // ********** Getters **********
 
-        [[nodiscard]] bool isVsync() const {
+        [[nodiscard]] bool isVSyncEnabled() const {
                 return vsync;
         }
 

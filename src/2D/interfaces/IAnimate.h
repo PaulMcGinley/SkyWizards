@@ -12,23 +12,24 @@
 
 class IAnimate {
 public:
-    virtual ~IAnimate() = default;
+        virtual ~IAnimate() = default;
 
-    // Map of animation sequences, populated by the entity
-    std::map<AnimationType, AniSequence> sequences;
+        // Map of animation sequences, populated by the entity
+        std::map<AnimationType, AnimationSequence> sequences;
 
-    // Current animation sequence of the entity
-    AnimationType current_animation = AnimationType::ANIMATION_IDLE;
+        // Current animation sequence of the entity
+        AnimationType current_animation = AnimationType::ANIMATION_IDLE;
 
-    // Current frame of the animation sequence
-    int current_animation_frame = 0;
+        // Current frame of the animation sequence
+        int current_animation_frame = 0;
 
-    // Time until the next frame of the animation
-    float next_frame_time = 0;
-    float next_animation_time = 0; // Time until the next animation can be played
+        // Time until the next frame of the animation
+        float next_frame_time = 0;
+        // Time until the next animation can be played
+        float next_animation_time = 0;
 
-    virtual void TickAnimation(GameTime gameTime);
-    bool ChangeAnimation(AnimationType next_animation, GameTime GAME_TIME, bool force_new_animation = false);
+        virtual void tickAnimation(GameTime gameTime);
+        bool changeAnimation(AnimationType next_animation, GameTime game_time, bool force_new_animation = false);
 };
 
 #endif //IANIMATE_H

@@ -17,25 +17,30 @@
 
 class Island : public IUpdate, public IDraw, public IAnimate {
 public:
-    Island(TextureLibrary &library, int startIndex, int length, int tick, sf::Vector2f position) {
-        this->library = library;
-        this->position = position;
-        sequence = AniSequence(startIndex, length, tick);
-        sprite.setTexture(library.GetTexture(AnimationType::Island));
-        sprite.setPosition(position);
-    }
-    ~Island() override = default;
-    sf::Vector2f position;
-    sf::Sprite sprite;
-    void Update(GameTime gameTime) override {
-        // Middle image in animation is front, eather shide should have an equal amount of frames
-        // These frames should be drawn based on the middle of the image being centered on screen
-    }
-    void Draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
-    void LateUpdate(GameTime gameTime) override {
-        TickAnimation(gameTime);
-    }
+        Island(TextureLibrary &library, int startIndex, int length, int tick, sf::Vector2f position) {
+                this->library = library;
+                this->position = position;
+                sequence = AnimationSequence(startIndex, length, tick);
+                sprite.setTexture(library.GetTexture(AnimationType::Island));
+                sprite.setPosition(position);
+        }
+        ~Island() override = default;
 
+
+        void update(GameTime gameTime) override {
+                // Middle image in animation is front, eather shide should have an equal amount of frames
+                // These frames should be drawn based on the middle of the image being centered on screen
+        }
+
+        void draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
+
+        void lateUpdate(GameTime gameTime) override {
+                tickAnimation(gameTime);
+        }
+
+private:
+        sf::Vector2f position;
+        sf::Sprite sprite;
 };
 
 #endif //ISLAND_H

@@ -8,7 +8,7 @@
 
 // Move to the next frame in the animation sequence
 // If we reach the end of the sequence, loop back to the start
-void IAnimate::TickAnimation(const GameTime gameTime) {
+void IAnimate::tickAnimation(const GameTime gameTime) {
 
         if (!gameTime.TimeElapsed(next_frame_time))
                 return;
@@ -17,14 +17,14 @@ void IAnimate::TickAnimation(const GameTime gameTime) {
         current_animation_frame++;
 
         // Loop back to the start of the sequence if we reach the end
-        if (current_animation_frame >= sequences[current_animation].Length)
+        if (current_animation_frame >= sequences[current_animation].length)
                 current_animation_frame = 0;
 
-        next_frame_time = gameTime.NowAddMilliseconds(sequences[current_animation].Interval);
+        next_frame_time = gameTime.NowAddMilliseconds(sequences[current_animation].interval);
 }
 
 // Change the current animation sequence
-bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTime game_time, const bool force_new_animation) {
+bool IAnimate::changeAnimation(const AnimationType next_animation, const GameTime game_time, const bool force_new_animation) {
 
         if (!game_time.TimeElapsed(next_animation_time) && !force_new_animation)
                 return false;
@@ -37,10 +37,10 @@ bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTim
         current_animation_frame = 0;
         next_frame_time = 0;
 
-        float newNextAniTime = game_time.NowAddMilliseconds(sequences[current_animation].Interval * sequences[current_animation].Length);
+        const float new_next_animation_time = game_time.NowAddMilliseconds(sequences[current_animation].interval * sequences[current_animation].length);
 
         if (next_animation == AnimationType::ANIMATION_ATTACK) {
-                next_animation_time = newNextAniTime;
+                next_animation_time = new_next_animation_time;
         }
 
         return true;

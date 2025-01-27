@@ -4,45 +4,63 @@
 
 #include "BackgroundSceneryObject.h"
 
-BackgroundSceneryObject::BackgroundSceneryObject(TextureLibrary& library, int startIndex, int length, int tick, sf::Vector2f position) : library(library) {
+BackgroundSceneryObject::BackgroundSceneryObject(TextureLibrary& library, const int start_index, const int length, const int tick, const sf::Vector2f position)
+        : library(library) {
 
-    this->position = position;
-    sequences =  {
-        {AnimationType::ANIMATION_IDLE, {startIndex, length, tick, nullptr, nullptr}}
-    };
-    ChangeAnimation(AnimationType::ANIMATION_IDLE, GameTime(), true);
+        // Set the position of the object in the world
+        this->position = position;
 
-    // Load the shader
-    if (!blurShader.loadFromFile("resources/shaders/blur.frag", sf::Shader::Fragment)) {
-        // Handle error
-    }
-    // When the scene is created
-    // Set shader parameters
-    blurShader.setUniform("texture", sf::Shader::CurrentTexture);
-    blurShader.setUniform("blur_radius", blurRadius); // Example blur radius
+        // Set the idle animation
+        // Background objects will only use idle for their animation sequence as it is the default animation
+        sequences =  {
+                {AnimationType::ANIMATION_IDLE, {start_index, length, tick, nullptr, nullptr, nullptr}}
+        };
+
+        // Set the current animation of the object to idle
+        changeAnimation(AnimationType::ANIMATION_IDLE, GameTime(), true);
+
+        // Load the shader
+        if (blurShader.loadFromFile("resources/shaders/blur.frag", sf::Shader::Fragment)) {
+                shaderLoaded = true;
+        }
+
+        // Set the shader properties
+        blurShader.setUniform("texture", sf::Shader::CurrentTexture); // Set the texture to for the shader to apply to
+        blurShader.setUniform("blur_radius", blurRadius); // Set the blur radius property of the shader
 }
 
-void BackgroundSceneryObject::Update(GameTime gameTime) {
-    //blurRadius += 0.010f;
-    //blurShader.setUniform("blur_radius", blurRadius); // Example blur radius
+void BackgroundSceneryObject::update(GameTime game_time) {
 
-    float drawX = position.x + library.entries[current_animation_frame].xOffset;
-    float drawY = position.y + library.entries[current_animation_frame].yOffset;
-    sprite.setPosition(sf::Vector2f(drawX, drawY));
+        // Calculate the frame index
+        const int frame_index = sequences[current_animation].startFrame + current_animation_frame;
 
-    const int frameIndex = sequences[current_animation].StartFrame + current_animation_frame;
-    sprite.setTexture(library.entries[frameIndex].texture);
+        // Calculate the position of the object in the world
+        const float drawX = position.x + library.entries[frame_index].xOffset;
+        const float drawY = position.y + library.entries[frame_index].yOffset;
 
+        // Set the position of the sprite
+        sprite.setPosition(sf::Vector2f(drawX, drawY));
 
-    IAnimate::TickAnimation(gameTime);
+        // Set the texture of the sprite
+        sprite.setTexture(library.entries[frame_index].texture, true);
+
+        // Call the base class update method which handles the tick of the animation
+        IAnimate::tickAnimation(game_time);
 }
 
-void BackgroundSceneryObject::LateUpdate(GameTime gameTime) {
-    // Late update the background scenery object
+void BackgroundSceneryObject::lateUpdate(GameTime gameTime) {
+        // Late update the background scenery object
 }
 
-void BackgroundSceneryObject::Draw(sf::RenderWindow& window, GameTime gameTime) {
+void BackgroundSceneryObject::draw(sf::RenderWindow& window, GameTime gameTime) {
 
-    window.draw(sprite, &blurShader);
+        // Check if the shader has been loaded and draw based on that
+        if (shaderLoaded) {
+                // Draw the sprite with the blur shader
+                window.draw(sprite, &blurShader);
+        } else {
+                // Draw the sprite without the blur shader
+                window.draw(sprite);
+        }
 }
 

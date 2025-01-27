@@ -20,24 +20,28 @@ class AssetManager;
 
 class Player final : public IAnimate, public IUpdate, public IDraw {
 public:
-    Player();
+        Player();
 
-    int robeLibrary = 2;
-    sf::VertexArray robeQuad{sf::Quads, 4};
-    int staffLibrary = 0;
-    sf::VertexArray staffQuad{sf::Quads, 4};
-    void Update(GameTime gameTime) override;
-    void LateUpdate(GameTime gameTime) override;
-    void Draw(sf::RenderWindow& window, GameTime gameTime) override;
-    FaceDirection faceDirection = FaceDirection::Right;
-    sf::Vector2f position = {0, 0};
-    int frame() {
-        return sequences[current_animation].StartFrame + current_animation_frame + faceDirection;
-    }
+        int robeLibrary = 2;
+        sf::VertexArray robeQuad{sf::Quads, 4};
+
+        int staffLibrary = 0;
+        sf::VertexArray staffQuad{sf::Quads, 4};
+
+        void update(GameTime gameTime) override;
+        void lateUpdate(GameTime gameTime) override;
+        void draw(sf::RenderWindow& window, GameTime gameTime) override;
+        void tickAnimation(GameTime gameTime) override;
+
+        FaceDirection faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
+        sf::Vector2f position = {0, 0};
+
+        int getCurrentFrame() {
+                return sequences[current_animation].startFrame + current_animation_frame + faceDirection;
+        }
 
         Health health = Health(2.0f, {25, 25});
 
-    void TickAnimation(GameTime gameTime) override;
 };
 
 

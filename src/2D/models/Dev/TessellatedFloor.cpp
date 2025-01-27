@@ -19,7 +19,7 @@ TessellatedFloor::TessellatedFloor() {
 
 }
 
-void TessellatedFloor::Draw(sf::RenderWindow& window, GameTime gameTime) {
+void TessellatedFloor::draw(sf::RenderWindow& window, GameTime gameTime) {
 
 
     // sf::Shader shader;
@@ -33,13 +33,13 @@ void TessellatedFloor::Draw(sf::RenderWindow& window, GameTime gameTime) {
     window.draw(highlightSprite);
 }
 
-void TessellatedFloor::Update(GameTime gameTime) {
+void TessellatedFloor::update(GameTime gameTime) {
     // auto c =  clampToPixel(mainSprite.getPosition());
     // mainSprite.setPosition(c);
     // highlightSprite.setPosition(c);
 }
 
-void TessellatedFloor::LateUpdate(GameTime gameTime) {
+void TessellatedFloor::lateUpdate(GameTime gameTime) {
 }
 
 sf::Vector2f TessellatedFloor::clampToPixel(sf::Vector2f position) {

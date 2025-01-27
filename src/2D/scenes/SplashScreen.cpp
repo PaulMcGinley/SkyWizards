@@ -10,7 +10,7 @@ SplashScreen::SplashScreen() {
     // Constructor
 }
 
-void SplashScreen::Update(GameTime gameTime) {
+void SplashScreen::update(GameTime gameTime) {
 
     std::string exeDir = getExecutableDirectory();
 
@@ -18,10 +18,10 @@ void SplashScreen::Update(GameTime gameTime) {
     if (!gameTime.TimeElapsed(1)) // 1 second
         return;
 
-    if (asset_manager.Robes.empty()) {
-        asset_manager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobeBlue.lib"));
-        asset_manager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobeGreen.lib"));
-        asset_manager.Robes.push_back(TextureLibrary(exeDir + "/resources/RobePurple.lib"));
+    if (asset_manager.robes.empty()) {
+        asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobeBlue.lib"));
+        asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobeGreen.lib"));
+        asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobePurple.lib"));
 
         CurrentValue+=3;
         text.setString("Loading Staff Textures...");
@@ -29,10 +29,10 @@ void SplashScreen::Update(GameTime gameTime) {
         return;
     }
 
-    if (asset_manager.Staffs.empty()) {
-        asset_manager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff1.lib"));
-        asset_manager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff2.lib"));
-        asset_manager.Staffs.push_back(TextureLibrary(exeDir + "/resources/Staff3.lib"));
+    if (asset_manager.staffs.empty()) {
+        asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff1.lib"));
+        asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff2.lib"));
+        asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff3.lib"));
 
         CurrentValue+=3;
         text.setString("Loading Chest Monster Textures...");
@@ -40,32 +40,32 @@ void SplashScreen::Update(GameTime gameTime) {
         return;
     }
 
-    if (asset_manager.ChestMonster.entries.empty()) {
-        asset_manager.ChestMonster = TextureLibrary(exeDir + "/resources/ChestMonster.lib");
+    if (asset_manager.chestMonster.entries.empty()) {
+        asset_manager.chestMonster = TextureLibrary(exeDir + "/resources/ChestMonster.lib");
         CurrentValue++;
         text.setString("Loading Heart Textures...");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
         return;
     }
 
-    if (asset_manager.Hearts.entries.empty()) {
-        asset_manager.Hearts = TextureLibrary(exeDir + "/resources/Hearts.lib");
+    if (asset_manager.hearts.entries.empty()) {
+        asset_manager.hearts = TextureLibrary(exeDir + "/resources/Hearts.lib");
         CurrentValue++;
         text.setString("Loading Background Islands Textures...");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
         return;
     }
 
-    if (asset_manager.BackgroundIslands.entries.empty()) {
-        asset_manager.BackgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
+    if (asset_manager.backgroundIslands.entries.empty()) {
+        asset_manager.backgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
         CurrentValue++;
         text.setString("Loading Game UI Elements!");
         text.setPosition((1920/2) - (text.getGlobalBounds().width/2), textYPoisition);
         return;
     }
 
-        if (asset_manager.ProgramUsage.entries.empty()) {
-                asset_manager.ProgramUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
+        if (asset_manager.programUsage.entries.empty()) {
+                asset_manager.programUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
                 CurrentValue++;
                 text.setString("Loading Complete!");
         }
@@ -76,7 +76,7 @@ void SplashScreen::Update(GameTime gameTime) {
     }
 }
 
-void SplashScreen::LateUpdate(GameTime gameTime) {
+void SplashScreen::lateUpdate(GameTime gameTime) {
     // Ensure we don't divide by zero
 
     if (loadCompltionTime < 0) {
@@ -85,12 +85,12 @@ void SplashScreen::LateUpdate(GameTime gameTime) {
     if (gameTime.TimeElapsed(loadCompltionTime)) {
         // Load the next scene
         std::cout << "Loading Complete" << std::endl;
-        SceneManager::getInstance().changeScene(SceneType::FirstMenu);
+        SceneManager::getInstance().changeScene(SceneType::SCENE_MAIN_MENU);
     }
 
 }
 
-void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
+void SplashScreen::draw(sf::RenderWindow& window, GameTime gameTime) {
     window.draw(backgroundQuad, &background); // Draw the background
     window.draw(progressQuad, &progress); // Draw the progress bar
     window.draw(frameQuad, &frame); // Draw the frame
@@ -98,7 +98,7 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
     window.draw(copyRightText); // Draw the copy right text
 }
 
-void SplashScreen::Scene_Init() {
+void SplashScreen::initializeScene() {
 
     std::string exeDir = getExecutableDirectory();
 
@@ -165,17 +165,19 @@ void SplashScreen::Scene_Init() {
     progressQuad[1].texCoords = {static_cast<float>(progress.getSize().x), 0};
     progressQuad[2].texCoords = {static_cast<float>(progress.getSize().x), static_cast<float>(progress.getSize().y)};
     progressQuad[3].texCoords = {0, static_cast<float>(progress.getSize().y)};
+
+        IScene::initializeScene(); // Call the parent class to set the scene as initialized
 }
 
-void SplashScreen::Scene_Destroy() {
+void SplashScreen::destroyScene() {
     // When the scene is finished
 }
 
-void SplashScreen::OnScene_Active() {
+void SplashScreen::onScene_Active() {
     // When the scene starts
 }
 
-void SplashScreen::OnScene_Deactive() {
+void SplashScreen::onScene_Deactivate() {
     // When the scene ends
 }
 

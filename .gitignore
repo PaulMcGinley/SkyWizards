@@ -1,5 +1,6 @@
 # IDE files
 .vscode/
+src/Utils/package/.*/
 
 # OS Rubbish
 **/*.DS_Store
