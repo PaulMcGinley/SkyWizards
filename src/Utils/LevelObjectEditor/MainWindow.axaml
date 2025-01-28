@@ -90,6 +90,7 @@
                                 <MenuItem Header="-" ToolTip.Tip="Remove selected layer" Click="mnuRemoveGraphicsLayer_Click"/>
                                 <MenuItem Header="▲" ToolTip.Tip="Move selected layer up" Click="mnuMoveGraphicsLayerUp_Click"/>
                                 <MenuItem Header="▼" ToolTip.Tip="Move selected layer down" Click="mnuMoveGraphicsLayerDown_Click"/>
+                                <MenuItem Header="ƒ×" ToolTip.Tip="Layer Effects" Click="mnuGraphicsLayerEffects_Click"/>
                             </Menu>
                             <ScrollViewer DockPanel.Dock="Top">
                                 <ListBox x:Name="LayersList" SelectionChanged="LayersList_SelectionChanged">
@@ -111,6 +112,7 @@
                                 <MenuItem Header="-" ToolTip.Tip="Remove selected layer" Click="mnuRemoveBoundaryLayer_Click"/>
                                 <MenuItem Header="▲" ToolTip.Tip="Move selected layer up"/>
                                 <MenuItem Header="▼" ToolTip.Tip="Move selected layer down"/>
+                                <MenuItem Header="ƒ°" ToolTip.Tip="Events"/>
                             </Menu>
                             <ScrollViewer DockPanel.Dock="Top">
                                 <ListBox x:Name="BoundaryLayersList" BorderBrush="Gray" BorderThickness="0,0,0,0">

@@ -55,7 +55,7 @@ public partial class MainWindow : Window
             Title = "Select the Objects Library",
             FileTypeFilter = new List<FilePickerFileType>
             {
-                new FilePickerFileType("PFM Library") { Patterns = new[] { "*.lib" } }
+                new FilePickerFileType("PFM Library") { Patterns = ["*.lib"] }
             },
             AllowMultiple = false
         });
@@ -374,6 +374,10 @@ public partial class MainWindow : Window
         {
             index = LayersList.SelectedIndex;
         }
+        
+        // Check if the index is valid
+        if (index < 0)
+            return;
 
         LibraryImageSelector imageSelector = new(ref library);
         await imageSelector.ShowDialog(this);
@@ -389,7 +393,7 @@ public partial class MainWindow : Window
         image.BackIndex = imageSelector.SelectedIndex;
         objectLibrary.Images[index] = image;
 
-        UpdateUI();
+        UpdateUI(updateLayers: true);
         
         // No dispose needed, Avalonia will handle it
     }
@@ -759,7 +763,46 @@ public partial class MainWindow : Window
 
         for (int i = 0; i < objectLibrary.Images.Count; i++)
         {
-            var listBoxItem = new ListBoxItem { Content = $"#{i + 1:00}" };
+            var layer = objectLibrary.Images[i];
+            Border border;
+            Image image;
+
+            if (layer.BackIndex >= 0 && layer.BackIndex < library.Images.Count)
+            {
+                var imageSource = LoadImage(library.Images[layer.BackIndex].Data);
+                image = new Image
+                {
+                    Source = imageSource,
+                    Width = 50,
+                    Height = 50,
+                    Margin = new Thickness(5, 0, 5, 0)
+                };
+                border = new Border
+                {
+                    Child = image,
+                    Width = 50,
+                    Height = 50,
+                    Margin = new Thickness(5, 0, 5, 0)
+                };
+            }
+            else
+            {
+                border = new Border
+                {
+                    Background = Brushes.Red,
+                    Width = 20,
+                    Height = 20,
+                    Margin = new Thickness(5, 0, 5, 0)
+                };
+            }
+
+            var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            var textBlock = new TextBlock { Text = $"#{i + 1:00}" };
+
+            stackPanel.Children.Add(border);
+            stackPanel.Children.Add(textBlock);
+
+            var listBoxItem = new ListBoxItem { Content = stackPanel };
             LayersList.Items.Add(listBoxItem);
         }
     }
@@ -778,4 +821,9 @@ public partial class MainWindow : Window
     }
 
     #endregion
+
+    private void mnuGraphicsLayerEffects_Click(object? sender, RoutedEventArgs e)
+    {
+      //  throw new NotImplementedException();
+    }
 }
