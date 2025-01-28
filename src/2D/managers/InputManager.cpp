@@ -97,6 +97,4 @@ private:
         std::unordered_map<int, bool> previous_state;
         std::unordered_map<unsigned int, std::unordered_map<unsigned int, bool>> joystick_state;
         std::unordered_map<unsigned int, std::unordered_map<unsigned int, bool>> previous_joystick_state;
-
-        std::vector<int>
 };

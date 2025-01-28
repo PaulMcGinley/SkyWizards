@@ -514,7 +514,7 @@ public partial class MainWindow : Window
             return;
 
         var index = BoundaryLayersList.SelectedIndex;
-        objectLibrary.Boundaries.RemoveAt(index);
+        objectLibrary.Boundaries?.RemoveAt(index);
 
         UpdateUI(updateLayers: true);
 
@@ -527,7 +527,7 @@ public partial class MainWindow : Window
         {
             Width = boundary.Width,
             Height = boundary.Height,
-            Fill = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0)), // 75% opacity red
+            Fill = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0)),
             //Stroke = Brushes.Red,
             StrokeThickness = 2
         };
@@ -551,13 +551,13 @@ public partial class MainWindow : Window
         AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Top);
 
         // // Top-right handle
-        // AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Top);
+        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Top);
         //
         // // Bottom-left handle
-        // AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Bottom);
+        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Bottom);
         //
         // // Bottom-right handle
-        // AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom);
+        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom);
     }
     
     // Redundant after deciding to stick with only one handle

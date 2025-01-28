@@ -52,6 +52,10 @@ add_executable(LoSW___BftS main.cpp
         managers/IOManager.h
         IO/GameSettingsFile.cpp
         IO/GameSettingsFile.h
+        models/Level.cpp
+        models/Level.h
+        Envir/SWS.cpp
+        Envir/SWS.h
 )
 
 

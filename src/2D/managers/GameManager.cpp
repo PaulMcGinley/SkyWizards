@@ -1,7 +1,12 @@
-#include <SFML/Graphics/RenderWindow.hpp>
 //
 // Created by Paul McGinley on 26/01/2025.
 //
+
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <string>
+#include <SFML/System/Vector2.hpp>
+#include <algorithm>
+
 class GameManager {
 public:
         // Method to get the instance of the singleton

@@ -29,7 +29,7 @@ private:
         AnimationSequence sequence;
         bool shaderLoaded = false;
         sf::Shader blurShader;
-        float blurRadius = 5.0f;
+        float blurRadius = 0.0f;
 };
 
 #endif //BACKGROUNDSCENERYOBJECT_H
