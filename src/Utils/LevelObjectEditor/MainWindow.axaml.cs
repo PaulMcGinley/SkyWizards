@@ -21,15 +21,20 @@ public partial class MainWindow : Window
     private PLibrary library;
     private OLibrary objectLibrary;
     private bool needsSave = false;
-    
+
     private bool isDragging = false;
     private Point clickPosition;
-    
+
     // Boundary layer constants
     private const double HandleSize = 10;
     private const double MinWidth = 100;
     private const double MinHeight = 25;
     
+    // Sequencer
+    private bool sequencerVisible = false;
+    private const char SequencerVisibleHeader = '\u25cf';
+    private const char SequencerHiddenHeader = '\u25cb';
+
     public MainWindow()
     {
         InitializeComponent();
@@ -42,7 +47,7 @@ public partial class MainWindow : Window
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
         OpenLibrary();
-        
+
         // Default to starting a new object library
         mnuNew_Click(sender, e);
     }
@@ -87,7 +92,7 @@ public partial class MainWindow : Window
     {
         if (library?.Images == null)
             return;
-        
+
         if (objectLibrary?.Images == null)
             return;
 
@@ -97,7 +102,7 @@ public partial class MainWindow : Window
         {
             if (graphic.BackIndex < 0 || graphic.BackIndex >= library.Images.Count)
                 continue;
-            
+
             var image = new Image
             {
                 Source = LoadImage(library.Images[graphic.BackIndex].Data),
@@ -112,7 +117,7 @@ public partial class MainWindow : Window
 
             ImageCanvas.Children.Add(image);
         }
-        
+
         foreach (var boundary in objectLibrary.Boundaries)
         {
             DrawBoundary(boundary);
@@ -122,21 +127,32 @@ public partial class MainWindow : Window
     private Bitmap LoadImage(byte[] imageData)
     {
         using var stream = new MemoryStream(imageData);
-        
+
         return new Bitmap(stream);
     }
 
     #region Object Manipulation
-    
+
     private void Image_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
     {
+        // Select the Graphic (image) in the list
         if (sender is not Image image)
             return;
-        
+
+        // var index = ImageCanvas.Children.IndexOf(image);
+        //
+        // Debug.Assert(objectLibrary.Images != null, "objectLibrary.Images != null");
+        // if (index < 0 || index >= objectLibrary.Images.Count)
+        //     return;
+        //
+        // LayersList.SelectedIndex = index;
+
+        // Start dragging the image
         isDragging = true;
         clickPosition = e.GetPosition(ImageCanvas);
         e.Pointer.Capture(image);
     }
+
     private void Image_MouseMove(object sender, PointerEventArgs e)
     {
         if (!isDragging)
@@ -144,19 +160,19 @@ public partial class MainWindow : Window
 
         if (sender is not Image image)
             return;
-        
+
         var currentPosition = e.GetPosition(ImageCanvas);
         var offsetX = currentPosition.X - clickPosition.X;
         var offsetY = currentPosition.Y - clickPosition.Y;
 
         var newLeft = Canvas.GetLeft(image) + offsetX;
         var newTop = Canvas.GetTop(image) + offsetY;
-        
+
         // Get the index of the image in the object library
         var index = ImageCanvas.Children.IndexOf(image);
         if (index < 0 || index >= objectLibrary.Images.Count)
             return;
-        
+
         // Update the image position in the object library
         var img = objectLibrary.Images[index];
         img.X = (int)newLeft;
@@ -167,33 +183,42 @@ public partial class MainWindow : Window
         Canvas.SetTop(image, newTop);
 
         clickPosition = currentPosition;
-        
+
         needsSave = true;
     }
+
     private void Image_MouseLeftButtonUp(object sender, PointerReleasedEventArgs e)
     {
         if (sender is not Image image)
             return;
-        
+
+        var index = ImageCanvas.Children.IndexOf(image);
+
+        Debug.Assert(objectLibrary.Images != null, "objectLibrary.Images != null");
+        if (index < 0 || index >= objectLibrary.Images.Count)
+            return;
+
+        LayersList.SelectedIndex = index;
+
         isDragging = false;
         e.Pointer.Capture(null);
 
-        var index = ImageCanvas.Children.IndexOf(image);
-        if (index < 0 || index >= objectLibrary.Images.Count)
-            return;
-        
+        //var index = ImageCanvas.Children.IndexOf(image);
+        // if (index < 0 || index >= objectLibrary.Images.Count)
+        //     return;
+
         var layer = objectLibrary.Images[index];
         layer.X = (int)Canvas.GetLeft(image);
         layer.Y = (int)Canvas.GetTop(image);
         objectLibrary.Images[index] = layer;
-        
+
         needsSave = true;
-        
+
         UpdateUI(updateLayers: true);
     }
 
     #endregion
-    
+
     #region Menu Bar
 
     private void mnuNew_Click(object? sender, RoutedEventArgs e)
@@ -379,20 +404,20 @@ public partial class MainWindow : Window
     private async void btnSelectImage_Click(object? sender, RoutedEventArgs e)
     {
         var index = -1;
-        
+
         // If Graphics list item is selected, get its index
         if (LayersList.SelectedItem != null)
         {
             index = LayersList.SelectedIndex;
         }
-        
+
         // Check if the index is valid
         if (index < 0)
             return;
 
         // Open the image selector dialog passing the library as a reference for quick access
         LibraryImageSelector imageSelector = new(ref library);
-        
+
         // Show the dialog
         await imageSelector.ShowDialog(this);
 
@@ -405,15 +430,15 @@ public partial class MainWindow : Window
 
         // Get the Graphic (image) from the object library at the selected index
         var image = objectLibrary.Images[index];
-        
+
         // Set the back index of the image to the selected index (image behind player)
         image.BackIndex = imageSelector.SelectedIndex;
-        
+
         // Update the object library with the new image
         objectLibrary.Images[index] = image;
-        
+
         UpdateUI(updateLayers: true);
-        
+
         // No dispose needed, Avalonia will handle it
     }
 
@@ -444,6 +469,9 @@ public partial class MainWindow : Window
 
         var itemToSelect = LayersList.Items[objectLibrary.Images.Count - 1];
         LayersList.SelectedItem = itemToSelect;
+
+        // Open the image selector dialog
+        btnSelectImage_Click(null, null!);
     }
 
     private void mnuRemoveGraphicsLayer_Click(object? sender, RoutedEventArgs e)
@@ -455,11 +483,11 @@ public partial class MainWindow : Window
             return;
 
         var index = LayersList.SelectedIndex;
-        
+
         //Check if the index is valid
         if (index < 0 || index >= objectLibrary.Images.Count)
             return;
-        
+
         // Remove the layer
         objectLibrary.Images.RemoveAt(index);
 
@@ -520,8 +548,6 @@ public partial class MainWindow : Window
         };
         objectLibrary.Boundaries.Add(newLayer);
 
-        //DrawBoundary(newLayer);
-
         UpdateUI(updateLayers: true);
 
         var itemToSelect = BoundaryLayersList.Items[objectLibrary.Boundaries.Count - 1];
@@ -543,7 +569,7 @@ public partial class MainWindow : Window
 
         BoundaryLayersList.SelectedIndex = Math.Min((int)index, objectLibrary.Boundaries.Count - 1);
     }
-    
+
     private void DrawBoundary(Boundry boundary)
     {
         var rectangle = new Rectangle
@@ -567,7 +593,7 @@ public partial class MainWindow : Window
         // Add resize handles
         AddResizeHandles(rectangle);
     }
-    
+
     private void AddResizeHandles(Rectangle rectangle)
     {
         // Top-left handle
@@ -582,9 +608,10 @@ public partial class MainWindow : Window
         // // Bottom-right handle
         AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom);
     }
-    
+
     // Redundant after deciding to stick with only one handle
-    private void AddHandle(Rectangle rectangle, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+    private void AddHandle(Rectangle rectangle, HorizontalAlignment horizontalAlignment,
+        VerticalAlignment verticalAlignment)
     {
         var handle = new Rectangle
         {
@@ -602,8 +629,9 @@ public partial class MainWindow : Window
 
         ImageCanvas.Children.Add(handle);
     }
-    
-    private void UpdateHandlePosition(Rectangle handle, Rectangle rectangle, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+
+    private void UpdateHandlePosition(Rectangle handle, Rectangle rectangle, HorizontalAlignment horizontalAlignment,
+        VerticalAlignment verticalAlignment)
     {
         double left = Canvas.GetLeft(rectangle);
         double top = Canvas.GetTop(rectangle);
@@ -629,12 +657,12 @@ public partial class MainWindow : Window
         Canvas.SetLeft(handle, left);
         Canvas.SetTop(handle, top);
     }
-    
+
     private void Rectangle_PointerMoved(object? sender, PointerEventArgs e)
     {
         if (!isDragging || sender is not Rectangle rectangle)
             return;
-        
+
         var position = e.GetPosition(ImageCanvas);
         var offsetX = position.X - clickPosition.X;
         var offsetY = position.Y - clickPosition.Y;
@@ -666,37 +694,40 @@ public partial class MainWindow : Window
 
         clickPosition = position;
     }
+
     private void Rectangle_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Rectangle rectangle)
             return;
-        
+
         isDragging = true;
         clickPosition = e.GetPosition(ImageCanvas);
         // Manually handle pointer capture
         rectangle.PointerPressed += (s, args) => { isDragging = true; };
     }
+
     private void Rectangle_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (sender is not Rectangle rectangle)
             return;
-        
+
         isDragging = false;
-        
+
         // Manually handle pointer release
         rectangle.PointerReleased += (s, args) => { isDragging = false; };
     }
-    
+
     private void Handle_PointerPressed(object? sender, PointerPressedEventArgs e, Rectangle rectangle)
     {
         isDragging = true;
         clickPosition = e.GetPosition(ImageCanvas);
     }
+
     private void Handle_PointerMoved(object? sender, PointerEventArgs e, Rectangle rectangle)
     {
         if (!isDragging)
             return;
-        
+
         var position = e.GetPosition(ImageCanvas);
         var offsetX = position.X - clickPosition.X;
         var offsetY = position.Y - clickPosition.Y;
@@ -728,6 +759,7 @@ public partial class MainWindow : Window
 
         clickPosition = position;
     }
+
     private void Handle_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         isDragging = false;
@@ -754,6 +786,8 @@ public partial class MainWindow : Window
         // If Graphics list item is selected, get its index
         if (LayersList.SelectedItem != null)
         {
+            AnimationPanel.IsVisible = true;
+
             var index = LayersList.SelectedIndex;
             if (index >= 0 && index < objectLibrary?.Images?.Count)
             {
@@ -763,12 +797,16 @@ public partial class MainWindow : Window
                 lbY.Text = layer.Y.ToString();
             }
         }
-        
+        else
+        {
+            AnimationPanel.IsVisible = false;
+        }
+
         LoadImages();
 
         if (!updateLayers)
             return;
-        
+
         UpdateGraphicsLayers();
         UpdateBoundaryLayers();
     }
@@ -845,11 +883,11 @@ public partial class MainWindow : Window
         catch (Exception e)
         {
             Console.WriteLine(e);
-            
+
             // Check if list is empty
             if (LayersList.Items.Count == 0)
                 return;
-            
+
             // If the selected index is out of bounds, set it to the last item
             if (selectedIndex >= LayersList.Items.Count)
                 LayersList.SelectedIndex = LayersList.Items.Count - 1;
@@ -873,6 +911,46 @@ public partial class MainWindow : Window
 
     private void mnuGraphicsLayerEffects_Click(object? sender, RoutedEventArgs e)
     {
-      //  throw new NotImplementedException();
+        //  throw new NotImplementedException();
+    }
+
+    private void ContentTabs_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is not TabControl tabControl)
+            return;
+
+        // Wrapped in a try-catch block to prevent crashing on application startup
+        try
+        {
+            // Graphics tab
+            if (tabControl.SelectedIndex == 0)
+                BoundaryLayersList.SelectedIndex = -1;
+
+            // Boundaries tab
+            if (tabControl.SelectedIndex == 1)
+                LayersList.SelectedIndex = -1;
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            //throw;
+        }
+
+    }
+
+    private void mnuToggleSequencer_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sequencerVisible)
+        {
+            sequencerVisible = false;
+            MnuToggleSequencer.Header = SequencerHiddenHeader;
+            AnimationPanel.IsVisible = false;
+        }
+        else
+        {
+            sequencerVisible = true;
+            MnuToggleSequencer.Header = SequencerVisibleHeader;
+            AnimationPanel.IsVisible = true;
+        }
     }
 }

@@ -3,7 +3,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="400"
-        Width="1200" Height="800"
         x:Class="LevelObjectEditor.MainWindow"
         Title="LevelObjectEditor">
     <DockPanel>
@@ -76,12 +75,24 @@
                             <MenuItem Header="Remove Exif Data"/>
                             <TextBox Text="Remove Exif Data"/>
                         </MenuItem>
+                        <MenuItem x:Name="MnuToggleSequencer" Header="○" Click="mnuToggleSequencer_Click" ToolTip.Tip="Toggle Sequencer"/>
                     </Menu>
+                    <!-- Animation Panel -->
                     <DockPanel LastChildFill="True">
-                        <Border DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="1,1,1,0" Height="150">
+                        <Border x:Name="AnimationPanel" DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="1,1,1,0" Height="250">
                             <DockPanel>
-                                <Slider DockPanel.Dock="Top" Minimum="0" Maximum="100" Value="50" Margin="5"/>
-                                <TextBlock Text="Animation Timeline" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <Slider DockPanel.Dock="Top" Minimum="0" Maximum="100" Value="50" Margin="0,-10,0,0"/>
+                                <!-- <TextBlock Text="Animation Timeline" VerticalAlignment="Center" HorizontalAlignment="Center"/> -->
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                                    <TextBlock Text="Index:" VerticalAlignment="Center" Margin="5"/>
+                                    <ComboBox Width="100" Margin="5"/>
+                                    <TextBlock Text="Start Index:" VerticalAlignment="Center" Margin="5"/>
+                                    <TextBox Width="50" Margin="5"/>
+                                    <TextBlock Text="End Index:" VerticalAlignment="Center" Margin="5"/>
+                                    <TextBox Width="50" Margin="5"/>
+                                </StackPanel>
+                                
                             </DockPanel>
                         </Border>
                         <Canvas x:Name="ImageCanvas" Background="Silver" DockPanel.Dock="Top">
@@ -93,7 +104,7 @@
 
             <!-- Layers list in the right column with a menu at the bottom -->
             <DockPanel Grid.Column="2" Margin="-11,-5,-11, 0">
-                <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="ContentTabs_SelectionChanged">
                     <TabItem Header="Graphics" FontSize="16" Padding="45,0,15,0">
                         <DockPanel HorizontalAlignment="Stretch">
                             <Menu DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="0,1,0,0">
@@ -114,7 +125,6 @@
                             </ScrollViewer>
                         </DockPanel>
                     </TabItem>
-
 
                     <TabItem Header="Boundaries" FontSize="16">
                         <DockPanel HorizontalAlignment="Stretch">

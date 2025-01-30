@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.1.0"/>
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.1.0" />
         <PackageReference Include="Avalonia.Desktop" Version="11.1.0"/>
         <PackageReference Include="Avalonia.Labs.Controls" Version="11.2.0" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0"/>
@@ -24,5 +25,9 @@
 
     <ItemGroup>
       <Folder Include="LObject\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Remove="Styles\SliderStyles.axaml" />
     </ItemGroup>
 </Project>
