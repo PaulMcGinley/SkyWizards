@@ -84,13 +84,14 @@
                                 <Slider DockPanel.Dock="Top" Minimum="0" Maximum="100" Value="50" Margin="0,-10,0,0"/>
                                 <!-- <TextBlock Text="Animation Timeline" VerticalAlignment="Center" HorizontalAlignment="Center"/> -->
 
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
-                                    <TextBlock Text="Index:" VerticalAlignment="Center" Margin="5"/>
-                                    <ComboBox Width="100" Margin="5"/>
-                                    <TextBlock Text="Start Index:" VerticalAlignment="Center" Margin="5"/>
-                                    <TextBox Width="50" Margin="5"/>
-                                    <TextBlock Text="End Index:" VerticalAlignment="Center" Margin="5"/>
-                                    <TextBox Width="50" Margin="5"/>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                                        <TextBlock Text="Back Animation Length:" VerticalAlignment="Center" Margin="5"/>
+                                        <TextBox x:Name="txtBackAnimLength" Width="50" Margin="5" TextChanged="AnimationLength_TextChanged"/>
+                                        <TextBlock Text="Front Animation Length:" VerticalAlignment="Center" Margin="5"/>
+                                        <TextBox x:Name="txtFrontAnimLength" Width="50" Margin="5" TextChanged="AnimationLength_TextChanged"/>
+                                    </StackPanel>
+                                    <TextBlock Text="Note: Length of 0 means no animation" HorizontalAlignment="Center" Margin="0,5,0,10" FontStyle="Italic"/>
                                 </StackPanel>
                                 
                             </DockPanel>

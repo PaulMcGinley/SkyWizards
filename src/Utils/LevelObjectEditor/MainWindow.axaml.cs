@@ -38,23 +38,17 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-
-        // Wait for the window to load before opening the library
-        // This prevents some UI issues
         Loaded += MainWindow_Loaded;
     }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
         OpenLibrary();
-
-        // Default to starting a new object library
         mnuNew_Click(sender, e);
     }
 
     private async void OpenLibrary()
     {
-        // Open a file dialog using StorageProvider
         var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Select the Objects Library",
@@ -65,10 +59,8 @@ public partial class MainWindow : Window
             AllowMultiple = false
         });
 
-        // Check if the cancelled, or no file was selected
         if (result.Count == 0)
         {
-            // If we have a library open, we will keep it open
             if (library != null)
                 return;
 
@@ -76,7 +68,6 @@ public partial class MainWindow : Window
             return;
         }
 
-        // Open the library
         library = new PLibrary(result[0].Path.LocalPath);
         library.Open(out var err);
 
@@ -90,14 +81,12 @@ public partial class MainWindow : Window
 
     private void LoadImages()
     {
-        if (library?.Images == null)
-            return;
-
-        if (objectLibrary?.Images == null)
+        if (library?.Images == null || objectLibrary?.Images == null)
             return;
 
         ImageCanvas.Children.Clear();
 
+        // Add images first
         foreach (var graphic in objectLibrary.Images)
         {
             if (graphic.BackIndex < 0 || graphic.BackIndex >= library.Images.Count)
@@ -118,16 +107,16 @@ public partial class MainWindow : Window
             ImageCanvas.Children.Add(image);
         }
 
-        foreach (var boundary in objectLibrary.Boundaries)
+        // Then add boundaries
+        for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
         {
-            DrawBoundary(boundary);
+            DrawBoundary(objectLibrary.Boundaries[i], i);
         }
     }
 
     private Bitmap LoadImage(byte[] imageData)
     {
         using var stream = new MemoryStream(imageData);
-
         return new Bitmap(stream);
     }
 
@@ -135,19 +124,9 @@ public partial class MainWindow : Window
 
     private void Image_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
     {
-        // Select the Graphic (image) in the list
         if (sender is not Image image)
             return;
 
-        // var index = ImageCanvas.Children.IndexOf(image);
-        //
-        // Debug.Assert(objectLibrary.Images != null, "objectLibrary.Images != null");
-        // if (index < 0 || index >= objectLibrary.Images.Count)
-        //     return;
-        //
-        // LayersList.SelectedIndex = index;
-
-        // Start dragging the image
         isDragging = true;
         clickPosition = e.GetPosition(ImageCanvas);
         e.Pointer.Capture(image);
@@ -155,10 +134,7 @@ public partial class MainWindow : Window
 
     private void Image_MouseMove(object sender, PointerEventArgs e)
     {
-        if (!isDragging)
-            return;
-
-        if (sender is not Image image)
+        if (!isDragging || sender is not Image image)
             return;
 
         var currentPosition = e.GetPosition(ImageCanvas);
@@ -168,12 +144,10 @@ public partial class MainWindow : Window
         var newLeft = Canvas.GetLeft(image) + offsetX;
         var newTop = Canvas.GetTop(image) + offsetY;
 
-        // Get the index of the image in the object library
         var index = ImageCanvas.Children.IndexOf(image);
         if (index < 0 || index >= objectLibrary.Images.Count)
             return;
 
-        // Update the image position in the object library
         var img = objectLibrary.Images[index];
         img.X = (int)newLeft;
         img.Y = (int)newTop;
@@ -183,7 +157,6 @@ public partial class MainWindow : Window
         Canvas.SetTop(image, newTop);
 
         clickPosition = currentPosition;
-
         needsSave = true;
     }
 
@@ -199,13 +172,8 @@ public partial class MainWindow : Window
             return;
 
         LayersList.SelectedIndex = index;
-
         isDragging = false;
         e.Pointer.Capture(null);
-
-        //var index = ImageCanvas.Children.IndexOf(image);
-        // if (index < 0 || index >= objectLibrary.Images.Count)
-        //     return;
 
         var layer = objectLibrary.Images[index];
         layer.X = (int)Canvas.GetLeft(image);
@@ -213,7 +181,6 @@ public partial class MainWindow : Window
         objectLibrary.Images[index] = layer;
 
         needsSave = true;
-
         UpdateUI(updateLayers: true);
     }
 
@@ -229,8 +196,7 @@ public partial class MainWindow : Window
         }
 
         objectLibrary = new OLibrary();
-        needsSave = false; // False because we just created an empty object
-
+        needsSave = false;
         UpdateUI(updateLayers: true);
     }
 
@@ -238,7 +204,6 @@ public partial class MainWindow : Window
     {
         string? err = null;
 
-        // Open a file dialog using StorageProvider
         var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Open Object Library",
@@ -249,11 +214,8 @@ public partial class MainWindow : Window
             AllowMultiple = false
         });
 
-        // Check if the user cancelled
         if (result.Count == 0)
-        {
             return;
-        }
 
         objectLibrary = new OLibrary();
         objectLibrary.SetFilePath(result[0].Path.LocalPath);
@@ -261,14 +223,11 @@ public partial class MainWindow : Window
         UpdateUI(updateLayers: true);
 
         if (err == null)
-        {
             return;
-        }
 
         Console.WriteLine(err);
         objectLibrary = null;
         needsSave = false;
-
         UpdateUI(updateLayers: true);
     }
 
@@ -289,7 +248,6 @@ public partial class MainWindow : Window
             return;
         }
 
-        // Save the object library
         objectLibrary.Save(out err, overwrite: true);
 
         if (err == null)
@@ -312,7 +270,6 @@ public partial class MainWindow : Window
             return;
         }
 
-        // Open a file dialog using StorageProvider
         var result = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = "Save Object Library",
@@ -323,16 +280,11 @@ public partial class MainWindow : Window
             }
         });
 
-        // Check if the user cancelled
         if (result == null)
-        {
             return;
-        }
 
-        // Save the library
         objectLibrary.SaveAs(result.Path.LocalPath, out err);
         needsSave = false;
-
         UpdateUI();
 
         if (err != null)
@@ -351,7 +303,6 @@ public partial class MainWindow : Window
         ImageCanvas.Children.Clear();
         objectLibrary = null;
         needsSave = false;
-
         UpdateUI();
     }
 
@@ -361,7 +312,6 @@ public partial class MainWindow : Window
         {
             // Ask the user if they want to save the current object
         }
-
         Close();
     }
 
@@ -377,8 +327,6 @@ public partial class MainWindow : Window
 
         var libraryPath = library.FilePath;
 
-        // Using a Try-Catch block here due to having non paths as the header text
-        // This is a quick and dirty way to handle it, but it provides all the error handling needed
         try
         {
             var directoryPath = Path.GetDirectoryName(libraryPath);
@@ -405,41 +353,28 @@ public partial class MainWindow : Window
     {
         var index = -1;
 
-        // If Graphics list item is selected, get its index
         if (LayersList.SelectedItem != null)
         {
             index = LayersList.SelectedIndex;
         }
 
-        // Check if the index is valid
         if (index < 0)
             return;
 
-        // Open the image selector dialog passing the library as a reference for quick access
         LibraryImageSelector imageSelector = new(ref library);
-
-        // Show the dialog
         await imageSelector.ShowDialog(this);
 
-        // If the user didn't select an image, return
         if (imageSelector.SelectedIndex == -1)
             return;
 
         if (objectLibrary == null)
             return;
 
-        // Get the Graphic (image) from the object library at the selected index
         var image = objectLibrary.Images[index];
-
-        // Set the back index of the image to the selected index (image behind player)
         image.BackIndex = imageSelector.SelectedIndex;
-
-        // Update the object library with the new image
         objectLibrary.Images[index] = image;
 
         UpdateUI(updateLayers: true);
-
-        // No dispose needed, Avalonia will handle it
     }
 
     #endregion
@@ -459,7 +394,9 @@ public partial class MainWindow : Window
         var newLayer = new Graphic
         {
             BackIndex = -1,
+            BackAnimationLength = 0,
             FrontIndex = -1,
+            FrontAnimationLength = 0,
             X = 0,
             Y = 0
         };
@@ -470,30 +407,22 @@ public partial class MainWindow : Window
         var itemToSelect = LayersList.Items[objectLibrary.Images.Count - 1];
         LayersList.SelectedItem = itemToSelect;
 
-        // Open the image selector dialog
         btnSelectImage_Click(null, null!);
     }
 
     private void mnuRemoveGraphicsLayer_Click(object? sender, RoutedEventArgs e)
     {
-        if (objectLibrary == null)
-            return;
-
-        if (LayersList.SelectedItem == null)
+        if (objectLibrary == null || LayersList.SelectedItem == null)
             return;
 
         var index = LayersList.SelectedIndex;
 
-        //Check if the index is valid
         if (index < 0 || index >= objectLibrary.Images.Count)
             return;
 
-        // Remove the layer
         objectLibrary.Images.RemoveAt(index);
-
         UpdateUI(updateLayers: true);
-
-        LayersList.SelectedIndex = Math.Min((int)index, objectLibrary.Images.Count - 1);
+        LayersList.SelectedIndex = Math.Min(index, objectLibrary.Images.Count - 1);
     }
 
     private void mnuMoveGraphicsLayerUp_Click(object? sender, RoutedEventArgs e)
@@ -508,7 +437,6 @@ public partial class MainWindow : Window
         objectLibrary.Images.Insert(index - 1, layer);
 
         UpdateUI(updateLayers: true);
-
         LayersList.SelectedIndex = index - 1;
     }
 
@@ -526,7 +454,6 @@ public partial class MainWindow : Window
         objectLibrary.Images.Insert(index + 1, layer);
 
         UpdateUI(updateLayers: true);
-
         LayersList.SelectedIndex = index + 1;
     }
 
@@ -556,28 +483,24 @@ public partial class MainWindow : Window
 
     private void mnuRemoveBoundaryLayer_Click(object? sender, RoutedEventArgs e)
     {
-        if (objectLibrary == null)
-            return;
-
-        if (BoundaryLayersList.SelectedItem == null)
+        if (objectLibrary == null || BoundaryLayersList.SelectedItem == null)
             return;
 
         var index = BoundaryLayersList.SelectedIndex;
         objectLibrary.Boundaries?.RemoveAt(index);
 
         UpdateUI(updateLayers: true);
-
-        BoundaryLayersList.SelectedIndex = Math.Min((int)index, objectLibrary.Boundaries.Count - 1);
+        BoundaryLayersList.SelectedIndex = Math.Min(index, objectLibrary.Boundaries.Count - 1);
     }
 
-    private void DrawBoundary(Boundry boundary)
+    private void DrawBoundary(Boundry boundary, int boundaryIndex)
     {
         var rectangle = new Rectangle
         {
             Width = boundary.Width,
             Height = boundary.Height,
             Fill = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0)),
-            //Stroke = Brushes.Red,
+            Tag = boundaryIndex,
             StrokeThickness = 2
         };
 
@@ -589,38 +512,31 @@ public partial class MainWindow : Window
         rectangle.PointerReleased += Rectangle_PointerReleased;
 
         ImageCanvas.Children.Add(rectangle);
-
-        // Add resize handles
-        AddResizeHandles(rectangle);
+        AddResizeHandles(rectangle, boundaryIndex);
     }
 
-    private void AddResizeHandles(Rectangle rectangle)
+    private void AddResizeHandles(Rectangle rectangle, int boundaryIndex)
     {
-        // Top-left handle
-        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Top);
-
-        // // Top-right handle
-        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Top);
-        //
-        // // Bottom-left handle
-        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Bottom);
-        //
-        // // Bottom-right handle
-        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom);
+        // Add all four corner handles
+        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Top, boundaryIndex);
+        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Top, boundaryIndex);
+        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Bottom, boundaryIndex);
+        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom, boundaryIndex);
     }
 
-    // Redundant after deciding to stick with only one handle
     private void AddHandle(Rectangle rectangle, HorizontalAlignment horizontalAlignment,
-        VerticalAlignment verticalAlignment)
+        VerticalAlignment verticalAlignment, int boundaryIndex)
     {
         var handle = new Rectangle
         {
             Width = HandleSize,
             Height = HandleSize,
-            Fill = Brushes.Blue
+            Fill = Brushes.Blue,
+            Tag = (boundaryIndex, horizontalAlignment, verticalAlignment),
+            HorizontalAlignment = horizontalAlignment,
+            VerticalAlignment = verticalAlignment
         };
 
-        // Position the handle relative to the boundary rectangle
         UpdateHandlePosition(handle, rectangle, horizontalAlignment, verticalAlignment);
 
         handle.PointerPressed += (s, e) => Handle_PointerPressed(s, e, rectangle);
@@ -637,22 +553,14 @@ public partial class MainWindow : Window
         double top = Canvas.GetTop(rectangle);
 
         if (horizontalAlignment == HorizontalAlignment.Right)
-        {
             left += rectangle.Width - HandleSize / 2;
-        }
         else
-        {
             left -= HandleSize / 2;
-        }
 
         if (verticalAlignment == VerticalAlignment.Bottom)
-        {
             top += rectangle.Height - HandleSize / 2;
-        }
         else
-        {
             top -= HandleSize / 2;
-        }
 
         Canvas.SetLeft(handle, left);
         Canvas.SetTop(handle, top);
@@ -660,7 +568,7 @@ public partial class MainWindow : Window
 
     private void Rectangle_PointerMoved(object? sender, PointerEventArgs e)
     {
-        if (!isDragging || sender is not Rectangle rectangle)
+        if (!isDragging || sender is not Rectangle rectangle || rectangle.Tag is not int boundaryIndex)
             return;
 
         var position = e.GetPosition(ImageCanvas);
@@ -676,20 +584,21 @@ public partial class MainWindow : Window
         // Update handle positions
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle handle && Equals(handle.Fill, Brushes.Blue))
+            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment> handleData
+                && handleData.Item1 == boundaryIndex)
             {
-                UpdateHandlePosition(handle, rectangle, handle.HorizontalAlignment, handle.VerticalAlignment);
+                UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
             }
         }
 
-        // Update the boundary in the object library
-        var index = ImageCanvas.Children.IndexOf(rectangle);
-        if (index >= 0 && index < objectLibrary.Boundaries.Count)
+        // Update the boundary in the object library using the stored index
+        if (boundaryIndex >= 0 && boundaryIndex < objectLibrary.Boundaries.Count)
         {
-            var boundary = objectLibrary.Boundaries[index];
+            var boundary = objectLibrary.Boundaries[boundaryIndex];
             boundary.X = (int)left;
             boundary.Y = (int)top;
-            objectLibrary.Boundaries[index] = boundary;
+            objectLibrary.Boundaries[boundaryIndex] = boundary;
+            needsSave = true;
         }
 
         clickPosition = position;
@@ -702,8 +611,7 @@ public partial class MainWindow : Window
 
         isDragging = true;
         clickPosition = e.GetPosition(ImageCanvas);
-        // Manually handle pointer capture
-        rectangle.PointerPressed += (s, args) => { isDragging = true; };
+        e.Pointer.Capture(rectangle);
     }
 
     private void Rectangle_PointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -712,20 +620,19 @@ public partial class MainWindow : Window
             return;
 
         isDragging = false;
-
-        // Manually handle pointer release
-        rectangle.PointerReleased += (s, args) => { isDragging = false; };
+        e.Pointer.Capture(null);
     }
 
     private void Handle_PointerPressed(object? sender, PointerPressedEventArgs e, Rectangle rectangle)
     {
         isDragging = true;
         clickPosition = e.GetPosition(ImageCanvas);
+        e.Pointer.Capture(sender as IInputElement);
     }
 
     private void Handle_PointerMoved(object? sender, PointerEventArgs e, Rectangle rectangle)
     {
-        if (!isDragging)
+        if (!isDragging || rectangle.Tag is not int boundaryIndex)
             return;
 
         var position = e.GetPosition(ImageCanvas);
@@ -741,20 +648,21 @@ public partial class MainWindow : Window
         // Update handle positions
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle handle && Equals(handle.Fill, Brushes.Blue))
+            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment> handleData
+                && handleData.Item1 == boundaryIndex)
             {
-                UpdateHandlePosition(handle, rectangle, handle.HorizontalAlignment, handle.VerticalAlignment);
+                UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
             }
         }
 
-        // Update the boundary in the object library
-        var index = ImageCanvas.Children.IndexOf(rectangle);
-        if (index >= 0 && index < objectLibrary.Boundaries.Count)
+        // Update the boundary in the object library using the stored index
+        if (boundaryIndex >= 0 && boundaryIndex < objectLibrary.Boundaries.Count)
         {
-            var boundary = objectLibrary.Boundaries[index];
+            var boundary = objectLibrary.Boundaries[boundaryIndex];
             boundary.Width = (int)newWidth;
             boundary.Height = (int)newHeight;
-            objectLibrary.Boundaries[index] = boundary;
+            objectLibrary.Boundaries[boundaryIndex] = boundary;
+            needsSave = true;
         }
 
         clickPosition = position;
@@ -763,6 +671,7 @@ public partial class MainWindow : Window
     private void Handle_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         isDragging = false;
+        e.Pointer.Capture(null);
     }
 
     #endregion
@@ -778,12 +687,11 @@ public partial class MainWindow : Window
             lbY.Text = "";
             lbWidth.Text = "";
             lbHeight.Text = "";
-
-            // Force update of layers
+            txtBackAnimLength.Text = "";
+            txtFrontAnimLength.Text = "";
             updateLayers = true;
         }
 
-        // If Graphics list item is selected, get its index
         if (LayersList.SelectedItem != null)
         {
             AnimationPanel.IsVisible = true;
@@ -795,6 +703,8 @@ public partial class MainWindow : Window
                 lbImageIndex.Text = layer.BackIndex.ToString();
                 lbX.Text = layer.X.ToString();
                 lbY.Text = layer.Y.ToString();
+                txtBackAnimLength.Text = layer.BackAnimationLength.ToString();
+                txtFrontAnimLength.Text = layer.FrontAnimationLength.ToString();
             }
         }
         else
@@ -814,7 +724,6 @@ public partial class MainWindow : Window
     private void UpdateGraphicsLayers()
     {
         int selectedIndex = LayersList.SelectedIndex;
-
         LayersList.Items.Clear();
 
         if (objectLibrary == null)
@@ -824,13 +733,11 @@ public partial class MainWindow : Window
         {
             var layer = objectLibrary.Images[i];
             Border border;
-            Image image;
 
-            // If the entry has an image (back image) draw it to the list
             if (layer.BackIndex >= 0 && layer.BackIndex < library.Images.Count)
             {
                 var imageSource = LoadImage(library.Images[layer.BackIndex].Data);
-                image = new Image
+                var image = new Image
                 {
                     Source = imageSource,
                     Width = 50,
@@ -846,7 +753,6 @@ public partial class MainWindow : Window
                     Margin = new Thickness(5, 0, 5, 0)
                 };
             }
-            // If the entry does not have an image, draw a red square
             else
             {
                 border = new Border
@@ -858,12 +764,13 @@ public partial class MainWindow : Window
                 };
             }
 
-            // List entry construction
             var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
             var textBlock = new TextBlock
             {
                 Text =
-                    $"Pos: {objectLibrary.Images[i].X}, {objectLibrary.Images[i].Y} \nBack: {objectLibrary.Images[i].BackIndex} \nFront: {objectLibrary.Images[i].FrontIndex}",
+                    $"Pos: {objectLibrary.Images[i].X}, {objectLibrary.Images[i].Y}\n" +
+                    $"Back: {objectLibrary.Images[i].BackIndex}" + (objectLibrary.Images[i].BackAnimationLength > 0 ? $" (Anim: {objectLibrary.Images[i].BackAnimationLength})" : "") + "\n" +
+                    $"Front: {objectLibrary.Images[i].FrontIndex}" + (objectLibrary.Images[i].FrontAnimationLength > 0 ? $" (Anim: {objectLibrary.Images[i].FrontAnimationLength})" : ""),
                 VerticalAlignment = VerticalAlignment.Center
             };
 
@@ -874,8 +781,6 @@ public partial class MainWindow : Window
             LayersList.Items.Add(listBoxItem);
         }
 
-
-        // Attempt to reselect the previously selected item
         try
         {
             LayersList.SelectedIndex = selectedIndex;
@@ -884,11 +789,9 @@ public partial class MainWindow : Window
         {
             Console.WriteLine(e);
 
-            // Check if list is empty
             if (LayersList.Items.Count == 0)
                 return;
 
-            // If the selected index is out of bounds, set it to the last item
             if (selectedIndex >= LayersList.Items.Count)
                 LayersList.SelectedIndex = LayersList.Items.Count - 1;
         }
@@ -919,23 +822,18 @@ public partial class MainWindow : Window
         if (sender is not TabControl tabControl)
             return;
 
-        // Wrapped in a try-catch block to prevent crashing on application startup
         try
         {
-            // Graphics tab
             if (tabControl.SelectedIndex == 0)
                 BoundaryLayersList.SelectedIndex = -1;
 
-            // Boundaries tab
             if (tabControl.SelectedIndex == 1)
                 LayersList.SelectedIndex = -1;
         }
         catch (Exception exception)
         {
             Console.WriteLine(exception);
-            //throw;
         }
-
     }
 
     private void mnuToggleSequencer_Click(object? sender, RoutedEventArgs e)
@@ -952,5 +850,31 @@ public partial class MainWindow : Window
             MnuToggleSequencer.Header = SequencerVisibleHeader;
             AnimationPanel.IsVisible = true;
         }
+    }
+
+    private void AnimationLength_TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (objectLibrary == null || LayersList.SelectedItem == null)
+            return;
+
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || index >= objectLibrary.Images.Count)
+            return;
+
+        var layer = objectLibrary.Images[index];
+
+        if (sender == txtBackAnimLength && int.TryParse(txtBackAnimLength.Text, out int backLength))
+        {
+            layer.BackAnimationLength = backLength;
+            needsSave = true;
+        }
+        else if (sender == txtFrontAnimLength && int.TryParse(txtFrontAnimLength.Text, out int frontLength))
+        {
+            layer.FrontAnimationLength = frontLength;
+            needsSave = true;
+        }
+
+        objectLibrary.Images[index] = layer;
+        UpdateUI(updateLayers: true);
     }
 }
