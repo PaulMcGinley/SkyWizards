@@ -151,6 +151,17 @@ public partial class MainWindow : Window
 
         var newLeft = Canvas.GetLeft(image) + offsetX;
         var newTop = Canvas.GetTop(image) + offsetY;
+        
+        // Get the index of the image in the object library
+        var index = ImageCanvas.Children.IndexOf(image);
+        if (index < 0 || index >= objectLibrary.Images.Count)
+            return;
+        
+        // Update the image position in the object library
+        var img = objectLibrary.Images[index];
+        img.X = (int)newLeft;
+        img.Y = (int)newTop;
+        objectLibrary.Images[index] = img;
 
         Canvas.SetLeft(image, newLeft);
         Canvas.SetTop(image, newTop);
@@ -171,14 +182,14 @@ public partial class MainWindow : Window
         if (index < 0 || index >= objectLibrary.Images.Count)
             return;
         
-        var img = objectLibrary.Images[index];
-        img.X = (int)Canvas.GetLeft(image);
-        img.Y = (int)Canvas.GetTop(image);
-        objectLibrary.Images[index] = img;
+        var layer = objectLibrary.Images[index];
+        layer.X = (int)Canvas.GetLeft(image);
+        layer.Y = (int)Canvas.GetTop(image);
+        objectLibrary.Images[index] = layer;
         
         needsSave = true;
         
-        UpdateUI();
+        UpdateUI(updateLayers: true);
     }
 
     #endregion
@@ -379,7 +390,10 @@ public partial class MainWindow : Window
         if (index < 0)
             return;
 
+        // Open the image selector dialog passing the library as a reference for quick access
         LibraryImageSelector imageSelector = new(ref library);
+        
+        // Show the dialog
         await imageSelector.ShowDialog(this);
 
         // If the user didn't select an image, return
@@ -389,10 +403,15 @@ public partial class MainWindow : Window
         if (objectLibrary == null)
             return;
 
+        // Get the Graphic (image) from the object library at the selected index
         var image = objectLibrary.Images[index];
+        
+        // Set the back index of the image to the selected index (image behind player)
         image.BackIndex = imageSelector.SelectedIndex;
+        
+        // Update the object library with the new image
         objectLibrary.Images[index] = image;
-
+        
         UpdateUI(updateLayers: true);
         
         // No dispose needed, Avalonia will handle it
@@ -736,7 +755,7 @@ public partial class MainWindow : Window
         if (LayersList.SelectedItem != null)
         {
             var index = LayersList.SelectedIndex;
-            if (index >= 0 && index < objectLibrary?.Images.Count)
+            if (index >= 0 && index < objectLibrary?.Images?.Count)
             {
                 var layer = objectLibrary.Images[index];
                 lbImageIndex.Text = layer.BackIndex.ToString();
@@ -745,28 +764,31 @@ public partial class MainWindow : Window
             }
         }
         
-        LoadImages(); 
+        LoadImages();
 
-        if (updateLayers)
-        {
-            UpdateGraphicsLayers();
-            UpdateBoundaryLayers();
-        }
+        if (!updateLayers)
+            return;
+        
+        UpdateGraphicsLayers();
+        UpdateBoundaryLayers();
     }
 
     private void UpdateGraphicsLayers()
     {
+        int selectedIndex = LayersList.SelectedIndex;
+
         LayersList.Items.Clear();
 
         if (objectLibrary == null)
             return;
 
-        for (int i = 0; i < objectLibrary.Images.Count; i++)
+        for (int i = 0; i < objectLibrary.Images?.Count; i++)
         {
             var layer = objectLibrary.Images[i];
             Border border;
             Image image;
 
+            // If the entry has an image (back image) draw it to the list
             if (layer.BackIndex >= 0 && layer.BackIndex < library.Images.Count)
             {
                 var imageSource = LoadImage(library.Images[layer.BackIndex].Data);
@@ -777,6 +799,7 @@ public partial class MainWindow : Window
                     Height = 50,
                     Margin = new Thickness(5, 0, 5, 0)
                 };
+
                 border = new Border
                 {
                     Child = image,
@@ -785,6 +808,7 @@ public partial class MainWindow : Window
                     Margin = new Thickness(5, 0, 5, 0)
                 };
             }
+            // If the entry does not have an image, draw a red square
             else
             {
                 border = new Border
@@ -796,14 +820,39 @@ public partial class MainWindow : Window
                 };
             }
 
+            // List entry construction
             var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
-            var textBlock = new TextBlock { Text = $"#{i + 1:00}" };
+            var textBlock = new TextBlock
+            {
+                Text =
+                    $"Pos: {objectLibrary.Images[i].X}, {objectLibrary.Images[i].Y} \nBack: {objectLibrary.Images[i].BackIndex} \nFront: {objectLibrary.Images[i].FrontIndex}",
+                VerticalAlignment = VerticalAlignment.Center
+            };
 
             stackPanel.Children.Add(border);
             stackPanel.Children.Add(textBlock);
 
             var listBoxItem = new ListBoxItem { Content = stackPanel };
             LayersList.Items.Add(listBoxItem);
+        }
+
+
+        // Attempt to reselect the previously selected item
+        try
+        {
+            LayersList.SelectedIndex = selectedIndex;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            
+            // Check if list is empty
+            if (LayersList.Items.Count == 0)
+                return;
+            
+            // If the selected index is out of bounds, set it to the last item
+            if (selectedIndex >= LayersList.Items.Count)
+                LayersList.SelectedIndex = LayersList.Items.Count - 1;
         }
     }
 

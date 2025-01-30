@@ -46,6 +46,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="X" Margin="5" Grid.Column="0" Grid.Row="0"/>
                     <TextBlock x:Name="lbX" Text="" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"/>
@@ -55,8 +56,10 @@
                     <TextBlock x:Name="lbWidth" Text="" Margin="5" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right"/>
                     <TextBlock Text="Height" Margin="5" Grid.Column="0" Grid.Row="3"/>
                     <TextBlock x:Name="lbHeight" Text="" Margin="5" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right"/>
-                    <Button Content="Image" Margin="0" Grid.Column="0" Grid.Row="4" Click="btnSelectImage_Click"/>
+                    <Button Content="Back Image" Margin="0" Grid.Column="0" Grid.Row="4" Click="btnSelectImage_Click"/>
                     <TextBlock x:Name="lbImageIndex" Text="-1" Margin="5" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right"/>
+                    <Button Content="Front Image" Margin="0" Grid.Column="0" Grid.Row="5" Click="btnSelectImage_Click"/>
+                    <TextBlock x:Name="lbFrontIndex" Text="-1" Margin="5" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right"/>
                 </Grid>
             </StackPanel>
 
@@ -74,9 +77,17 @@
                             <TextBox Text="Remove Exif Data"/>
                         </MenuItem>
                     </Menu>
-                    <Canvas x:Name="ImageCanvas" Background="Silver">
-                        <Image x:Name="Preview" Margin="5"/>
-                    </Canvas>
+                    <DockPanel LastChildFill="True">
+                        <Border DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="1,1,1,0" Height="150">
+                            <DockPanel>
+                                <Slider DockPanel.Dock="Top" Minimum="0" Maximum="100" Value="50" Margin="5"/>
+                                <TextBlock Text="Animation Timeline" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                        <Canvas x:Name="ImageCanvas" Background="Silver" DockPanel.Dock="Top">
+                            <Image x:Name="Preview" Margin="5"/>
+                        </Canvas>
+                    </DockPanel>
                 </DockPanel>
             </Border>
 
@@ -103,8 +114,8 @@
                             </ScrollViewer>
                         </DockPanel>
                     </TabItem>
-                    
-                    
+
+
                     <TabItem Header="Boundaries" FontSize="16">
                         <DockPanel HorizontalAlignment="Stretch">
                             <Menu DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="0,1,0,0">
