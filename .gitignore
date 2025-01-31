@@ -43,6 +43,13 @@ src/Utils/LibraryEditor/[Bb]in/
 src/Utils/LibraryEditor/[Oo]bj/
 src/Utils/LibraryEditor/LibraryEditor.sln.DotSettings.user
 
+
+# Library Editor Plugins
+src/Utils/Plugins/*/LEPlugin_*/.*/
+src/Utils/Plugins/*/LEPlugin_*/[Bb]in/
+src/Utils/Plugins/*/LEPlugin_*/[Oo]bj/
+src/Utils/Plugins/*/LEPlugin_*.sln.DotSettings.user
+
 # Level Editor
 src/Utils/LevelEditor/.*/
 src/Utils/LevelEditor/[Bb]in/

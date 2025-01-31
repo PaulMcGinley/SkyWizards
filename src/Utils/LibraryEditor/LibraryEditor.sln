@@ -1,8 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryEditor", "LibraryEditor.csproj", "{2D7B281A-F200-4F66-B097-B10E966638D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libType", "..\libType\libType\libType.csproj", "{6FE297B7-0BE1-4322-9859-6D507749BE0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LEPlugin_PolyArtTexture", "..\Plugins\LibraryEditor\LEPlugin_PolyArtTexture\LEPlugin_PolyArtTexture.csproj", "{3269719D-5FF9-44FA-8426-A2CF40EAF63F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +21,9 @@ Global
 		{6FE297B7-0BE1-4322-9859-6D507749BE0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FE297B7-0BE1-4322-9859-6D507749BE0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FE297B7-0BE1-4322-9859-6D507749BE0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3269719D-5FF9-44FA-8426-A2CF40EAF63F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3269719D-5FF9-44FA-8426-A2CF40EAF63F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3269719D-5FF9-44FA-8426-A2CF40EAF63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3269719D-5FF9-44FA-8426-A2CF40EAF63F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

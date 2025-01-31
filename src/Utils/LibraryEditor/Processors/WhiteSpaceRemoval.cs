@@ -17,7 +17,7 @@ public static partial class ImageOptimizer
         if (lImage.Data == null || lImage.Data.Length == 0) return;
 
         using var stream = new MemoryStream(lImage.Data);
-        
+
         var image = new Bitmap(stream);
 
         var width = image.PixelSize.Width;
@@ -25,7 +25,7 @@ public static partial class ImageOptimizer
 
         int left = 0, right = width - 1;
         int top = 0, bottom = height - 1;
-        
+
         var stride = width * 4; // 32bpp (4 bytes per pixel for RGBA)
         IntPtr pixelBuffer = Marshal.AllocHGlobal(height * stride);
 

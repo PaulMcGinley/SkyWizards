@@ -116,7 +116,7 @@ namespace LibraryEditor
             var bounds = ImageCanvas.Bounds;
             Preview.Clip = new RectangleGeometry(new Rect(0, 0, bounds.Width, bounds.Height));
         }
-        
+
         private void Image_Click(object? sender, PointerPressedEventArgs e)
         {
             if (sender is not Border { Child: Image } border)
@@ -129,7 +129,7 @@ namespace LibraryEditor
         }
 
         #endregion
-        
+
         #region Library Menu
 
         /// <summary>

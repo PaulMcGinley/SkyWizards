@@ -28,4 +28,14 @@
     <ItemGroup>
       <ProjectReference Include="..\libType\libType\libType.csproj" />
     </ItemGroup>
+
+    <Target Name="CreatePluginsDirectory" AfterTargets="Build">
+        <MakeDir Directories="$(OutputPath)plugins" />
+    </Target>
+
+    <Target Name="CopyPlugin" AfterTargets="Build">
+        <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" 
+              DestinationFolder="$(OutputPath)plugins"
+              SkipUnchangedFiles="true" />
+    </Target>
 </Project>
