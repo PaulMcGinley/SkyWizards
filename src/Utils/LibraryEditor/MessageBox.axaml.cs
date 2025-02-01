@@ -58,13 +58,9 @@ public partial class MessageBox : Window
         messageBox.Closed += delegate { tcs.TrySetResult(result); };
 
         if (parent != null)
-        {
             messageBox.ShowDialog(parent);
-        }
         else
-        {
             messageBox.Show();
-        }
 
         // Return the task that completes when the message box is closed
         return tcs.Task;

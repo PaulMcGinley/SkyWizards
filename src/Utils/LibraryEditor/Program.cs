@@ -18,7 +18,7 @@ class Program
         string pluginsPath = Path.Combine(exePath, "plugins");
         
         var pluginLoader = new PluginLoader(pluginsPath);
-        pluginLoader.LoadPlugins();
+        //pluginLoader.LoadPlugins();
         
         // Store plugin loader instance for access throughout the application
         App.PluginLoader = pluginLoader;

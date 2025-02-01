@@ -43,13 +43,6 @@ src/Utils/LibraryEditor/[Bb]in/
 src/Utils/LibraryEditor/[Oo]bj/
 src/Utils/LibraryEditor/LibraryEditor.sln.DotSettings.user
 
-
-# Library Editor Plugins
-src/Utils/Plugins/*/LEPlugin_*/.*/
-src/Utils/Plugins/*/LEPlugin_*/[Bb]in/
-src/Utils/Plugins/*/LEPlugin_*/[Oo]bj/
-src/Utils/Plugins/*/LEPlugin_*.sln.DotSettings.user
-
 # Level Editor
 src/Utils/LevelEditor/.*/
 src/Utils/LevelEditor/[Bb]in/
@@ -61,6 +54,18 @@ src/Utils/LevelObjectEditor/.*/
 src/Utils/LevelObjectEditor/[Bb]in/
 src/Utils/LevelObjectEditor/[Oo]bj/
 src/Utils/LevelObjectEditor/LevelObjectEditor.sln.DotSettings.user
+
+# IPlugin (Interface Plugin)
+src/Utils/IPlugin/.*/
+src/Utils/IPlugin/IPlugin/[Bb]in/
+src/Utils/IPlugin/IPlugin/[Oo]bj/
+src/Utils/IPlugin/IPlugin.sln.DotSettings.user
+
+# Library Editor Plugins
+src/Utils/Plugins/*/LEPlugin_*/.*/
+src/Utils/Plugins/*/LEPlugin_*/[Bb]in/
+src/Utils/Plugins/*/LEPlugin_*/[Oo]bj/
+src/Utils/Plugins/*/LEPlugin_*.sln.DotSettings.user
 
 # qdLibBuilder (Quick and Dirty Library Builder - macOS cli lib manager)
 # This tool will be deprecated when the new library manager is finished

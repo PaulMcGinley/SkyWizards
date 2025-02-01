@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using libType;
 
 namespace LibraryEditor.Plugins
 {
@@ -13,7 +15,8 @@ namespace LibraryEditor.Plugins
         void Initialize();
         void Execute();
         void ExecuteWithLibrary(ref libType.PLibrary library);
-        public string GetMethodDisplayName(string methodName);
+        Task ExecuteWithLibraryAsync(libType.PLibrary library);
+        public string? GetMethodDisplayName(string methodName);
         public string GetMethodDescription(string methodName);
     }
 }

@@ -36,6 +36,7 @@
             </MenuItem>
 
             <MenuItem Header="Plugins" Name="mnuPlugins">
+                <!-- Plugins list appears here-->
             </MenuItem>
         </Menu>
 

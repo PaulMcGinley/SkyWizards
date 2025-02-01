@@ -14,8 +14,15 @@ namespace LibraryEditor.Plugins
         private readonly FileSystemWatcher watcher;
         private bool isDisposed;
 
+        /// <summary>
+        /// Event handler for when plugins are changed
+        /// </summary>
         public event EventHandler PluginsChanged;
 
+        /// <summary>
+        /// Create a new plugin loader with the specified plugin path
+        /// </summary>
+        /// <param name="_pluginPath"></param>
         public PluginLoader(string _pluginPath)
         {
             pluginPath = _pluginPath;
@@ -27,29 +34,88 @@ namespace LibraryEditor.Plugins
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.CreationTime,
                 EnableRaisingEvents = true
             };
-
+            
             watcher.Created += OnPluginChanged;
             watcher.Changed += OnPluginChanged;
             watcher.Deleted += OnPluginDeleted;
             watcher.Renamed += OnPluginRenamed;
         }
 
+        /// <summary>
+        /// Get a list of all loaded plugins
+        /// </summary>
         public IReadOnlyList<IPlugin> LoadedPlugins => loadedPlugins.Values.ToList().AsReadOnly();
 
+        /// <summary>
+        /// Reload a plugin from the specified path
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnPluginChanged(object sender, FileSystemEventArgs e)
         {
-            // Add a small delay to ensure the file is fully written
-            System.Threading.Thread.Sleep(100);
+            byte attempt = 1;
+
+            while (IsFileLocked(e.FullPath))
+            {
+                // Increment the attempt counter
+                attempt++;
+                
+                // Add a small delay to ensure the file is fully written
+                System.Threading.Thread.Sleep(100);
+                if (attempt > 10)
+                {
+                    Console.WriteLine($"Failed to reload plugin {e.FullPath} after 10 attempts");
+                    return;
+                }
+            }
+
             ReloadPlugin(e.FullPath);
             PluginsChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Check if a file is locked
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <returns></returns>
+        private bool IsFileLocked(string fullPath)
+        {
+            try
+            {
+                using (FileStream stream = File.Open(fullPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    // File is not locked
+
+                    // Close the file
+                    stream.Close();
+                }
+            }
+            catch (IOException)
+            {
+                // File is locked
+                return true;
+            }
+
+            // File is not locked
+            return false;
+        }
+
+        /// <summary>
+        /// Unload a plugin from the specified path
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnPluginDeleted(object sender, FileSystemEventArgs e)
         {
             UnloadPlugin(e.FullPath);
             PluginsChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Reload a plugin from the specified path
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnPluginRenamed(object sender, RenamedEventArgs e)
         {
             UnloadPlugin(e.OldFullPath);
@@ -57,6 +123,10 @@ namespace LibraryEditor.Plugins
             PluginsChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Unload a plugin from the specified path
+        /// </summary>
+        /// <param name="pluginPath"></param>
         public void UnloadPlugin(string pluginPath)
         {
             if (loadedPlugins.TryRemove(pluginPath, out var plugin))
@@ -69,6 +139,10 @@ namespace LibraryEditor.Plugins
             }
         }
 
+        /// <summary>
+        /// Reload a plugin from the specified path
+        /// </summary>
+        /// <param name="pluginPath"></param>
         public void ReloadPlugin(string pluginPath)
         {
             try
@@ -101,6 +175,9 @@ namespace LibraryEditor.Plugins
             }
         }
 
+        /// <summary>
+        /// Load all plugins from the plugins directory
+        /// </summary>
         public void LoadPlugins()
         {
             // Create plugins directory if it doesn't exist
@@ -112,12 +189,18 @@ namespace LibraryEditor.Plugins
             // Get all DLL files from the plugins directory
             string[] dllFiles = Directory.GetFiles(pluginPath, "*.dll");
 
+            
+            
             foreach (string dllPath in dllFiles)
             {
+                Console.WriteLine($"Loading plugin from {dllPath}");
                 ReloadPlugin(dllPath);
             }
         }
 
+        /// <summary>
+        /// Dispose of the plugin loader
+        /// </summary>
         public void Dispose()
         {
             if (!isDisposed)

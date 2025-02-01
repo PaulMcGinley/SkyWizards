@@ -1,42 +1,47 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using System.Threading.Tasks;
 using libType;
 
 namespace LibraryEditor.Plugins
 {
-    public class PluginBase : IPlugin
+    public abstract class PluginBase : IPlugin
     {
-        public string Name => "Plugin Name";
-        public string Description => "Plugin Description";
-        public string Group => "General";
-        public string Author => "Your Name Here";
-        public Version Version => new(1, 0, 0);
+        public abstract string Name { get; }
+        public abstract string Description { get; }
+        public abstract string Group { get; }
+        public abstract string Author { get; }
+        public abstract Version Version { get; }
 
         /// <summary>
         /// Initialize the plugin
         /// </summary>
-        public virtual void Initialize()
-        {
-            Console.WriteLine($"Initialized: {Name} v{Version}");
-        }
+        public virtual void Initialize() { }
 
         /// <summary>
         /// Execute the plugin
         /// </summary>
-        public virtual void Execute()
-        {
-            Console.WriteLine($"[{Name}] - Execute");
-        }
+        [DisplayName("Execute"), Description("Small description of the function")]
+        public virtual void Execute() { }
 
         /// <summary>
         /// Pass a library to the plugin by reference
         /// The plugin can modify the library and the changes will be reflected in the main application
         /// </summary>
         /// <param name="library"></param>
-        public virtual void ExecuteWithLibrary(ref PLibrary library)
+        [DisplayName("ExecuteWithLibrary"), Description("Small description of the function")]
+        public virtual void ExecuteWithLibrary(ref PLibrary library) { }
+
+        /// <summary>
+        /// Execute the plugin asynchronously
+        /// </summary>
+        /// <param name="library"></param>
+        /// <returns></returns>
+        [DisplayName("ExecuteWithLibraryAsync"), Description("Small description of the function")]
+        public virtual Task ExecuteWithLibraryAsync(PLibrary library)
         {
-            Console.WriteLine($"[{Name}] - Execute with library:/n{library.FilePath}");
+            return Task.Run(() => ExecuteWithLibrary(ref library));
         }
 
         /// <summary>

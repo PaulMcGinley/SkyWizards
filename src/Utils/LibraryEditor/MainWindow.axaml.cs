@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -10,6 +12,8 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
+using LibraryEditor.Plugins;
 using LibraryEditor.Processors;
 using libType;
 using libType.Converters;
@@ -19,7 +23,6 @@ namespace LibraryEditor
     public partial class MainWindow : Window
     {
         private PLibrary library;
-        private bool needsSave = false;
         private int _selectedImageIndex = int.MinValue;
 
         private int SelectedImageIndex
@@ -73,14 +76,24 @@ namespace LibraryEditor
         {
             InitializeComponent();
 
+            App.PluginLoader.PluginsChanged += (s, e) =>
+            {
+                Dispatcher.UIThread.InvokeAsync(() => { PopulatePluginMenu(); });
+            };
+
             Loaded += MainWindow_Loaded;
-           // Closing += MainWindow_Closing; // this locks the user into the app due to cancelling th argument and prompting user to save
+            // Closing += MainWindow_Closing; // this locks the user into the app due to cancelling th argument and prompting user to save
+
         }
 
         #region Events
 
         private void MainWindow_Loaded(object? sender, EventArgs e)
         {
+            Console.WriteLine("MainWindow loaded");
+            App.PluginLoader.LoadPlugins();
+            PopulatePluginMenu();
+            
             mnuNew_OnClick(null, null); // Create a new library
             UpdateUI();
         }
@@ -89,7 +102,7 @@ namespace LibraryEditor
         private async void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true; // Cancel the closing event
-            if (needsSave)
+            if (library.needsSave)
             {
                 var result = await MessageBox.Show(this, "Do you want to save changes?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -139,7 +152,7 @@ namespace LibraryEditor
         /// <param name="e"></param>
         private async void mnuNew_OnClick(object? sender, RoutedEventArgs e)
         {
-            if (needsSave)
+            if (library != null && library.needsSave)
             {
                 var result = await MessageBox.Show(this, "Do you want to save changes?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -159,7 +172,7 @@ namespace LibraryEditor
 
             library = new PLibrary(string.Empty);
             SelectedImageIndex = int.MinValue;
-            needsSave = false; // False because we just created an empty object
+            library.needsSave = false; // False because we just created an empty object
 
             UpdateUI();
         }
@@ -210,7 +223,7 @@ namespace LibraryEditor
 
             Console.WriteLine(err);
             library = null;
-            needsSave = false;
+            library.needsSave = false;
 
             UpdateUI();
         }
@@ -315,7 +328,7 @@ namespace LibraryEditor
 
             // Save the library
             library.SaveNew(result.Path.LocalPath, out err);
-            needsSave = false;
+            library.needsSave = false;
 
             if (err != null)
             {
@@ -325,7 +338,7 @@ namespace LibraryEditor
 
         private async void mnuClose_Click(object? sender, RoutedEventArgs e)
         {
-            if (needsSave)
+            if (library.needsSave)
             {
                 var result = await MessageBox.Show(this, "Do you want to save changes?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -346,14 +359,12 @@ namespace LibraryEditor
             library?.Dispose();
             library = null;
 
-            needsSave = false;
-
             UpdateUI();
         }
 
         private async void mnuExit_Click(object? sender, RoutedEventArgs e)
         {
-            if (needsSave)
+            if (library.needsSave)
             {
                 var result = await MessageBox.Show(this, "Do you want to save changes?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -443,7 +454,7 @@ namespace LibraryEditor
                 //SelectedImageIndex = library.Images.Count - 1;
             }
 
-            needsSave = true;
+            library.needsSave = true;
 
             UpdateUI();
             await LoadImagesFromLibrary();
@@ -486,7 +497,7 @@ namespace LibraryEditor
                 library.Images.Add(image);
             }
 
-            needsSave = true;
+            library.needsSave = true;
 
             UpdateUI();
             await LoadImagesFromLibrary();
@@ -507,7 +518,7 @@ namespace LibraryEditor
                 }
             });
 
-            needsSave = true;
+            library.needsSave = true;
 
             UpdateUI();
             await LoadImagesFromLibrary();
@@ -528,7 +539,7 @@ namespace LibraryEditor
                 }
             });
 
-            needsSave = true;
+            library.needsSave = true;
 
             UpdateUI();
             await LoadImagesFromLibrary();
@@ -550,7 +561,7 @@ namespace LibraryEditor
                 return;
 
             library.Images.RemoveAt(SelectedImageIndex);
-            needsSave = true;
+            library.needsSave = true;
 
             if (library.Images.Count == 0)
             {
@@ -597,7 +608,7 @@ namespace LibraryEditor
             image.Data = imageData;
             library.Images[SelectedImageIndex] = image;
 
-            needsSave = true;
+            library.needsSave = true;
 
             UpdateUI();
             await LoadImagesFromLibrary();
@@ -683,7 +694,7 @@ namespace LibraryEditor
             library.Images.Insert(index, image);
 
             SelectedImageIndex = index;
-            needsSave = true;
+            library.needsSave = true;
 
             UpdateUI();
             await LoadImagesFromLibrary();
@@ -712,7 +723,7 @@ namespace LibraryEditor
             var image = library.Images[SelectedImageIndex];
             library.Images.Insert(index, image);
             SelectedImageIndex = index;
-            needsSave = true;
+            library.needsSave = true;
 
             UpdateUI();
             await LoadImagesFromLibrary();
@@ -739,7 +750,7 @@ namespace LibraryEditor
             }
 
             library.Images.RemoveAt(index);
-            needsSave = true;
+            library.needsSave = true;
 
             UpdateUI();
             await LoadImagesFromLibrary();
@@ -826,7 +837,7 @@ namespace LibraryEditor
             }
             else
             {
-                Title = $"Library Editor - {library.FilePath}{(needsSave ? "*" : "")}";
+                Title = $"Library Editor - {library.FilePath}{(library.needsSave ? "*" : "")}";
             }
 
             if (SelectedImageIndex < 0 || SelectedImageIndex >= library.Images.Count)
@@ -908,5 +919,87 @@ namespace LibraryEditor
         }
 
         #endregion
+
+        #region Plugins
+
+        
+        private void PopulatePluginMenu() {
+            mnuPlugins.Items.Clear();
+    
+            var plugins = App.PluginLoader.LoadedPlugins;
+            var groupedPlugins = plugins.Where(p => !string.IsNullOrEmpty(p.Group))
+                .GroupBy(p => p.Group);
+            var ungroupedPlugins = plugins.Where(p => string.IsNullOrEmpty(p.Group));
+    
+            // Add grouped plugins first
+            foreach (var group in groupedPlugins) {
+                var groupMenu = new MenuItem { Header = group.Key };
+                foreach (var plugin in group)
+                    AddPluginMenuItems(groupMenu.Items, plugin);
+                mnuPlugins.Items.Add(groupMenu);
+            }
+    
+            // Add separator if we have both grouped and ungrouped plugins
+            if (groupedPlugins.Any() && ungroupedPlugins.Any())
+                mnuPlugins.Items.Add(new Separator());
+    
+            // Add ungrouped plugins directly to menu
+            foreach (var plugin in ungroupedPlugins)
+                AddPluginMenuItems(mnuPlugins.Items, plugin);
+        }
+
+        private void AddPluginMenuItems(IList items, IPlugin plugin) {
+            // Get display names
+            string? execName = plugin.GetMethodDisplayName("Execute");
+            string? execLibName = plugin.GetMethodDisplayName("ExecuteWithLibrary");
+            string? execLibAsyncName = plugin.GetMethodDisplayName("ExecuteWithLibraryAsync");
+            
+            // Add Execute menu item if it has a display name
+            if (!string.IsNullOrEmpty(execName)) {
+                var execItem = new MenuItem { 
+                    Header = execName,
+                    //ToolTip.Tip = plugin.GetMethodDescription("Execute")
+                };
+                execItem.Click += (s,e) => plugin.Execute();
+                items.Add(execItem);
+            }
+    
+            // Add ExecuteWithLibrary menu item if it has a display name
+            if (!string.IsNullOrEmpty(execLibName)) {
+                var execLibItem = new MenuItem { 
+                    Header = execLibName,
+                    //ToolTip.Tip = plugin.GetMethodDescription("ExecuteWithLibrary")
+                };
+                execLibItem.Click += async (s, e) =>
+                {
+                    plugin.ExecuteWithLibrary(ref library);
+                    await LoadImagesFromLibrary();
+                    UpdateUI();
+                };
+                items.Add(execLibItem);
+            }
+            
+            // Add ExecuteWithLibraryAsync menu item if it has a display name
+            if (!string.IsNullOrEmpty(execLibAsyncName)) {
+                var execLibAsyncItem = new MenuItem {
+                    Header = execLibName + " Async",
+                    //ToolTip.Tip = plugin.GetMethodDescription("ExecuteWithLibraryAsync")
+                };
+                execLibAsyncItem.Click += async (s, e) =>
+                {
+                    // TODO: This crashes the program, i think its the plugin.ExecuteWithLibraryAsync(library) call
+                    // Some UI Thread issue
+                    // await plugin.ExecuteWithLibraryAsync(library);
+                    // await Dispatcher.UIThread.InvokeAsync(() => UpdateUI());
+                };
+                items.Add(execLibAsyncItem);
+            }
+        }
+
+        #endregion
+        
+        
+        
+        
     }
 }

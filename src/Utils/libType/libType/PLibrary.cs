@@ -15,6 +15,9 @@ namespace libType
 
         // Flag to detect redundant calls
         private bool disposed = false;
+        
+        // Flag to detect if the library needs to be saved
+        public bool needsSave = false;
 
         public PLibrary(string filePath)
         {
