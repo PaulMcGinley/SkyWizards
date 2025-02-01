@@ -1,4 +1,6 @@
-﻿public interface IPlugin
+namespace WizardPlugin.LibraryEditorPlugin;
+
+public interface IPlugin
 {
     string Name { get; }
     string Description { get; }
@@ -9,6 +11,7 @@
     void Initialize();
     void Execute();
     void ExecuteWithLibrary(ref libType.PLibrary library);
-    public string GetMethodDisplayName(string methodName);
+    Task ExecuteWithLibraryAsync(libType.PLibrary library);
+    public string? GetMethodDisplayName(string methodName);
     public string GetMethodDescription(string methodName);
 }

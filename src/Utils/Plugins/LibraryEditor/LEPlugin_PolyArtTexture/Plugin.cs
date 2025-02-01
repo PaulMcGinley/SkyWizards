@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel;
-using LibraryEditor.Plugins;
 using libType;
 
 namespace LEPlugin_PolyArtTexture
 {
-    public class Plugin : PluginBase
+    public class Plugin : WizardPlugin.LibraryEditorPlugin.PluginBase
     {
         public override string Name => "PolyArt Generator";
         public override string Description => "Generate PolyArt textures";

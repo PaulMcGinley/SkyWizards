@@ -55,11 +55,11 @@ src/Utils/LevelObjectEditor/[Bb]in/
 src/Utils/LevelObjectEditor/[Oo]bj/
 src/Utils/LevelObjectEditor/LevelObjectEditor.sln.DotSettings.user
 
-# IPlugin (Interface Plugin)
-src/Utils/IPlugin/.*/
-src/Utils/IPlugin/IPlugin/[Bb]in/
-src/Utils/IPlugin/IPlugin/[Oo]bj/
-src/Utils/IPlugin/IPlugin.sln.DotSettings.user
+# WizardPlugin (Interface Plugin)
+src/Utils/WizardPlugin/.*/
+src/Utils/WizardPlugin/[Bb]in/
+src/Utils/WizardPlugin/[Oo]bj/
+src/Utils/WizardPlugin.sln.DotSettings.user
 
 # Library Editor Plugins
 src/Utils/Plugins/*/LEPlugin_*/.*/

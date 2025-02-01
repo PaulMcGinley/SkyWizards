@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LEPlugin_PolyArtTexture", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LEPlugin_PolyArtTexture_AB", "..\Plugins\LibraryEditor\LEPlugin_PolyArtTexture_AB\LEPlugin_PolyArtTexture_AB.csproj", "{54C8F093-5E50-4270-B0B3-EE9C5AB3EA5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WizardPlugin", "..\WizardPlugin\WizardPlugin.csproj", "{93635FC9-6E04-4E17-A250-1E5E8763F728}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,5 +33,9 @@ Global
 		{54C8F093-5E50-4270-B0B3-EE9C5AB3EA5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54C8F093-5E50-4270-B0B3-EE9C5AB3EA5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54C8F093-5E50-4270-B0B3-EE9C5AB3EA5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93635FC9-6E04-4E17-A250-1E5E8763F728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93635FC9-6E04-4E17-A250-1E5E8763F728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93635FC9-6E04-4E17-A250-1E5E8763F728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93635FC9-6E04-4E17-A250-1E5E8763F728}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

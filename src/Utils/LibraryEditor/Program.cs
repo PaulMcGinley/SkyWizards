@@ -1,7 +1,7 @@
-﻿﻿using Avalonia;
+﻿using Avalonia;
 using System;
 using System.IO;
-using LibraryEditor.Plugins;
+using WizardPlugin.LibraryEditorPlugin;
 
 namespace LibraryEditor;
 
@@ -18,7 +18,6 @@ class Program
         string pluginsPath = Path.Combine(exePath, "plugins");
         
         var pluginLoader = new PluginLoader(pluginsPath);
-        //pluginLoader.LoadPlugins();
         
         // Store plugin loader instance for access throughout the application
         App.PluginLoader = pluginLoader;

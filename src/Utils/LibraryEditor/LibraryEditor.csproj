@@ -27,6 +27,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\libType\libType\libType.csproj" />
+      <ProjectReference Include="..\WizardPlugin\WizardPlugin.csproj" />
     </ItemGroup>
 
     <Target Name="CreatePluginsDirectory" AfterTargets="Build">

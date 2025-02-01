@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,10 +12,10 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using LibraryEditor.Plugins;
 using LibraryEditor.Processors;
 using libType;
 using libType.Converters;
+using WizardPlugin.LibraryEditorPlugin;
 
 namespace LibraryEditor
 {

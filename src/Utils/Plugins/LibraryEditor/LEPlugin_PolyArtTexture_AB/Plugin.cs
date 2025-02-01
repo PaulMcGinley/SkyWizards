@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel;
-using Avalonia.Media.Imaging;
-using LibraryEditor.Plugins;
 using libType;
 
 namespace LEPlugin_PolyArtTexture_AB
 {
-    public class Plugin : PluginBase
+    public class Plugin : WizardPlugin.LibraryEditorPlugin.PluginBase
     {
         public override string Name => "ABolton PolyArt Generator";
         public override string Description => "Generate PolyArt textures";
