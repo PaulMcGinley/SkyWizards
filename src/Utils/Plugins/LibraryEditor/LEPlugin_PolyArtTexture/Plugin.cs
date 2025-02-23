@@ -71,7 +71,5 @@ namespace LEPlugin_PolyArtTexture
         {
             return Task.Run(() => ExecuteWithLibrary(ref library));
         }
-        
-        
     }
 }

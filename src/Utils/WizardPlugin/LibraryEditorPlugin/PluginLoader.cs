@@ -57,7 +57,7 @@ public class PluginLoader : IDisposable
             attempt++;
 
             // Add a small delay to ensure the file is fully written
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(100);
             if (attempt > 10)
             {
                 Console.WriteLine($"Failed to reload plugin {e.FullPath} after 10 attempts");

@@ -115,7 +115,7 @@ public:
                         // Position heart based on row and column (max 10 per row)
                         const int row_count = i / hearts_per_row;
                         const int column_count = i % hearts_per_row;
-                        heart_sprite.setPosition(position.x + column_count * heart_size.x * scale,
+                        heart_sprite.setPosition(position.x + column_count * heart_size.x * scale - ((i*1)%hearts_per_row) * scale,
                                                 position.y - (row_count * 5 * scale) + row_count * heart_size.y * scale);
 
                         window.draw(heart_sprite);
@@ -123,9 +123,9 @@ public:
         }
 
 private:
-        int maximum_health = 80;            // Maximum health
-        int current_health = 80;       // Current health
-        int target_health = 80;        // Target health to animate to
+        int maximum_health = 4;            // Maximum health
+        int current_health = 4;       // Current health
+        int target_health = 4;        // Target health to animate to
         float next_update_time = 0;     // Next time the health should be updated
 
         const int hearts_per_row = 10;    // Limit to 10 hearts per row

@@ -4,13 +4,14 @@
 
 #include "IOManager.h"
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
 std::string IOManager::ReadFile(const std::string& filePath) {
         std::ifstream file(filePath);
         if (!file.is_open()) {
-                throw std::runtime_error("Could not open file for reading: " + filePath);
+                std::cout << "Could not open file for reading: " << filePath << std::endl;
         }
 
         std::stringstream buffer;
@@ -22,7 +23,7 @@ std::string IOManager::ReadFile(const std::string& filePath) {
 std::string IOManager::WriteFile(const std::string& filePath, const std::string& content) {
         std::ofstream file(filePath);
         if (!file.is_open()) {
-                throw std::runtime_error("Could not open file for writing: " + filePath);
+                std::cout << "Could not open file for writing: " << filePath << std::endl;
         }
 
         file << content;

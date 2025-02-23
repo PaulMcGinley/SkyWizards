@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace libType
 {
     public class PLibrary : IDisposable
@@ -18,6 +20,8 @@ namespace libType
         
         // Flag to detect if the library needs to be saved
         public bool needsSave = false;
+        
+        public byte GetVersion() => Version;
 
         public PLibrary(string filePath)
         {

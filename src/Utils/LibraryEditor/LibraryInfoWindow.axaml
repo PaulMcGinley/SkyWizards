@@ -1,0 +1,70 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="450"
+        Width="350" Height="450"
+        x:Class="LibraryEditor.LibraryInfoWindow"
+        Title="Library Info">
+    <StackPanel Margin="10">
+        <!-- File Name and Size -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Name="FileNameHeaderTextBox" Text="FileName" FontWeight="Bold" FontSize="16" />
+            <TextBlock Grid.Column="1" Name="FileSizeHeaderTextBox" Text="FileSize" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- Last Modified Date -->
+        <TextBlock Name="LastModifiedHeaderTextBlock" Text="LastModified" Margin="0,5,0,10" />
+
+        <!-- Collapsible Group: General Info -->
+        <Expander Header="General Info" IsExpanded="True" BorderThickness="0" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"  />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" Text="Kind:" />
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="..." Name="KindTextBlock" />
+                <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Text="Size:" />
+                <TextBlock Grid.Column="2" Grid.Row="1" Text="..." Name="SizeTextBlock" />
+                <TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Text="Path:" />
+                <TextBlock Grid.Column="2" Grid.Row="2" Text="..." Name="PathTextBlock" />
+                <TextBlock Grid.Column="0" Grid.Row="3" HorizontalAlignment="Right" Text="Created:" />
+                <TextBlock Grid.Column="2" Grid.Row="3" Text="..." Name="CreatedTextBlock" />
+                <TextBlock Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right" Text="Last Modified:" />
+                <TextBlock Grid.Column="2" Grid.Row="4" Text="..." Name="LastModifiedTextBlock" />
+            </Grid>
+        </Expander>
+
+        <!-- Collapsible Group: More Info -->
+        <Expander Header="More Info" IsExpanded="True" Margin="0,10,0,0" BorderThickness="0" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" Text="Version:" />
+                <TextBlock Grid.Column="2" Grid.Row="0" Text="..." Name="VersionTextBlock" />
+                <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Text="Images:" />
+                <TextBlock Grid.Column="2" Grid.Row="1" Text="..." Name="ImageCountTextBlock" />
+            </Grid>
+        </Expander>
+    </StackPanel>
+</Window>

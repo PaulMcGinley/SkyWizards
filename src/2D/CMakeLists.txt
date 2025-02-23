@@ -10,6 +10,10 @@ find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
 add_executable(LoSW___BftS main.cpp
         Game.h
         Game.cpp
+        interfaces/IAnimate.cpp
+        interfaces/IAnimate.h
+        interfaces/IUpdate.h
+        interfaces/IDraw.h
         models/AniSequence.h
         models/GameTime.h
         models/TextureEntry.h
@@ -18,10 +22,6 @@ add_executable(LoSW___BftS main.cpp
         objects/Player.h
         enums/AniType.h
         enums/FaceDirection.h
-        interfaces/IAnimate.cpp
-        interfaces/IAnimate.h
-        interfaces/IUpdate.h
-        interfaces/IDraw.h
         managers/AssetManager.cpp
         models/ParallaxBackground.h
         objects/mobs/ChestMonster.cpp

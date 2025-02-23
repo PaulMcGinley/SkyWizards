@@ -60,10 +60,10 @@ void Player::update(GameTime gameTime) {
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                     changeAnimation(AnimationType::ANIMATION_RUN, gameTime);
-                    position.x -= 0.1f;
+                    position.x -= RUNNING_SPEED * gameTime.delta_time;
                 } else {
                     changeAnimation(AnimationType::ANIMATION_WALK, gameTime);
-                    position.x -= 0.06f;
+                    position.x -= WALKING_SPEED * gameTime.delta_time;
                 }
         }
 
@@ -72,10 +72,10 @@ void Player::update(GameTime gameTime) {
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                     changeAnimation(AnimationType::ANIMATION_RUN, gameTime);
-                    position.x += 0.1f;
+                    position.x += RUNNING_SPEED * gameTime.delta_time;
                 } else {
                     changeAnimation(AnimationType::ANIMATION_WALK, gameTime);
-                    position.x += 0.04f;
+                    position.x += WALKING_SPEED * gameTime.delta_time;
                 }
         }
 

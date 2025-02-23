@@ -10,22 +10,26 @@
         <!-- Menu at the top -->
         <Menu DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="0,0,0,1">
             <MenuItem Header="Library" FontWeight="Bold">
-                <MenuItem Header="New" Click="mnuNew_OnClick"/>
+                <MenuItem Header="New" Click="mnuNew_OnClick" InputGesture="Ctrl+N"/>
                 <Separator/>
-                <MenuItem Header="Open" Click="mnuOpen_Click"/>
+                <MenuItem Header="Open" Click="mnuOpen_Click" InputGesture="Ctrl+O"/>
                 <Separator/>
                 <MenuItem Header="Convert" Click="mnuConvert_Click"/>
                 <Separator/>
-                <MenuItem Header="Save" Click="mnuSave_Click"/>
-                <MenuItem Header="Save As" Click="mnuSaveAs_Click"/>
+                <MenuItem Header="Save" Click="mnuSave_Click" InputGesture="Ctrl+S"/>
+                <MenuItem Header="Save As" Click="mnuSaveAs_Click" InputGesture="Ctrl+Shift+S"/>
                 <Separator/>
-                <MenuItem Header="Close" Click="mnuClose_Click"/>
+                <MenuItem Header="Close" Click="mnuClose_Click" InputGesture="Ctrl+Q"/>
                 <Separator/>
-                <MenuItem Header="Exit" Click="mnuExit_Click"/>
+                <MenuItem Header="Info" Click="mnuInfo_OnClick" InputGesture="Ctrl+I"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="mnuExit_Click" InputGesture="Ctrl+Shift+Q"/>
             </MenuItem>
             <MenuItem Header="Edit">
                 <MenuItem Header="Trim Whitespace" Click="mnuTrimWhitespace_Click" ToolTip.Tip="Removes the empty rows and columns from an image.&#x0a;Rows to the top and columns to the left will be tracked while removing and update the X and Y offset accordingly.&#x0a;These offsets are vital for ensuring animated sequences are drawn correctly.&#x0a;&#x0a;Metadata is lost during this process."/>
                 <MenuItem Header="Remove Metadata" Click="mnuRemoveMetadata_Click" ToolTip.Tip="Note: Trimming whitespace will also remove all Meta data."/>
+                <Separator/>
+                <MenuItem Header="Export Image" Click="mnuExportImage_Click"/>
             </MenuItem>
             <MenuItem Header="Insert">
                 <MenuItem Header="Images" Click="mnuInsertImages_Click"/>
@@ -101,8 +105,6 @@
                             <MenuItem Header="Remove" Click="mnuImageRemove_Click"/>
                             <MenuItem Header="Replace" Click="mnuImageReplace_Click"/>
                             <Separator/>
-                            <!-- <MenuItem Header="Trim Whitespace"/> -->
-                            <!-- <MenuItem Header="Remove Exif Data"/> -->
                             <TextBox Name="tbImage_Command" Width="150" KeyDown="ImageCommand_Enter"/>
                         </MenuItem>
                         <MenuItem Header="|◄" Click="mnuFirst_Click"/>
@@ -127,9 +129,9 @@
                             </Image>
                         </Canvas>
                         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="Gray"/>
-                        <ScrollViewer HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="2">
+                        <ScrollViewer HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="2" Margin="0">
                             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <ItemsControl Name="ImageGrid" Margin="0">
+                                <ItemsControl Name="ImageGrid">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel/>

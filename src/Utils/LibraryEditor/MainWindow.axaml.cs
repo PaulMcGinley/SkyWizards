@@ -996,9 +996,48 @@ namespace LibraryEditor
         }
 
         #endregion
-        
-        
-        
-        
+
+
+        private async void mnuExportImage_Click(object? sender, RoutedEventArgs e)
+        {
+            if (library == null)
+                return;
+            
+            if (SelectedImageIndex < 0 || SelectedImageIndex >= library.Images.Count)
+                return;
+            
+            var image = library.Images[SelectedImageIndex];
+            
+            var dialog = new SaveFileDialog
+            {
+                Title = "Export Image",
+                Filters = new List<FileDialogFilter>
+                {
+                    new FileDialogFilter { Name = "PNG Files", Extensions = ["png"] }
+                }
+            };
+            
+            var path = await dialog.ShowAsync(this);
+            
+            
+            await using var stream = new FileStream(path.ToString(), FileMode.Create);
+            await stream.WriteAsync(image.Data);
+            
+            
+            
+            Console.WriteLine($"Exported image to {path}");
+        }
+
+        private void mnuInfo_OnClick(object? sender, RoutedEventArgs e)
+        {
+            if (library == null)
+                return;
+            
+            if (library.FilePath == string.Empty)
+                return;
+            
+            var infoWindow = new LibraryInfoWindow(library.FilePath, library.Images.Count(), library.GetVersion());
+            infoWindow.Show();
+        }
     }
 }

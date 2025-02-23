@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>../../../../../Build/Debug/Utils/Library Editor/plugins</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="../../../libType/libType/libType.csproj" />
     <ProjectReference Include="..\..\..\WizardPlugin\WizardPlugin.csproj" />

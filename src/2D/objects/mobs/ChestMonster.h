@@ -4,32 +4,32 @@
 
 #ifndef CHESTMONSTER_H
 #define CHESTMONSTER_H
-#include <SFML/Graphics/VertexArray.hpp>
 
+#include <SFML/Graphics/VertexArray.hpp>
 #include "enums/FaceDirection.h"
 #include "interfaces/IAnimate.h"
 #include "interfaces/IDraw.h"
 #include "interfaces/IUpdate.h"
 
-
 class ChestMonster final : public IAnimate, public IUpdate, public IDraw {
-
 public:
     ChestMonster();
 
-    sf::VertexArray texQuad{sf::Quads, 4};
+    sf::VertexArray texture_quads{sf::Quads, 4};
+
     void update(GameTime gameTime) override;
     void lateUpdate(GameTime gameTime) override;
     void draw(sf::RenderWindow& window, GameTime gameTime) override;
-    FaceDirection faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
+
+    FaceDirection face_direction = FaceDirection::FACE_DIRECTION_LEFT;
     sf::Vector2f position = {0, 0};
     int frame() {
-        return sequences[current_animation].startFrame + current_animation_frame + faceDirection;
+        return sequences[current_animation].startFrame + current_animation_frame + face_direction;
     }
 
 private:
-    const float walkSpeed = 100;
-    const float runSpeed = 200;
+    const float WALK_SPEED = 100;
+    const float RUN_SPEED = 200;
 };
 
 

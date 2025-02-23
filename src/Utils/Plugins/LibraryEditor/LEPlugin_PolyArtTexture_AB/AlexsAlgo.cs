@@ -73,9 +73,9 @@ namespace LEPlugin_PolyArtTexture_AB
                 // Define colors close to yellow
                 var colors = new[]
                 {
-                    new SKColor(255, 190, 140),    // Yellow
-                    new SKColor(255, 165, 0),  // Light Yellow
-                    new SKColor(200, 120, 0)   // Pale Yellow
+                    new SKColor(255, 190, 140),
+                    new SKColor(255, 165, 0),
+                    new SKColor(200, 120, 0)
                 };
 
                 foreach (var nodeWithNeighbors in nodesWithNeighbors)

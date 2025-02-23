@@ -34,9 +34,9 @@ void ChestMonster::update(GameTime gameTime) {
         // Walk AI
         if (current_animation == AnimationType::ANIMATION_WALK) {
                 // Calculate how much to move
-                float moveDistance =  walkSpeed * gameTime.delta_time;
+                float moveDistance =  WALK_SPEED * gameTime.delta_time;
 
-                switch (faceDirection) {
+                switch (face_direction) {
                         case FaceDirection::FACE_DIRECTION_LEFT:
                                 position.x -= moveDistance;
                         break;
@@ -50,9 +50,9 @@ void ChestMonster::update(GameTime gameTime) {
         // Run AI
         if (current_animation == AnimationType::ANIMATION_RUN) {
                 // Calculate how much to move
-                float moveDistance =  runSpeed * gameTime.delta_time;
+                float moveDistance =  RUN_SPEED * gameTime.delta_time;
 
-                switch (faceDirection) {
+                switch (face_direction) {
                         case FaceDirection::FACE_DIRECTION_LEFT:
                                 position.x -= moveDistance;
                         break;
@@ -65,15 +65,15 @@ void ChestMonster::update(GameTime gameTime) {
 
         TextureEntry* entry = asset_manager.getChestMonsterFrame_ptr(frame());
 
-        texQuad[0].texCoords = entry->texQuad[0].texCoords;
-        texQuad[1].texCoords = entry->texQuad[1].texCoords;
-        texQuad[2].texCoords = entry->texQuad[2].texCoords;
-        texQuad[3].texCoords = entry->texQuad[3].texCoords;
+        texture_quads[0].texCoords = entry->texQuad[0].texCoords;
+        texture_quads[1].texCoords = entry->texQuad[1].texCoords;
+        texture_quads[2].texCoords = entry->texQuad[2].texCoords;
+        texture_quads[3].texCoords = entry->texQuad[3].texCoords;
 
-        texQuad[0].position = entry->texQuad[0].position + position;
-        texQuad[1].position = entry->texQuad[1].position + position;
-        texQuad[2].position = entry->texQuad[2].position + position;
-        texQuad[3].position = entry->texQuad[3].position + position;
+        texture_quads[0].position = entry->texQuad[0].position + position;
+        texture_quads[1].position = entry->texQuad[1].position + position;
+        texture_quads[2].position = entry->texQuad[2].position + position;
+        texture_quads[3].position = entry->texQuad[3].position + position;
 }
 
 void ChestMonster::lateUpdate(GameTime gameTime) {
@@ -82,7 +82,7 @@ void ChestMonster::lateUpdate(GameTime gameTime) {
 
 void ChestMonster::draw(sf::RenderWindow& window, GameTime gameTime) {
         window.draw(
-            texQuad,
+            texture_quads,
             &asset_manager.getChestMonsterFrame_ptr(frame())->texture
         );
 }
