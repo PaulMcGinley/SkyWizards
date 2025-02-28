@@ -27,8 +27,9 @@ public class PluginLoader : IDisposable
         // Set up file system watcher
         watcher = new FileSystemWatcher(pluginPath, "*.dll")
         {
-            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.CreationTime,
-            EnableRaisingEvents = true
+            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess | NotifyFilters.CreationTime,
+            EnableRaisingEvents = true,
+            IncludeSubdirectories = true
         };
 
         watcher.Created += OnPluginChanged;
@@ -78,13 +79,11 @@ public class PluginLoader : IDisposable
     {
         try
         {
-            using (FileStream stream = File.Open(fullPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
-            {
-                // File is not locked
+            using FileStream stream = File.Open(fullPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            // File is not locked
 
-                // Close the file
-                stream.Close();
-            }
+            // Close the file
+            stream.Close();
         }
         catch (IOException)
         {

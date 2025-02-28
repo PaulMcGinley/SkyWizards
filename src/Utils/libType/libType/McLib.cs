@@ -147,7 +147,9 @@ public class McLib : IDisposable
 
         lock (_lockObject)
         {
-            var entryOffset = _header.FatOffset + 4 + (index * Marshal.SizeOf<PfmEntry>());
+            const int HeaderSize = 4; // Size of the integer that stores the count of entries in the FAT
+            int entrySize = Marshal.SizeOf<PfmEntry>();
+            var entryOffset = _header.FatOffset + HeaderSize + (index * entrySize);
             return ReadStructure<PfmEntry>(entryOffset);
         }
     }
@@ -376,7 +378,7 @@ public class McLib : IDisposable
     /// <param name="structure">The structure to write.</param>
     private void WriteStructure<T>(T structure) where T : struct
     {
-        if (_fileStream == null){
+        if (_fileStream == null) {
             Console.WriteLine("No file is open");
             return;
         }
