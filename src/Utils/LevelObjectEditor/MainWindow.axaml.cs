@@ -682,7 +682,7 @@ public partial class MainWindow : Window
     {
         if (objectLibrary == null)
         {
-            lbImageIndex.Text = "";
+            //lbImageIndex.Text = "";
             lbX.Text = "";
             lbY.Text = "";
             lbWidth.Text = "";
@@ -700,7 +700,7 @@ public partial class MainWindow : Window
             if (index >= 0 && index < objectLibrary?.Images?.Count)
             {
                 var layer = objectLibrary.Images[index];
-                lbImageIndex.Text = layer.BackIndex.ToString();
+                //lbImageIndex.Text = layer.BackIndex.ToString();
                 lbX.Text = layer.X.ToString();
                 lbY.Text = layer.Y.ToString();
                 txtBackAnimLength.Text = layer.BackAnimationLength.ToString();
@@ -810,6 +810,22 @@ public partial class MainWindow : Window
         }
     }
 
+    private void TogglePanels(bool showGraphics)
+    {
+        if (GraphicsPanel == null || BoundariesPanel == null)
+            return;
+        
+        try
+        {
+            GraphicsPanel.IsVisible = showGraphics;
+            BoundariesPanel.IsVisible = !showGraphics;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+    
     #endregion
 
     private void mnuGraphicsLayerEffects_Click(object? sender, RoutedEventArgs e)
@@ -821,6 +837,12 @@ public partial class MainWindow : Window
     {
         if (sender is not TabControl tabControl)
             return;
+        
+        // TODO: Move this to a separate function to avoid code duplication
+        if (GraphicsPanel == null || BoundariesPanel == null)
+            return;
+        
+        TogglePanels(tabControl.SelectedIndex == 0);
 
         try
         {
