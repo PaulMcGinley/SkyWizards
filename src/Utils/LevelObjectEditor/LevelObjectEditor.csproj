@@ -24,10 +24,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="LObject\" />
+      <AvaloniaXaml Remove="Styles\SliderStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>
-      <AvaloniaXaml Remove="Styles\SliderStyles.axaml" />
+      <Compile Update="SetupViews\PublisherDetails.axaml.cs">
+        <DependentUpon>PublisherDetails.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Configurations\" />
     </ItemGroup>
 </Project>

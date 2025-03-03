@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="800" Height="450"
+        x:Class="LevelObjectEditor.SetupWindow"
+        Title="Editor Setup">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel -->
+        <ScrollViewer Grid.Column="0" Margin="0,5,0,0">
+            <StackPanel>
+                <TextBlock Text="Editor" FontWeight="Bold" FontSize="16" Margin="5,0,0,5"/>
+                <Button Content="Paths" Click="Editor_Paths_Click" Background="Transparent" BorderBrush="Transparent" Padding="15,5,0,5" HorizontalAlignment="Stretch" CornerRadius="0,20,20,0"/>
+                
+                
+                <TextBlock Text="Publish" FontWeight="Bold" FontSize="16" Margin="5,20,0,5"/>
+                <Button Content="Publisher Details" Click="Publish_PublisherDetails_Click" Background="Transparent" BorderBrush="Transparent" Padding="15,5,0,5" HorizontalAlignment="Stretch" CornerRadius="0,20,20,0"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Right Panel -->
+        <ScrollViewer Grid.Column="1" Margin="10">
+            <ContentControl x:Name="RightPanel"/>
+        </ScrollViewer>
+    </Grid>
+</Window>

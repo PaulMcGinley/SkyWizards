@@ -3,11 +3,11 @@ using System.IO.Compression;
 
 namespace libType;
 
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
 /// <summary>
 /// Header structure for the library
 /// Total size: 21 bytes
 /// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PfmHeader  // Total size: 21 bytes
 {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
@@ -17,11 +17,11 @@ public struct PfmHeader  // Total size: 21 bytes
     public long FatOffset;    // 8 bytes
 }
 
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
 /// <summary>
 /// Entry structure for each image
 /// Total size: 28 bytes
 /// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PfmEntry  // Total size: 28 bytes
 {
     public long ImageOffset;  // 8 bytes

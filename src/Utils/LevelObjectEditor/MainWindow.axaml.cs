@@ -27,26 +27,49 @@ public partial class MainWindow : Window
 
     // Boundary layer constants
     private const double HandleSize = 10;
-    private const double MinWidth = 100;
+    private const double MinWidth = 25;
     private const double MinHeight = 25;
-    
+
     // Sequencer
     private bool sequencerVisible = false;
-    private const char SequencerVisibleHeader = '\u25cf';
-    private const char SequencerHiddenHeader = '\u25cb';
+    private const char SequencerVisibleHeader = '\u25cf'; // Filled circle
+    private const char SequencerHiddenHeader = '\u25cb'; // Empty circle
 
+    #region This Form
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public MainWindow()
     {
         InitializeComponent();
+
+        // Add an event handler for the Loaded event
+        // We need to wait for the form to load before we can interact with the UI elements
         Loaded += MainWindow_Loaded;
     }
 
+    /// <summary>
+    /// Event handler for the Loaded event
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
-        OpenLibrary();
+        // Simulate a click on the New menu item to create a new object library
         mnuNew_Click(sender, e);
+
+        // TODO: This tool should read the client as we will not be limited to a single library
+        OpenLibrary();
     }
 
+    #endregion
+
+    #region Library
+    
+    /// <summary>
+    /// Function to open the library file
+    /// </summary>
     private async void OpenLibrary()
     {
         var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
@@ -79,6 +102,9 @@ public partial class MainWindow : Window
         lbLibraryPath.Header = library.FilePath;
     }
 
+    /// <summary>
+    /// Load the images from the library and object library
+    /// </summary>
     private void LoadImages()
     {
         if (library?.Images == null || objectLibrary?.Images == null)
@@ -94,7 +120,7 @@ public partial class MainWindow : Window
 
             var image = new Image
             {
-                Source = LoadImage(library.Images[graphic.BackIndex].Data),
+                Source = CreateImage(library.Images[graphic.BackIndex].Data),
             };
 
             Canvas.SetLeft(image, graphic.X);
@@ -114,12 +140,19 @@ public partial class MainWindow : Window
         }
     }
 
-    private Bitmap LoadImage(byte[] imageData)
+    /// <summary>
+    /// Create a bitmap image from the image data
+    /// </summary>
+    /// <param name="imageData"></param>
+    /// <returns></returns>
+    private Bitmap CreateImage(byte[] imageData)
     {
         using var stream = new MemoryStream(imageData);
         return new Bitmap(stream);
     }
 
+    #endregion
+    
     #region Object Manipulation
 
     private void Image_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
@@ -312,6 +345,7 @@ public partial class MainWindow : Window
         {
             // Ask the user if they want to save the current object
         }
+
         Close();
     }
 
@@ -457,6 +491,11 @@ public partial class MainWindow : Window
         LayersList.SelectedIndex = index + 1;
     }
 
+    private void mnuGraphicsLayerEffects_Click(object? sender, RoutedEventArgs e)
+    {
+
+    }
+
     #endregion
 
     #region Boundary Layers
@@ -515,15 +554,27 @@ public partial class MainWindow : Window
         AddResizeHandles(rectangle, boundaryIndex);
     }
 
+    /// <summary>
+    /// Adds resize handles to the boundary rectangle
+    /// </summary>
+    /// <param name="rectangle"></param>
+    /// <param name="boundaryIndex"></param>
     private void AddResizeHandles(Rectangle rectangle, int boundaryIndex)
     {
-        // Add all four corner handles
         AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Top, boundaryIndex);
         AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Top, boundaryIndex);
         AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Bottom, boundaryIndex);
         AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom, boundaryIndex);
     }
 
+    /// <summary>
+    /// Adds a resize handle to the boundary rectangle
+    /// Called from AddResizeHandles
+    /// </summary>
+    /// <param name="rectangle"></param>
+    /// <param name="horizontalAlignment"></param>
+    /// <param name="verticalAlignment"></param>
+    /// <param name="boundaryIndex"></param>
     private void AddHandle(Rectangle rectangle, HorizontalAlignment horizontalAlignment,
         VerticalAlignment verticalAlignment, int boundaryIndex)
     {
@@ -546,6 +597,13 @@ public partial class MainWindow : Window
         ImageCanvas.Children.Add(handle);
     }
 
+    /// <summary>
+    /// Updates the position of the handle based on the boundary position
+    /// </summary>
+    /// <param name="handle"></param>
+    /// <param name="rectangle"></param>
+    /// <param name="horizontalAlignment"></param>
+    /// <param name="verticalAlignment"></param>
     private void UpdateHandlePosition(Rectangle handle, Rectangle rectangle, HorizontalAlignment horizontalAlignment,
         VerticalAlignment verticalAlignment)
     {
@@ -566,6 +624,11 @@ public partial class MainWindow : Window
         Canvas.SetTop(handle, top);
     }
 
+    /// <summary>
+    /// Update the position and size of the boundary when the handle is dragged
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void Rectangle_PointerMoved(object? sender, PointerEventArgs e)
     {
         if (!isDragging || sender is not Rectangle rectangle || rectangle.Tag is not int boundaryIndex)
@@ -584,8 +647,9 @@ public partial class MainWindow : Window
         // Update handle positions
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment> handleData
-                && handleData.Item1 == boundaryIndex)
+            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment>
+                                              handleData
+                                          && handleData.Item1 == boundaryIndex)
             {
                 UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
             }
@@ -604,6 +668,11 @@ public partial class MainWindow : Window
         clickPosition = position;
     }
 
+    /// <summary>
+    /// Start dragging the boundary rectangle
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void Rectangle_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Rectangle rectangle)
@@ -614,6 +683,11 @@ public partial class MainWindow : Window
         e.Pointer.Capture(rectangle);
     }
 
+    /// <summary>
+    /// Stop dragging the boundary rectangle
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void Rectangle_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (sender is not Rectangle rectangle)
@@ -648,8 +722,9 @@ public partial class MainWindow : Window
         // Update handle positions
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment> handleData
-                && handleData.Item1 == boundaryIndex)
+            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment>
+                                              handleData
+                                          && handleData.Item1 == boundaryIndex)
             {
                 UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
             }
@@ -677,6 +752,31 @@ public partial class MainWindow : Window
     #endregion
 
     #region Updaters
+
+    private void ContentTabs_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is not TabControl tabControl)
+            return;
+
+        // TODO: Move this to a separate function to avoid code duplication
+        if (!UIElement_LayerTabsLoaded)
+            return;
+
+        TogglePanels(tabControl.SelectedIndex == 0);
+
+        try
+        {
+            if (tabControl.SelectedIndex == 0)
+                BoundaryLayersList.SelectedIndex = -1;
+
+            if (tabControl.SelectedIndex == 1)
+                LayersList.SelectedIndex = -1;
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+        }
+    }
 
     private void UpdateUI(bool updateLayers = false)
     {
@@ -736,7 +836,7 @@ public partial class MainWindow : Window
 
             if (layer.BackIndex >= 0 && layer.BackIndex < library.Images.Count)
             {
-                var imageSource = LoadImage(library.Images[layer.BackIndex].Data);
+                var imageSource = CreateImage(library.Images[layer.BackIndex].Data);
                 var image = new Image
                 {
                     Source = imageSource,
@@ -769,8 +869,12 @@ public partial class MainWindow : Window
             {
                 Text =
                     $"Pos: {objectLibrary.Images[i].X}, {objectLibrary.Images[i].Y}\n" +
-                    $"Back: {objectLibrary.Images[i].BackIndex}" + (objectLibrary.Images[i].BackAnimationLength > 0 ? $" (Anim: {objectLibrary.Images[i].BackAnimationLength})" : "") + "\n" +
-                    $"Front: {objectLibrary.Images[i].FrontIndex}" + (objectLibrary.Images[i].FrontAnimationLength > 0 ? $" (Anim: {objectLibrary.Images[i].FrontAnimationLength})" : ""),
+                    $"Back: {objectLibrary.Images[i].BackIndex}" + (objectLibrary.Images[i].BackAnimationLength > 0
+                        ? $" (Anim: {objectLibrary.Images[i].BackAnimationLength})"
+                        : "") + "\n" +
+                    $"Front: {objectLibrary.Images[i].FrontIndex}" + (objectLibrary.Images[i].FrontAnimationLength > 0
+                        ? $" (Anim: {objectLibrary.Images[i].FrontAnimationLength})"
+                        : ""),
                 VerticalAlignment = VerticalAlignment.Center
             };
 
@@ -812,9 +916,9 @@ public partial class MainWindow : Window
 
     private void TogglePanels(bool showGraphics)
     {
-        if (GraphicsPanel == null || BoundariesPanel == null)
+        if (!UIElement_LayerTabsLoaded)
             return;
-        
+
         try
         {
             GraphicsPanel.IsVisible = showGraphics;
@@ -825,39 +929,24 @@ public partial class MainWindow : Window
             Console.WriteLine(e);
         }
     }
-    
+
     #endregion
 
-    private void mnuGraphicsLayerEffects_Click(object? sender, RoutedEventArgs e)
-    {
-        //  throw new NotImplementedException();
-    }
+    #region Validation
 
-    private void ContentTabs_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (sender is not TabControl tabControl)
-            return;
-        
-        // TODO: Move this to a separate function to avoid code duplication
-        if (GraphicsPanel == null || BoundariesPanel == null)
-            return;
-        
-        TogglePanels(tabControl.SelectedIndex == 0);
+    /// <summary>
+    /// Check if the GraphicsPanel and BoundariesPanel have been initialized
+    /// We can't update design elements until they are loaded
+    /// </summary>
+    private bool UIElement_LayerTabsLoaded => (GraphicsPanel != null && BoundariesPanel != null);
 
-        try
-        {
-            if (tabControl.SelectedIndex == 0)
-                BoundaryLayersList.SelectedIndex = -1;
+    #endregion
 
-            if (tabControl.SelectedIndex == 1)
-                LayersList.SelectedIndex = -1;
-        }
-        catch (Exception exception)
-        {
-            Console.WriteLine(exception);
-        }
-    }
-
+    
+    
+    
+    
+    // TODO: Defunct, remove the animation panel
     private void mnuToggleSequencer_Click(object? sender, RoutedEventArgs e)
     {
         if (sequencerVisible)
@@ -898,5 +987,11 @@ public partial class MainWindow : Window
 
         objectLibrary.Images[index] = layer;
         UpdateUI(updateLayers: true);
+    }
+
+    private void mnuSettings_Click(object? sender, RoutedEventArgs e)
+    {
+        SetupWindow setupWindow = new();
+        setupWindow.ShowDialog(this);
     }
 }
