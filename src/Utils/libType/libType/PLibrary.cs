@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace libType
 {
     public class PLibrary : IDisposable
@@ -8,9 +6,9 @@ namespace libType
         public string FilePath { get; private set; }
 
         // Headers
-        private const byte Version = 1;
-        private const string Validation = "Sky Wizard Asset Library";
-        private const byte Type = (byte)LType.Image;
+        private const byte VERSION = 1;
+        private const string VALIDATION = "Sky Wizard Asset Library";
+        private const byte TYPE = (byte)LType.Image;
 
         // Content
         public List<LImage> Images = [];
@@ -21,7 +19,7 @@ namespace libType
         // Flag to detect if the library needs to be saved
         public bool needsSave = false;
         
-        public byte GetVersion() => Version;
+        public byte GetVersion() => VERSION;
 
         public PLibrary(string filePath)
         {
@@ -44,15 +42,15 @@ namespace libType
 
             // --- Version check
             var version = reader.ReadByte();
-            if (version != Version)
+            if (version != VERSION)
             {
                 err = "Invalid library version";
                 return;
             }
 
             // --- Validation check
-            var val = new string(reader.ReadChars(Validation.Length));
-            if (val != Validation)
+            var val = new string(reader.ReadChars(VALIDATION.Length));
+            if (val != VALIDATION)
             {
                 err = "Invalid library file";
                 return;
@@ -60,7 +58,7 @@ namespace libType
 
             // --- Type check
             var type = reader.ReadByte();
-            if (type != Type)
+            if (type != TYPE)
             {
                 err = "Invalid library type";
                 return;
@@ -121,9 +119,9 @@ namespace libType
             using var writer = new BinaryWriter(File.Open(FilePath, FileMode.Create));
 
             // Write headers
-            writer.Write(Version);
-            writer.Write(Validation.ToCharArray());
-            writer.Write(Type);
+            writer.Write(VERSION);
+            writer.Write(VALIDATION.ToCharArray());
+            writer.Write(TYPE);
 
             // Write the image count
             writer.Write(Images.Count);

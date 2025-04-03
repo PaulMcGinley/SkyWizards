@@ -46,11 +46,11 @@
 
                 <!-- Resources Folder -->
                 <TextBlock Text="Developer Name" VerticalAlignment="Center" Margin="5" Grid.Row="0"/>
-                <TextBox Grid.Column="1" Margin="5" Grid.Row="0"/>
+                <TextBox Grid.Column="1" Name="DeveloperName"  Margin="5" Grid.Row="0"/>
 
                 <!-- Objects Folder -->
                 <TextBlock Text="Developer Group" VerticalAlignment="Center" Margin="5" Grid.Row="1"/>
-                <TextBox Grid.Column="1" Margin="5" Grid.Row="1"/>
+                <TextBox Grid.Column="1" Name="DeveloperGroup" Margin="5" Grid.Row="1"/>
 
                 <!-- Add more entries as needed -->
             </Grid>

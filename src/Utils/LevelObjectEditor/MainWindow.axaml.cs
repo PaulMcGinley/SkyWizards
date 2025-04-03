@@ -18,9 +18,8 @@ namespace LevelObjectEditor;
 
 public partial class MainWindow : Window
 {
-    private PLibrary library;
     private OLibrary objectLibrary;
-    private bool needsSave = false;
+    private bool needsSave = false; // This should be a library (Olib) property
 
     private bool isDragging = false;
     private Point clickPosition;
@@ -29,11 +28,48 @@ public partial class MainWindow : Window
     private const double HandleSize = 10;
     private const double MinWidth = 25;
     private const double MinHeight = 25;
+    
+    /// <summary>
+    /// Returns the index of the selected graphic layer
+    /// -1 if no layer is selected
+    /// </summary>
+    /// <returns></returns>
+    private int GraphicLayerIndex()
+    {
+        if (LayersList.SelectedItem == null)
+            return -1;
+
+        var index = LayersList.SelectedIndex;
+        if (objectLibrary.Images != null && (index < 0 || index >= objectLibrary.Images.Count))
+            return -1;
+
+        return index;
+    }
+    
+    /// <summary>
+    /// Returns the index of the selected boundary layer
+    /// -1 if no layer is selected
+    /// </summary>
+    /// <returns></returns>
+    private int BoundaryLayerIndex()
+    {
+        if (BoundaryLayersList.SelectedItem == null)
+            return -1;
+
+        var index = BoundaryLayersList.SelectedIndex;
+        if (objectLibrary.Boundaries != null && (index < 0 || index >= objectLibrary.Boundaries.Count))
+            return -1;
+
+        return index;
+    }
+    
+    
 
     // Sequencer
-    private bool sequencerVisible = false;
-    private const char SequencerVisibleHeader = '\u25cf'; // Filled circle
-    private const char SequencerHiddenHeader = '\u25cb'; // Empty circle
+    // [Obsolete ("The sequencer is no longer used as I am using the left panel for the data")]
+    // private bool sequencerVisible = false;
+    // private const char SequencerVisibleHeader = '\u25cf'; // Filled circle
+    // private const char SequencerHiddenHeader = '\u25cb'; // Empty circle
 
     #region This Form
 
@@ -43,7 +79,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-
+        
+        // TODO: Load settings
+        
         // Add an event handler for the Loaded event
         // We need to wait for the form to load before we can interact with the UI elements
         Loaded += MainWindow_Loaded;
@@ -58,9 +96,6 @@ public partial class MainWindow : Window
     {
         // Simulate a click on the New menu item to create a new object library
         mnuNew_Click(sender, e);
-
-        // TODO: This tool should read the client as we will not be limited to a single library
-        OpenLibrary();
     }
 
     #endregion
@@ -70,44 +105,45 @@ public partial class MainWindow : Window
     /// <summary>
     /// Function to open the library file
     /// </summary>
-    private async void OpenLibrary()
-    {
-        var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "Select the Objects Library",
-            FileTypeFilter = new List<FilePickerFileType>
-            {
-                new FilePickerFileType("PFM Library") { Patterns = ["*.lib"] }
-            },
-            AllowMultiple = false
-        });
-
-        if (result.Count == 0)
-        {
-            if (library != null)
-                return;
-
-            lbLibraryPath.Header = "No library selected";
-            return;
-        }
-
-        library = new PLibrary(result[0].Path.LocalPath);
-        library.Open(out var err);
-
-        if (err != null)
-        {
-            Console.WriteLine(err);
-        }
-
-        lbLibraryPath.Header = library.FilePath;
-    }
+    ///  Defunct function as library is now per graphic
+    // private async void OpenLibrary()
+    // {
+    //     var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+    //     {
+    //         Title = "Select the Objects Library",
+    //         FileTypeFilter = new List<FilePickerFileType>
+    //         {
+    //             new FilePickerFileType("PFM Library") { Patterns = ["*.lib"] }
+    //         },
+    //         AllowMultiple = false
+    //     });
+    //
+    //     if (result.Count == 0)
+    //     {
+    //         if (library != null)
+    //             return;
+    //
+    //         //lbLibraryPath.Header = "No library selected";
+    //         return;
+    //     }
+    //
+    //     library = new PLibrary(result[0].Path.LocalPath);
+    //     library.Open(out var err);
+    //
+    //     if (err != null)
+    //     {
+    //         Console.WriteLine(err);
+    //     }
+    //
+    //     //lbLibraryPath.Header = library.FilePath;
+    // }
 
     /// <summary>
     /// Load the images from the library and object library
     /// </summary>
     private void LoadImages()
     {
-        if (library?.Images == null || objectLibrary?.Images == null)
+        if (objectLibrary?.Images == null)
             return;
 
         ImageCanvas.Children.Clear();
@@ -115,12 +151,14 @@ public partial class MainWindow : Window
         // Add images first
         foreach (var graphic in objectLibrary.Images)
         {
-            if (graphic.BackIndex < 0 || graphic.BackIndex >= library.Images.Count)
+            var lib = LibraryManager.Libraries[graphic.BackImageLibrary].Content;
+            
+            if (graphic.BackIndex < 0 || graphic.BackIndex >= lib.Images.Count)
                 continue;
 
             var image = new Image
             {
-                Source = CreateImage(library.Images[graphic.BackIndex].Data),
+                Source = CreateImage(lib.Images[graphic.BackIndex].Data),
             };
 
             Canvas.SetLeft(image, graphic.X);
@@ -349,36 +387,6 @@ public partial class MainWindow : Window
         Close();
     }
 
-    private void mnuFind_Click(object? sender, RoutedEventArgs e)
-    {
-        OpenLibrary();
-    }
-
-    private void LbLibraryPath_Click(object? sender, RoutedEventArgs e)
-    {
-        if (library == null)
-            return;
-
-        var libraryPath = library.FilePath;
-
-        try
-        {
-            var directoryPath = Path.GetDirectoryName(libraryPath);
-            if (directoryPath != null)
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = directoryPath,
-                    UseShellExecute = true
-                });
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
-    }
-
     #endregion
 
     #region Details Panel
@@ -395,7 +403,8 @@ public partial class MainWindow : Window
         if (index < 0)
             return;
 
-        LibraryImageSelector imageSelector = new(ref library);
+        var lib = LibraryManager.Libraries[objectLibrary.Images[index].BackImageLibrary].Content;
+        LibraryImageSelector imageSelector = new(ref lib);
         await imageSelector.ShowDialog(this);
 
         if (imageSelector.SelectedIndex == -1)
@@ -409,6 +418,39 @@ public partial class MainWindow : Window
         objectLibrary.Images[index] = image;
 
         UpdateUI(updateLayers: true);
+    }
+    
+    private async void btnSelectBackImageLibrary_Click(object? sender, TappedEventArgs tappedEventArgs)
+    {
+        // Check if graphic is selected
+        if (LayersList.SelectedItem == null)
+            return;
+        
+        LibrarySelector librarySelector = new();
+        var result = await librarySelector.ShowDialog<string>(this);
+        
+        // librarySelector is disposed after the dialog is closed
+
+        if (result == null)
+            return;
+        
+        var index = -1;
+        if (LayersList.SelectedItem != null)
+        {
+            index = LayersList.SelectedIndex;
+        }
+            
+        if (index < 0)
+            return;
+            
+        if (objectLibrary == null)
+            return;
+            
+        var graphic = objectLibrary.Images[index];
+        graphic.BackImageLibrary = result;
+
+
+        lbBackImageLibrary.Text = graphic.BackImageLibrary;
     }
 
     #endregion
@@ -434,13 +476,29 @@ public partial class MainWindow : Window
             X = 0,
             Y = 0
         };
-        objectLibrary.Images.Add(newLayer);
+        objectLibrary.Images?.Add(newLayer);
 
         UpdateUI(updateLayers: true);
 
-        var itemToSelect = LayersList.Items[objectLibrary.Images.Count - 1];
-        LayersList.SelectedItem = itemToSelect;
+        if (objectLibrary.Images != null)
+        {
+            var itemToSelect = LayersList.Items[objectLibrary.Images.Count - 1];
+            LayersList.SelectedItem = itemToSelect;
+        }
 
+        // Simulate click on select back image library
+        btnSelectBackImageLibrary_Click(null, null!);
+        
+        
+        // check if graphic has a back image library
+        if (objectLibrary.Images == null || objectLibrary.Images.Count == 0)
+            return;
+        
+        var graphic = objectLibrary.Images[objectLibrary.Images.Count - 1];
+        if (graphic.BackImageLibrary == string.Empty)
+            return;
+      
+        // Simulate click on select image
         btnSelectImage_Click(null, null!);
     }
 
@@ -529,7 +587,9 @@ public partial class MainWindow : Window
         objectLibrary.Boundaries?.RemoveAt(index);
 
         UpdateUI(updateLayers: true);
-        BoundaryLayersList.SelectedIndex = Math.Min(index, objectLibrary.Boundaries.Count - 1);
+        
+        if (objectLibrary.Boundaries != null)
+            BoundaryLayersList.SelectedIndex = Math.Min(index, objectLibrary.Boundaries.Count - 1);
     }
 
     private void DrawBoundary(Boundry boundary, int boundaryIndex)
@@ -631,7 +691,7 @@ public partial class MainWindow : Window
     /// <param name="e"></param>
     private void Rectangle_PointerMoved(object? sender, PointerEventArgs e)
     {
-        if (!isDragging || sender is not Rectangle rectangle || rectangle.Tag is not int boundaryIndex)
+        if (!isDragging || sender is not Rectangle { Tag: int boundaryIndex } rectangle)
             return;
 
         var position = e.GetPosition(ImageCanvas);
@@ -647,9 +707,8 @@ public partial class MainWindow : Window
         // Update handle positions
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment>
-                                              handleData
-                                          && handleData.Item1 == boundaryIndex)
+            if (child is Rectangle { Tag: ValueTuple<int, HorizontalAlignment, VerticalAlignment> handleData } handle
+                && handleData.Item1 == boundaryIndex)
             {
                 UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
             }
@@ -787,8 +846,8 @@ public partial class MainWindow : Window
             lbY.Text = "";
             lbWidth.Text = "";
             lbHeight.Text = "";
-            txtBackAnimLength.Text = "";
-            txtFrontAnimLength.Text = "";
+            // txtBackAnimLength.Text = "";
+            // txtFrontAnimLength.Text = "";
             updateLayers = true;
         }
 
@@ -803,8 +862,8 @@ public partial class MainWindow : Window
                 //lbImageIndex.Text = layer.BackIndex.ToString();
                 lbX.Text = layer.X.ToString();
                 lbY.Text = layer.Y.ToString();
-                txtBackAnimLength.Text = layer.BackAnimationLength.ToString();
-                txtFrontAnimLength.Text = layer.FrontAnimationLength.ToString();
+                // txtBackAnimLength.Text = layer.BackAnimationLength.ToString();
+                // txtFrontAnimLength.Text = layer.FrontAnimationLength.ToString();
             }
         }
         else
@@ -832,11 +891,12 @@ public partial class MainWindow : Window
         for (int i = 0; i < objectLibrary.Images?.Count; i++)
         {
             var layer = objectLibrary.Images[i];
+            var lib = LibraryManager.Libraries[layer.BackImageLibrary].Content;
             Border border;
 
-            if (layer.BackIndex >= 0 && layer.BackIndex < library.Images.Count)
+            if (layer.BackIndex >= 0 && layer.BackIndex < lib.Images.Count)
             {
-                var imageSource = CreateImage(library.Images[layer.BackIndex].Data);
+                var imageSource = CreateImage(lib.Images[layer.BackIndex].Data);
                 var image = new Image
                 {
                     Source = imageSource,
@@ -941,54 +1001,7 @@ public partial class MainWindow : Window
     private bool UIElement_LayerTabsLoaded => (GraphicsPanel != null && BoundariesPanel != null);
 
     #endregion
-
     
-    
-    
-    
-    // TODO: Defunct, remove the animation panel
-    private void mnuToggleSequencer_Click(object? sender, RoutedEventArgs e)
-    {
-        if (sequencerVisible)
-        {
-            sequencerVisible = false;
-            MnuToggleSequencer.Header = SequencerHiddenHeader;
-            AnimationPanel.IsVisible = false;
-        }
-        else
-        {
-            sequencerVisible = true;
-            MnuToggleSequencer.Header = SequencerVisibleHeader;
-            AnimationPanel.IsVisible = true;
-        }
-    }
-
-    private void AnimationLength_TextChanged(object? sender, TextChangedEventArgs e)
-    {
-        if (objectLibrary == null || LayersList.SelectedItem == null)
-            return;
-
-        var index = LayersList.SelectedIndex;
-        if (index < 0 || index >= objectLibrary.Images.Count)
-            return;
-
-        var layer = objectLibrary.Images[index];
-
-        if (sender == txtBackAnimLength && int.TryParse(txtBackAnimLength.Text, out int backLength))
-        {
-            layer.BackAnimationLength = backLength;
-            needsSave = true;
-        }
-        else if (sender == txtFrontAnimLength && int.TryParse(txtFrontAnimLength.Text, out int frontLength))
-        {
-            layer.FrontAnimationLength = frontLength;
-            needsSave = true;
-        }
-
-        objectLibrary.Images[index] = layer;
-        UpdateUI(updateLayers: true);
-    }
-
     private void mnuSettings_Click(object? sender, RoutedEventArgs e)
     {
         SetupWindow setupWindow = new();

@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LevelObjectEditor"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="800" Height="450"
+        x:Class="LevelObjectEditor.LibrarySelector"
+        Title="Library Selector"
+        x:Name="LibrarySelectorWindow"
+        x:DataType="local:LibrarySelector">
+    <Grid RowDefinitions="Auto,*">
+        <TextBlock Grid.Row="0" Margin="10" Text="Select a Library File"
+                   FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"/>
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding LibraryFiles}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding}"
+                                HorizontalAlignment="Stretch"
+                                Margin="5"
+                                Padding="10"
+                                Command="{Binding ElementName=LibrarySelectorWindow, Path=SelectLibrary}"
+                                CommandParameter="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Window>

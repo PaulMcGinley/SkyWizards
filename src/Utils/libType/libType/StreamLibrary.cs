@@ -5,7 +5,7 @@ namespace libType;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct LibraryHeader
 {
-    public byte[] Magic;            // "pfm" (3 bytes)
+    public byte[] Magic;            // "PIL" (3 bytes)
     public byte Version;
     public int EntryCount;          // Maximum entries allowed in the library
     public bool IsCompressed;
@@ -55,8 +55,8 @@ public class StreamLibrary
     /// <returns></returns>
     private static bool IsValidHeader(LibraryHeader header)
     {
-        // Check if the magic number is "pfm"
-        if (header.Magic is not [(byte)'p', (byte)'f', (byte)'m'])
+        // Check if the magic number is "PIL"
+        if (header.Magic is not [(byte)'P', (byte)'I', (byte)'L'])
         {
             Console.WriteLine("Not a PIL file.");
             return false;

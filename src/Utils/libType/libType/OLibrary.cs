@@ -16,6 +16,10 @@ public class OLibrary
         Boundaries = [];
     }
 
+    /// <summary>
+    /// Open the library from the file path specified in FilePath.
+    /// </summary>
+    /// <param name="err"></param>
     public void Open(out string? err)
     {
         err = null;
@@ -35,10 +39,10 @@ public class OLibrary
             Images = deserializedLibrary.Images;
             Boundaries = deserializedLibrary.Boundaries;
         }
-        catch (Exception e) when (e is TimeoutException 
-                                      or AccessViolationException 
-                                      or InsufficientMemoryException 
-                                      or EndOfStreamException)
+        catch (Exception e) when (e is TimeoutException                 // HDD Failure
+                                      or AccessViolationException       // File is in use
+                                      or InsufficientMemoryException    // Out of memory
+                                      or EndOfStreamException)          // File is corrupted
         {
             err = e.Message;
         }
@@ -48,6 +52,11 @@ public class OLibrary
         }
     }
 
+    /// <summary>
+    /// Save the library to the file path specified in FilePath.
+    /// </summary>
+    /// <param name="err"></param>
+    /// <param name="overwrite"></param>
     public void Save(out string? err, bool overwrite = false)
     {
         err = null;
@@ -61,15 +70,13 @@ public class OLibrary
         try
         {
             var serializer = new XmlSerializer(typeof(OLibrary));
-            using (var stream = new FileStream(FilePath, FileMode.Create))
-            {
-                serializer.Serialize(stream, this);
-            }
+            using var stream = new FileStream(FilePath, FileMode.Create);
+            serializer.Serialize(stream, this);
         }
-        catch (Exception e) when (e is TimeoutException 
-                                      or AccessViolationException 
-                                      or InsufficientMemoryException 
-                                      or EndOfStreamException)
+        catch (Exception e) when (e is TimeoutException                 // HDD Failure
+                                      or AccessViolationException       // File is in use
+                                      or InsufficientMemoryException    // Out of memory
+                                      or EndOfStreamException)          // File is corrupted
         {
             err = e.Message;
         }
@@ -79,12 +86,22 @@ public class OLibrary
         }
     }
 
+    /// <summary>
+    /// Save the library to the specified file path.
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <param name="err"></param>
+    /// <param name="overwrite"></param>
     public void SaveAs(string filePath, out string? err, bool overwrite = false)
     {
         FilePath = filePath;
         Save(out err, overwrite);
     }
     
+    /// <summary>
+    /// Set the file path for the library.
+    /// </summary>
+    /// <param name="filePath"></param>
     public void SetFilePath(string filePath)
     {
         FilePath = filePath;

@@ -2,11 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600
+             "
              x:Class="LevelObjectEditor.SetupViews.PathsView">
     <StackPanel Margin="10">
         <!-- Header Label -->
-        <TextBlock Text="Paths" FontSize="20" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock Text="Paths" Name="HeaderText" FontSize="20" FontWeight="Bold" Margin="0,0,0,5"/>
 
         <!-- Description and Buttons in a Grid -->
         <Grid Margin="0,0,0,10">
@@ -47,8 +48,8 @@
 
                 <!-- Configs Folder -->
                 <TextBlock Text="Configs Folder" VerticalAlignment="Center" Margin="5" Grid.Row="0"/>
-                <TextBox Grid.Column="1" Text="./configs/" Margin="5" Grid.Row="0"/>
-                <Button Content="Browse" Grid.Column="2" Margin="5" Grid.Row="0"/>
+                <TextBox Grid.Column="1" Text="" Name="ConfigsFolder" IsReadOnly="True" Margin="5" Grid.Row="0"/>
+                <Button Content="Browse" Grid.Column="2" IsEnabled="False" Margin="5" Grid.Row="0"/>
 
                 <!-- Add more entries as needed -->
             </Grid>
@@ -69,12 +70,12 @@
 
                 <!-- Resources Folder -->
                 <TextBlock Text="Resources Folder" VerticalAlignment="Center" Margin="5" Grid.Row="0"/>
-                <TextBox Grid.Column="1" Margin="5" Grid.Row="0"/>
+                <TextBox Grid.Column="1" Text="" Name="ResourcesFolder" Margin="5" Grid.Row="0"/>
                 <Button Content="Browse" Grid.Column="2" Margin="5" Grid.Row="0"/>
 
                 <!-- Objects Folder -->
                 <TextBlock Text="Objects Folder" VerticalAlignment="Center" Margin="5" Grid.Row="1"/>
-                <TextBox Grid.Column="1" Margin="5" Grid.Row="1"/>
+                <TextBox Grid.Column="1" Text="" Name="ObjectsFolder" Margin="5" Grid.Row="1"/>
                 <Button Content="Browse" Grid.Column="2" Margin="5" Grid.Row="1"/>
             </Grid>
         </Expander>
@@ -95,7 +96,7 @@
 
                 <!-- Temp Folder -->
                 <TextBlock Text="Projects Folder" VerticalAlignment="Center" Margin="5" Grid.Row="0"/>
-                <TextBox Grid.Column="1" Text="./projects/" Margin="5" Grid.Row="0"/>
+                <TextBox Grid.Column="1" Text="" Name="ProjectsFolder" Margin="5" Grid.Row="0"/>
                 <Button Content="Browse" Grid.Column="2" Margin="5" Grid.Row="0"/>
 
                 <!-- Add more entries as needed -->

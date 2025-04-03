@@ -18,13 +18,13 @@ Player::Player() {
         // Once one part of the animation is complete, it can change the ani to the next part of the animation
         // .OnComplete [](){currentAni = AniType::JumpEnd;}
         sequences = {
-                {AnimationType::ANIMATION_CONSUME, {0, 32, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_CONSUME, {0, 32, 100, nullptr /*[](){changeAnimation(AnimationType::ANIMATION_JUMP_AIR, nullptr, false);}*/, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DAMAGED, {32, 13, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DEATH, {45, 11, 100 , nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DIZZY, {56, 20, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_FIRE, {76, 16, 100, nullptr, nullptr, nullptr}},
-                {AnimationType::ANIMATION_IDLE, {92, 16, 100, nullptr, nullptr, nullptr}},
-                {AnimationType::ANIMATION_IDLE2, {108, 64, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_IDLE, {92, 16, 100, nullptr, nullptr, nullptr}}, // Randomly play idle2
+                {AnimationType::ANIMATION_IDLE2, {108, 64, 100, nullptr, nullptr, nullptr}}, // once played go back to idle
                 {AnimationType::ANIMATION_INTERACT, {172, 21, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_JUMP_AIR, {193, 14, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_JUMP_END, {207, 10, 100, nullptr, nullptr, nullptr}},
@@ -34,9 +34,11 @@ Player::Player() {
                 {AnimationType::ANIMATION_RUN, {249, 10, 80, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_WALK, {259, 16, 65, nullptr, nullptr, [](const int _frame){std::cout << "Walking frame: " << _frame << std::endl;}}} // Debug output
         };
+        GameTime gameTime;
 }
 
 void Player::update(GameTime gameTime) {
+
 
         // DEBUG
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
@@ -53,6 +55,8 @@ void Player::update(GameTime gameTime) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
                 staffLibrary = 2;
         // END DEBUG
+
+
 
         // Check if left or right key is pressed
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -79,9 +83,9 @@ void Player::update(GameTime gameTime) {
                 }
         }
 
-        else {
-                changeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
-        }
+        // else {
+        //         changeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
+        // }
 
         TextureEntry& robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
         robeQuad[0].texCoords = robe.texQuad[0].texCoords;
