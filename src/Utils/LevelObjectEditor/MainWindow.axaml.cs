@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
@@ -28,48 +29,6 @@ public partial class MainWindow : Window
     private const double HandleSize = 10;
     private const double MinWidth = 25;
     private const double MinHeight = 25;
-    
-    /// <summary>
-    /// Returns the index of the selected graphic layer
-    /// -1 if no layer is selected
-    /// </summary>
-    /// <returns></returns>
-    private int GraphicLayerIndex()
-    {
-        if (LayersList.SelectedItem == null)
-            return -1;
-
-        var index = LayersList.SelectedIndex;
-        if (objectLibrary.Images != null && (index < 0 || index >= objectLibrary.Images.Count))
-            return -1;
-
-        return index;
-    }
-    
-    /// <summary>
-    /// Returns the index of the selected boundary layer
-    /// -1 if no layer is selected
-    /// </summary>
-    /// <returns></returns>
-    private int BoundaryLayerIndex()
-    {
-        if (BoundaryLayersList.SelectedItem == null)
-            return -1;
-
-        var index = BoundaryLayersList.SelectedIndex;
-        if (objectLibrary.Boundaries != null && (index < 0 || index >= objectLibrary.Boundaries.Count))
-            return -1;
-
-        return index;
-    }
-    
-    
-
-    // Sequencer
-    // [Obsolete ("The sequencer is no longer used as I am using the left panel for the data")]
-    // private bool sequencerVisible = false;
-    // private const char SequencerVisibleHeader = '\u25cf'; // Filled circle
-    // private const char SequencerHiddenHeader = '\u25cb'; // Empty circle
 
     #region This Form
 
@@ -78,6 +37,9 @@ public partial class MainWindow : Window
     /// </summary>
     public MainWindow()
     {
+        // Lets not mess about, before this window opens I want all these fellas loaded into memory!
+        LibraryManager.LoadAllFuckingLibraries();
+        
         InitializeComponent();
         
         // TODO: Load settings
@@ -96,97 +58,6 @@ public partial class MainWindow : Window
     {
         // Simulate a click on the New menu item to create a new object library
         mnuNew_Click(sender, e);
-    }
-
-    #endregion
-
-    #region Library
-    
-    /// <summary>
-    /// Function to open the library file
-    /// </summary>
-    ///  Defunct function as library is now per graphic
-    // private async void OpenLibrary()
-    // {
-    //     var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-    //     {
-    //         Title = "Select the Objects Library",
-    //         FileTypeFilter = new List<FilePickerFileType>
-    //         {
-    //             new FilePickerFileType("PFM Library") { Patterns = ["*.lib"] }
-    //         },
-    //         AllowMultiple = false
-    //     });
-    //
-    //     if (result.Count == 0)
-    //     {
-    //         if (library != null)
-    //             return;
-    //
-    //         //lbLibraryPath.Header = "No library selected";
-    //         return;
-    //     }
-    //
-    //     library = new PLibrary(result[0].Path.LocalPath);
-    //     library.Open(out var err);
-    //
-    //     if (err != null)
-    //     {
-    //         Console.WriteLine(err);
-    //     }
-    //
-    //     //lbLibraryPath.Header = library.FilePath;
-    // }
-
-    /// <summary>
-    /// Load the images from the library and object library
-    /// </summary>
-    private void LoadImages()
-    {
-        if (objectLibrary?.Images == null)
-            return;
-
-        ImageCanvas.Children.Clear();
-
-        // Add images first
-        foreach (var graphic in objectLibrary.Images)
-        {
-            var lib = LibraryManager.Libraries[graphic.BackImageLibrary].Content;
-            
-            if (graphic.BackIndex < 0 || graphic.BackIndex >= lib.Images.Count)
-                continue;
-
-            var image = new Image
-            {
-                Source = CreateImage(lib.Images[graphic.BackIndex].Data),
-            };
-
-            Canvas.SetLeft(image, graphic.X);
-            Canvas.SetTop(image, graphic.Y);
-
-            image.PointerPressed += Image_MouseLeftButtonDown;
-            image.PointerMoved += Image_MouseMove;
-            image.PointerReleased += Image_MouseLeftButtonUp;
-
-            ImageCanvas.Children.Add(image);
-        }
-
-        // Then add boundaries
-        for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
-        {
-            DrawBoundary(objectLibrary.Boundaries[i], i);
-        }
-    }
-
-    /// <summary>
-    /// Create a bitmap image from the image data
-    /// </summary>
-    /// <param name="imageData"></param>
-    /// <returns></returns>
-    private Bitmap CreateImage(byte[] imageData)
-    {
-        using var stream = new MemoryStream(imageData);
-        return new Bitmap(stream);
     }
 
     #endregion
@@ -259,6 +130,12 @@ public partial class MainWindow : Window
 
     #region Menu Bar
 
+    private void mnuSettings_Click(object? sender, RoutedEventArgs e)
+    {
+        SetupWindow setupWindow = new();
+        setupWindow.ShowDialog(this);
+    }
+    
     private void mnuNew_Click(object? sender, RoutedEventArgs e)
     {
         if (needsSave)
@@ -422,34 +299,17 @@ public partial class MainWindow : Window
     
     private async void btnSelectBackImageLibrary_Click(object? sender, TappedEventArgs tappedEventArgs)
     {
-        // Check if graphic is selected
-        if (LayersList.SelectedItem == null)
-            return;
-        
-        LibrarySelector librarySelector = new();
-        var result = await librarySelector.ShowDialog<string>(this);
-        
-        // librarySelector is disposed after the dialog is closed
-
+        var result = await SelectLibrary();
+    
         if (result == null)
             return;
-        
-        var index = -1;
-        if (LayersList.SelectedItem != null)
-        {
-            index = LayersList.SelectedIndex;
-        }
-            
-        if (index < 0)
+
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || objectLibrary == null)
             return;
-            
-        if (objectLibrary == null)
-            return;
-            
+
         var graphic = objectLibrary.Images[index];
         graphic.BackImageLibrary = result;
-
-
         lbBackImageLibrary.Text = graphic.BackImageLibrary;
     }
 
@@ -462,15 +322,17 @@ public partial class MainWindow : Window
         UpdateUI();
     }
 
-    private void mnuNewGraphicsLayer_Click(object? sender, RoutedEventArgs e)
+    private async void mnuNewGraphicsLayer_Click(object? sender, RoutedEventArgs e)
     {
         if (objectLibrary == null)
             return;
 
         var newLayer = new Graphic
         {
+            BackImageLibrary = string.Empty,
             BackIndex = -1,
             BackAnimationLength = 0,
+            FrontImageLibrary = string.Empty,
             FrontIndex = -1,
             FrontAnimationLength = 0,
             X = 0,
@@ -479,27 +341,6 @@ public partial class MainWindow : Window
         objectLibrary.Images?.Add(newLayer);
 
         UpdateUI(updateLayers: true);
-
-        if (objectLibrary.Images != null)
-        {
-            var itemToSelect = LayersList.Items[objectLibrary.Images.Count - 1];
-            LayersList.SelectedItem = itemToSelect;
-        }
-
-        // Simulate click on select back image library
-        btnSelectBackImageLibrary_Click(null, null!);
-        
-        
-        // check if graphic has a back image library
-        if (objectLibrary.Images == null || objectLibrary.Images.Count == 0)
-            return;
-        
-        var graphic = objectLibrary.Images[objectLibrary.Images.Count - 1];
-        if (graphic.BackImageLibrary == string.Empty)
-            return;
-      
-        // Simulate click on select image
-        btnSelectImage_Click(null, null!);
     }
 
     private void mnuRemoveGraphicsLayer_Click(object? sender, RoutedEventArgs e)
@@ -853,22 +694,16 @@ public partial class MainWindow : Window
 
         if (LayersList.SelectedItem != null)
         {
-            AnimationPanel.IsVisible = true;
-
             var index = LayersList.SelectedIndex;
             if (index >= 0 && index < objectLibrary?.Images?.Count)
             {
-                var layer = objectLibrary.Images[index];
+                //var layer = objectLibrary.Images[index];
                 //lbImageIndex.Text = layer.BackIndex.ToString();
-                lbX.Text = layer.X.ToString();
-                lbY.Text = layer.Y.ToString();
+               // lbX.Text = layer.X.ToString();
+               // lbY.Text = layer.Y.ToString();
                 // txtBackAnimLength.Text = layer.BackAnimationLength.ToString();
                 // txtFrontAnimLength.Text = layer.FrontAnimationLength.ToString();
             }
-        }
-        else
-        {
-            AnimationPanel.IsVisible = false;
         }
 
         LoadImages();
@@ -891,12 +726,14 @@ public partial class MainWindow : Window
         for (int i = 0; i < objectLibrary.Images?.Count; i++)
         {
             var layer = objectLibrary.Images[i];
-            var lib = LibraryManager.Libraries[layer.BackImageLibrary].Content;
+
+            
+            
             Border border;
 
-            if (layer.BackIndex >= 0 && layer.BackIndex < lib.Images.Count)
+            if (LibraryManager.Libraries.ContainsKey(layer.BackImageLibrary) && (layer.BackIndex >= 0 && layer.BackIndex < LibraryManager.Libraries[layer.BackImageLibrary].Content.Images.Count))
             {
-                var imageSource = CreateImage(lib.Images[layer.BackIndex].Data);
+                var imageSource = CreateImage(LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].Data);
                 var image = new Image
                 {
                     Source = imageSource,
@@ -992,7 +829,41 @@ public partial class MainWindow : Window
 
     #endregion
 
-    #region Validation
+    #region Helper Functions
+    
+    /// <summary>
+    /// Returns the index of the selected graphic layer
+    /// -1 if no layer is selected
+    /// </summary>
+    /// <returns></returns>
+    private int CurrentGraphicLayerIndex()
+    {
+        if (LayersList.SelectedItem == null)
+            return -1;
+
+        var index = LayersList.SelectedIndex;
+        if (objectLibrary.Images != null && (index < 0 || index >= objectLibrary.Images.Count))
+            return -1;
+
+        return index;
+    }
+    
+    /// <summary>
+    /// Returns the index of the selected boundary layer
+    /// -1 if no layer is selected
+    /// </summary>
+    /// <returns></returns>
+    private int CurrentBoundaryLayerIndex()
+    {
+        if (BoundaryLayersList.SelectedItem == null)
+            return -1;
+
+        var index = BoundaryLayersList.SelectedIndex;
+        if (objectLibrary.Boundaries != null && (index < 0 || index >= objectLibrary.Boundaries.Count))
+            return -1;
+
+        return index;
+    }
 
     /// <summary>
     /// Check if the GraphicsPanel and BoundariesPanel have been initialized
@@ -1000,11 +871,72 @@ public partial class MainWindow : Window
     /// </summary>
     private bool UIElement_LayerTabsLoaded => (GraphicsPanel != null && BoundariesPanel != null);
 
+    /// <summary>
+    /// Load the images from the library and object library
+    /// </summary>
+    private void LoadImages()
+    {
+        if (objectLibrary?.Images == null)
+            return;
+
+        ImageCanvas.Children.Clear();
+
+        // Add images first
+        foreach (var graphic in objectLibrary.Images)
+        {
+            Console.WriteLine("BG LIB:" + graphic.BackImageLibrary);
+            if (graphic.BackImageLibrary == string.Empty || graphic.BackIndex < 0)
+                continue;
+            
+            var lib = LibraryManager.Libraries[graphic.BackImageLibrary].Content;
+            
+            if (graphic.BackIndex < 0 || graphic.BackIndex >= lib.Images.Count)
+                continue;
+
+            var image = new Image
+            {
+                Source = CreateImage(lib.Images[graphic.BackIndex].Data),
+            };
+
+            Canvas.SetLeft(image, graphic.X);
+            Canvas.SetTop(image, graphic.Y);
+
+            image.PointerPressed += Image_MouseLeftButtonDown;
+            image.PointerMoved += Image_MouseMove;
+            image.PointerReleased += Image_MouseLeftButtonUp;
+
+            ImageCanvas.Children.Add(image);
+        }
+
+        // Then add boundaries
+        for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
+        {
+            DrawBoundary(objectLibrary.Boundaries[i], i);
+        }
+    }
+
+    /// <summary>
+    /// Create a bitmap image from the image data
+    /// </summary>
+    /// <param name="imageData"></param>
+    /// <returns></returns>
+    private Bitmap CreateImage(byte[] imageData)
+    {
+        using var stream = new MemoryStream(imageData);
+        return new Bitmap(stream);
+    }
+    
+    private async Task<string?> SelectLibrary()
+    {
+        // Check if graphic is selected
+        if (LayersList.SelectedItem == null)
+            return null;
+
+        LibrarySelector librarySelector = new();
+        var result = await librarySelector.ShowDialog<string>(this);
+        return result;
+    }
+    
     #endregion
     
-    private void mnuSettings_Click(object? sender, RoutedEventArgs e)
-    {
-        SetupWindow setupWindow = new();
-        setupWindow.ShowDialog(this);
-    }
 }

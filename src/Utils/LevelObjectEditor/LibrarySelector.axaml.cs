@@ -75,7 +75,7 @@ namespace LevelObjectEditor
             SelectedLibraryPath = relativePath;
             Console.WriteLine($"Selected library: {relativePath}");
             // Load the library using the LibraryManager
-            LibraryManager.LoadLibrary(relativePath);
+            //LibraryManager.LoadLibrary(relativePath); // nope, not doing that here
             
 
             // Close the window and return the selected path

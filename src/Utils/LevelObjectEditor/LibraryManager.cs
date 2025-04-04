@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -11,20 +12,69 @@ namespace LevelObjectEditor
         /// <summary>
         /// Dictionary of libraries with their relative file paths as keys
         /// </summary>
-        private static ConcurrentDictionary<string, Library> _libraries;
-        public static ConcurrentDictionary<string, Library> Libraries => _libraries;
-        
+        public static Dictionary<string, Library> Libraries = new();
 
-        public static void LoadLibrary(string libraryFolderPath)
+        /// <summary>
+        /// Async coding sucks ass, just load everything into memory, I gots enought!
+        /// </summary>
+        public static void LoadAllFuckingLibraries()
         {
-            var libraryFiles = Directory.GetFiles(libraryFolderPath, "*.lib", SearchOption.AllDirectories);
-            foreach (var file in libraryFiles)
+            string resourcesPath = Configurations.Editor.Paths.ResourcesFolder;
+            List<string> files = [];
+
+            if (Directory.Exists(resourcesPath))
             {
-                Libraries[file] = new Library
-                {
-                    Content = new PLibrary(file)
-                };
+                files = Directory.GetFiles(resourcesPath, "*.lib", SearchOption.AllDirectories)
+                    .Select(path => Path.GetRelativePath(resourcesPath, path))
+                    .OrderBy(path => path)
+                    .ToList();
             }
+
+            foreach (var file in files)
+            {
+                string path = Path.Combine(resourcesPath, file);
+                Libraries[file] = new Library()
+                {
+                    Content = new PLibrary(path)
+                };
+                Libraries[file].Content.Open(out string err);
+                
+                Console.WriteLine($"{Libraries.Count} - {file} - Img Count = {Libraries[file].Content.Images.Count}");
+                Console.WriteLine($"err: {err}");
+            }
+            
+            // Break me
+        }
+        
+        
+        
+        public static void LoadLibrary(string path)
+        {
+            // Check if the library is already loaded
+            // I'm not editing the library while using them so once laoded no need to load again
+            // I do like to write dynamic code but between us, this is like a month long rewrite because i been
+            // sick and lazy a bit much.... xD
+            if (Libraries.ContainsKey(path))
+                return;
+            
+            // Load the library
+            var library = new Library
+            {
+                Content = new PLibrary(path)
+            };
+            
+            // Open the library and check for errors
+            library.Content.Open(out var err);
+            
+            if (err != null)
+            {
+                // Handle the error (e.g., log it, show a message to the user, etc.)
+                System.Diagnostics.Debug.WriteLine($"Error loading library: {err}");
+                return;
+            }
+            
+            // Add the library to the dictionary
+            Libraries.TryAdd(path, library);
         }
         
         public struct Library
