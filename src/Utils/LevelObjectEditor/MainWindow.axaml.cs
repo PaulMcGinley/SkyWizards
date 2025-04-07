@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using System.Timers;
 using Avalonia;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
@@ -12,8 +13,9 @@ using Avalonia.Media.Imaging;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
+using LevelObjectEditor.Dialogs;
 using libType;
-using Path = System.IO.Path;
 
 namespace LevelObjectEditor;
 
@@ -29,6 +31,11 @@ public partial class MainWindow : Window
     private const double HandleSize = 10;
     private const double MinWidth = 25;
     private const double MinHeight = 25;
+    
+    
+    Timer AnimationTimer;
+    UInt64 TimeNowEpoch => (UInt64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+    
 
     #region This Form
 
@@ -58,6 +65,68 @@ public partial class MainWindow : Window
     {
         // Simulate a click on the New menu item to create a new object library
         mnuNew_Click(sender, e);
+        
+        AnimationTimer = new Timer();
+        AnimationTimer.Interval = 16; // 60 FPS
+        AnimationTimer.Elapsed += AnimationTimer_Elapsed;
+        AnimationTimer.Start();
+    }
+
+    private void AnimationTimer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+        if (objectLibrary == null)
+            return;
+
+        // Cant update UI on a non-UI thread so useing the dispatcher to post the update on the correct thread
+        Dispatcher.UIThread.Post(() =>
+        {
+            // iterate throught he images in the object library
+            for (int i = 0; i < objectLibrary.Images.Count; i++)
+            {
+                var img = objectLibrary.Images[i];
+
+                if (img.BackIndex == -1)
+                    continue;
+                
+                if (img.BackEndIndex == -1)
+                    continue;
+
+                if (TimeNowEpoch < img.BackAnimationNextFrame)
+                    continue;
+
+                var newImg = img;
+                
+                
+                newImg.BackImageCurrentFrame++;
+                if (newImg.BackImageCurrentFrame > img.BackEndIndex)
+                    newImg.BackImageCurrentFrame = img.BackIndex;
+                
+                // Add this near your animation update code
+                Console.WriteLine($"Before Speed: {img.BackAnimationSpeed}, Time now: {TimeNowEpoch}, Next frame: {img.BackAnimationNextFrame}");
+                
+                newImg.BackAnimationNextFrame = TimeNowEpoch + img.BackAnimationSpeed;
+                
+                Console.WriteLine($"After Speed: {img.BackAnimationSpeed}, Time now: {TimeNowEpoch}, Next frame: {newImg.BackAnimationNextFrame}");
+
+
+                // Update the ui element if it exists
+                // TODO: Need to break the dogs leg, will change to guard clause
+                if (i < ImageCanvas.Children.Count)
+                {
+                    if (ImageCanvas.Children[i] is Image image)
+                    {
+                        var lib = LibraryManager.Libraries[img.BackImageLibrary].Content;
+                        image.Source = CreateImage(lib.Images[newImg.BackImageCurrentFrame].Data);
+                        Canvas.SetLeft(image, newImg.X + LibraryManager.Libraries[img.BackImageLibrary].Content.Images[newImg.BackImageCurrentFrame].OffsetX);
+                        Canvas.SetTop(image, newImg.Y + LibraryManager.Libraries[img.BackImageLibrary].Content.Images[newImg.BackImageCurrentFrame].OffsetY);
+                    }
+                }
+
+                // Update the collection
+                objectLibrary.Images[i] = newImg;
+
+            }
+        });
     }
 
     #endregion
@@ -267,9 +336,34 @@ public partial class MainWindow : Window
     #endregion
 
     #region Details Panel
-
-    private async void btnSelectImage_Click(object? sender, RoutedEventArgs e)
+    
+    private async void btnSelectBackImageLibrary_Click(object? sender, TappedEventArgs tappedEventArgs)
     {
+        var result = await SelectLibrary();
+
+        if (result == null)
+            return;
+
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || objectLibrary == null)
+            return;
+
+        var graphic = objectLibrary.Images[index];
+        graphic.BackImageLibrary = result;
+        graphic.BackIndex = -1;
+        graphic.BackEndIndex = -1;
+        objectLibrary.Images[index] = graphic;
+        
+        UpdateUI(updateLayers: true);
+    }
+
+    private async void btnSelectBackImage_Click(object? sender, TappedEventArgs e)
+    {
+        Console.WriteLine("Select Back Image");
+        
+        if (objectLibrary == null)
+            return;
+        
         var index = -1;
 
         if (LayersList.SelectedItem != null)
@@ -279,6 +373,12 @@ public partial class MainWindow : Window
 
         if (index < 0)
             return;
+        
+        Console.WriteLine(objectLibrary.Images[index].BackImageLibrary);
+        
+        if (objectLibrary.Images[index].BackImageLibrary == string.Empty)
+            return;
+        
 
         var lib = LibraryManager.Libraries[objectLibrary.Images[index].BackImageLibrary].Content;
         LibraryImageSelector imageSelector = new(ref lib);
@@ -297,20 +397,64 @@ public partial class MainWindow : Window
         UpdateUI(updateLayers: true);
     }
     
-    private async void btnSelectBackImageLibrary_Click(object? sender, TappedEventArgs tappedEventArgs)
-    {
-        var result = await SelectLibrary();
     
-        if (result == null)
+    private async void btnSelectBackImageEnd_Click(object? sender, TappedEventArgs e)
+    {
+        Console.WriteLine("Select Back Image End");
+        
+        if (objectLibrary == null)
+            return;
+        
+        var index = -1;
+
+        if (LayersList.SelectedItem != null)
+        {
+            index = LayersList.SelectedIndex;
+        }
+
+        if (index < 0)
+            return;
+        
+        Console.WriteLine(objectLibrary.Images[index].BackEndIndex);
+        
+        if (objectLibrary.Images[index].BackImageLibrary == string.Empty)
+            return;
+        
+
+        var lib = LibraryManager.Libraries[objectLibrary.Images[index].BackImageLibrary].Content;
+        LibraryImageSelector imageSelector = new(ref lib);
+        await imageSelector.ShowDialog(this);
+
+        if (imageSelector.SelectedIndex == -1)
             return;
 
+        if (objectLibrary == null)
+            return;
+
+        var image = objectLibrary.Images[index];
+        image.BackEndIndex = imageSelector.SelectedIndex;
+        objectLibrary.Images[index] = image;
+
+        UpdateUI(updateLayers: true);
+    }
+    
+    
+    private async void lbBackImageAnimationTickSpeed_Click(object? sender, TappedEventArgs e)
+    {
         var index = LayersList.SelectedIndex;
         if (index < 0 || objectLibrary == null)
             return;
 
+        // Create and show the slider dialog
+        DlgSlider dlgSlider = new();
+        var result = await dlgSlider.ShowDialog<int>(this);
+    
+        // Update the selected layer's animation tick speed
         var graphic = objectLibrary.Images[index];
-        graphic.BackImageLibrary = result;
-        lbBackImageLibrary.Text = graphic.BackImageLibrary;
+        graphic.BackAnimationSpeed = (UInt64)result;
+        objectLibrary.Images[index] = graphic;
+    
+        UpdateUI(updateLayers: false);
     }
 
     #endregion
@@ -322,7 +466,7 @@ public partial class MainWindow : Window
         UpdateUI();
     }
 
-    private async void mnuNewGraphicsLayer_Click(object? sender, RoutedEventArgs e)
+    private void mnuNewGraphicsLayer_Click(object? sender, RoutedEventArgs e)
     {
         if (objectLibrary == null)
             return;
@@ -331,10 +475,10 @@ public partial class MainWindow : Window
         {
             BackImageLibrary = string.Empty,
             BackIndex = -1,
-            BackAnimationLength = 0,
+            BackEndIndex = -1,
             FrontImageLibrary = string.Empty,
             FrontIndex = -1,
-            FrontAnimationLength = 0,
+            FrontEndIndex = -1,
             X = 0,
             Y = 0
         };
@@ -697,10 +841,14 @@ public partial class MainWindow : Window
             var index = LayersList.SelectedIndex;
             if (index >= 0 && index < objectLibrary?.Images?.Count)
             {
-                //var layer = objectLibrary.Images[index];
+                var layer = objectLibrary.Images[index];
+                lbBackImageLibrary.Text = (layer.BackImageLibrary == string.Empty ? "Select" : layer.BackImageLibrary);
+                lbBackImageIndexStart.Text = layer.BackIndex.ToString();
+                lbBackImageIndexEnd.Text = layer.BackEndIndex.ToString();
+                lbBackImageAnimationTickSpeed.Text = layer.BackAnimationSpeed.ToString();
                 //lbImageIndex.Text = layer.BackIndex.ToString();
-               // lbX.Text = layer.X.ToString();
-               // lbY.Text = layer.Y.ToString();
+                // lbX.Text = layer.X.ToString();
+                // lbY.Text = layer.Y.ToString();
                 // txtBackAnimLength.Text = layer.BackAnimationLength.ToString();
                 // txtFrontAnimLength.Text = layer.FrontAnimationLength.ToString();
             }
@@ -766,11 +914,11 @@ public partial class MainWindow : Window
             {
                 Text =
                     $"Pos: {objectLibrary.Images[i].X}, {objectLibrary.Images[i].Y}\n" +
-                    $"Back: {objectLibrary.Images[i].BackIndex}" + (objectLibrary.Images[i].BackAnimationLength > 0
-                        ? $" (Anim: {objectLibrary.Images[i].BackAnimationLength})"
+                    $"Back: {objectLibrary.Images[i].BackIndex}" + (objectLibrary.Images[i].BackEndIndex > 0
+                        ? $" (Anim: {objectLibrary.Images[i].BackEndIndex})"
                         : "") + "\n" +
-                    $"Front: {objectLibrary.Images[i].FrontIndex}" + (objectLibrary.Images[i].FrontAnimationLength > 0
-                        ? $" (Anim: {objectLibrary.Images[i].FrontAnimationLength})"
+                    $"Front: {objectLibrary.Images[i].FrontIndex}" + (objectLibrary.Images[i].FrontEndIndex > 0
+                        ? $" (Anim: {objectLibrary.Images[i].FrontEndIndex})"
                         : ""),
                 VerticalAlignment = VerticalAlignment.Center
             };
@@ -938,5 +1086,14 @@ public partial class MainWindow : Window
     }
     
     #endregion
-    
+
+    private void MoveFrameLeft_Click(object? sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    private void MoveFrameRight_Click(object? sender, RoutedEventArgs e)
+    {
+        
+    }
 }

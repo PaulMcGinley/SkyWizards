@@ -16,7 +16,26 @@ public struct Graphic
     /// Length of the back animation in frames.
     /// 0 means no animation.
     /// </summary>
-    public int BackAnimationLength { get; set; }
+    public int BackEndIndex { get; set; }
+    
+    /// <summary>
+    /// Time in milliseconds between animation frames
+    /// </summary>
+    public UInt64 BackAnimationSpeed { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public UInt64 BackAnimationNextFrame { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public int BackImageCurrentFrame { get; set; }
+    
+    
+    
+    
     
     /// <summary>
     /// Relative path to the front image library within the resources folder.
@@ -29,7 +48,26 @@ public struct Graphic
     /// <summary>
     /// Length of the front animation in frames.
     /// </summary>
-    public int FrontAnimationLength { get; set; }
+    public int FrontEndIndex { get; set; }
+    
+    /// <summary>
+    /// Time in milliseconds between animation frames
+    /// </summary>
+    public UInt64 FrontAnimationSpeed { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public UInt64 FrontAnimationNextFrame { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public int FrontImageCurrentFrame { get; set; }
+    
+    
+    
+    
     
     /// <summary>
     /// X coordinate of the image in pixels.

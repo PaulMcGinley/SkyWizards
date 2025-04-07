@@ -2,22 +2,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600
-        "
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         Width="1400" Height="800"
         x:Class="LevelObjectEditor.MainWindow"
         Title="LevelObjectEditor">
     <DockPanel>
         <Menu DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="0,0,0,1">
-            
             <MenuItem Header="Editor" FontWeight="Bold">
                 <MenuItem Header="Settings" Click="mnuSettings_Click"/>
                 <Separator/>
                 <MenuItem Header="Exit" Click="mnuExit_Click"/>
             </MenuItem>
-            
             <MenuItem Header="|" IsEnabled="False"/>
-            
             <MenuItem Header="Object" FontWeight="Bold">
                 <MenuItem Header="New" Click="mnuNew_Click"/>
                 <Separator/>
@@ -30,18 +26,15 @@
             </MenuItem>
         </Menu>
 
-        <!-- Main content area -->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"/> <!-- Left column locked width -->
-                <ColumnDefinition Width="*"/>   <!-- Middle column takes remaining space -->
-                <ColumnDefinition Width="250"/> <!-- Right column locked width for layers list -->
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
 
-            <!-- List of text in the left column -->
             <ScrollViewer Grid.Column="0" Margin="2">
                 <StackPanel>
-                    <!-- Graphics Panel -->
                     <StackPanel x:Name="GraphicsPanel" IsVisible="True">
                         <Expander Header="Position and Size" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
                             <Grid>
@@ -78,7 +71,6 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="Library" Margin="5" Grid.Column="0" Grid.Row="0"/>
-                                <TextBlock Text="Library" Margin="5" Grid.Column="0" Grid.Row="0"/>
                                 <TextBlock x:Name="lbBackImageLibrary"
                                            Text="Select"
                                            TextDecorations="Underline"
@@ -89,11 +81,35 @@
                                            Grid.Row="0"
                                            HorizontalAlignment="Right"/>
                                 <TextBlock Text="Start Index" Margin="5" Grid.Column="0" Grid.Row="1"/>
-                                <TextBlock x:Name="lbBackImageIndexStart" Text="" Margin="5" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right"/>
+                                <TextBlock x:Name="lbBackImageIndexStart"
+                                           Text="-1"
+                                           TextDecorations="Underline"
+                                           Cursor="Hand"
+                                           Tapped="btnSelectBackImage_Click"
+                                           Margin="5"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           HorizontalAlignment="Right"/>
                                 <TextBlock Text="End Index" Margin="5" Grid.Column="0" Grid.Row="2"/>
-                                <TextBlock x:Name="lbBackImageIndexLast" Text="" Margin="5" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right"/>
+                                <TextBlock x:Name="lbBackImageIndexEnd"
+                                           Text="-1"
+                                           TextDecorations="Underline"
+                                           Cursor="Hand"
+                                           Tapped="btnSelectBackImageEnd_Click"
+                                           Margin="5"
+                                           Grid.Column="1"
+                                           Grid.Row="2"
+                                           HorizontalAlignment="Right"/>
                                 <TextBlock Text="Animation Tick" Margin="5" Grid.Column="0" Grid.Row="3"/>
-                                <TextBlock x:Name="lbBackImageTickSpeed" Text="" Margin="5" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right"/>
+                                <TextBlock x:Name="lbBackImageAnimationTickSpeed"
+                                           Text="0"
+                                           TextDecorations="Underline"
+                                           Cursor="Hand"
+                                           Tapped="lbBackImageAnimationTickSpeed_Click"
+                                           Margin="5"
+                                           Grid.Column="1"
+                                           Grid.Row="3"
+                                           HorizontalAlignment="Right"/>
                             </Grid>
                         </Expander>
                         <Expander Header="Front Image" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
@@ -117,40 +133,68 @@
                         </Expander>
                     </StackPanel>
 
-                    <!-- Boundaries Panel -->
                     <StackPanel x:Name="BoundariesPanel" IsVisible="False">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Image" Margin="5" Grid.Column="0" Grid.Row="0"/>
-                            <Image x:Name="BoundaryImage" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"/>
-                            <TextBlock Text="X Offset" Margin="5" Grid.Column="0" Grid.Row="1"/>
-                            <NumericUpDown x:Name="BoundaryXOffset" Margin="5" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right"/>
-                            <TextBlock Text="Y Offset" Margin="5" Grid.Column="0" Grid.Row="2"/>
-                            <NumericUpDown x:Name="BoundaryYOffset" Margin="5" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right"/>
-                            <TextBlock Text="Width" Margin="5" Grid.Column="0" Grid.Row="3"/>
-                            <NumericUpDown x:Name="BoundaryWidth" Margin="5" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right"/>
-                            <TextBlock Text="Height" Margin="5" Grid.Column="0" Grid.Row="4"/>
-                            <NumericUpDown x:Name="BoundaryHeight" Margin="5" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right"/>
-                            <TextBlock Text="Disabled" Margin="5" Grid.Column="0" Grid.Row="5"/>
-                            <CheckBox x:Name="BoundaryDisabled" Margin="5" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right"/>
-                        </Grid>
+                        <Expander Header="Animation" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Frame" Margin="5" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0">
+                                    <Button Content="&lt;" Margin="5" Click="MoveFrameLeft_Click"/>
+                                    <Button Content="&gt;" Margin="5" Click="MoveFrameRight_Click"/>
+                                </StackPanel>
+                                <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="First" Margin="5" Grid.Column="0" VerticalAlignment="Center" TextDecorations="Underline" Cursor="Hand" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="Current" Margin="5" Grid.Column="1" VerticalAlignment="Center" TextDecorations="Underline" Cursor="Hand" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Last" Margin="5" Grid.Column="2" VerticalAlignment="Center" TextDecorations="Underline" Cursor="Hand" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </Grid>
+                        </Expander>
+                        <Expander Header="Boundaries" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Graphic" Margin="5" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
+                                <Image x:Name="BoundaryImage" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"/>
+                                <ComboBox Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBlock Text="X Offset" Margin="5" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
+                                <NumericUpDown x:Name="BoundaryXOffset" Margin="5" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Width="150"/>
+                                <TextBlock Text="Y Offset" Margin="5" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
+                                <NumericUpDown x:Name="BoundaryYOffset" Margin="5" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right" Width="150"/>
+                                <TextBlock Text="Width" Margin="5" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center"/>
+                                <NumericUpDown x:Name="BoundaryWidth" Margin="5" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" Width="150"/>
+                                <TextBlock Text="Height" Margin="5" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center"/>
+                                <NumericUpDown x:Name="BoundaryHeight" Margin="5" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right" Width="150"/>
+                                <TextBlock Text="Disabled" Margin="5" Grid.Column="0" Grid.Row="5" VerticalAlignment="Center"/>
+                                <CheckBox x:Name="BoundaryDisabled" Margin="5" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right" Width="150"/>
+                            </Grid>
+                        </Expander>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- Image column with white background and menu at the top -->
             <Border Grid.Column="1" Margin="0">
                 <DockPanel>
                     <Menu DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="1,0,1,1">
@@ -163,27 +207,9 @@
                             <MenuItem Header="Remove Exif Data"/>
                             <TextBox Text="Remove Exif Data"/>
                         </MenuItem>
-                        <!-- <MenuItem x:Name="MnuToggleSequencer" Header="○" Click="mnuToggleSequencer_Click" ToolTip.Tip="Toggle Sequencer"/> -->
+                        <MenuItem Header="Pause Animation" />
                     </Menu>
-                    <!-- Animation Panel -->
                     <DockPanel LastChildFill="True">
-                        <Border x:Name="AnimationPanel" DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="1,1,1,0" Height="250">
-                            <DockPanel>
-                                <Slider DockPanel.Dock="Top" Minimum="0" Maximum="100" Value="50" Margin="0,-10,0,0"/>
-                                <!-- <TextBlock Text="Animation Timeline" VerticalAlignment="Center" HorizontalAlignment="Center"/> -->
-
-                                <!-- <StackPanel> -->
-                                <!--     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"> -->
-                                <!--         <TextBlock Text="Back Animation Length:" VerticalAlignment="Center" Margin="5"/> -->
-                                <!--         <TextBox x:Name="txtBackAnimLength" Width="50" Margin="5" TextChanged="AnimationLength_TextChanged"/> -->
-                                <!--         <TextBlock Text="Front Animation Length:" VerticalAlignment="Center" Margin="5"/> -->
-                                <!--         <TextBox x:Name="txtFrontAnimLength" Width="50" Margin="5" TextChanged="AnimationLength_TextChanged"/> -->
-                                <!--     </StackPanel> -->
-                                <!--     <TextBlock Text="Note: Length of 0 means no animation" HorizontalAlignment="Center" Margin="0,5,0,10" FontStyle="Italic"/> -->
-                                <!-- </StackPanel> -->
-
-                            </DockPanel>
-                        </Border>
                         <ScrollViewer DockPanel.Dock="Top">
                             <Canvas x:Name="ImageCanvas" Background="Silver">
                                 <Image x:Name="Preview" Margin="5"/>
@@ -193,13 +219,12 @@
                 </DockPanel>
             </Border>
 
-            <!-- Layers list in the right column with a menu at the bottom -->
-            <DockPanel Grid.Column="2" Margin="-11,-5,-11, 0">
+            <DockPanel Grid.Column="2" Margin="-11,-5,-11,0">
                 <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectionChanged="ContentTabs_SelectionChanged">
                     <TabItem Header="Graphics" FontSize="16" Padding="45,0,15,0">
                         <DockPanel HorizontalAlignment="Stretch">
                             <Menu DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="0,1,0,0">
-                                <MenuItem Header="+" ToolTip.Tip="Add new layer" Click="mnuNewGraphicsLayer_Click" />
+                                <MenuItem Header="+" ToolTip.Tip="Add new layer" Click="mnuNewGraphicsLayer_Click"/>
                                 <MenuItem Header="-" ToolTip.Tip="Remove selected layer" Click="mnuRemoveGraphicsLayer_Click"/>
                                 <MenuItem Header="▲" ToolTip.Tip="Move selected layer up" Click="mnuMoveGraphicsLayerUp_Click"/>
                                 <MenuItem Header="▼" ToolTip.Tip="Move selected layer down" Click="mnuMoveGraphicsLayerDown_Click"/>
@@ -220,7 +245,7 @@
                     <TabItem Header="Boundaries" FontSize="16">
                         <DockPanel HorizontalAlignment="Stretch">
                             <Menu DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="0,1,0,0">
-                                <MenuItem Header="+" ToolTip.Tip="Add new layer" Click="mnuNewBoundaryLayer_Click" />
+                                <MenuItem Header="+" ToolTip.Tip="Add new layer" Click="mnuNewBoundaryLayer_Click"/>
                                 <MenuItem Header="-" ToolTip.Tip="Remove selected layer" Click="mnuRemoveBoundaryLayer_Click"/>
                                 <MenuItem Header="▲" ToolTip.Tip="Move selected layer up"/>
                                 <MenuItem Header="▼" ToolTip.Tip="Move selected layer down"/>
@@ -228,7 +253,6 @@
                             </Menu>
                             <ScrollViewer DockPanel.Dock="Top">
                                 <ListBox x:Name="BoundaryLayersList" BorderBrush="Gray" BorderThickness="0,0,0,0">
-                                    <!-- Entries appear here: -->
                                 </ListBox>
                             </ScrollViewer>
                         </DockPanel>
