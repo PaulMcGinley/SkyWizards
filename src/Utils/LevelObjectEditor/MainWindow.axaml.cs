@@ -1113,7 +1113,6 @@ public partial class MainWindow : Window
         // Add images first
         foreach (var graphic in objectLibrary.Images)
         {
-            Console.WriteLine("BG LIB:" + graphic.BackImageLibrary);
             if (graphic.BackImageLibrary == string.Empty || graphic.BackIndex < 0)
                 continue;
             
@@ -1126,9 +1125,12 @@ public partial class MainWindow : Window
             {
                 Source = CreateImage(lib.Images[graphic.BackIndex].Data),
             };
+            
+            int xOffset = lib.Images[graphic.BackIndex].OffsetX;
+            int yOffset = lib.Images[graphic.BackIndex].OffsetY;
 
-            Canvas.SetLeft(image, graphic.X);
-            Canvas.SetTop(image, graphic.Y);
+            Canvas.SetLeft(image, graphic.X + xOffset);
+            Canvas.SetTop(image, graphic.Y + yOffset);
 
             image.PointerPressed += Image_MouseLeftButtonDown;
             image.PointerMoved += Image_MouseMove;
