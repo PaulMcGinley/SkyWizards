@@ -87,7 +87,7 @@ public partial class MainWindow : Window
 
                 if (img.BackIndex == -1)
                     continue;
-                
+
                 if (img.BackEndIndex == -1)
                     continue;
 
@@ -95,31 +95,27 @@ public partial class MainWindow : Window
                     continue;
 
                 var newImg = img;
-                
-                
+
+
                 newImg.BackImageCurrentFrame++;
                 if (newImg.BackImageCurrentFrame > img.BackEndIndex)
                     newImg.BackImageCurrentFrame = img.BackIndex;
-                
-                // Add this near your animation update code
-                Console.WriteLine($"Before Speed: {img.BackAnimationSpeed}, Time now: {TimeNowEpoch}, Next frame: {img.BackAnimationNextFrame}");
-                
-                newImg.BackAnimationNextFrame = TimeNowEpoch + img.BackAnimationSpeed;
-                
-                Console.WriteLine($"After Speed: {img.BackAnimationSpeed}, Time now: {TimeNowEpoch}, Next frame: {newImg.BackAnimationNextFrame}");
-
 
                 // Update the ui element if it exists
-                // TODO: Need to break the dogs leg, will change to guard clause
                 if (i < ImageCanvas.Children.Count)
                 {
-                    if (ImageCanvas.Children[i] is Image image)
-                    {
-                        var lib = LibraryManager.Libraries[img.BackImageLibrary].Content;
-                        image.Source = CreateImage(lib.Images[newImg.BackImageCurrentFrame].Data);
-                        Canvas.SetLeft(image, newImg.X + LibraryManager.Libraries[img.BackImageLibrary].Content.Images[newImg.BackImageCurrentFrame].OffsetX);
-                        Canvas.SetTop(image, newImg.Y + LibraryManager.Libraries[img.BackImageLibrary].Content.Images[newImg.BackImageCurrentFrame].OffsetY);
-                    }
+                    if (ImageCanvas.Children[i] is not Image image)
+                        continue;
+                    
+                    var lib = LibraryManager.Libraries[img.BackImageLibrary].Content;
+                    image.Source = CreateImage(lib.Images[newImg.BackImageCurrentFrame].Data);
+                    Canvas.SetLeft(image,
+                        newImg.X + LibraryManager.Libraries[img.BackImageLibrary].Content
+                            .Images[newImg.BackImageCurrentFrame].OffsetX);
+                    Canvas.SetTop(image,
+                        newImg.Y + LibraryManager.Libraries[img.BackImageLibrary].Content
+                            .Images[newImg.BackImageCurrentFrame].OffsetY);
+
                 }
 
                 // Update the collection
@@ -161,7 +157,9 @@ public partial class MainWindow : Window
 
         var img = objectLibrary.Images[index];
         img.X = (int)newLeft;
+        lbX.Text = img.X.ToString();
         img.Y = (int)newTop;
+        lbY.Text = img.Y.ToString();
         objectLibrary.Images[index] = img;
 
         Canvas.SetLeft(image, newLeft);
@@ -187,8 +185,8 @@ public partial class MainWindow : Window
         e.Pointer.Capture(null);
 
         var layer = objectLibrary.Images[index];
-        layer.X = (int)Canvas.GetLeft(image);
-        layer.Y = (int)Canvas.GetTop(image);
+        layer.X = (int)Canvas.GetLeft(image) - LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].OffsetX;
+        layer.Y = (int)Canvas.GetTop(image) - LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].OffsetY;
         objectLibrary.Images[index] = layer;
 
         needsSave = true;
@@ -1129,8 +1127,8 @@ public partial class MainWindow : Window
             int xOffset = lib.Images[graphic.BackIndex].OffsetX;
             int yOffset = lib.Images[graphic.BackIndex].OffsetY;
 
-            Canvas.SetLeft(image, graphic.X + xOffset);
-            Canvas.SetTop(image, graphic.Y + yOffset);
+            Canvas.SetLeft(image, graphic.X+xOffset);
+            Canvas.SetTop(image, graphic.Y+yOffset);
 
             image.PointerPressed += Image_MouseLeftButtonDown;
             image.PointerMoved += Image_MouseMove;
