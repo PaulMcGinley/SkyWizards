@@ -950,12 +950,93 @@ public partial class MainWindow : Window
     {
         BoundaryLayersList.Items.Clear();
 
+        // Store the currently selected index
+        int selectedGraphicIndex = AssociatedGraphic.SelectedIndex;
+
+        // TODO: Refactor code to remove this check
+        // Some times efficienty isn't worth the hassle xD
+        bool rebuildGraphicsDropdown = true;
+
+        if (rebuildGraphicsDropdown)
+            AssociatedGraphic.Items.Clear();
+
         if (objectLibrary == null)
             return;
 
+        // Populate boundary layers list
         for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
-        {
             BoundaryLayersList.Items.Add(new ListBoxItem { Content = $"#{i + 1:00}" });
+
+        // Only rebuild the graphics dropdown if needed
+        // Nah mate, calm down past paul, we just gona rebuild it every time xD
+        if (rebuildGraphicsDropdown)
+        {
+            // Populate associated graphics dropdown with content
+            // TODO: Refactor this to use a method
+            // Note to any reader... these TODOs are probably not going to be done :)
+            for (int i = 0; i < objectLibrary.Images?.Count; i++)
+            {
+                var layer = objectLibrary.Images[i];
+                Border border;
+
+                if (LibraryManager.Libraries.ContainsKey(layer.BackImageLibrary) &&
+                    (layer.BackIndex >= 0 && layer.BackIndex <
+                        LibraryManager.Libraries[layer.BackImageLibrary].Content.Images.Count))
+                {
+                    var imageSource = CreateImage(LibraryManager.Libraries[layer.BackImageLibrary].Content
+                        .Images[layer.BackIndex].Data);
+                    var image = new Image
+                    {
+                        Source = imageSource,
+                        Width = 50,
+                        Height = 50,
+                        Margin = new Thickness(5, 0, 5, 0)
+                    };
+
+                    border = new Border
+                    {
+                        Child = image,
+                        Width = 50,
+                        Height = 50,
+                        Margin = new Thickness(5, 0, 5, 0)
+                    };
+                }
+                else
+                {
+                    border = new Border
+                    {
+                        Background = Brushes.Red,
+                        Width = 20,
+                        Height = 20,
+                        Margin = new Thickness(5, 0, 5, 0)
+                    };
+                }
+
+                var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+                var textBlock = new TextBlock
+                {
+                    Text =
+                        $"Pos: {layer.X}, {layer.Y}\n" +
+                        $"Back: {layer.BackIndex}" + (layer.BackEndIndex > 0
+                            ? $" (Anim: {layer.BackEndIndex})"
+                            : "") + "\n" +
+                        $"Front: {layer.FrontIndex}" + (layer.FrontEndIndex > 0
+                            ? $" (Anim: {layer.FrontEndIndex})"
+                            : ""),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                stackPanel.Children.Add(border);
+                stackPanel.Children.Add(textBlock);
+
+                AssociatedGraphic.Items.Add(new ComboBoxItem { Content = stackPanel });
+            }
+
+            // Restore selected index if valid
+            if (selectedGraphicIndex >= 0 && selectedGraphicIndex < AssociatedGraphic.Items.Count)
+            {
+                AssociatedGraphic.SelectedIndex = selectedGraphicIndex;
+            }
         }
     }
 

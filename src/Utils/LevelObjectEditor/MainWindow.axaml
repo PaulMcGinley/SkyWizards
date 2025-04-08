@@ -177,8 +177,8 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="Graphic" Margin="5" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
-                                <Image x:Name="BoundaryImage" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"/>
-                                <ComboBox Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <!-- <Image x:Name="BoundaryImage" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"/> -->
+                                <ComboBox Name="AssociatedGraphic" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 <TextBlock Text="X Offset" Margin="5" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
                                 <NumericUpDown x:Name="BoundaryXOffset" Margin="5" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Width="150"/>
                                 <TextBlock Text="Y Offset" Margin="5" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
