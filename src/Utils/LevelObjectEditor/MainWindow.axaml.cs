@@ -22,7 +22,7 @@ namespace LevelObjectEditor;
 public partial class MainWindow : Window
 {
     private OLibrary objectLibrary;
-    private bool needsSave = false; // This should be a library (Olib) property
+    private bool needsSave = false; // TODO: This should be a library (Olib) property
 
     private bool isDragging = false;
     private Point clickPosition;
@@ -32,7 +32,7 @@ public partial class MainWindow : Window
     private const double MinWidth = 25;
     private const double MinHeight = 25;
     
-    
+    // TODO: just track from when the application started
     Timer AnimationTimer;
     UInt64 TimeNowEpoch => (UInt64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
     
@@ -143,27 +143,29 @@ public partial class MainWindow : Window
     {
         if (!isDragging || sender is not Image image)
             return;
-
-        var currentPosition = e.GetPosition(ImageCanvas);
-        var offsetX = currentPosition.X - clickPosition.X;
-        var offsetY = currentPosition.Y - clickPosition.Y;
-
-        var newLeft = Canvas.GetLeft(image) + offsetX;
-        var newTop = Canvas.GetTop(image) + offsetY;
-
+ 
         var index = ImageCanvas.Children.IndexOf(image);
         if (index < 0 || index >= objectLibrary.Images.Count)
             return;
-
+        
         var img = objectLibrary.Images[index];
+        
+        var currentPosition = e.GetPosition(ImageCanvas);
+        var offsetX = currentPosition.X - clickPosition.X;
+        var offsetY = currentPosition.Y - clickPosition.Y;
+        
+        // TODO: While moving, seems to not move perfectly, sort of drifts out of sync with the mouse
+        var newLeft = img.X + offsetX;
+        var newTop = img.Y + offsetY;
+
         img.X = (int)newLeft;
         lbX.Text = img.X.ToString();
         img.Y = (int)newTop;
         lbY.Text = img.Y.ToString();
         objectLibrary.Images[index] = img;
 
-        Canvas.SetLeft(image, newLeft);
-        Canvas.SetTop(image, newTop);
+        Canvas.SetLeft(image, img.X + LibraryManager.Libraries[img.BackImageLibrary].Content.Images[img.BackIndex].OffsetX);
+        Canvas.SetTop(image, newTop + LibraryManager.Libraries[img.BackImageLibrary].Content.Images[img.BackIndex].OffsetY);
 
         clickPosition = currentPosition;
         needsSave = true;
