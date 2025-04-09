@@ -99,7 +99,7 @@ public partial class MainWindow : Window
                     newImg.BackImageCurrentFrame = img.BackIndex;
 
                 // Set the next frame time based on animation speed
-                newImg.BackAnimationNextFrame = TimeNowEpoch + newImg.BackAnimationSpeed;
+                newImg.BackAnimationNextFrame = TimeNowEpoch + (ulong)newImg.BackAnimationSpeed;
 
                 // Update the UI element if it exists
                 if (i < ImageCanvas.Children.Count && ImageCanvas.Children[i] is Image image)
@@ -450,7 +450,7 @@ public partial class MainWindow : Window
 
         // Update the selected layer's animation tick speed
         var graphic = objectLibrary.Images[index];
-        graphic.BackAnimationSpeed = (UInt64)result;
+        graphic.BackAnimationSpeed = result;
         objectLibrary.Images[index] = graphic;
 
         UpdateUI(updateLayers: false);
@@ -475,9 +475,6 @@ public partial class MainWindow : Window
             BackImageLibrary = string.Empty,
             BackIndex = -1,
             BackEndIndex = -1,
-            FrontImageLibrary = string.Empty,
-            FrontIndex = -1,
-            FrontEndIndex = -1,
             X = 0,
             Y = 0
         };
@@ -832,6 +829,7 @@ public partial class MainWindow : Window
             lbHeight.Text = "";
             // txtBackAnimLength.Text = "";
             // txtFrontAnimLength.Text = "";
+            cbDrawLayer.SelectedIndex = -1;
             updateLayers = true;
         }
 
@@ -847,6 +845,7 @@ public partial class MainWindow : Window
                 lbBackImageAnimationTickSpeed.Text = layer.BackAnimationSpeed.ToString();
                 lbX.Text = layer.X.ToString();
                 lbY.Text = layer.Y.ToString();
+                cbDrawLayer.SelectedIndex = layer.DrawLayer;
                 //lbWidth.Text = LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].Width.ToString();
                 // lbHeight.Text = LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].Height.ToString();
             }
@@ -916,10 +915,7 @@ public partial class MainWindow : Window
                     $"Pos: {objectLibrary.Images[i].X}, {objectLibrary.Images[i].Y}\n" +
                     $"Back: {objectLibrary.Images[i].BackIndex}" + (objectLibrary.Images[i].BackEndIndex > 0
                         ? $" (Anim: {objectLibrary.Images[i].BackEndIndex})"
-                        : "") + "\n" +
-                    $"Front: {objectLibrary.Images[i].FrontIndex}" + (objectLibrary.Images[i].FrontEndIndex > 0
-                        ? $" (Anim: {objectLibrary.Images[i].FrontEndIndex})"
-                        : ""),
+                        : "") + "\n",
                 VerticalAlignment = VerticalAlignment.Center
             };
 
@@ -1019,10 +1015,7 @@ public partial class MainWindow : Window
                         $"Pos: {layer.X}, {layer.Y}\n" +
                         $"Back: {layer.BackIndex}" + (layer.BackEndIndex > 0
                             ? $" (Anim: {layer.BackEndIndex})"
-                            : "") + "\n" +
-                        $"Front: {layer.FrontIndex}" + (layer.FrontEndIndex > 0
-                            ? $" (Anim: {layer.FrontEndIndex})"
-                            : ""),
+                            : "") + "\n",
                     VerticalAlignment = VerticalAlignment.Center
                 };
 
@@ -1217,7 +1210,7 @@ public partial class MainWindow : Window
         DlgNumber dlgNumber = new();
         var result = await dlgNumber.ShowDialog<double>(this, graphic.X, -10000, 10000);
 
-        // If dialog was canceled
+        // Dialog was canceled
         if (result == null)
             return;
 
@@ -1240,5 +1233,17 @@ public partial class MainWindow : Window
         needsSave = true;
         UpdateUI(updateLayers: true);
     }
-    
+
+    private void CbDrawLayer_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (CurrentGraphicLayerIndex() < 0)
+            return;
+        
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || objectLibrary == null)
+            return;
+        var graphic = objectLibrary.Images[index];
+        
+        graphic.DrawLayer = cbDrawLayer.SelectedIndex;
+    }
 }

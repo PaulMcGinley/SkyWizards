@@ -23,7 +23,7 @@ public struct Graphic
     /// <summary>
     /// Time in milliseconds between animation frames
     /// </summary>
-    public UInt64 BackAnimationSpeed { get; set; }
+    public int BackAnimationSpeed { get; set; }
     
     /// <summary>
     /// 
@@ -38,43 +38,6 @@ public struct Graphic
     public int BackImageCurrentFrame { get; set; }
     
     
-    
-    
-    
-    /// <summary>
-    /// Relative path to the front image library within the resources folder.
-    /// </summary>
-    public string FrontImageLibrary { get; set; }
-    /// <summary>
-    /// Index of the front image in the library.
-    /// </summary>
-    public int FrontIndex { get; set; }
-    /// <summary>
-    /// Length of the front animation in frames.
-    /// </summary>
-    public int FrontEndIndex { get; set; }
-    
-    /// <summary>
-    /// Time in milliseconds between animation frames
-    /// </summary>
-    public UInt64 FrontAnimationSpeed { get; set; }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    [XmlIgnore]
-    public UInt64 FrontAnimationNextFrame { get; set; }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    [XmlIgnore]
-    public int FrontImageCurrentFrame { get; set; }
-    
-    
-    
-    
-    
     /// <summary>
     /// X coordinate of the image in pixels.
     /// </summary>
@@ -84,4 +47,12 @@ public struct Graphic
     /// Y coordinate of the image in pixels.
     /// </summary>
     public int Y { get; set; }
+    
+    /// <summary>
+    /// 0   -   Scenery
+    /// 1   -   Back
+    /// 2   -   Front
+    /// 3   -   Topmost
+    /// </summary>
+    public int DrawLayer { get; set; }
 }
