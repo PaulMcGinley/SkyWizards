@@ -38,15 +38,8 @@ namespace LevelObjectEditor
                     Content = new PLibrary(path)
                 };
                 Libraries[file].Content.Open(out string err);
-                
-                Console.WriteLine($"{Libraries.Count} - {file} - Img Count = {Libraries[file].Content.Images.Count}");
-                Console.WriteLine($"err: {err}");
             }
-            
-            // Break me
         }
-        
-        
         
         public static void LoadLibrary(string path)
         {
@@ -68,7 +61,6 @@ namespace LevelObjectEditor
             
             if (err != null)
             {
-                // Handle the error (e.g., log it, show a message to the user, etc.)
                 System.Diagnostics.Debug.WriteLine($"Error loading library: {err}");
                 return;
             }

@@ -49,7 +49,7 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="X" Margin="5" Grid.Column="0" Grid.Row="0"/>
-                                <TextBlock x:Name="lbX" Text="" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"/>
+                                <TextBlock x:Name="lbX" Text="" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Tapped="LbX_OnTapped"/>
                                 <TextBlock Text="Y" Margin="5" Grid.Column="0" Grid.Row="1"/>
                                 <TextBlock x:Name="lbY" Text="" Margin="5" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right"/>
                                 <TextBlock Text="Width" Margin="5" Grid.Column="0" Grid.Row="2"/>

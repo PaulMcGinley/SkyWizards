@@ -2,6 +2,8 @@ namespace libType;
 
 public struct Boundry
 {
+    public int Layer { get; set; }
+    public int Frame { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
     public int Width { get; set; }

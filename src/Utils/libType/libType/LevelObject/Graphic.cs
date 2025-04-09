@@ -1,3 +1,5 @@
+using System.Xml.Serialization;
+
 namespace libType;
 
 public struct Graphic
@@ -26,11 +28,13 @@ public struct Graphic
     /// <summary>
     /// 
     /// </summary>
+    [XmlIgnore]
     public UInt64 BackAnimationNextFrame { get; set; }
     
     /// <summary>
     /// 
     /// </summary>
+    [XmlIgnore]
     public int BackImageCurrentFrame { get; set; }
     
     
@@ -58,11 +62,13 @@ public struct Graphic
     /// <summary>
     /// 
     /// </summary>
+    [XmlIgnore]
     public UInt64 FrontAnimationNextFrame { get; set; }
     
     /// <summary>
     /// 
     /// </summary>
+    [XmlIgnore]
     public int FrontImageCurrentFrame { get; set; }
     
     
