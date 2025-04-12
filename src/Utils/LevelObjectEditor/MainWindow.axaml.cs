@@ -16,6 +16,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using LevelObjectEditor.Dialogs;
 using libType;
+using System.Linq;
 
 namespace LevelObjectEditor;
 
@@ -124,7 +125,7 @@ public partial class MainWindow : Window
 
     #region Object Manipulation
 
-    private void Image_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
+    private void Image_MouseLeftButtonDown(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Image image)
             return;
@@ -134,13 +135,13 @@ public partial class MainWindow : Window
         e.Pointer.Capture(image);
     }
 
-    private void Image_MouseMove(object sender, PointerEventArgs e)
+    private void Image_MouseMove(object? sender, PointerEventArgs e)
     {
         if (!isDragging || sender is not Image image)
             return;
 
         var index = ImageCanvas.Children.IndexOf(image);
-        if (index < 0 || index >= objectLibrary.Images.Count)
+        if (index < 0 || index >= objectLibrary?.Images?.Count)
             return;
 
         var img = objectLibrary.Images[index];
@@ -168,15 +169,14 @@ public partial class MainWindow : Window
         needsSave = true;
     }
 
-    private void Image_MouseLeftButtonUp(object sender, PointerReleasedEventArgs e)
+    private void Image_MouseLeftButtonUp(object? sender, PointerReleasedEventArgs e)
     {
         if (sender is not Image image)
             return;
 
         var index = ImageCanvas.Children.IndexOf(image);
 
-        Debug.Assert(objectLibrary.Images != null, "objectLibrary.Images != null");
-        if (index < 0 || index >= objectLibrary.Images.Count)
+        if (objectLibrary?.Images == null || index < 0 || index >= objectLibrary.Images.Count)
             return;
 
         LayersList.SelectedIndex = index;
@@ -184,9 +184,9 @@ public partial class MainWindow : Window
         e.Pointer.Capture(null);
 
         var layer = objectLibrary.Images[index];
-        layer.X = (int)Canvas.GetLeft(image) -
+        layer.X = (int)(Canvas.GetLeft(image)) -
                   LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].OffsetX;
-        layer.Y = (int)Canvas.GetTop(image) -
+        layer.Y = (int)(Canvas.GetTop(image)) -
                   LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].OffsetY;
         objectLibrary.Images[index] = layer;
 
@@ -540,7 +540,6 @@ public partial class MainWindow : Window
 
     #region Boundary Layers
 
-    // Add this field to the MainWindow class
     private Dictionary<int, int> boundaryCurrentFrames = new Dictionary<int, int>();
 
     private int GetCurrentBoundaryFrame(int boundaryIndex)
@@ -577,18 +576,19 @@ public partial class MainWindow : Window
         if (objectLibrary == null)
             return;
 
-        var newLayer = new Boundry
+        var newGroup = new BoundryGroup
         {
-            X = 0,
-            Y = 0,
-            Width = 100,
-            Height = 25
+            Layer = BoundaryLayersList.Items.Count,
+            Boundries = new List<Boundry>
+            {
+                new Boundry { X = 0, Y = 0, Width = 100, Height = 25 }
+            }
         };
-        objectLibrary.Boundaries.Add(newLayer);
+        objectLibrary.BoundaryGroups.Add(newGroup);
 
         UpdateUI(updateLayers: true);
 
-        var itemToSelect = BoundaryLayersList.Items[objectLibrary.Boundaries.Count - 1];
+        var itemToSelect = BoundaryLayersList.Items[objectLibrary.BoundaryGroups.Count - 1];
         BoundaryLayersList.SelectedItem = itemToSelect;
     }
 
@@ -598,22 +598,22 @@ public partial class MainWindow : Window
             return;
 
         var index = BoundaryLayersList.SelectedIndex;
-        objectLibrary.Boundaries?.RemoveAt(index);
+        objectLibrary.BoundaryGroups?.RemoveAt(index);
 
         UpdateUI(updateLayers: true);
 
-        if (objectLibrary.Boundaries != null)
-            BoundaryLayersList.SelectedIndex = Math.Min(index, objectLibrary.Boundaries.Count - 1);
+        if (objectLibrary.BoundaryGroups != null)
+            BoundaryLayersList.SelectedIndex = Math.Min(index, objectLibrary.BoundaryGroups.Count - 1);
     }
 
-    private void DrawBoundary(Boundry boundary, int boundaryIndex)
+    private void DrawBoundary(Boundry boundary, int groupIndex, int boundaryIndex)
     {
         var rectangle = new Rectangle
         {
             Width = boundary.Width,
             Height = boundary.Height,
             Fill = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0)),
-            Tag = boundaryIndex,
+            Tag = (groupIndex, boundaryIndex),
             StrokeThickness = 2
         };
 
@@ -625,39 +625,26 @@ public partial class MainWindow : Window
         rectangle.PointerReleased += Rectangle_PointerReleased;
 
         ImageCanvas.Children.Add(rectangle);
-        AddResizeHandles(rectangle, boundaryIndex);
+        AddResizeHandles(rectangle, groupIndex, boundaryIndex);
     }
 
-    /// <summary>
-    /// Adds resize handles to the boundary rectangle
-    /// </summary>
-    /// <param name="rectangle"></param>
-    /// <param name="boundaryIndex"></param>
-    private void AddResizeHandles(Rectangle rectangle, int boundaryIndex)
+    private void AddResizeHandles(Rectangle rectangle, int groupIndex, int boundaryIndex)
     {
-        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Top, boundaryIndex);
-        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Top, boundaryIndex);
-        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Bottom, boundaryIndex);
-        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom, boundaryIndex);
+        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Top, groupIndex, boundaryIndex);
+        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Top, groupIndex, boundaryIndex);
+        AddHandle(rectangle, HorizontalAlignment.Left, VerticalAlignment.Bottom, groupIndex, boundaryIndex);
+        AddHandle(rectangle, HorizontalAlignment.Right, VerticalAlignment.Bottom, groupIndex, boundaryIndex);
     }
 
-    /// <summary>
-    /// Adds a resize handle to the boundary rectangle
-    /// Called from AddResizeHandles
-    /// </summary>
-    /// <param name="rectangle"></param>
-    /// <param name="horizontalAlignment"></param>
-    /// <param name="verticalAlignment"></param>
-    /// <param name="boundaryIndex"></param>
     private void AddHandle(Rectangle rectangle, HorizontalAlignment horizontalAlignment,
-        VerticalAlignment verticalAlignment, int boundaryIndex)
+        VerticalAlignment verticalAlignment, int groupIndex, int boundaryIndex)
     {
         var handle = new Rectangle
         {
             Width = HandleSize,
             Height = HandleSize,
             Fill = Brushes.Blue,
-            Tag = (boundaryIndex, horizontalAlignment, verticalAlignment),
+            Tag = (groupIndex, boundaryIndex, horizontalAlignment, verticalAlignment),
             HorizontalAlignment = horizontalAlignment,
             VerticalAlignment = verticalAlignment
         };
@@ -671,13 +658,6 @@ public partial class MainWindow : Window
         ImageCanvas.Children.Add(handle);
     }
 
-    /// <summary>
-    /// Updates the position of the handle based on the boundary position
-    /// </summary>
-    /// <param name="handle"></param>
-    /// <param name="rectangle"></param>
-    /// <param name="horizontalAlignment"></param>
-    /// <param name="verticalAlignment"></param>
     private void UpdateHandlePosition(Rectangle handle, Rectangle rectangle, HorizontalAlignment horizontalAlignment,
         VerticalAlignment verticalAlignment)
     {
@@ -698,14 +678,9 @@ public partial class MainWindow : Window
         Canvas.SetTop(handle, top);
     }
 
-    /// <summary>
-    /// Update the position and size of the boundary when the handle is dragged
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void Rectangle_PointerMoved(object? sender, PointerEventArgs e)
     {
-        if (!isDragging || sender is not Rectangle { Tag: int boundaryIndex } rectangle)
+        if (!isDragging || sender is not Rectangle { Tag: ValueTuple<int, int> tag } rectangle)
             return;
 
         var position = e.GetPosition(ImageCanvas);
@@ -718,34 +693,32 @@ public partial class MainWindow : Window
         Canvas.SetLeft(rectangle, left);
         Canvas.SetTop(rectangle, top);
 
-        // Update handle positions
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle { Tag: ValueTuple<int, HorizontalAlignment, VerticalAlignment> handleData } handle
-                && handleData.Item1 == boundaryIndex)
+            if (child is Rectangle { Tag: ValueTuple<int, int, HorizontalAlignment, VerticalAlignment> handleData } handle
+                && handleData.Item1 == tag.Item1 && handleData.Item2 == tag.Item2)
             {
-                UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
+                UpdateHandlePosition(handle, rectangle, handleData.Item3, handleData.Item4);
             }
         }
 
-        // Update the boundary in the object library using the stored index
-        if (boundaryIndex >= 0 && boundaryIndex < objectLibrary.Boundaries.Count)
+        if (tag.Item1 >= 0 && tag.Item1 < objectLibrary?.BoundaryGroups?.Count)
         {
-            var boundary = objectLibrary.Boundaries[boundaryIndex];
-            boundary.X = (int)left;
-            boundary.Y = (int)top;
-            objectLibrary.Boundaries[boundaryIndex] = boundary;
-            needsSave = true;
+            var group = objectLibrary.BoundaryGroups[tag.Item1];
+            if (tag.Item2 >= 0 && tag.Item2 < group.Boundries.Count)
+            {
+                var boundary = group.Boundries[tag.Item2];
+                boundary.X = (int)left;
+                boundary.Y = (int)top;
+                group.Boundries[tag.Item2] = boundary;
+                objectLibrary.BoundaryGroups[tag.Item1] = group;
+                needsSave = true;
+            }
         }
 
         clickPosition = position;
     }
 
-    /// <summary>
-    /// Start dragging the boundary rectangle
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void Rectangle_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Rectangle rectangle)
@@ -756,11 +729,6 @@ public partial class MainWindow : Window
         e.Pointer.Capture(rectangle);
     }
 
-    /// <summary>
-    /// Stop dragging the boundary rectangle
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     private void Rectangle_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (sender is not Rectangle rectangle)
@@ -768,7 +736,7 @@ public partial class MainWindow : Window
 
         isDragging = false;
         e.Pointer.Capture(null);
-        
+
         UpdateBoundaryControls();
     }
 
@@ -781,7 +749,7 @@ public partial class MainWindow : Window
 
     private void Handle_PointerMoved(object? sender, PointerEventArgs e, Rectangle rectangle)
     {
-        if (!isDragging || rectangle.Tag is not int boundaryIndex)
+        if (!isDragging || rectangle.Tag is not ValueTuple<int, int> tag)
             return;
 
         var position = e.GetPosition(ImageCanvas);
@@ -794,25 +762,28 @@ public partial class MainWindow : Window
         rectangle.Width = newWidth;
         rectangle.Height = newHeight;
 
-        // Update handle positions
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment>
+            if (child is Rectangle handle && handle.Tag is ValueTuple<int, int, HorizontalAlignment, VerticalAlignment>
                                               handleData
-                                          && handleData.Item1 == boundaryIndex)
+                                          && handleData.Item1 == tag.Item1 && handleData.Item2 == tag.Item2)
             {
-                UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
+                UpdateHandlePosition(handle, rectangle, handleData.Item3, handleData.Item4);
             }
         }
 
-        // Update the boundary in the object library using the stored index
-        if (boundaryIndex >= 0 && boundaryIndex < objectLibrary.Boundaries.Count)
+        if (tag.Item1 >= 0 && tag.Item1 < objectLibrary?.BoundaryGroups?.Count)
         {
-            var boundary = objectLibrary.Boundaries[boundaryIndex];
-            boundary.Width = (int)newWidth;
-            boundary.Height = (int)newHeight;
-            objectLibrary.Boundaries[boundaryIndex] = boundary;
-            needsSave = true;
+            var group = objectLibrary.BoundaryGroups[tag.Item1];
+            if (tag.Item2 >= 0 && tag.Item2 < group.Boundries.Count)
+            {
+                var boundary = group.Boundries[tag.Item2];
+                boundary.Width = (int)newWidth;
+                boundary.Height = (int)newHeight;
+                group.Boundries[tag.Item2] = boundary;
+                objectLibrary.BoundaryGroups[tag.Item1] = group;
+                needsSave = true;
+            }
         }
 
         clickPosition = position;
@@ -822,45 +793,9 @@ public partial class MainWindow : Window
     {
         isDragging = false;
         e.Pointer.Capture(null);
-        
+
         UpdateBoundaryControls();
     }
-
-    // private void MoveFrameLeft_Click(object? sender, RoutedEventArgs e)
-    // {
-    //     var index = LayersList.SelectedIndex;
-    //     if (index < 0 || objectLibrary == null)
-    //         return;
-    //
-    //     var graphic = objectLibrary.Images[index];
-    //
-    //     if (graphic.BackImageCurrentFrame > 0)
-    //         graphic.BackImageCurrentFrame--;
-    //     else
-    //         graphic.BackImageCurrentFrame = graphic.BackEndIndex;
-    //
-    //     objectLibrary.Images[index] = graphic;
-    //
-    //     UpdateUI(updateLayers: false);
-    // }
-    //
-    // private void MoveFrameRight_Click(object? sender, RoutedEventArgs e)
-    // {
-    //     var index = LayersList.SelectedIndex;
-    //     if (index < 0 || objectLibrary == null)
-    //         return;
-    //
-    //     var graphic = objectLibrary.Images[index];
-    //
-    //     if (graphic.BackImageCurrentFrame < graphic.BackEndIndex)
-    //         graphic.BackImageCurrentFrame++;
-    //     else
-    //         graphic.BackImageCurrentFrame = graphic.BackIndex;
-    //
-    //     objectLibrary.Images[index] = graphic;
-    //
-    //     UpdateUI(updateLayers: false);
-    // }
 
     private async void LbX_OnTapped(object? sender, TappedEventArgs e)
     {
@@ -875,17 +810,14 @@ public partial class MainWindow : Window
             DlgNumber dlgNumber = new();
             var result = await dlgNumber.ShowDialog<double>(this, graphic.X, -10000, 10000);
 
-            // Dialog was canceled
             if (result == null)
                 return;
 
             graphic.X = (int)result.Value;
             objectLibrary.Images[index] = graphic;
 
-            // Update the UI display
             lbX.Text = graphic.X.ToString();
 
-            // Update the canvas position
             if (index < ImageCanvas.Children.Count && ImageCanvas.Children[index] is Image image)
             {
                 if (LibraryManager.Libraries.ContainsKey(graphic.BackImageLibrary) && graphic.BackIndex >= 0)
@@ -918,17 +850,14 @@ public partial class MainWindow : Window
             DlgNumber dlgNumber = new();
             var result = await dlgNumber.ShowDialog<double>(this, graphic.Y, -10000, 10000);
 
-            // Dialog was canceled
             if (result == null)
                 return;
 
             graphic.Y = (int)result.Value;
             objectLibrary.Images[index] = graphic;
 
-            // Update the UI display
             lbY.Text = graphic.Y.ToString();
 
-            // Update the canvas position
             if (index < ImageCanvas.Children.Count && ImageCanvas.Children[index] is Image image)
             {
                 if (LibraryManager.Libraries.ContainsKey(graphic.BackImageLibrary) && graphic.BackIndex >= 0)
@@ -952,7 +881,6 @@ public partial class MainWindow : Window
 
     private void CbDrawLayer_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        // Avoid circular updates
         if (updatingUI || sender is not ComboBox cbDrawLayer)
             return;
 
@@ -965,11 +893,9 @@ public partial class MainWindow : Window
         graphic.DrawLayer = _drawLayer;
         objectLibrary.Images[index] = graphic;
 
-        // Set flag before updating UI
         updatingUI = true;
         try
         {
-            // Defer UI update to avoid selection conflicts
             Dispatcher.UIThread.Post(() =>
             {
                 UpdateUI(updateLayers: true);
@@ -995,14 +921,11 @@ public partial class MainWindow : Window
 
         var graphic = objectLibrary.Images[graphicIndex];
 
-        // Calculate current and previous frame
         int currentFrame = GetCurrentBoundaryFrame(boundaryIndex);
         int prevFrame = currentFrame > graphic.BackIndex ? currentFrame - 1 : graphic.BackEndIndex;
 
-        // Save current boundary configuration before changing frames
         SaveBoundaryFrameState(boundaryIndex, currentFrame);
 
-        // Update to previous frame
         SetCurrentBoundaryFrame(boundaryIndex, prevFrame);
         LoadBoundaryFrameState(boundaryIndex, prevFrame);
     }
@@ -1018,125 +941,99 @@ public partial class MainWindow : Window
 
         var graphic = objectLibrary.Images[graphicIndex];
 
-        // Calculate current and next frame
         int currentFrame = GetCurrentBoundaryFrame(boundaryIndex);
         int nextFrame = currentFrame < graphic.BackEndIndex ? currentFrame + 1 : graphic.BackIndex;
 
-        // Save current boundary configuration before changing frames
         SaveBoundaryFrameState(boundaryIndex, currentFrame);
 
-        // Update to next frame
         SetCurrentBoundaryFrame(boundaryIndex, nextFrame);
         LoadBoundaryFrameState(boundaryIndex, nextFrame);
     }
 
     private void SaveBoundaryFrameState(int boundaryIndex, int frame)
     {
-        if (objectLibrary?.Boundaries == null || boundaryIndex < 0 ||
-            boundaryIndex >= objectLibrary.Boundaries.Count)
+        if (objectLibrary?.BoundaryGroups == null || boundaryIndex < 0 ||
+            boundaryIndex >= objectLibrary.BoundaryGroups.Count)
             return;
 
-        var boundary = objectLibrary.Boundaries[boundaryIndex];
+        var group = objectLibrary.BoundaryGroups[boundaryIndex];
+        var boundary = group.Boundries.FirstOrDefault(b => b.Frame == frame);
 
-        // Store current state
-        boundary.Frame = frame;
-        boundary.X = (int)Canvas.GetLeft(GetBoundaryRectangle(boundaryIndex));
-        boundary.Y = (int)Canvas.GetTop(GetBoundaryRectangle(boundaryIndex));
-        boundary.Width = (int)GetBoundaryRectangle(boundaryIndex).Width;
-        boundary.Height = (int)GetBoundaryRectangle(boundaryIndex).Height;
-        boundary.Active = !BoundaryDisabled.IsChecked ?? true;
+        
+            boundary.Frame = frame;
+            boundary.X = (int)(Canvas.GetLeft(GetBoundaryRectangle(boundaryIndex)));
+            boundary.Y = (int)(Canvas.GetTop(GetBoundaryRectangle(boundaryIndex)));
+            boundary.Width = (int)(GetBoundaryRectangle(boundaryIndex)?.Width ?? 0.0);
+            boundary.Height = (int)(GetBoundaryRectangle(boundaryIndex)?.Height ?? 0.0);
+            boundary.Active = !(BoundaryDisabled.IsChecked ?? false);
 
-        // Update in library
-        objectLibrary.Boundaries[boundaryIndex] = boundary;
-        needsSave = true;
+            needsSave = true;
+        
     }
 
     private void LoadBoundaryFrameState(int boundaryIndex, int frame)
     {
-        if (objectLibrary?.Boundaries == null || boundaryIndex < 0 ||
-            boundaryIndex >= objectLibrary.Boundaries.Count)
+        if (objectLibrary?.BoundaryGroups == null || boundaryIndex < 0 ||
+            boundaryIndex >= objectLibrary.BoundaryGroups.Count)
             return;
 
-        // Find boundary state for this frame or create new one
-        Boundry? foundBoundary = null;
+        var group = objectLibrary.BoundaryGroups[boundaryIndex];
+        var boundary = group.Boundries.FirstOrDefault(b => b.Frame == frame);
 
-        foreach (var b in objectLibrary.Boundaries)
-            if (b.Layer == boundaryIndex && b.Frame == frame)
+            boundary = new Boundry
             {
-                foundBoundary = b;
-                break;
-            }
-
-        // If no existing boundary state for this frame, create default
-        if (foundBoundary == null)
-        {
-            var currentBoundary = objectLibrary.Boundaries[boundaryIndex];
-            foundBoundary = new Boundry
-            {
-                Layer = boundaryIndex,
                 Frame = frame,
-                X = currentBoundary.X,
-                Y = currentBoundary.Y,
-                Width = currentBoundary.Width,
-                Height = currentBoundary.Height,
-                Active = currentBoundary.Active
+                X = 0,
+                Y = 0,
+                Width = 100,
+                Height = 25,
+                Active = true
             };
-            objectLibrary.Boundaries.Add(foundBoundary.Value);
-        }
+            group.Boundries.Add(boundary);
+        
 
-        // Update UI with boundary state
         var rectangle = GetBoundaryRectangle(boundaryIndex);
         if (rectangle != null)
         {
-            Canvas.SetLeft(rectangle, foundBoundary.Value.X);
-            Canvas.SetTop(rectangle, foundBoundary.Value.Y);
-            rectangle.Width = foundBoundary.Value.Width;
-            rectangle.Height = foundBoundary.Value.Height;
+            Canvas.SetLeft(rectangle, boundary.X);
+            Canvas.SetTop(rectangle, boundary.Y);
+            rectangle.Width = boundary.Width;
+            rectangle.Height = boundary.Height;
 
-            // Update handles
             foreach (var child in ImageCanvas.Children)
             {
-                if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment>
+                if (child is Rectangle handle && handle.Tag is ValueTuple<int, int, HorizontalAlignment, VerticalAlignment>
                         handleData && handleData.Item1 == boundaryIndex)
                 {
-                    UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
+                    UpdateHandlePosition(handle, rectangle, handleData.Item3, handleData.Item4);
                 }
             }
         }
 
-        // Update disabled checkbox
-        BoundaryDisabled.IsChecked = !foundBoundary.Value.Active;
+        BoundaryDisabled.IsChecked = !boundary.Active;
     }
 
     private void BoundaryDisabled_CheckedChanged(object sender, RoutedEventArgs e)
     {
         var boundaryIndex = CurrentBoundaryLayerIndex();
-        if (boundaryIndex < 0 || objectLibrary?.Boundaries == null)
+        if (boundaryIndex < 0 || objectLibrary?.BoundaryGroups == null)
             return;
 
         int currentFrame = GetCurrentBoundaryFrame(boundaryIndex);
 
-        // Find the boundary for this frame
-        for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
-        {
-            if (objectLibrary.Boundaries[i].Layer == boundaryIndex &&
-                objectLibrary.Boundaries[i].Frame == currentFrame)
+        var group = objectLibrary.BoundaryGroups[boundaryIndex];
+        var boundary = group.Boundries.FirstOrDefault(b => b.Frame == currentFrame);
+
+            boundary.Active = !(BoundaryDisabled.IsChecked ?? false);
+
+            var rectangle = GetBoundaryRectangle(boundaryIndex);
+            if (rectangle != null)
             {
-                var boundary = objectLibrary.Boundaries[i];
-                boundary.Active = !BoundaryDisabled.IsChecked ?? true;
-                objectLibrary.Boundaries[i] = boundary;
-
-                // Update visuals
-                var rectangle = GetBoundaryRectangle(boundaryIndex);
-                if (rectangle != null)
-                {
-                    rectangle.Opacity = boundary.Active ? 1.0 : 0.4;
-                }
-
-                needsSave = true;
-                break;
+                rectangle.Opacity = boundary.Active ? 1.0 : 0.4;
             }
-        }
+
+            needsSave = true;
+        
     }
 
     private void BoundaryLayersList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -1149,11 +1046,9 @@ public partial class MainWindow : Window
 
         var graphic = objectLibrary.Images[graphicIndex];
 
-        // Initialize to the first frame
         int currentFrame = graphic.BackIndex;
         lbBoundaryCurrentFrame.Text = currentFrame.ToString();
 
-        // Load the boundary state for this frame
         LoadBoundaryFrameState(boundaryIndex, currentFrame);
 
         UpdateUI(updateLayers: false);
@@ -1161,79 +1056,54 @@ public partial class MainWindow : Window
 
     private void BoundaryOffset_ValueChanged(object sender, NumericUpDownValueChangedEventArgs e)
     {
-        // Guard against recursive updates
         if (_isUpdatingControls) return;
 
         if (sender is NumericUpDown control)
         {
             int boundaryIndex = CurrentBoundaryLayerIndex();
-            if (boundaryIndex < 0 || objectLibrary?.Boundaries == null) return;
-            
-            int currentFrame = GetCurrentBoundaryFrame(boundaryIndex);
-            
-            // Find the boundary for this layer and frame
-            for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
-            {
-                var boundary = objectLibrary.Boundaries[i];
-                if (boundary.Layer == boundaryIndex && boundary.Frame == currentFrame)
-                {
-                    // Create a modified copy of the boundary
-                    if (control.Name == "BoundaryXOffset")
-                        boundary.X = (int)e.NewValue;
-                    else if (control.Name == "BoundaryYOffset")
-                        boundary.Y = (int)e.NewValue;
-                    
-                    // Update the original in the collection
-                    objectLibrary.Boundaries[i] = boundary;
-                    break;
-                }
-            }
+            if (boundaryIndex < 0 || objectLibrary?.BoundaryGroups == null) return;
 
-            UpdateBoundaryDisplay();
+            int currentFrame = GetCurrentBoundaryFrame(boundaryIndex);
+
+            var group = objectLibrary.BoundaryGroups[boundaryIndex];
+            var boundary = group.Boundries.FirstOrDefault(b => b.Frame == currentFrame);
+
+                if (control.Name == "BoundaryXOffset")
+                    boundary.X = (int)e.NewValue;
+                else if (control.Name == "BoundaryYOffset")
+                    boundary.Y = (int)e.NewValue;
+
+                UpdateBoundaryDisplay();
+            
         }
     }
 
     private void BoundarySize_ValueChanged(object sender, NumericUpDownValueChangedEventArgs e)
     {
-        // Guard against recursive updates
         if (_isUpdatingControls) return;
 
         if (sender is NumericUpDown control)
         {
             int boundaryIndex = CurrentBoundaryLayerIndex();
-            if (boundaryIndex < 0 || objectLibrary?.Boundaries == null) return;
+            if (boundaryIndex < 0 || objectLibrary?.BoundaryGroups == null) return;
 
             int currentFrame = GetCurrentBoundaryFrame(boundaryIndex);
 
-            // Find the boundary for this layer and frame
-            for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
-            {
-                var boundary = objectLibrary.Boundaries[i];
-                if (boundary.Layer == boundaryIndex && boundary.Frame == currentFrame)
-                {
-                    // Create a modified copy of the boundary
-                    if (control.Name == "BoundaryWidth")
-                        boundary.Width = (int)e.NewValue;
-                    else if (control.Name == "BoundaryHeight")
-                        boundary.Height = (int)e.NewValue;
+            var group = objectLibrary.BoundaryGroups[boundaryIndex];
+            var boundary = group.Boundries.FirstOrDefault(b => b.Frame == currentFrame);
 
-                    // Update the original in the collection
-                    objectLibrary.Boundaries[i] = boundary;
-                    break;
-                }
-            }
+                if (control.Name == "BoundaryWidth")
+                    boundary.Width = (int)e.NewValue;
+                else if (control.Name == "BoundaryHeight")
+                    boundary.Height = (int)e.NewValue;
 
-            UpdateBoundaryDisplay();
+                UpdateBoundaryDisplay();
+            
         }
     }
 
-    // Prevent recursive updates
     private bool _isUpdatingControls = false;
 
-    
-    /// <summary>
-    /// Updates the controls for the selected boundary
-    /// </summary>
     public void UpdateBoundaryControls()
     {
         var selectedBoundary = GetSelectedBoundary();
@@ -1252,33 +1122,17 @@ public partial class MainWindow : Window
             _isUpdatingControls = false;
         }
     }
-    
-    /// <summary>
-    /// Gets the currently selected boundary from the object library based on selection and current frame
-    /// </summary>
-    /// <returns>The currently selected Boundry or null if none selected</returns>
+
     private Boundry? GetSelectedBoundary()
     {
-        var boundaryIndex = CurrentBoundaryLayerIndex();
-        if (boundaryIndex < 0 || objectLibrary?.Boundaries == null)
+        var groupIndex = CurrentBoundaryLayerIndex();
+        if (groupIndex < 0 || objectLibrary?.BoundaryGroups == null)
             return null;
 
-        int currentFrame = GetCurrentBoundaryFrame(boundaryIndex);
-
-        // Find the boundary for this layer and frame
-        foreach (var boundary in objectLibrary.Boundaries)
-        {
-            if (boundary.Layer == boundaryIndex && boundary.Frame == currentFrame)
-                return boundary;
-        }
-
-        // If no boundary exists for this frame yet, return the default one
-        return objectLibrary.Boundaries[boundaryIndex];
+        var group = objectLibrary.BoundaryGroups[groupIndex];
+        return group.Boundries.FirstOrDefault();
     }
 
-    /// <summary>
-    /// Updates the visual representation of the selected boundary on the canvas
-    /// </summary>
     private void UpdateBoundaryDisplay()
     {
         var selectedBoundary = GetSelectedBoundary();
@@ -1288,24 +1142,21 @@ public partial class MainWindow : Window
         var rectangle = GetBoundaryRectangle(boundaryIndex);
         if (rectangle == null) return;
 
-        // Update rectangle position and size
         Canvas.SetLeft(rectangle, selectedBoundary.Value.X);
         Canvas.SetTop(rectangle, selectedBoundary.Value.Y);
         rectangle.Width = selectedBoundary.Value.Width;
         rectangle.Height = selectedBoundary.Value.Height;
         rectangle.Opacity = selectedBoundary.Value.Active ? 1.0 : 0.4;
 
-        // Update handles
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle handle && handle.Tag is ValueTuple<int, HorizontalAlignment, VerticalAlignment> handleData 
+            if (child is Rectangle handle && handle.Tag is ValueTuple<int, int, HorizontalAlignment, VerticalAlignment> handleData 
                                           && handleData.Item1 == boundaryIndex)
             {
-                UpdateHandlePosition(handle, rectangle, handleData.Item2, handleData.Item3);
+                UpdateHandlePosition(handle, rectangle, handleData.Item3, handleData.Item4);
             }
         }
 
-        // Mark as needing save
         needsSave = true;
     }
 
@@ -1318,7 +1169,6 @@ public partial class MainWindow : Window
         if (sender is not TabControl tabControl)
             return;
 
-        // TODO: Move this to a separate function to avoid code duplication
         if (!UIElement_LayerTabsLoaded)
             return;
 
@@ -1342,7 +1192,6 @@ public partial class MainWindow : Window
     {
         if (objectLibrary == null)
         {
-            //lbImageIndex.Text = "";
             lbX.Text = "";
             lbY.Text = "";
             cbDrawLayer.SelectedIndex = 0;
@@ -1362,10 +1211,8 @@ public partial class MainWindow : Window
                 lbX.Text = layer.X.ToString();
                 lbY.Text = layer.Y.ToString();
 
-                // TODO: Circular update between selecting layers and updating the UI
                 try
                 {
-
                     cbDrawLayer.SelectedIndex = layer.DrawLayer < 0 ? 0 : layer.DrawLayer;
                 }
                 catch (Exception exception)
@@ -1388,10 +1235,8 @@ public partial class MainWindow : Window
     {
         int selectedIndex = LayersList.SelectedIndex;
 
-        // Temporarily clear selection before modifying items
         LayersList.SelectedIndex = -1;
 
-        // Clear items after selection is reset
         LayersList.Items.Clear();
 
         if (objectLibrary == null)
@@ -1454,10 +1299,8 @@ public partial class MainWindow : Window
             LayersList.Items.Add(listBoxItem);
         }
 
-        // Restore selection only after items are fully populated
         if (selectedIndex >= 0 && selectedIndex < LayersList.Items.Count)
         {
-            // Use Dispatcher to defer selection until after the current operation completes
             Dispatcher.UIThread.Post(() => { LayersList.SelectedIndex = selectedIndex; });
         }
         else if (LayersList.Items.Count > 0)
@@ -1470,90 +1313,74 @@ public partial class MainWindow : Window
     {
         BoundaryLayersList.Items.Clear();
 
-        // Store the currently selected index
         int selectedGraphicIndex = AssociatedGraphic.SelectedIndex;
 
-        // TODO: Refactor code to remove this check
-        // Some times efficienty isn't worth the hassle xD
-        bool rebuildGraphicsDropdown = true;
-
-        if (rebuildGraphicsDropdown)
-            AssociatedGraphic.Items.Clear();
+        AssociatedGraphic.Items.Clear();
 
         if (objectLibrary == null)
             return;
 
-        // Populate boundary layers list
-        for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
-            BoundaryLayersList.Items.Add(new ListBoxItem { Content = $"#{i + 1:00}" });
+        for (int i = 0; i < objectLibrary.BoundaryGroups.Count; i++)
+            BoundaryLayersList.Items.Add(new ListBoxItem { Content = $"Group #{i + 1:00}" });
 
-        // Only rebuild the graphics dropdown if needed
-        // Nah mate, calm down past paul, we just gona rebuild it every time xD
-        if (rebuildGraphicsDropdown)
+        for (int i = 0; i < objectLibrary.Images?.Count; i++)
         {
-            // Populate associated graphics dropdown with content
-            // TODO: Refactor this to use a method
-            // Note to any reader... these TODOs are probably not going to be done :)
-            for (int i = 0; i < objectLibrary.Images?.Count; i++)
+            var layer = objectLibrary.Images[i];
+            Border border;
+
+            if (LibraryManager.Libraries.ContainsKey(layer.BackImageLibrary) &&
+                (layer.BackIndex >= 0 && layer.BackIndex <
+                    LibraryManager.Libraries[layer.BackImageLibrary].Content.Images.Count))
             {
-                var layer = objectLibrary.Images[i];
-                Border border;
-
-                if (LibraryManager.Libraries.ContainsKey(layer.BackImageLibrary) &&
-                    (layer.BackIndex >= 0 && layer.BackIndex <
-                        LibraryManager.Libraries[layer.BackImageLibrary].Content.Images.Count))
+                var imageSource = CreateImage(LibraryManager.Libraries[layer.BackImageLibrary].Content
+                    .Images[layer.BackIndex].Data);
+                var image = new Image
                 {
-                    var imageSource = CreateImage(LibraryManager.Libraries[layer.BackImageLibrary].Content
-                        .Images[layer.BackIndex].Data);
-                    var image = new Image
-                    {
-                        Source = imageSource,
-                        Width = 50,
-                        Height = 50,
-                        Margin = new Thickness(5, 0, 5, 0)
-                    };
-
-                    border = new Border
-                    {
-                        Child = image,
-                        Width = 50,
-                        Height = 50,
-                        Margin = new Thickness(5, 0, 5, 0)
-                    };
-                }
-                else
-                {
-                    border = new Border
-                    {
-                        Background = Brushes.Red,
-                        Width = 20,
-                        Height = 20,
-                        Margin = new Thickness(5, 0, 5, 0)
-                    };
-                }
-
-                var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
-                var textBlock = new TextBlock
-                {
-                    Text =
-                        $"Pos: {layer.X}, {layer.Y}\n" +
-                        $"Back: {layer.BackIndex}" + (layer.BackEndIndex > 0
-                            ? $" (Anim: {layer.BackEndIndex})"
-                            : "") + "\n",
-                    VerticalAlignment = VerticalAlignment.Center
+                    Source = imageSource,
+                    Width = 50,
+                    Height = 50,
+                    Margin = new Thickness(5, 0, 5, 0)
                 };
 
-                stackPanel.Children.Add(border);
-                stackPanel.Children.Add(textBlock);
-
-                AssociatedGraphic.Items.Add(new ComboBoxItem { Content = stackPanel });
+                border = new Border
+                {
+                    Child = image,
+                    Width = 50,
+                    Height = 50,
+                    Margin = new Thickness(5, 0, 5, 0)
+                };
             }
-
-            // Restore selected index if valid
-            if (selectedGraphicIndex >= 0 && selectedGraphicIndex < AssociatedGraphic.Items.Count)
+            else
             {
-                AssociatedGraphic.SelectedIndex = selectedGraphicIndex;
+                border = new Border
+                {
+                    Background = Brushes.Red,
+                    Width = 20,
+                    Height = 20,
+                    Margin = new Thickness(5, 0, 5, 0)
+                };
             }
+
+            var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            var textBlock = new TextBlock
+            {
+                Text =
+                    $"Pos: {layer.X}, {layer.Y}\n" +
+                    $"Back: {layer.BackIndex}" + (layer.BackEndIndex > 0
+                        ? $" (Anim: {layer.BackEndIndex})"
+                        : "") + "\n",
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            stackPanel.Children.Add(border);
+            stackPanel.Children.Add(textBlock);
+
+            AssociatedGraphic.Items.Add(new ComboBoxItem { Content = stackPanel });
+        }
+
+        if (selectedGraphicIndex >= 0 && selectedGraphicIndex < AssociatedGraphic.Items.Count)
+        {
+            AssociatedGraphic.SelectedIndex = selectedGraphicIndex;
         }
     }
 
@@ -1577,11 +1404,6 @@ public partial class MainWindow : Window
 
     #region Helper Functions
 
-    /// <summary>
-    /// Returns the index of the selected graphic layer
-    /// -1 if no layer is selected
-    /// </summary>
-    /// <returns></returns>
     private int CurrentGraphicLayerIndex()
     {
         if (LayersList.SelectedItem == null)
@@ -1594,32 +1416,20 @@ public partial class MainWindow : Window
         return index;
     }
 
-    /// <summary>
-    /// Returns the index of the selected boundary layer
-    /// -1 if no layer is selected
-    /// </summary>
-    /// <returns></returns>
     private int CurrentBoundaryLayerIndex()
     {
         if (BoundaryLayersList.SelectedItem == null)
             return -1;
 
         var index = BoundaryLayersList.SelectedIndex;
-        if (objectLibrary.Boundaries != null && (index < 0 || index >= objectLibrary.Boundaries.Count))
+        if (objectLibrary.BoundaryGroups != null && (index < 0 || index >= objectLibrary.BoundaryGroups.Count))
             return -1;
 
         return index;
     }
 
-    /// <summary>
-    /// Check if the GraphicsPanel and BoundariesPanel have been initialized
-    /// We can't update design elements until they are loaded
-    /// </summary>
     private bool UIElement_LayerTabsLoaded => (GraphicsPanel != null && BoundariesPanel != null);
 
-    /// <summary>
-    /// Load the images from the library and object library
-    /// </summary>
     private void LoadImages()
     {
         if (objectLibrary?.Images == null)
@@ -1627,7 +1437,6 @@ public partial class MainWindow : Window
 
         ImageCanvas.Children.Clear();
 
-        // Add images first
         foreach (var graphic in objectLibrary.Images)
         {
             if (graphic.BackImageLibrary == string.Empty || graphic.BackIndex < 0)
@@ -1656,18 +1465,16 @@ public partial class MainWindow : Window
             ImageCanvas.Children.Add(image);
         }
 
-        // Then add boundaries
-        for (int i = 0; i < objectLibrary.Boundaries.Count; i++)
+        for (int i = 0; i < objectLibrary.BoundaryGroups.Count; i++)
         {
-            DrawBoundary(objectLibrary.Boundaries[i], i);
+            var group = objectLibrary.BoundaryGroups[i];
+            for (int j = 0; j < group.Boundries.Count; j++)
+            {
+                DrawBoundary(group.Boundries[j], i, j);
+            }
         }
     }
 
-    /// <summary>
-    /// Create a bitmap image from the image data
-    /// </summary>
-    /// <param name="imageData"></param>
-    /// <returns></returns>
     private Bitmap CreateImage(byte[] imageData)
     {
         using var stream = new MemoryStream(imageData);
@@ -1676,7 +1483,6 @@ public partial class MainWindow : Window
 
     private async Task<string?> SelectLibrary()
     {
-        // Check if graphic is selected
         if (LayersList.SelectedItem == null)
             return null;
 
@@ -1685,12 +1491,11 @@ public partial class MainWindow : Window
         return result;
     }
 
-    // Helper method to get boundary rectangle by index
     private Rectangle? GetBoundaryRectangle(int boundaryIndex)
     {
         foreach (var child in ImageCanvas.Children)
         {
-            if (child is Rectangle rectangle && rectangle.Tag is int index && index == boundaryIndex)
+            if (child is Rectangle rectangle && rectangle.Tag is ValueTuple<int, int> tag && tag.Item1 == boundaryIndex)
             {
                 return rectangle;
             }
@@ -1700,5 +1505,5 @@ public partial class MainWindow : Window
     }
 
     #endregion
-
 }
+

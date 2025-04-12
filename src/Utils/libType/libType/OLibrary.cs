@@ -8,12 +8,12 @@ public class OLibrary
     public string FilePath { get; private set; } = string.Empty;
 
     public List<Graphic>? Images;
-    public List<Boundry>? Boundaries;
+    public List<BoundryGroup>? BoundaryGroups;
 
     public OLibrary()
     {
         Images = [];
-        Boundaries = [];
+        BoundaryGroups = [];
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class OLibrary
             var deserializedLibrary = (OLibrary)serializer.Deserialize(stream)!;
 
             Images = deserializedLibrary.Images;
-            Boundaries = deserializedLibrary.Boundaries;
+            BoundaryGroups = deserializedLibrary.BoundaryGroups;
         }
         catch (Exception e) when (e is TimeoutException                 // HDD Failure
                                       or AccessViolationException       // File is in use
@@ -107,3 +107,4 @@ public class OLibrary
         FilePath = filePath;
     }
 }
+
