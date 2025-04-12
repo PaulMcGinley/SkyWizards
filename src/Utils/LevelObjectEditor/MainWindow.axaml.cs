@@ -869,17 +869,17 @@ public partial class MainWindow : Window
     {
         int selectedIndex = LayersList.SelectedIndex;
 
-        // suspend selection events
-        updatingUI = true;
-        try
+        // Temporarily clear selection before modifying items
+        LayersList.SelectedIndex = -1;
+    
+        // Clear items after selection is reset
+        LayersList.Items.Clear();
+
+        if (objectLibrary == null)
+            return;
+
+        for (int i = 0; i < objectLibrary.Images?.Count; i++)
         {
-            LayersList.Items.Clear();
-
-            if (objectLibrary == null)
-                return;
-
-            for (int i = 0; i < objectLibrary.Images?.Count; i++)
-            {
                 var layer = objectLibrary.Images[i];
 
                 Border border;
@@ -933,21 +933,21 @@ public partial class MainWindow : Window
 
                 var listBoxItem = new ListBoxItem { Content = stackPanel };
                 LayersList.Items.Add(listBoxItem);
-            }
-
-            //  restore selection
-            if (selectedIndex >= 0 && selectedIndex < LayersList.Items.Count)
-            {
-                LayersList.SelectedIndex = selectedIndex;
-            }
-            else if (LayersList.Items.Count > 0)
-            {
-                LayersList.SelectedIndex = 0;
-            }
         }
-        finally
+
+        // Restore selection only after items are fully populated
+        if (selectedIndex >= 0 && selectedIndex < LayersList.Items.Count)
         {
-            updatingUI = false;
+            // Use Dispatcher to defer selection until after the current operation completes
+            Dispatcher.UIThread.Post(() => {
+                LayersList.SelectedIndex = selectedIndex;
+            });
+        }
+        else if (LayersList.Items.Count > 0)
+        {
+            Dispatcher.UIThread.Post(() => {
+                LayersList.SelectedIndex = 0;
+            });
         }
     }
 
@@ -1251,28 +1251,29 @@ public partial class MainWindow : Window
             return;
 
         var index = LayersList.SelectedIndex;
-        if (index < 0 || objectLibrary == null)
+        if (index < 0 || objectLibrary?.Images == null || index >= objectLibrary.Images.Count)
             return;
 
         var graphic = objectLibrary.Images[index];
-    
-        int _drawLayer = cbDrawLayer.SelectedIndex;
-        if (_drawLayer < 0)
-            _drawLayer = 0;
-
+        int _drawLayer = cbDrawLayer.SelectedIndex < 0 ? 0 : cbDrawLayer.SelectedIndex;
         graphic.DrawLayer = _drawLayer;
         objectLibrary.Images[index] = graphic;
-    
+
         // Set flag before updating UI
         updatingUI = true;
         try
         {
-            UpdateUI(updateLayers: true);
-            needsSave = true;
+            // Defer UI update to avoid selection conflicts
+            Dispatcher.UIThread.Post(() => {
+                UpdateUI(updateLayers: true);
+                needsSave = true;
+                updatingUI = false;
+            });
         }
-        finally
+        catch
         {
             updatingUI = false;
+            throw;
         }
     }
 }
