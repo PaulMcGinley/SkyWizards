@@ -475,6 +475,7 @@ public partial class MainWindow : Window
             BackImageLibrary = string.Empty,
             BackIndex = -1,
             BackEndIndex = -1,
+            DrawLayer = 0,
             X = 0,
             Y = 0
         };
@@ -825,11 +826,7 @@ public partial class MainWindow : Window
             //lbImageIndex.Text = "";
             lbX.Text = "";
             lbY.Text = "";
-            lbWidth.Text = "";
-            lbHeight.Text = "";
-            // txtBackAnimLength.Text = "";
-            // txtFrontAnimLength.Text = "";
-            cbDrawLayer.SelectedIndex = -1;
+            cbDrawLayer.SelectedIndex = 0;
             updateLayers = true;
         }
 
@@ -845,9 +842,17 @@ public partial class MainWindow : Window
                 lbBackImageAnimationTickSpeed.Text = layer.BackAnimationSpeed.ToString();
                 lbX.Text = layer.X.ToString();
                 lbY.Text = layer.Y.ToString();
-                cbDrawLayer.SelectedIndex = layer.DrawLayer;
-                //lbWidth.Text = LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].Width.ToString();
-                // lbHeight.Text = LibraryManager.Libraries[layer.BackImageLibrary].Content.Images[layer.BackIndex].Height.ToString();
+                
+                // TODO: Circular update between selecting layers and updating the UI
+                try
+                {
+
+                    cbDrawLayer.SelectedIndex = layer.DrawLayer < 0 ? 0 : layer.DrawLayer;
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
             }
         }
 
@@ -863,82 +868,86 @@ public partial class MainWindow : Window
     private void UpdateGraphicsLayers()
     {
         int selectedIndex = LayersList.SelectedIndex;
-        LayersList.Items.Clear();
 
-        if (objectLibrary == null)
-            return;
-
-        for (int i = 0; i < objectLibrary.Images?.Count; i++)
-        {
-            var layer = objectLibrary.Images[i];
-
-
-
-            Border border;
-
-            if (LibraryManager.Libraries.ContainsKey(layer.BackImageLibrary) && (layer.BackIndex >= 0 &&
-                    layer.BackIndex < LibraryManager.Libraries[layer.BackImageLibrary].Content.Images.Count))
-            {
-                var imageSource = CreateImage(LibraryManager.Libraries[layer.BackImageLibrary].Content
-                    .Images[layer.BackIndex].Data);
-                var image = new Image
-                {
-                    Source = imageSource,
-                    Width = 50,
-                    Height = 50,
-                    Margin = new Thickness(5, 0, 5, 0)
-                };
-
-                border = new Border
-                {
-                    Child = image,
-                    Width = 50,
-                    Height = 50,
-                    Margin = new Thickness(5, 0, 5, 0)
-                };
-            }
-            else
-            {
-                border = new Border
-                {
-                    Background = Brushes.Red,
-                    Width = 20,
-                    Height = 20,
-                    Margin = new Thickness(5, 0, 5, 0)
-                };
-            }
-
-            var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
-            var textBlock = new TextBlock
-            {
-                Text =
-                    $"Pos: {objectLibrary.Images[i].X}, {objectLibrary.Images[i].Y}\n" +
-                    $"Back: {objectLibrary.Images[i].BackIndex}" + (objectLibrary.Images[i].BackEndIndex > 0
-                        ? $" (Anim: {objectLibrary.Images[i].BackEndIndex})"
-                        : "") + "\n",
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            stackPanel.Children.Add(border);
-            stackPanel.Children.Add(textBlock);
-
-            var listBoxItem = new ListBoxItem { Content = stackPanel };
-            LayersList.Items.Add(listBoxItem);
-        }
-
+        // suspend selection events
+        updatingUI = true;
         try
         {
-            LayersList.SelectedIndex = selectedIndex;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
+            LayersList.Items.Clear();
 
-            if (LayersList.Items.Count == 0)
+            if (objectLibrary == null)
                 return;
 
-            if (selectedIndex >= LayersList.Items.Count)
-                LayersList.SelectedIndex = LayersList.Items.Count - 1;
+            for (int i = 0; i < objectLibrary.Images?.Count; i++)
+            {
+                var layer = objectLibrary.Images[i];
+
+                Border border;
+
+                if (LibraryManager.Libraries.ContainsKey(layer.BackImageLibrary) && (layer.BackIndex >= 0 &&
+                        layer.BackIndex < LibraryManager.Libraries[layer.BackImageLibrary].Content.Images.Count))
+                {
+                    var imageSource = CreateImage(LibraryManager.Libraries[layer.BackImageLibrary].Content
+                        .Images[layer.BackIndex].Data);
+                    var image = new Image
+                    {
+                        Source = imageSource,
+                        Width = 50,
+                        Height = 50,
+                        Margin = new Thickness(5, 0, 5, 0)
+                    };
+
+                    border = new Border
+                    {
+                        Child = image,
+                        Width = 50,
+                        Height = 50,
+                        Margin = new Thickness(5, 0, 5, 0)
+                    };
+                }
+                else
+                {
+                    border = new Border
+                    {
+                        Background = Brushes.Red,
+                        Width = 20,
+                        Height = 20,
+                        Margin = new Thickness(5, 0, 5, 0)
+                    };
+                }
+
+                var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+                var textBlock = new TextBlock
+                {
+                    Text =
+                        $"Pos: {objectLibrary.Images[i].X}, {objectLibrary.Images[i].Y}\n" +
+                        $"Back: {objectLibrary.Images[i].BackIndex}" + (objectLibrary.Images[i].BackEndIndex > 0
+                            ? $" (Anim: {objectLibrary.Images[i].BackEndIndex})"
+                            : "") + "\n" +
+                        "Layer: " + objectLibrary.Images[i].DrawLayer,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                stackPanel.Children.Add(border);
+                stackPanel.Children.Add(textBlock);
+
+                var listBoxItem = new ListBoxItem { Content = stackPanel };
+                LayersList.Items.Add(listBoxItem);
+            }
+
+            //  restore selection
+            if (selectedIndex >= 0 && selectedIndex < LayersList.Items.Count)
+            {
+                LayersList.SelectedIndex = selectedIndex;
+            }
+            else if (LayersList.Items.Count > 0)
+            {
+                LayersList.SelectedIndex = 0;
+            }
+        }
+        finally
+        {
+            updatingUI = false;
         }
     }
 
@@ -1233,17 +1242,37 @@ public partial class MainWindow : Window
         needsSave = true;
         UpdateUI(updateLayers: true);
     }
-
+    
+    private bool updatingUI = false;
     private void CbDrawLayer_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (CurrentGraphicLayerIndex() < 0)
+        // Avoid circular updates
+        if (updatingUI || sender is not ComboBox cbDrawLayer)
             return;
-        
+
         var index = LayersList.SelectedIndex;
         if (index < 0 || objectLibrary == null)
             return;
+
         var graphic = objectLibrary.Images[index];
-        
-        graphic.DrawLayer = cbDrawLayer.SelectedIndex;
+    
+        int _drawLayer = cbDrawLayer.SelectedIndex;
+        if (_drawLayer < 0)
+            _drawLayer = 0;
+
+        graphic.DrawLayer = _drawLayer;
+        objectLibrary.Images[index] = graphic;
+    
+        // Set flag before updating UI
+        updatingUI = true;
+        try
+        {
+            UpdateUI(updateLayers: true);
+            needsSave = true;
+        }
+        finally
+        {
+            updatingUI = false;
+        }
     }
 }
