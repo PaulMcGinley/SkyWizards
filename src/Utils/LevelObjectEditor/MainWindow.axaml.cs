@@ -617,8 +617,7 @@ public partial class MainWindow : Window
     /// <param name="horizontalAlignment"></param>
     /// <param name="verticalAlignment"></param>
     /// <param name="boundaryIndex"></param>
-    private void AddHandle(Rectangle rectangle, HorizontalAlignment horizontalAlignment,
-        VerticalAlignment verticalAlignment, int boundaryIndex)
+    private void AddHandle(Rectangle rectangle, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, int boundaryIndex)
     {
         var handle = new Rectangle
         {
@@ -646,8 +645,7 @@ public partial class MainWindow : Window
     /// <param name="rectangle"></param>
     /// <param name="horizontalAlignment"></param>
     /// <param name="verticalAlignment"></param>
-    private void UpdateHandlePosition(Rectangle handle, Rectangle rectangle, HorizontalAlignment horizontalAlignment,
-        VerticalAlignment verticalAlignment)
+    private void UpdateHandlePosition(Rectangle handle, Rectangle rectangle, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
     {
         double left = Canvas.GetLeft(rectangle);
         double top = Canvas.GetTop(rectangle);
@@ -788,6 +786,111 @@ public partial class MainWindow : Window
     {
         isDragging = false;
         e.Pointer.Capture(null);
+    }
+
+    private void MoveFrameLeft_Click(object? sender, RoutedEventArgs e)
+    {
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || objectLibrary == null)
+            return;
+
+        var graphic = objectLibrary.Images[index];
+
+        if (graphic.BackImageCurrentFrame > 0)
+            graphic.BackImageCurrentFrame--;
+        else
+            graphic.BackImageCurrentFrame = graphic.BackEndIndex;
+
+        objectLibrary.Images[index] = graphic;
+
+        UpdateUI(updateLayers: false);
+    }
+
+    private void MoveFrameRight_Click(object? sender, RoutedEventArgs e)
+    {
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || objectLibrary == null)
+            return;
+
+        var graphic = objectLibrary.Images[index];
+
+        if (graphic.BackImageCurrentFrame < graphic.BackEndIndex)
+            graphic.BackImageCurrentFrame++;
+        else
+            graphic.BackImageCurrentFrame = graphic.BackIndex;
+
+        objectLibrary.Images[index] = graphic;
+
+        UpdateUI(updateLayers: false);
+    }
+
+    private async void LbX_OnTapped(object? sender, TappedEventArgs e)
+    {
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || objectLibrary == null)
+            return;
+
+        var graphic = objectLibrary.Images[index];
+
+        DlgNumber dlgNumber = new();
+        var result = await dlgNumber.ShowDialog<double>(this, graphic.X, -10000, 10000);
+
+        // Dialog was canceled
+        if (result == null)
+            return;
+
+        graphic.X = (int)result.Value;
+        objectLibrary.Images[index] = graphic;
+
+        // Update the UI display
+        lbX.Text = graphic.X.ToString();
+
+        // Update the canvas position
+        if (index < ImageCanvas.Children.Count && ImageCanvas.Children[index] is Image image)
+        {
+            if (LibraryManager.Libraries.ContainsKey(graphic.BackImageLibrary) && graphic.BackIndex >= 0)
+            {
+                int offsetX = LibraryManager.Libraries[graphic.BackImageLibrary].Content.Images[graphic.BackIndex].OffsetX;
+                Canvas.SetLeft(image, graphic.X + offsetX);
+            }
+        }
+
+        needsSave = true;
+        UpdateUI(updateLayers: true);
+    }
+    
+    private bool updatingUI = false;
+    private void CbDrawLayer_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        // Avoid circular updates
+        if (updatingUI || sender is not ComboBox cbDrawLayer)
+            return;
+
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || objectLibrary?.Images == null || index >= objectLibrary.Images.Count)
+            return;
+
+        var graphic = objectLibrary.Images[index];
+        int _drawLayer = cbDrawLayer.SelectedIndex < 0 ? 0 : cbDrawLayer.SelectedIndex;
+        graphic.DrawLayer = _drawLayer;
+        objectLibrary.Images[index] = graphic;
+
+        // Set flag before updating UI
+        updatingUI = true;
+        try
+        {
+            // Defer UI update to avoid selection conflicts
+            Dispatcher.UIThread.Post(() => {
+                UpdateUI(updateLayers: true);
+                needsSave = true;
+                updatingUI = false;
+            });
+        }
+        catch
+        {
+            updatingUI = false;
+            throw;
+        }
     }
 
     #endregion
@@ -1171,109 +1274,5 @@ public partial class MainWindow : Window
     }
 
     #endregion
-
-    private void MoveFrameLeft_Click(object? sender, RoutedEventArgs e)
-    {
-        var index = LayersList.SelectedIndex;
-        if (index < 0 || objectLibrary == null)
-            return;
-
-        var graphic = objectLibrary.Images[index];
-
-        if (graphic.BackImageCurrentFrame > 0)
-            graphic.BackImageCurrentFrame--;
-        else
-            graphic.BackImageCurrentFrame = graphic.BackEndIndex;
-
-        objectLibrary.Images[index] = graphic;
-
-        UpdateUI(updateLayers: false);
-    }
-
-    private void MoveFrameRight_Click(object? sender, RoutedEventArgs e)
-    {
-        var index = LayersList.SelectedIndex;
-        if (index < 0 || objectLibrary == null)
-            return;
-
-        var graphic = objectLibrary.Images[index];
-
-        if (graphic.BackImageCurrentFrame < graphic.BackEndIndex)
-            graphic.BackImageCurrentFrame++;
-        else
-            graphic.BackImageCurrentFrame = graphic.BackIndex;
-
-        objectLibrary.Images[index] = graphic;
-
-        UpdateUI(updateLayers: false);
-    }
-
-    private async void LbX_OnTapped(object? sender, TappedEventArgs e)
-    {
-        var index = LayersList.SelectedIndex;
-        if (index < 0 || objectLibrary == null)
-            return;
-
-        var graphic = objectLibrary.Images[index];
-
-        DlgNumber dlgNumber = new();
-        var result = await dlgNumber.ShowDialog<double>(this, graphic.X, -10000, 10000);
-
-        // Dialog was canceled
-        if (result == null)
-            return;
-
-        graphic.X = (int)result.Value;
-        objectLibrary.Images[index] = graphic;
-
-        // Update the UI display
-        lbX.Text = graphic.X.ToString();
-
-        // Update the canvas position
-        if (index < ImageCanvas.Children.Count && ImageCanvas.Children[index] is Image image)
-        {
-            if (LibraryManager.Libraries.ContainsKey(graphic.BackImageLibrary) && graphic.BackIndex >= 0)
-            {
-                int offsetX = LibraryManager.Libraries[graphic.BackImageLibrary].Content.Images[graphic.BackIndex].OffsetX;
-                Canvas.SetLeft(image, graphic.X + offsetX);
-            }
-        }
-
-        needsSave = true;
-        UpdateUI(updateLayers: true);
-    }
     
-    private bool updatingUI = false;
-    private void CbDrawLayer_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        // Avoid circular updates
-        if (updatingUI || sender is not ComboBox cbDrawLayer)
-            return;
-
-        var index = LayersList.SelectedIndex;
-        if (index < 0 || objectLibrary?.Images == null || index >= objectLibrary.Images.Count)
-            return;
-
-        var graphic = objectLibrary.Images[index];
-        int _drawLayer = cbDrawLayer.SelectedIndex < 0 ? 0 : cbDrawLayer.SelectedIndex;
-        graphic.DrawLayer = _drawLayer;
-        objectLibrary.Images[index] = graphic;
-
-        // Set flag before updating UI
-        updatingUI = true;
-        try
-        {
-            // Defer UI update to avoid selection conflicts
-            Dispatcher.UIThread.Post(() => {
-                UpdateUI(updateLayers: true);
-                needsSave = true;
-                updatingUI = false;
-            });
-        }
-        catch
-        {
-            updatingUI = false;
-            throw;
-        }
-    }
 }

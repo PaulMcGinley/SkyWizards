@@ -10,8 +10,8 @@ namespace libType;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PfmHeader  // Total size: 21 bytes
 {
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
-    public char[] Magic;      // 10 bytes
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 11)] // TODO: Is size const correct? UTF-16 is 2 bytes per char, ASCI is 1 byte per char
+    public char[] Magic;      // 11 bytes (Ascii string), 22 bytes (UTF-16)
     public ushort Version;    // 2 bytes
     public byte Flags;        // 1 byte
     public long FatOffset;    // 8 bytes
@@ -41,7 +41,7 @@ public class McLib : IDisposable
     private FileStream? _fileStream;
     private PfmHeader _header;
     private List<PfmEntry> _entries;
-    private readonly object _lockObject = new object();
+    private readonly object _lockObject = new object(); // Lint: Consider changing the type of '_lockObject' field to 'System.Threading.Lock' to express field intent
     private bool _disposed;
 
     /// <summary>
@@ -53,9 +53,9 @@ public class McLib : IDisposable
         _entries = new List<PfmEntry>();
         _header = new PfmHeader
         {
-            Magic = "PFM Library".ToCharArray(),
+            Magic = "PFM Library".ToCharArray(), // 11 Characters
             Version = 2,
-            Flags = 3,
+            Flags = 0b00000011,
             FatOffset = 21 // Header size
         };
 
