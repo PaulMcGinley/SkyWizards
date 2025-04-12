@@ -29,8 +29,8 @@ public partial class MainWindow : Window
 
     // Boundary layer constants
     private const double HandleSize = 10;
-    private const double MinWidth = 25;
-    private const double MinHeight = 25;
+    private const double MinBoundaryWidth = 25;
+    private const double MinBoundaryHeight = 25;
 
     // TODO: just track from when the application started
     Timer AnimationTimer;
@@ -752,8 +752,8 @@ public partial class MainWindow : Window
         var offsetX = position.X - clickPosition.X;
         var offsetY = position.Y - clickPosition.Y;
 
-        var newWidth = Math.Max(rectangle.Width + offsetX, MinWidth);
-        var newHeight = Math.Max(rectangle.Height + offsetY, MinHeight);
+        var newWidth = Math.Max(rectangle.Width + offsetX, MinBoundaryWidth);
+        var newHeight = Math.Max(rectangle.Height + offsetY, MinBoundaryHeight);
 
         rectangle.Width = newWidth;
         rectangle.Height = newHeight;
@@ -852,6 +852,41 @@ public partial class MainWindow : Window
             {
                 int offsetX = LibraryManager.Libraries[graphic.BackImageLibrary].Content.Images[graphic.BackIndex].OffsetX;
                 Canvas.SetLeft(image, graphic.X + offsetX);
+            }
+        }
+
+        needsSave = true;
+        UpdateUI(updateLayers: true);
+    }
+    
+    private async void LbY_OnTapped(object? sender, TappedEventArgs e)
+    {
+        var index = LayersList.SelectedIndex;
+        if (index < 0 || objectLibrary == null)
+            return;
+
+        var graphic = objectLibrary.Images[index];
+
+        DlgNumber dlgNumber = new();
+        var result = await dlgNumber.ShowDialog<double>(this, graphic.Y, -10000, 10000);
+
+        // Dialog was canceled
+        if (result == null)
+            return;
+
+        graphic.Y = (int)result.Value;
+        objectLibrary.Images[index] = graphic;
+
+        // Update the UI display
+        lbY.Text = graphic.Y.ToString();
+
+        // Update the canvas position
+        if (index < ImageCanvas.Children.Count && ImageCanvas.Children[index] is Image image)
+        {
+            if (LibraryManager.Libraries.ContainsKey(graphic.BackImageLibrary) && graphic.BackIndex >= 0)
+            {
+                int offsetY = LibraryManager.Libraries[graphic.BackImageLibrary].Content.Images[graphic.BackIndex].OffsetY;
+                Canvas.SetTop(image, graphic.Y + offsetY);
             }
         }
 
@@ -1274,5 +1309,5 @@ public partial class MainWindow : Window
     }
 
     #endregion
-    
+
 }
