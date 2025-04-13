@@ -50,9 +50,13 @@ public struct Graphic
     
     /// <summary>
     /// 0   -   Scenery
-    /// 1   -   Back
-    /// 2   -   Front
-    /// 3   -   Topmost
+    /// 1   -   Background
+    /// 2   -   Platform back (Platforms player stands on)
+    /// 3   -   Behind player
+    /// 4   -   Player / Entity draw layer
+    /// 5   -   In front of player / entities
+    /// 6   -   Platform front (Platforms player stands on)
+    /// 7   -   Topmost (front parallax)
     /// </summary>
     public int DrawLayer { get; set; }
 }
