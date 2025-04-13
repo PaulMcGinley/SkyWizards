@@ -124,8 +124,12 @@
                                 <TextBlock Text="Layer" Margin="5" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
                                 <ComboBox x:Name="cbDrawLayer" Margin="5" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Width="150" SelectionChanged="CbDrawLayer_OnSelectionChanged">
                                     <ComboBoxItem Content="Scenery"/>
-                                    <ComboBoxItem Content="Back"/>
-                                    <ComboBoxItem Content="Front"/>
+                                    <ComboBoxItem Content="Background"/>
+                                    <ComboBoxItem Content="Platform Back"/>
+                                    <ComboBoxItem Content="Behind Player"/>
+                                    <ComboBoxItem Content="Player" IsEnabled="False"/>
+                                    <ComboBoxItem Content="In front of Player"/>
+                                    <ComboBoxItem Content="Platform Front"/>
                                     <ComboBoxItem Content="Top Most"/>
                                 </ComboBox>
                             </Grid>
@@ -215,15 +219,15 @@
             <Border Grid.Column="1" Margin="0">
                 <DockPanel>
                     <Menu DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="1,0,1,1">
-                        <MenuItem Header="..." IsEnabled="False">
-                            <MenuItem Header="Move"/>
-                            <MenuItem Header="Remove"/>
-                            <MenuItem Header="Replace"/>
-                            <Separator/>
-                            <MenuItem Header="Trim Whitespace"/>
-                            <MenuItem Header="Remove Exif Data"/>
-                            <TextBox Text="Remove Exif Data"/>
-                        </MenuItem>
+                        <!-- <MenuItem Header="..." IsEnabled="False"> -->
+                        <!--     <MenuItem Header="Move"/> -->
+                        <!--     <MenuItem Header="Remove"/> -->
+                        <!--     <MenuItem Header="Replace"/> -->
+                        <!--     <Separator/> -->
+                        <!--     <MenuItem Header="Trim Whitespace"/> -->
+                        <!--     <MenuItem Header="Remove Exif Data"/> -->
+                        <!--     <TextBox Text="Remove Exif Data"/> -->
+                        <!-- </MenuItem> -->
                         <MenuItem Header="Toggle Animation" Tapped="InputElement_OnTapped" />
                     </Menu>
                     <DockPanel LastChildFill="True">
@@ -245,7 +249,7 @@
                                 <MenuItem Header="-" ToolTip.Tip="Remove selected layer" Click="mnuRemoveGraphicsLayer_Click"/>
                                 <MenuItem Header="▲" ToolTip.Tip="Move selected layer up" Click="mnuMoveGraphicsLayerUp_Click"/>
                                 <MenuItem Header="▼" ToolTip.Tip="Move selected layer down" Click="mnuMoveGraphicsLayerDown_Click"/>
-                                <MenuItem Header="ƒ×" ToolTip.Tip="Layer Effects" Click="mnuGraphicsLayerEffects_Click"/>
+                                <!-- <MenuItem Header="ƒ×" ToolTip.Tip="Layer Effects" Click="mnuGraphicsLayerEffects_Click"/> -->
                             </Menu>
                             <ScrollViewer DockPanel.Dock="Top">
                                 <ListBox x:Name="LayersList" SelectionChanged="LayersList_SelectionChanged">
@@ -266,7 +270,7 @@
                                 <MenuItem Header="-" ToolTip.Tip="Remove selected layer" Click="mnuRemoveBoundaryLayer_Click"/>
                                 <MenuItem Header="▲" ToolTip.Tip="Move selected layer up"/>
                                 <MenuItem Header="▼" ToolTip.Tip="Move selected layer down"/>
-                                <MenuItem Header="ƒ°" ToolTip.Tip="Events"/>
+                                <!-- <MenuItem Header="ƒ°" ToolTip.Tip="Events"/> -->
                             </Menu>
                             <ScrollViewer DockPanel.Dock="Top">
                                 <ListBox x:Name="BoundaryLayersList" BorderBrush="Gray" BorderThickness="0,0,0,0" SelectionChanged="BoundaryLayersList_SelectionChanged">
