@@ -1569,6 +1569,7 @@ public partial class MainWindow : Window
 
         ImageCanvas.Children.Clear();
 
+        // Draw all graphics first
         foreach (var graphic in objectLibrary.Images)
         {
             if (graphic.BackImageLibrary == string.Empty || graphic.BackIndex < 0)
@@ -1597,12 +1598,19 @@ public partial class MainWindow : Window
             ImageCanvas.Children.Add(image);
         }
 
-        for (int i = 0; i < objectLibrary.BoundaryGroups.Count; i++)
+        // Only draw boundaries for the currently selected layer
+        int selectedBoundaryIndex = CurrentBoundaryLayerIndex();
+        if (selectedBoundaryIndex >= 0 && 
+            selectedBoundaryIndex < objectLibrary.BoundaryGroups.Count)
         {
-            var group = objectLibrary.BoundaryGroups[i];
-            for (int j = 0; j < group.Boundries.Count; j++)
+            var group = objectLibrary.BoundaryGroups[selectedBoundaryIndex];
+            int currentFrame = GetCurrentBoundaryFrame(selectedBoundaryIndex);
+        
+            // Find and draw only the boundary for the current frame
+            var boundary = group.Boundries.FirstOrDefault(b => b.Frame == currentFrame);
+            if (boundary.Frame == currentFrame) // Valid boundary found
             {
-                DrawBoundary(group.Boundries[j], i, j);
+                DrawBoundary(boundary, selectedBoundaryIndex, 0);
             }
         }
     }
@@ -1851,7 +1859,7 @@ public partial class MainWindow : Window
     
     #endregion
 
-    private void InputElement_OnTapped(object? sender, TappedEventArgs e)
+    private void ToggleAnimation_OnTapped(object? sender, TappedEventArgs e)
     {
         SceneAnimated = !SceneAnimated;
     }
