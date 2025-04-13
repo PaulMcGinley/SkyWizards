@@ -34,6 +34,7 @@ public partial class MainWindow : Window
     private const double MinBoundaryHeight = 25;
 
     // TODO: just track from when the application started
+    private bool SceneAnimated = true;
     Timer AnimationTimer;
     UInt64 TimeNowEpoch => (UInt64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 
@@ -75,6 +76,9 @@ public partial class MainWindow : Window
 
     private void AnimationTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
+        if (!SceneAnimated)
+            return;
+        
         if (objectLibrary == null)
             return;
 
@@ -1851,4 +1855,9 @@ public partial class MainWindow : Window
     }
     
     #endregion
+
+    private void InputElement_OnTapped(object? sender, TappedEventArgs e)
+    {
+        SceneAnimated = !SceneAnimated;
+    }
 }

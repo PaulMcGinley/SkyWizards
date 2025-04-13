@@ -224,7 +224,7 @@
                             <MenuItem Header="Remove Exif Data"/>
                             <TextBox Text="Remove Exif Data"/>
                         </MenuItem>
-                        <MenuItem Header="Pause Animation" />
+                        <MenuItem Header="Toggle Animation" Tapped="InputElement_OnTapped" />
                     </Menu>
                     <DockPanel LastChildFill="True">
                         <ScrollViewer DockPanel.Dock="Top">
