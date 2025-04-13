@@ -640,8 +640,7 @@ public partial class MainWindow : Window
                         Width = 100,
                         Height = 25,
                         Frame = frame,
-                        Active = true,
-                        Layer = newGroup.Layer
+                        Active = true
                     });
                 }
             }
@@ -655,8 +654,7 @@ public partial class MainWindow : Window
                     Width = 100,
                     Height = 25,
                     Frame = graphic.BackIndex,
-                    Active = true,
-                    Layer = newGroup.Layer
+                    Active = true
                 });
             }
         }
@@ -671,8 +669,7 @@ public partial class MainWindow : Window
                 Width = 100,
                 Height = 25,
                 Frame = 0,
-                Active = true,
-                Layer = newGroup.Layer
+                Active = true
             });
         }
 
@@ -711,8 +708,7 @@ public partial class MainWindow : Window
                 Y = (int)(Canvas.GetTop(GetBoundaryRectangle(boundaryIndex))),
                 Width = (int)(GetBoundaryRectangle(boundaryIndex)?.Width ?? 100.0),
                 Height = (int)(GetBoundaryRectangle(boundaryIndex)?.Height ?? 25.0),
-                Active = !(BoundaryDisabled.IsChecked ?? false),
-                Layer = group.Layer
+                Active = !(BoundaryDisabled.IsChecked ?? false)
             };
             group.Boundries.Add(boundary);
         }
@@ -757,8 +753,7 @@ public partial class MainWindow : Window
                 Y = 0,
                 Width = 100,
                 Height = 25,
-                Active = true,
-                Layer = group.Layer
+                Active = true
             };
             group.Boundries.Add(boundary);
             
