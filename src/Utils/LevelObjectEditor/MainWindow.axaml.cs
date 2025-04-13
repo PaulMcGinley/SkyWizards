@@ -612,10 +612,10 @@ public partial class MainWindow : Window
             return;
 
         // Create a new boundary group and add it to the object library
-        var newGroup = new BoundryGroup
+        var newGroup = new BoundaryGroup
         {
             Layer = BoundaryLayersList?.Items.Count ?? 0,
-            Boundries = new List<Boundry>()
+            Boundaries = new List<Boundary>()
         };
 
         // Get the selected graphic index
@@ -633,7 +633,7 @@ public partial class MainWindow : Window
                 // Create a boundary for each frame in the animation
                 for (int frame = graphic.BackIndex; frame <= graphic.BackEndIndex; frame++)
                 {
-                    newGroup.Boundries.Add(new Boundry
+                    newGroup.Boundaries.Add(new Boundary
                     {
                         X = 0,
                         Y = 0,
@@ -647,7 +647,7 @@ public partial class MainWindow : Window
             else if (graphic.BackIndex >= 0)
             {
                 // Just one frame
-                newGroup.Boundries.Add(new Boundry
+                newGroup.Boundaries.Add(new Boundary
                 {
                     X = 0,
                     Y = 0,
@@ -660,9 +660,9 @@ public partial class MainWindow : Window
         }
 
         // If no boundaries were added (no graphic selected), add a default one
-        if (newGroup.Boundries.Count == 0)
+        if (newGroup.Boundaries.Count == 0)
         {
-            newGroup.Boundries.Add(new Boundry
+            newGroup.Boundaries.Add(new Boundary
             {
                 X = 0,
                 Y = 0,
@@ -695,13 +695,13 @@ public partial class MainWindow : Window
         var group = objectLibrary.BoundaryGroups[boundaryIndex];
         
         // Get the boundary for the current frame
-        var boundary = group.Boundries.FirstOrDefault(b => b.Frame == frame);
+        var boundary = group.Boundaries.FirstOrDefault(b => b.Frame == frame);
 
         // If boundary doesn't exist for this frame
         if (boundary.Frame != frame)
         {
             // Create a new boundary for this frame and add it to the group
-            boundary = new Boundry
+            boundary = new Boundary
             {
                 Frame = frame,
                 X = (int)(Canvas.GetLeft(GetBoundaryRectangle(boundaryIndex))),
@@ -710,13 +710,13 @@ public partial class MainWindow : Window
                 Height = (int)(GetBoundaryRectangle(boundaryIndex)?.Height ?? 25.0),
                 Active = !(BoundaryDisabled.IsChecked ?? false)
             };
-            group.Boundries.Add(boundary);
+            group.Boundaries.Add(boundary);
         }
         else
         {
             // Update existing boundary
             // TODO: Find a better name
-            var boundaryIndex2 = group.Boundries.FindIndex(b => b.Frame == frame);
+            var boundaryIndex2 = group.Boundaries.FindIndex(b => b.Frame == frame);
             if (boundaryIndex2 >= 0)
             {
                 boundary.X = (int)(Canvas.GetLeft(GetBoundaryRectangle(boundaryIndex)));
@@ -724,7 +724,7 @@ public partial class MainWindow : Window
                 boundary.Width = (int)(GetBoundaryRectangle(boundaryIndex)?.Width ?? 100.0);
                 boundary.Height = (int)(GetBoundaryRectangle(boundaryIndex)?.Height ?? 25.0);
                 boundary.Active = !(BoundaryDisabled.IsChecked ?? false);
-                group.Boundries[boundaryIndex2] = boundary;
+                group.Boundaries[boundaryIndex2] = boundary;
             }
         }
 
@@ -740,13 +740,13 @@ public partial class MainWindow : Window
         var group = objectLibrary.BoundaryGroups[boundaryIndex];
         
         // Get the boundary for the current frame
-        var boundary = group.Boundries.FirstOrDefault(b => b.Frame == frame);
+        var boundary = group.Boundaries.FirstOrDefault(b => b.Frame == frame);
 
          // If boundary doesn't exist for this frame
         if (boundary.Frame != frame)
         {
             // Create a new boundary for this frame
-            boundary = new Boundry
+            boundary = new Boundary
             {
                 Frame = frame,
                 X = 0,
@@ -755,7 +755,7 @@ public partial class MainWindow : Window
                 Height = 25,
                 Active = true
             };
-            group.Boundries.Add(boundary);
+            group.Boundaries.Add(boundary);
             
             needsSave = true;
         }
@@ -800,7 +800,7 @@ public partial class MainWindow : Window
         for (int i = 0; i < objectLibrary.BoundaryGroups.Count; i++)
         {
             var group = objectLibrary.BoundaryGroups[i];
-            var framesCount = group.Boundries.Count;
+            var framesCount = group.Boundaries.Count;
 
             var stackPanel = new StackPanel();
 
@@ -816,7 +816,7 @@ public partial class MainWindow : Window
             // Add info for each boundary frame
             for (int j = 0; j < Math.Min(framesCount, maximumFrameRows); j++)
             {
-                var boundary = group.Boundries[j];
+                var boundary = group.Boundaries[j];
                 stackPanel.Children.Add(new TextBlock
                 {
                     Text = $"  Frame {boundary.Frame}: {boundary.X},{boundary.Y} {boundary.Width}x{boundary.Height}" + (boundary.Active ? "" : " (Disabled)"),
@@ -1014,7 +1014,7 @@ public partial class MainWindow : Window
     //     }
     // }
     
-    private Boundry? GetSelectedBoundary()
+    private Boundary? GetSelectedBoundary()
     {
         // Get the selected boundary layer index
         var groupIndex = CurrentBoundaryLayerIndex();
@@ -1030,14 +1030,14 @@ public partial class MainWindow : Window
         var group = objectLibrary.BoundaryGroups[groupIndex];
         
         // Return the boundary for the current frame
-        return group.Boundries.FirstOrDefault(b => b.Frame == currentFrame);
+        return group.Boundaries.FirstOrDefault(b => b.Frame == currentFrame);
     }
 
     #endregion
 
     #region Boundary Management
 
-    private void DrawBoundary(Boundry boundary, int groupIndex, int boundaryIndex)
+    private void DrawBoundary(Boundary boundary, int groupIndex, int boundaryIndex)
     {
         // Only display boundaries for the currently selected frame
         int currentFrame = GetCurrentBoundaryFrame(groupIndex);
@@ -1607,7 +1607,7 @@ public partial class MainWindow : Window
             int currentFrame = GetCurrentBoundaryFrame(selectedBoundaryIndex);
         
             // Find and draw only the boundary for the current frame
-            var boundary = group.Boundries.FirstOrDefault(b => b.Frame == currentFrame);
+            var boundary = group.Boundaries.FirstOrDefault(b => b.Frame == currentFrame);
             if (boundary.Frame == currentFrame) // Valid boundary found
             {
                 DrawBoundary(boundary, selectedBoundaryIndex, 0);
@@ -1753,11 +1753,11 @@ public partial class MainWindow : Window
             group.Layer = i;
             
             // Update the group in the list
-            for (int j = 0; j < group.Boundries.Count; j++)
+            for (int j = 0; j < group.Boundaries.Count; j++)
             {
-                var boundary = group.Boundries[j];
+                var boundary = group.Boundaries[j];
                 boundary.Frame = j;
-                group.Boundries[j] = boundary;
+                group.Boundaries[j] = boundary;
             }
 
             // Update tags on any rectangles and handles for this group

@@ -8,7 +8,7 @@ public class OLibrary
     public string FilePath { get; private set; } = string.Empty;
 
     public List<Graphic>? Images;
-    public List<BoundryGroup>? BoundaryGroups;
+    public List<BoundaryGroup>? BoundaryGroups;
 
     public OLibrary()
     {

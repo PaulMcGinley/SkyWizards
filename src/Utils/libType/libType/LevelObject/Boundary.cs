@@ -1,6 +1,6 @@
 namespace libType;
 
-public struct Boundry
+public struct Boundary
 {
     public int Frame { get; set; }
     public int X { get; set; }
