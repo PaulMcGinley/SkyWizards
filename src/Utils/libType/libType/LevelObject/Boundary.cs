@@ -9,3 +9,9 @@ public struct Boundary
     public int Height { get; set; }
     public bool Active { get; set; }
 }
+
+public class BoundaryGroup
+{
+    public int Layer { get; set; }
+    public List<Boundary> Boundaries { get; set; }
+}

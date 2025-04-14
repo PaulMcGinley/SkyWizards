@@ -1223,7 +1223,7 @@ public partial class MainWindow : Window
                 UpdateHandlePosition(handle, rectangle, handleData.Item3, handleData.Item4);
 
         clickPosition = currentPosition;
-    }
+        }
 
     private void Boundary_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
