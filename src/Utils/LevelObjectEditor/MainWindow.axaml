@@ -24,6 +24,9 @@
                 <Separator/>
                 <MenuItem Header="Close" Click="mnuClose_Click"/>
             </MenuItem>
+            <MenuItem Header="Batch">
+                <MenuItem Header="From Tiles" Click="mnuCreateFromTiles_OnClick"/>
+            </MenuItem>
         </Menu>
 
         <Grid>
