@@ -28,9 +28,12 @@
             <MenuItem Header="Edit">
                 <MenuItem Header="Trim Whitespace" Click="mnuTrimWhitespace_Click" ToolTip.Tip="Removes the empty rows and columns from an image.&#x0a;Rows to the top and columns to the left will be tracked while removing and update the X and Y offset accordingly.&#x0a;These offsets are vital for ensuring animated sequences are drawn correctly.&#x0a;&#x0a;Metadata is lost during this process."/>
                 <MenuItem Header="Remove Metadata" Click="mnuRemoveMetadata_Click" ToolTip.Tip="Note: Trimming whitespace will also remove all Meta data."/>
+                <MenuItem Header="Zero Offsets" Click="mnuZeroOffsets_OnClick" ToolTip.Tip="Set offsets of images within library to 0."/>
+                <MenuItem Header="Create Tile Array" Click="mnuCreateTileArray_OnClick" ToolTip.Tip="Convert the selected image into tiles (256x256px) and adds them to the end of the library."/>
                 <Separator/>
                 <MenuItem Header="Export Image" Click="mnuExportImage_Click"/>
             </MenuItem>
+            
             <MenuItem Header="Insert">
                 <MenuItem Header="Images" Click="mnuInsertImages_Click"/>
                 <MenuItem Header="Folder" Click="mnuInsertFolder_Click" ToolTip.Tip="Scan a given folder for all PNG files, sort them by name, then import to the end of the library."/>

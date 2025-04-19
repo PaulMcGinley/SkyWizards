@@ -940,6 +940,14 @@ public partial class MainWindow : Window
         // Set and load the previous frame
         SetCurrentBoundaryFrame(boundaryIndex, prevFrame);
         LoadBoundaryFrameState(boundaryIndex, prevFrame);
+
+        // Update the graphic's current frame as well
+        graphic.BackImageCurrentFrame = prevFrame;
+        graphic.BackAnimationNextFrame = TimeNowEpoch + (ulong)graphic.BackAnimationSpeed;
+        objectLibrary.Images[graphicIndex] = graphic;
+
+        // Update the image in the canvas
+        UpdateGraphicFrame(graphicIndex, prevFrame);
     }
 
     private void BoundaryFrameForward_Click(object? sender, RoutedEventArgs e)
@@ -972,6 +980,43 @@ public partial class MainWindow : Window
         // Set and load the next frame
         SetCurrentBoundaryFrame(boundaryIndex, nextFrame);
         LoadBoundaryFrameState(boundaryIndex, nextFrame);
+
+        // Update the graphic's current frame as well
+        graphic.BackImageCurrentFrame = nextFrame;
+        graphic.BackAnimationNextFrame = TimeNowEpoch + (ulong)graphic.BackAnimationSpeed;
+        objectLibrary.Images[graphicIndex] = graphic;
+
+        // Update the image in the canvas
+        UpdateGraphicFrame(graphicIndex, nextFrame);
+    }
+
+    /// <summary>
+    /// Updates the graphic frame in the canvas.
+    /// </summary>
+    /// <param name="graphicIndex"></param>
+    /// <param name="frameIndex"></param>
+    private void UpdateGraphicFrame(int graphicIndex, int frameIndex)
+    {
+        if (graphicIndex < 0 || graphicIndex >= objectLibrary?.Images?.Count)
+            return;
+
+        var graphic = objectLibrary.Images[graphicIndex];
+        if (!LibraryManager.Libraries.ContainsKey(graphic.BackImageLibrary))
+            return;
+
+        var lib = LibraryManager.Libraries[graphic.BackImageLibrary].Content;
+
+        // Find the image in the canvas
+        for (int i = 0; i < ImageCanvas.Children.Count; i++)
+        {
+            if (ImageCanvas.Children[i] is Image image && i == graphicIndex)
+            {
+                image.Source = CreateImage(lib.Images[frameIndex].Data);
+                Canvas.SetLeft(image, graphic.X + lib.Images[frameIndex].OffsetX);
+                Canvas.SetTop(image, graphic.Y + lib.Images[frameIndex].OffsetY);
+                break;
+            }
+        }
     }
 
     private void BoundaryLayersList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -1223,7 +1268,7 @@ public partial class MainWindow : Window
                 UpdateHandlePosition(handle, rectangle, handleData.Item3, handleData.Item4);
 
         clickPosition = currentPosition;
-        }
+    }
 
     private void Boundary_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
@@ -1385,10 +1430,16 @@ public partial class MainWindow : Window
         try
         {
             if (tabControl.SelectedIndex == 0)
+            {
+                AnimationTimer.Start();
                 BoundaryLayersList.SelectedIndex = -1;
+            }
 
             if (tabControl.SelectedIndex == 1)
+            {
+                AnimationTimer.Stop();
                 LayersList.SelectedIndex = -1;
+            }
         }
         catch (Exception exception)
         {

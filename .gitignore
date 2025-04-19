@@ -48,7 +48,7 @@ src/Utils/LibraryEditor/LibraryEditor.sln.DotSettings.user
 src/Utils/LevelEditor/.*/
 src/Utils/LevelEditor/[Bb]in/
 src/Utils/LevelEditor/[Oo]bj/
-src/Utils/LevelEditor/LevelEditor.sln.DotSettings.user
+src/Utils/LevelEditor/*.DotSettings.user
 
 # Level Object Editor
 src/Utils/LevelObjectEditor/.*/

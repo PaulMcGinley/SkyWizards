@@ -1019,11 +1019,12 @@ namespace LibraryEditor
             
             var path = await dialog.ShowAsync(this);
             
+            // Check if export has been cancelled
+            if (string.IsNullOrEmpty(path))
+                return;
             
-            await using var stream = new FileStream(path.ToString(), FileMode.Create);
+            await using var stream = new FileStream(path, FileMode.Create);
             await stream.WriteAsync(image.Data);
-            
-            
             
             Console.WriteLine($"Exported image to {path}");
         }
@@ -1038,6 +1039,52 @@ namespace LibraryEditor
             
             var infoWindow = new LibraryInfoWindow(library.FilePath, library.Images.Count(), library.GetVersion());
             infoWindow.Show();
+        }
+
+        private async void mnuZeroOffsets_OnClick(object? sender, RoutedEventArgs e)
+        {
+            if (library == null)
+                return;
+
+            await Task.Run(() =>
+            {
+                ImageOptimizer.ZeroOffsets(ref library);
+            });
+
+            library.needsSave = true;
+
+            UpdateUI();
+            await LoadImagesFromLibrary();
+        }
+
+        private async void mnuCreateTileArray_OnClick(object? sender, RoutedEventArgs e)
+        {
+            if (library == null)
+                return;
+            
+            if (SelectedImageIndex < 0 || SelectedImageIndex >= library.Images.Count)
+                return;
+            
+            var image = library.Images[SelectedImageIndex];
+            
+            LImage[] tileArray = [];
+            await Task.Run(() =>
+            {
+                ImageOptimizer.ProcessTileImage(ref image, out tileArray);
+            });
+            
+            if (tileArray.Length == 0)
+                return;
+            
+            library.Images.RemoveAt(SelectedImageIndex);
+            
+            library.Images.AddRange(tileArray);
+            
+            library.needsSave = true;
+            SelectedImageIndex = library.Images.Count - 1;
+            UpdateUI();
+            
+            await LoadImagesFromLibrary();
         }
     }
 }

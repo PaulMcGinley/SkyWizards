@@ -2,8 +2,147 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:local="clr-namespace:LevelEditor"
+        mc:Ignorable="d" d:DesignWidth="2384" d:DesignHeight="1520"
+        Width="2384" Height="1520"
         x:Class="LevelEditor.MainWindow"
         Title="LevelEditor">
-    Welcome to Avalonia!
+    <DockPanel LastChildFill="True">
+        <!-- Menu Bar at the top -->
+        <Menu DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="0,0,0,1">
+        <MenuItem Header="Editor" FontWeight="Bold">
+            <MenuItem Header="Settings"/>
+            <Separator/>
+            <MenuItem Header="Exit"/>
+        </MenuItem>
+        <MenuItem Header="|" IsEnabled="False"/>
+        <MenuItem Header="Level" FontWeight="Bold">
+            <MenuItem Header="New"/>
+            <Separator/>
+            <MenuItem Header="Open"/>
+            <Separator/>
+            <MenuItem Header="Save"/>
+            <MenuItem Header="Save As"/>
+            <Separator/>
+            <MenuItem Header="Close"/>
+        </MenuItem>
+        </Menu>
+        
+<!-- Main content area -->
+<Grid>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="400" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="250" /> <!-- Width for the left panel -->
+        <ColumnDefinition Width="Auto" /> <!-- For the vertical splitter -->
+        <ColumnDefinition Width="*" /> <!-- For the canvas -->
+        <ColumnDefinition Width="Auto" /> <!-- For the right splitter -->
+        <ColumnDefinition Width="200" /> <!-- Width for the right panel -->
+    </Grid.ColumnDefinitions>
+
+    <!-- Left Panel with Expanders -->
+    <ScrollViewer Grid.Row="0" Grid.Column="0" 
+                  HorizontalScrollBarVisibility="Disabled" 
+                  VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="2">
+            <Expander Header="Parallax Background" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                <StackPanel Margin="10">
+                    <TextBlock Text="placeholder" />
+                </StackPanel>
+            </Expander>
+            <Expander Header="Parallax Foreground" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                <StackPanel Margin="10">
+                    <TextBlock Text="placeholder" />
+                </StackPanel>
+            </Expander>
+            <Expander Header="Expander 3" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                <StackPanel Margin="10">
+                    <TextBlock Text="placeholder" />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </ScrollViewer>
+
+    <!-- Vertical Splitter between Left Panel and Canvas -->
+    <GridSplitter Grid.Row="0" Grid.Column="1"
+                  Width="5" Background="Gray"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Center" />
+
+    <!-- Scrollable Canvas (now in the right column) -->
+    <ScrollViewer x:Name="ScrollViewerContainer" Grid.Row="0" Grid.Column="2"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto">
+        <Canvas x:Name="DrawingCanvas" Background="White"
+                Width="{Binding #ScrollViewerContainer.Bounds.Width}"
+                Height="{Binding #ScrollViewerContainer.Bounds.Height}"
+                MinWidth="100000" MinHeight="10000" />
+    </ScrollViewer>
+    
+    <!-- Vertical Splitter between Canvas and Right Panel -->
+    <GridSplitter Grid.Row="0" Grid.Column="3"
+                  Width="5" Background="Gray"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Center" />
+
+    <!-- Right Panel with Item List -->
+    <ScrollViewer Grid.Row="0" Grid.Column="4"
+                  HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <ListBox x:Name="ItemListBox">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:ListItemViewModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding Icon}" Width="16" Height="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </ScrollViewer>
+
+    <!-- Horizontal Splitter between Canvas and TabControl (spans all columns) -->
+    <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"
+                  Height="5" Background="Gray" 
+                  HorizontalAlignment="Stretch" />
+
+    <!-- TabControl at the bottom (spans all columns) -->
+    <TabControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+        <TabItem Header="Objects">
+            <TabControl>
+                <TabItem Header="Required">
+                    <TextBlock Text="Required objects content" />
+                </TabItem>
+                <TabItem Header="Scenery">
+                    <TextBlock Text="Scenery objects content" />
+                </TabItem>
+                <TabItem Header="Background">
+                    <TextBlock Text="Background objects content" />
+                </TabItem>
+                <TabItem Header="Platform Back">
+                    <TextBlock Text="Platform Back objects content" />
+                </TabItem>
+                <TabItem Header="Behind Player">
+                    <TextBlock Text="Behind Player objects content" />
+                </TabItem>
+                <TabItem Header="Infront of Player">
+                    <TextBlock Text="Infront of Player objects content" />
+                </TabItem>
+                <TabItem Header="Platform Front">
+                    <TextBlock Text="Platform Front objects content" />
+                </TabItem>
+            </TabControl>
+        </TabItem>
+        <TabItem Header="Entities">
+            <TextBlock Text="Content for Tab 2" />
+        </TabItem>
+        <TabItem Header="Scripts">
+            <TextBlock Text="Content for Tab 3" />
+        </TabItem>
+    </TabControl>
+</Grid>
+    </DockPanel>
 </Window>
