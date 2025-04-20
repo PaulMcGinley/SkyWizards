@@ -18,24 +18,25 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        LibraryManager.LoadAllFuckingLibraries();
-
         InitializeComponent();
-        UpdateItemList();
-        DrawGuideLine();
-
+        
         Loaded += MainWindow_Loaded;
     }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
-        _objManager = new LevelObjectManager();
-        _objManager.LoadAllObjects();
-
+        LibraryManager.LoadAllFuckingLibraries();
+        DrawGuideLine();
         InitializeObjectLibraryList();
 
         // Load the map
         _map = new WMap();
+        _map.LevelObjects.Add(new WMObject()
+        {
+            ObjectLibrary = "cliff_00",
+            Position = new []{100f,100f}
+        });
+        UpdateItemList();
     }
 
     #endregion
@@ -55,50 +56,22 @@ public partial class MainWindow : Window
         }
     }
     
-    private async void InputElement_OnTapped(object? sender, TappedEventArgs e)
-    {
-        // Get a reference to the library first
-        var backgroundsLibrary = LibraryManager.Libraries["ParallaxBackgrounds.lib"];
-
-        LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
-        await imageSelector.ShowDialog(this);
-
-        // Check if a valid image was selected
-        if (imageSelector.SelectedIndex == -1)
-        {
-            Console.WriteLine("No start image selected, returning");
-            return;
-        }
-
-        _map.ParallaxBackgroundIndex = imageSelector.SelectedIndex;
-
-        // Change the picture box image to the selected image
-        LImage img = backgroundsLibrary.Content.Images[imageSelector.SelectedIndex];
-
-        // Convert byte array to stream before creating Bitmap
-        using var memoryStream = new System.IO.MemoryStream(img.Data);
-        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
-    
-        // Update the SkyboxPreview image
-        SkyboxPreview.Source = bitmap;
-    }
-    
     private void InitializeObjectLibraryList()
     {
-        // Get the objects from the LevelObjectManager
-        var objectManager = new LevelObjectManager();
-        objectManager.LoadAllObjects();
+        _objManager = new LevelObjectManager();
+        _objManager.LoadAllObjects();
 
         // Create view models for each object
         var objectItems = new List<ObjectItemViewModel>();
-        for (int i = 0; i < objectManager.Objects.Count; i++)
+        foreach (var kvp in _objManager.LibraryObjects)
         {
-            var lib = objectManager.Objects[i];
-            var preview = objectManager.Previews.Count > i ? objectManager.Previews[i] : null;
+            var key = kvp.Key;
+            var lib = kvp.Value;
+            var preview = _objManager.LibraryPreviews.TryGetValue(key, out var p) ? p : null;
 
             objectItems.Add(new ObjectItemViewModel
             {
-                Name = Path.GetFileNameWithoutExtension(lib.FilePath),
+                Name = key,
                 Library = lib,
                 Preview = preview
             });
@@ -127,26 +100,76 @@ public partial class MainWindow : Window
     
     #endregion
     
+    #region Left Panel
+    
+    private async void ChangeSkyBox_OnTapped(object? sender, TappedEventArgs e)
+    {
+        // Get a reference to the library first
+        var backgroundsLibrary = LibraryManager.Libraries["sky.lib"];
+
+        LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
+        await imageSelector.ShowDialog(this);
+
+        // Check if a valid image was selected
+        if (imageSelector.SelectedIndex == -1)
+        {
+            Console.WriteLine("No start image selected, returning");
+            return;
+        }
+
+        _map.ParallaxBackgroundIndex = imageSelector.SelectedIndex;
+
+        // Change the picture box image to the selected image
+        LImage img = backgroundsLibrary.Content.Images[imageSelector.SelectedIndex];
+
+        // Convert byte array to stream before creating Bitmap
+        using var memoryStream = new System.IO.MemoryStream(img.Data);
+        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
+    
+        // Update the SkyboxPreview image
+        SkyboxPreview.Source = bitmap;
+    }
+    
+    #endregion
+    
     #region Map Objects
 
     private void UpdateItemList()
     {
-        // Track last known index 
-        
+        // Clear the current items
         ItemListBox.Items.Clear();
-        
-        // TODO: Replace this placeholder with actual data
-        var items = new List<ListItemViewModel>
+
+        if (_map == null || _map.LevelObjects == null || _objManager == null)
+            return;
+
+        // Create view models for each map object
+        var items = new List<ListItemViewModel>();
+
+        foreach (var mapObject in _map.LevelObjects)
         {
-            new ListItemViewModel { Icon = "avares://LevelEditor/Assets/icon1.png", Label = "Item 1" },
-            new ListItemViewModel { Icon = "avares://LevelEditor/Assets/icon2.png", Label = "Item 2" },
-            new ListItemViewModel { Icon = "avares://LevelEditor/Assets/icon3.png", Label = "Item 3" }
-        };
+            // Use the object library name as the key
+            string key = mapObject.ObjectLibrary;
         
+            // Check if we have this library
+            if (!_objManager.LibraryObjects.TryGetValue(key, out var libraryObject))
+                continue;
+
+            // Get the preview for this library
+            var preview = _objManager.LibraryPreviews.TryGetValue(key, out var p) ? p : null;
+
+            // Create the view model
+            items.Add(new ListItemViewModel
+            {
+                Label = key,
+                // Use a placeholder icon if no preview is available
+                Icon = preview != null ? "memory://preview/" + key : "",
+                // Store the map object for reference
+                Tag = mapObject
+            });
+        }
+
         // Add the items to the ListBox
         ItemListBox.ItemsSource = items;
-        
-        // Set last known index list item
 
         // Event handler to handle selection changes
         ItemListBox.SelectionChanged += (sender, e) =>
@@ -154,12 +177,19 @@ public partial class MainWindow : Window
             // Guard clause to ensure only the selected item is processed
             if (ItemListBox.SelectedItem is not ListItemViewModel selectedItem)
                 return;
-        
+
             // TODO: Handle the selected item click event
             Console.WriteLine($"Selected: {selectedItem.Label}");
+
+            // You can access the map object via selectedItem.Tag
+            if (selectedItem.Tag is WMObject mapObject)
+            {
+                // Do something with the selected map object
+                // e.g., highlight it on the canvas
+            }
         };
     }
-    
+
     #endregion
     
     #region Canvas

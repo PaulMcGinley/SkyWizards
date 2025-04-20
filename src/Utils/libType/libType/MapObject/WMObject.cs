@@ -5,6 +5,6 @@ namespace libType;
 /// </summary>
 public class WMObject
 {
-    public OLibrary ObjectLibrary;
+    public string ObjectLibrary;
     public float[] Position = [0, 0];
 }

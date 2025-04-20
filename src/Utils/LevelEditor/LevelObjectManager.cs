@@ -8,8 +8,8 @@ namespace LevelEditor;
 
 public class LevelObjectManager
 {
-    public List<OLibrary> Objects = new List<OLibrary>();
-    public List<Bitmap> Previews = new List<Bitmap>();
+    public Dictionary<string, OLibrary> LibraryObjects = new Dictionary<string, OLibrary>();
+    public Dictionary<string, Bitmap> LibraryPreviews = new Dictionary<string, Bitmap>();
 
     public void LoadAllObjects()
     {
@@ -27,18 +27,22 @@ public class LevelObjectManager
                 continue;
             }
 
-            Objects.Add(library);
+            string key = Path.GetFileNameWithoutExtension(file);
+            LibraryObjects[key] = library;
         }
 
         GeneratePreviews();
-    }
+    } // End of LoadAllObjects
 
     private void GeneratePreviews()
     {
-        Previews.Clear();
+        LibraryPreviews.Clear();
 
-        foreach (var library in Objects)
+        foreach (var kvp in LibraryObjects)
         {
+            string key = kvp.Key;       // File name without extension
+            var library = kvp.Value;    // OLibrary object
+            
             try
             {
                 // Create a default preview image
@@ -48,7 +52,7 @@ public class LevelObjectManager
                 for (int i = 0; i < library.Images.Count; i++)
                 {
                     var image = library.Images[i];
-                
+
                     // Skip images with invalid BackIndex (-1)
                     if (string.IsNullOrEmpty(image.BackImageLibrary) || image.BackIndex == -1)
                         continue;
@@ -57,7 +61,7 @@ public class LevelObjectManager
                     if (LibraryManager.Libraries.TryGetValue(image.BackImageLibrary, out var backLibrary))
                     {
                         var backIndex = image.BackIndex;
-                    
+
                         if (backIndex >= 0 && backIndex < backLibrary.Content.Images.Count)
                         {
                             var imageData = backLibrary.Content.Images[backIndex].Data;
@@ -65,7 +69,7 @@ public class LevelObjectManager
                             {
                                 using var memoryStream = new MemoryStream(imageData);
                                 preview = new Bitmap(memoryStream);
-                            
+
                                 // Use the first valid image as preview and break
                                 break;
                             }
@@ -73,16 +77,16 @@ public class LevelObjectManager
                     }
                 }
 
-                Previews.Add(preview);
+                // Add the preview to the dictionary with the same key
+                LibraryPreviews[key] = preview;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error creating preview for {library.FilePath}: {ex.Message}");
                 
-                // If an error occurs, add a null preview to maintain the list size and associated index
-                Previews.Add(null);
+                // If an error occurs, still add a null preview to prevent exception on access
+                LibraryPreviews[key] = null;
             }
         }
-    }
-    // End of LoadAllObjects
-} // End of LevelObjectManager
+    } // End of GeneratePreviews
+} // End of LevelObjectManager class

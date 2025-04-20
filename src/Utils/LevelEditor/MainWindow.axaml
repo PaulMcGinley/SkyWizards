@@ -53,7 +53,7 @@
                     <Border BorderBrush="Gray" BorderThickness="1" Width="230" Height="130" CornerRadius="5"  ClipToBounds="True">
                         <Panel>
                                 <Image x:Name="SkyboxPreview" Stretch="UniformToFill" />
-                            <Rectangle Fill="Transparent" Cursor="Hand" Tapped="InputElement_OnTapped"/>
+                            <Rectangle Fill="Transparent" Cursor="Hand" Tapped="ChangeSkyBox_OnTapped"/>
                         </Panel>
                     </Border>
                 </Grid>
