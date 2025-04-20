@@ -38,6 +38,8 @@ public partial class MainWindow : Window
         });
         DrawScene();
         UpdateItemList();
+        SetupObjectsListBoxEvents();
+        SetupItemListBoxEvents();
     }
 
     #endregion
@@ -138,11 +140,11 @@ public partial class MainWindow : Window
 
     private void UpdateItemList()
     {
-        // Clear the current items
-        ItemListBox.Items.Clear();
-
         if (_map == null || _map.LevelObjects == null || _objManager == null)
+        {
+            ItemListBox.ItemsSource = new List<ListItemViewModel>(); // Set to empty collection
             return;
+        }
 
         // Create view models for each map object
         var items = new List<ListItemViewModel>();
@@ -153,7 +155,7 @@ public partial class MainWindow : Window
             string key = mapObject.ObjectLibrary;
 
             // Check if we have this library
-            if (!_objManager.LibraryObjects.TryGetValue(key, out var libraryObject))
+            if (!_objManager.LibraryObjects.TryGetValue(key, out  _))
                 continue;
 
             // Get the preview for this library
@@ -163,31 +165,82 @@ public partial class MainWindow : Window
             items.Add(new ListItemViewModel
             {
                 Label = key,
-                // Use a placeholder icon if no preview is available
                 Icon = preview,
-                // Store the map object for reference
                 Tag = mapObject
             });
         }
 
-        // Add the items to the ListBox
+        // Set the ItemsSource directly
         ItemListBox.ItemsSource = items;
+    }
 
-        // Event handler to handle selection changes
-        ItemListBox.SelectionChanged += (sender, e) =>
+    private void SetupItemListBoxEvents()
+    {
+        // Remove any existing event handlers and add my own
+        ItemListBox.SelectionChanged -= ItemListBox_SelectionChanged;
+        ItemListBox.SelectionChanged += ItemListBox_SelectionChanged;
+    }
+
+    private void ItemListBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        // Guard clause to ensure only the selected item is processed
+        if (ItemListBox.SelectedItem is not ListItemViewModel selectedItem)
+            return;
+
+        // Handle the selected item click event
+        Console.WriteLine($"Selected: {selectedItem.Label}");
+
+        // Check if the selected item is a map object
+        if (selectedItem.Tag is WMObject mapObject)
         {
-            // Guard clause to ensure only the selected item is processed
-            if (ItemListBox.SelectedItem is not ListItemViewModel selectedItem)
-                return;
-
-            // TODO: Handle the selected item click event
-            Console.WriteLine($"Selected: {selectedItem.Label}");
-
-            // You can access the map object via selectedItem.Tag
-            if (selectedItem.Tag is WMObject mapObject)
+            // Scroll to the position of the selected object
+            var x = mapObject.Position[0];
+            var y = mapObject.Position[1];
+            var scrollViewer = ScrollViewerContainer;
+            if (scrollViewer != null)
             {
-                // Do something with the selected map object
-                // e.g., highlight it on the canvas
+                // Scroll to the object's position
+                scrollViewer.Offset = new Avalonia.Vector(x - (scrollViewer.Viewport.Width / 2), y - (scrollViewer.Viewport.Height / 2));
+            }
+        }
+    }
+
+    private void SetupObjectsListBoxEvents()
+    {
+        ObjectsListBox.DoubleTapped += (sender, e) =>
+        {
+            if (ObjectsListBox.SelectedItem is ObjectItemViewModel selectedObject)
+            {
+                // Get the current scroll position of the canvas
+                var horizontalOffset = ScrollViewerContainer.Offset.X;
+                var verticalOffset = ScrollViewerContainer.Offset.Y;
+            
+                // Calculate the center of the viewport
+                var viewportWidth = ScrollViewerContainer.Viewport.Width;
+                var viewportHeight = ScrollViewerContainer.Viewport.Height;
+            
+                // Position the new object at the center of the current view
+                float posX = (float)(horizontalOffset + (viewportWidth / 2));
+                float posY = (float)(verticalOffset + (viewportHeight / 2));
+            
+                // Create the new map object
+                var newObject = new WMObject
+                {
+                    ObjectLibrary = selectedObject.Name,
+                    Position = new float[] { posX, posY }
+                };
+            
+                // Add it to the map
+                if (_map != null && _map.LevelObjects != null)
+                {
+                    _map.LevelObjects.Add(newObject);
+                
+                    // Refresh the scene to show the new object
+                    DrawScene();
+                
+                    // Also update the ItemListBox to include the new object
+                    UpdateItemList();
+                }
             }
         };
     }
@@ -247,7 +300,7 @@ public partial class MainWindow : Window
         }
 
         // Wait until layout is completed, then scroll to show the line
-        this.LayoutUpdated += ScrollToGuideLine;
+        //this.LayoutUpdated += ScrollToGuideLine;
     }
 
     private WMObject _currentlyDraggedObject = null;
@@ -257,17 +310,8 @@ public partial class MainWindow : Window
 
     void DrawScene()
     {
-        // Clear existing objects (excluding the guideline)
-        var guideLine = DrawingCanvas.Children.OfType<Avalonia.Controls.Shapes.Line>().FirstOrDefault();
-
         // Clear all children
         DrawingCanvas.Children.Clear();
-
-        // Add back the guideline if it existed
-        if (guideLine != null)
-        {
-            DrawingCanvas.Children.Add(guideLine);
-        }
 
         // Ensure we have a map and objects to draw
         if (_map == null || _map.LevelObjects == null || _objManager == null)
@@ -283,7 +327,7 @@ public partial class MainWindow : Window
                 continue;
 
             // Get the library object to access its image references
-            if (!_objManager.LibraryObjects.TryGetValue(key, out var libraryObject))
+            if (!_objManager.LibraryObjects.TryGetValue(key, out _))
                 continue;
 
             // Create an Image control for the object
