@@ -33,7 +33,7 @@ public partial class MainWindow : Window
         _map = new WMap();
         _map.LevelObjects.Add(new WMObject()
         {
-            ObjectLibrary = "cliff_00",
+            ObjectLibrary = "cliff_06",
             Position = new []{100f,100f}
         });
         UpdateItemList();
@@ -68,6 +68,7 @@ public partial class MainWindow : Window
             var key = kvp.Key;
             var lib = kvp.Value;
             var preview = _objManager.LibraryPreviews.TryGetValue(key, out var p) ? p : null;
+            Console.WriteLine(key);
 
             objectItems.Add(new ObjectItemViewModel
             {
@@ -162,7 +163,7 @@ public partial class MainWindow : Window
             {
                 Label = key,
                 // Use a placeholder icon if no preview is available
-                Icon = preview != null ? "memory://preview/" + key : "",
+                Icon = preview,
                 // Store the map object for reference
                 Tag = mapObject
             });
