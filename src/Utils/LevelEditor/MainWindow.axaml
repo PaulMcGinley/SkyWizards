@@ -94,21 +94,38 @@
                   HorizontalAlignment="Center" />
 
     <!-- Right Panel with Item List -->
-    <ScrollViewer Grid.Row="0" Grid.Column="4"
-                  HorizontalScrollBarVisibility="Disabled"
-                  VerticalScrollBarVisibility="Auto">
-        <ListBox x:Name="ItemListBox">
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type local:ListItemViewModel}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding Icon}" Width="16" Height="16" Margin="0,0,5,0"/>
-                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </ScrollViewer>
-
+    <Grid Grid.Row="0" Grid.Column="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+    
+        <!-- Item List -->
+        <ScrollViewer Grid.Row="0"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <ListBox x:Name="ItemListBox">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:ListItemViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding Icon}" Width="64" Height="64" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+    
+        <!-- Layer Controls Menu -->
+        <Menu Grid.Row="1" BorderBrush="Gray" BorderThickness="0,1,0,0">
+            <!-- <MenuItem Header="+" ToolTip.Tip="Add new object"/> -->
+            <MenuItem Header="-" ToolTip.Tip="Remove selected object"/>
+            <MenuItem Header="▲" ToolTip.Tip="Move selected object up"/>
+            <MenuItem Header="▼" ToolTip.Tip="Move selected object down" />
+            <MenuItem Header="ƒ×" ToolTip.Tip="Object Script"/>
+        </Menu>
+    </Grid>
+    
     <!-- Horizontal Splitter between Canvas and TabControl (spans all columns) -->
     <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"
                   Height="5" Background="Gray" 
