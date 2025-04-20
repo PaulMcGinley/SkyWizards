@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -19,14 +20,13 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        
+
         Loaded += MainWindow_Loaded;
     }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
         LibraryManager.LoadAllFuckingLibraries();
-        DrawGuideLine();
         InitializeObjectLibraryList();
 
         // Load the map
@@ -34,21 +34,21 @@ public partial class MainWindow : Window
         _map.LevelObjects.Add(new WMObject()
         {
             ObjectLibrary = "cliff_06",
-            Position = new []{0f,0f}
+            Position = new[] { 0f, 0f }
         });
         DrawScene();
         UpdateItemList();
     }
 
     #endregion
-    
+
     #region Helper Functions
 
     private void ScrollToGuideLine(object? sender, EventArgs e)
     {
         // Remove the event handler to ensure it only runs once
         this.LayoutUpdated -= ScrollToGuideLine;
-    
+
         // Get the ScrollViewer that contains the canvas
         if (DrawingCanvas.Parent is ScrollViewer scrollViewer)
         {
@@ -56,7 +56,7 @@ public partial class MainWindow : Window
             scrollViewer.Offset = new Avalonia.Vector(0, 4500);
         }
     }
-    
+
     private void InitializeObjectLibraryList()
     {
         _objManager = new LevelObjectManager();
@@ -99,11 +99,11 @@ public partial class MainWindow : Window
             }
         };
     }
-    
+
     #endregion
-    
+
     #region Left Panel
-    
+
     private async void ChangeSkyBox_OnTapped(object? sender, TappedEventArgs e)
     {
         // Get a reference to the library first
@@ -127,13 +127,13 @@ public partial class MainWindow : Window
         // Convert byte array to stream before creating Bitmap
         using var memoryStream = new System.IO.MemoryStream(img.Data);
         var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
-    
+
         // Update the SkyboxPreview image
         SkyboxPreview.Source = bitmap;
     }
-    
+
     #endregion
-    
+
     #region Map Objects
 
     private void UpdateItemList()
@@ -151,7 +151,7 @@ public partial class MainWindow : Window
         {
             // Use the object library name as the key
             string key = mapObject.ObjectLibrary;
-        
+
             // Check if we have this library
             if (!_objManager.LibraryObjects.TryGetValue(key, out var libraryObject))
                 continue;
@@ -193,9 +193,9 @@ public partial class MainWindow : Window
     }
 
     #endregion
-    
+
     #region Canvas
-    
+
     /// <summary>
     /// The guideline helps keep the level on the same y-axis.
     /// Start and finish should land on this line and any splitting in paths should return to this line.
@@ -250,37 +250,42 @@ public partial class MainWindow : Window
         this.LayoutUpdated += ScrollToGuideLine;
     }
 
+    private WMObject _currentlyDraggedObject = null;
+    private Point _dragStartPosition;
+    private Point _originalObjectPosition;
+    private Image _currentDragImage;
+
     void DrawScene()
     {
         // Clear existing objects (excluding the guideline)
         var guideLine = DrawingCanvas.Children.OfType<Avalonia.Controls.Shapes.Line>().FirstOrDefault();
-    
+
         // Clear all children
         DrawingCanvas.Children.Clear();
-    
+
         // Add back the guideline if it existed
         if (guideLine != null)
         {
             DrawingCanvas.Children.Add(guideLine);
         }
-    
+
         // Ensure we have a map and objects to draw
         if (_map == null || _map.LevelObjects == null || _objManager == null)
             return;
-    
+
         // Draw each map object
         foreach (var mapObject in _map.LevelObjects)
         {
             string key = mapObject.ObjectLibrary;
-        
+
             // Skip if we don't have this object's image
             if (!_objManager.ObjectImages.TryGetValue(key, out var objectImage) || objectImage == null)
                 continue;
-        
+
             // Get the library object to access its image references
             if (!_objManager.LibraryObjects.TryGetValue(key, out var libraryObject))
                 continue;
-            
+
             // Create an Image control for the object
             var imageControl = new Avalonia.Controls.Image
             {
@@ -288,17 +293,82 @@ public partial class MainWindow : Window
                 Width = objectImage.PixelSize.Width,
                 Height = objectImage.PixelSize.Height
             };
-        
+
             // Apply the map object position
-            // The position in the map corresponds to where we want the "anchor point" of the object
             Canvas.SetLeft(imageControl, mapObject.Position[0]);
             Canvas.SetTop(imageControl, mapObject.Position[1]);
-        
+
             // Add the image to the canvas
             DrawingCanvas.Children.Add(imageControl);
+
+            // Tag the image with its associated map object for dragging
+            imageControl.Tag = mapObject;
+
+            // Add drag event handlers to the image
+            SetupDragHandlers(imageControl);
         }
+        
+        DrawGuideLine();
     }
-    
+
+    private void SetupDragHandlers(Image imageControl)
+    {
+        // mouse down
+        imageControl.PointerPressed += (sender, e) =>
+        {
+            if (sender is Image image && image.Tag is WMObject obj)
+            {
+                _currentlyDraggedObject = obj;
+                _currentDragImage = image;
+                _dragStartPosition = e.GetPosition(DrawingCanvas);
+                _originalObjectPosition = new Point(obj.Position[0], obj.Position[1]);
+
+                // capture pointer for drag operation
+                e.Pointer.Capture(image);
+                e.Handled = true;
+            }
+        };
+
+        // mouse move
+        imageControl.PointerMoved += (sender, e) =>
+        {
+            if (_currentlyDraggedObject != null && sender is Image image)
+            {
+                var currentPosition = e.GetPosition(DrawingCanvas);
+                var delta = currentPosition - _dragStartPosition;
+
+                // update the image position
+                var newX = _originalObjectPosition.X + delta.X;
+                var newY = _originalObjectPosition.Y + delta.Y;
+
+                Canvas.SetLeft(image, newX);
+                Canvas.SetTop(image, newY);
+
+                e.Handled = true;
+            }
+        };
+
+        // mouse up
+        imageControl.PointerReleased += (sender, e) =>
+        {
+            if (_currentlyDraggedObject != null)
+            {
+                // update the object position in the map data
+                var currentPosition = e.GetPosition(DrawingCanvas);
+                var delta = currentPosition - _dragStartPosition;
+
+                _currentlyDraggedObject.Position[0] = (float)(_originalObjectPosition.X + delta.X);
+                _currentlyDraggedObject.Position[1] = (float)(_originalObjectPosition.Y + delta.Y);
+
+                // release pointer and reset
+                e.Pointer.Capture(null);
+                _currentlyDraggedObject = null;
+                _currentDragImage = null;
+                e.Handled = true;
+            }
+        };
+    }
+
     #endregion
 
 }
