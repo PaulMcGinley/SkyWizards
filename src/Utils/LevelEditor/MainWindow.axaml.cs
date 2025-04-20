@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using libType;
 
 namespace LevelEditor;
@@ -40,6 +41,7 @@ public partial class MainWindow : Window
         UpdateItemList();
         SetupObjectsListBoxEvents();
         SetupItemListBoxEvents();
+        ScrollToGuideLine(null,null);
     }
 
     #endregion
@@ -415,4 +417,32 @@ public partial class MainWindow : Window
 
     #endregion
 
+    private async void mnuSave_Click(object? sender, RoutedEventArgs e)
+    {
+        var storageProvider = StorageProvider;
+    
+        var fileOptions = new FilePickerSaveOptions
+        {
+            Title = "Save Map",
+            FileTypeChoices = new[]
+            {
+                new FilePickerFileType("Wizard Map Files")
+                {
+                    Patterns = new[] { "*.wmap" },
+                    MimeTypes = new[] { "application/x-wmap" }
+                }
+            },
+            DefaultExtension = "wmap"
+        };
+    
+        var file = await storageProvider.SaveFilePickerAsync(fileOptions);
+
+        if (file == null)
+            return;
+        
+        _map.SaveAs(file.Path.LocalPath, out string? err, true);
+        
+        if (err != null)
+            Console.WriteLine(err);
+    }
 }

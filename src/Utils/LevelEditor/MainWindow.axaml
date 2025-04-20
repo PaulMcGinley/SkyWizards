@@ -21,7 +21,7 @@
             <Separator/>
             <MenuItem Header="Open"/>
             <Separator/>
-            <MenuItem Header="Save"/>
+            <MenuItem Header="Save" Click="mnuSave_Click"/>
             <MenuItem Header="Save As"/>
             <Separator/>
             <MenuItem Header="Close"/>
