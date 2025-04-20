@@ -48,10 +48,15 @@
                   HorizontalScrollBarVisibility="Disabled" 
                   VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="2">
-            <Expander Header="Parallax Background" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
-                <StackPanel Margin="10">
-                    <TextBlock Text="placeholder" />
-                </StackPanel>
+            <Expander Header="Skybox" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
+                    <Border BorderBrush="Gray" BorderThickness="1" Width="230" Height="130" CornerRadius="5"  ClipToBounds="True">
+                        <Panel>
+                                <Image x:Name="SkyboxPreview" Stretch="UniformToFill" />
+                            <Rectangle Fill="Transparent" Cursor="Hand" Tapped="InputElement_OnTapped" PointerPressed="SkyboxPreview_Clicked"/>
+                        </Panel>
+                    </Border>
+                </Grid>
             </Expander>
             <Expander Header="Parallax Foreground" HorizontalAlignment="Stretch" Margin="0,0,0,2">
                 <StackPanel Margin="10">

@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using libType;
 
 namespace LevelEditor;
 
 public partial class MainWindow : Window
 {
     private LevelObjectManager _objManager;
+    private WMap _map;
         
     public MainWindow()
     {
@@ -27,6 +30,9 @@ public partial class MainWindow : Window
         
         // Generate object preview graphics
         GenerateObjectPreviewGraphics();
+        
+        // Load the map
+        _map = new WMap();
     }
 
     private void GenerateObjectPreviewGraphics()
@@ -130,5 +136,43 @@ public partial class MainWindow : Window
             // Scroll to the line's position (slightly above to make it visible)
             scrollViewer.Offset = new Avalonia.Vector(0, 4500);
         }
+    }
+    
+    private async void SkyboxPreview_Clicked(object sender, PointerPressedEventArgs e)
+    {
+
+    }
+
+    private async void ChangeSkybox_Click(object sender, RoutedEventArgs e)
+    {
+       // SkyboxPreview_Clicked(null, null);
+    }
+
+    private async void InputElement_OnTapped(object? sender, TappedEventArgs e)
+    {
+        // Get a reference to the library first
+        var backgroundsLibrary = LibraryManager.Libraries["ParallaxBackgrounds.lib"];
+
+        LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
+        await imageSelector.ShowDialog(this);
+
+        // Check if a valid image was selected
+        if (imageSelector.SelectedIndex == -1)
+        {
+            Console.WriteLine("No start image selected, returning");
+            return;
+        }
+
+        _map.ParallaxBackgroundIndex = imageSelector.SelectedIndex;
+
+        // Change the picture box image to the selected image
+        LImage img = backgroundsLibrary.Content.Images[imageSelector.SelectedIndex];
+
+        // Convert byte array to stream before creating Bitmap
+        using var memoryStream = new System.IO.MemoryStream(img.Data);
+        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
+    
+        // Update the SkyboxPreview image
+        SkyboxPreview.Source = bitmap;
     }
 }
