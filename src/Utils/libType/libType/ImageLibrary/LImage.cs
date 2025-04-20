@@ -1,7 +1,7 @@
 ﻿namespace libType;
 
 /// <summary>
-/// Library image
+/// Library Image
 /// </summary>
 public struct LImage
 {

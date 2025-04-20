@@ -2,6 +2,9 @@ using System.Xml.Serialization;
 
 namespace libType;
 
+/// <summary>
+/// Object Library
+/// </summary>
 public class OLibrary
 {
     [XmlIgnore]

@@ -2,6 +2,9 @@ using System.Xml.Serialization;
 
 namespace libType;
 
+/// <summary>
+/// Wizard Map
+/// </summary>
 public class WMap
 {
     [XmlIgnore]

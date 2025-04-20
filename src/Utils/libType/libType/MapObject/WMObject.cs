@@ -1,5 +1,8 @@
 namespace libType;
 
+/// <summary>
+/// Wizard Map Object
+/// </summary>
 public class WMObject
 {
     public OLibrary ObjectLibrary;
