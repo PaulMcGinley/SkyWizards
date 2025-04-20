@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -11,34 +13,121 @@ public partial class MainWindow : Window
 {
     private LevelObjectManager _objManager;
     private WMap _map;
-        
+
+    #region This Form
+
     public MainWindow()
     {
         LibraryManager.LoadAllFuckingLibraries();
-        
+
         InitializeComponent();
         UpdateItemList();
         DrawGuideLine();
 
-       Loaded += MainWindow_Loaded;
+        Loaded += MainWindow_Loaded;
     }
 
     private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
     {
         _objManager = new LevelObjectManager();
         _objManager.LoadAllObjects();
-        
-        // Generate object preview graphics
-        GenerateObjectPreviewGraphics();
-        
+
+        InitializeObjectLibraryList();
+
         // Load the map
         _map = new WMap();
     }
 
-    private void GenerateObjectPreviewGraphics()
+    #endregion
+    
+    #region Helper Functions
+
+    private void ScrollToGuideLine(object? sender, EventArgs e)
     {
-        //throw new NotImplementedException();
+        // Remove the event handler to ensure it only runs once
+        this.LayoutUpdated -= ScrollToGuideLine;
+    
+        // Get the ScrollViewer that contains the canvas
+        if (DrawingCanvas.Parent is ScrollViewer scrollViewer)
+        {
+            // Scroll to the line's position (slightly above to make it visible)
+            scrollViewer.Offset = new Avalonia.Vector(0, 4500);
+        }
     }
+    
+    private async void InputElement_OnTapped(object? sender, TappedEventArgs e)
+    {
+        // Get a reference to the library first
+        var backgroundsLibrary = LibraryManager.Libraries["ParallaxBackgrounds.lib"];
+
+        LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
+        await imageSelector.ShowDialog(this);
+
+        // Check if a valid image was selected
+        if (imageSelector.SelectedIndex == -1)
+        {
+            Console.WriteLine("No start image selected, returning");
+            return;
+        }
+
+        _map.ParallaxBackgroundIndex = imageSelector.SelectedIndex;
+
+        // Change the picture box image to the selected image
+        LImage img = backgroundsLibrary.Content.Images[imageSelector.SelectedIndex];
+
+        // Convert byte array to stream before creating Bitmap
+        using var memoryStream = new System.IO.MemoryStream(img.Data);
+        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
+    
+        // Update the SkyboxPreview image
+        SkyboxPreview.Source = bitmap;
+    }
+    
+    private void InitializeObjectLibraryList()
+    {
+        // Get the objects from the LevelObjectManager
+        var objectManager = new LevelObjectManager();
+        objectManager.LoadAllObjects();
+
+        // Create view models for each object
+        var objectItems = new List<ObjectItemViewModel>();
+        for (int i = 0; i < objectManager.Objects.Count; i++)
+        {
+            var lib = objectManager.Objects[i];
+            var preview = objectManager.Previews.Count > i ? objectManager.Previews[i] : null;
+
+            objectItems.Add(new ObjectItemViewModel
+            {
+                Name = Path.GetFileNameWithoutExtension(lib.FilePath),
+                Library = lib,
+                Preview = preview
+            });
+        }
+
+        // Set the ListBox's items source
+        ObjectsListBox.ItemsSource = objectItems;
+
+        // Setup search functionality
+        ObjectSearchBox.TextChanged += (s, e) =>
+        {
+            var searchText = ObjectSearchBox.Text?.ToLower() ?? "";
+
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                ObjectsListBox.ItemsSource = objectItems;
+            }
+            else
+            {
+                ObjectsListBox.ItemsSource = objectItems
+                    .Where(item => item.Name.ToLower().Contains(searchText))
+                    .ToList();
+            }
+        };
+    }
+    
+    #endregion
+    
+    #region Map Objects
 
     private void UpdateItemList()
     {
@@ -70,6 +159,10 @@ public partial class MainWindow : Window
             Console.WriteLine($"Selected: {selectedItem.Label}");
         };
     }
+    
+    #endregion
+    
+    #region Canvas
     
     /// <summary>
     /// The guideline helps keep the level on the same y-axis.
@@ -124,55 +217,7 @@ public partial class MainWindow : Window
         // Wait until layout is completed, then scroll to show the line
         this.LayoutUpdated += ScrollToGuideLine;
     }
-
-    private void ScrollToGuideLine(object? sender, EventArgs e)
-    {
-        // Remove the event handler to ensure it only runs once
-        this.LayoutUpdated -= ScrollToGuideLine;
     
-        // Get the ScrollViewer that contains the canvas
-        if (DrawingCanvas.Parent is ScrollViewer scrollViewer)
-        {
-            // Scroll to the line's position (slightly above to make it visible)
-            scrollViewer.Offset = new Avalonia.Vector(0, 4500);
-        }
-    }
-    
-    private async void SkyboxPreview_Clicked(object sender, PointerPressedEventArgs e)
-    {
+    #endregion
 
-    }
-
-    private async void ChangeSkybox_Click(object sender, RoutedEventArgs e)
-    {
-       // SkyboxPreview_Clicked(null, null);
-    }
-
-    private async void InputElement_OnTapped(object? sender, TappedEventArgs e)
-    {
-        // Get a reference to the library first
-        var backgroundsLibrary = LibraryManager.Libraries["ParallaxBackgrounds.lib"];
-
-        LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
-        await imageSelector.ShowDialog(this);
-
-        // Check if a valid image was selected
-        if (imageSelector.SelectedIndex == -1)
-        {
-            Console.WriteLine("No start image selected, returning");
-            return;
-        }
-
-        _map.ParallaxBackgroundIndex = imageSelector.SelectedIndex;
-
-        // Change the picture box image to the selected image
-        LImage img = backgroundsLibrary.Content.Images[imageSelector.SelectedIndex];
-
-        // Convert byte array to stream before creating Bitmap
-        using var memoryStream = new System.IO.MemoryStream(img.Data);
-        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
-    
-        // Update the SkyboxPreview image
-        SkyboxPreview.Source = bitmap;
-    }
 }

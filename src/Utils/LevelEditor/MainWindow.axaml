@@ -53,7 +53,7 @@
                     <Border BorderBrush="Gray" BorderThickness="1" Width="230" Height="130" CornerRadius="5"  ClipToBounds="True">
                         <Panel>
                                 <Image x:Name="SkyboxPreview" Stretch="UniformToFill" />
-                            <Rectangle Fill="Transparent" Cursor="Hand" Tapped="InputElement_OnTapped" PointerPressed="SkyboxPreview_Clicked"/>
+                            <Rectangle Fill="Transparent" Cursor="Hand" Tapped="InputElement_OnTapped"/>
                         </Panel>
                     </Border>
                 </Grid>
@@ -116,28 +116,31 @@
 
     <!-- TabControl at the bottom (spans all columns) -->
     <TabControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
-        <TabItem Header="Objects">
+        <TabItem Header="Place">
             <TabControl>
                 <TabItem Header="Required">
                     <TextBlock Text="Required objects content" />
                 </TabItem>
-                <TabItem Header="Scenery">
-                    <TextBlock Text="Scenery objects content" />
-                </TabItem>
-                <TabItem Header="Background">
-                    <TextBlock Text="Background objects content" />
-                </TabItem>
-                <TabItem Header="Platform Back">
-                    <TextBlock Text="Platform Back objects content" />
-                </TabItem>
-                <TabItem Header="Behind Player">
-                    <TextBlock Text="Behind Player objects content" />
-                </TabItem>
-                <TabItem Header="Infront of Player">
-                    <TextBlock Text="Infront of Player objects content" />
-                </TabItem>
-                <TabItem Header="Platform Front">
-                    <TextBlock Text="Platform Front objects content" />
+                <TabItem Header="Objects">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+        
+                        <TextBox Grid.Row="0" x:Name="ObjectSearchBox" Watermark="Search objects..." Margin="5"/>
+        
+                        <ListBox Grid.Row="1" x:Name="ObjectsListBox" Margin="5">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:ObjectItemViewModel}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Preview}" Width="32" Height="32" Margin="0,0,5,0"/>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </TabItem>
