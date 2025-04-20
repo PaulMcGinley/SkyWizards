@@ -115,7 +115,7 @@
                   HorizontalAlignment="Stretch" />
 
     <!-- TabControl at the bottom (spans all columns) -->
-    <TabControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+    <TabControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5">
         <TabItem Header="Place">
             <TabControl>
                 <TabItem Header="Required">
@@ -131,11 +131,23 @@
                         <TextBox Grid.Row="0" x:Name="ObjectSearchBox" Watermark="Search objects..." Margin="5"/>
         
                         <ListBox Grid.Row="1" x:Name="ObjectsListBox" Margin="5">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:ObjectItemViewModel}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Source="{Binding Preview}" Width="32" Height="32" Margin="0,0,5,0"/>
-                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    <StackPanel Width="140" Margin="5" VerticalAlignment="Top">
+                                        <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3">
+                                            <Image Source="{Binding Preview}" Width="128" Height="128" 
+                                                   Stretch="Uniform" />
+                                        </Border>
+                                        <TextBlock Text="{Binding Name}" 
+                                                   TextAlignment="Center" 
+                                                   TextWrapping="Wrap"
+                                                   MaxWidth="128"
+                                                   Margin="0,4,0,0"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
