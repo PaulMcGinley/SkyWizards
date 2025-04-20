@@ -34,8 +34,9 @@ public partial class MainWindow : Window
         _map.LevelObjects.Add(new WMObject()
         {
             ObjectLibrary = "cliff_06",
-            Position = new []{100f,100f}
+            Position = new []{0f,0f}
         });
+        DrawScene();
         UpdateItemList();
     }
 
@@ -247,6 +248,55 @@ public partial class MainWindow : Window
 
         // Wait until layout is completed, then scroll to show the line
         this.LayoutUpdated += ScrollToGuideLine;
+    }
+
+    void DrawScene()
+    {
+        // Clear existing objects (excluding the guideline)
+        var guideLine = DrawingCanvas.Children.OfType<Avalonia.Controls.Shapes.Line>().FirstOrDefault();
+    
+        // Clear all children
+        DrawingCanvas.Children.Clear();
+    
+        // Add back the guideline if it existed
+        if (guideLine != null)
+        {
+            DrawingCanvas.Children.Add(guideLine);
+        }
+    
+        // Ensure we have a map and objects to draw
+        if (_map == null || _map.LevelObjects == null || _objManager == null)
+            return;
+    
+        // Draw each map object
+        foreach (var mapObject in _map.LevelObjects)
+        {
+            string key = mapObject.ObjectLibrary;
+        
+            // Skip if we don't have this object's image
+            if (!_objManager.ObjectImages.TryGetValue(key, out var objectImage) || objectImage == null)
+                continue;
+        
+            // Get the library object to access its image references
+            if (!_objManager.LibraryObjects.TryGetValue(key, out var libraryObject))
+                continue;
+            
+            // Create an Image control for the object
+            var imageControl = new Avalonia.Controls.Image
+            {
+                Source = objectImage,
+                Width = objectImage.PixelSize.Width,
+                Height = objectImage.PixelSize.Height
+            };
+        
+            // Apply the map object position
+            // The position in the map corresponds to where we want the "anchor point" of the object
+            Canvas.SetLeft(imageControl, mapObject.Position[0]);
+            Canvas.SetTop(imageControl, mapObject.Position[1]);
+        
+            // Add the image to the canvas
+            DrawingCanvas.Children.Add(imageControl);
+        }
     }
     
     #endregion
