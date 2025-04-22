@@ -5,7 +5,7 @@
 #ifndef ANISEQUENCE_H
 #define ANISEQUENCE_H
 
-struct AnimationSequence{
+struct AnimationSequence {
 
         // First frame index within the library for the animation sequence
         int startFrame;

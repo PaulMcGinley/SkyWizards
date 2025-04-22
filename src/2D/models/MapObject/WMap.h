@@ -7,7 +7,7 @@
 
 #include <string>
 #include <vector>
-#include "Envir/WMObject.h"
+#include "WMObject.h"
 
 class WMap {
 public:

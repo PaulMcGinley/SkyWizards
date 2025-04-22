@@ -5,6 +5,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
+#include "MapObject/WMap.h"
 #include "interfaces/IDraw.h"
 #include "interfaces/IUpdate.h"
 
@@ -19,10 +20,7 @@ public:
         void draw(sf::RenderWindow &window, GameTime gameTime) override;
 
 private:
-        //std::vector<LevelObject> level_objects; // TODO: Create LevelObject class
-        //ILevelObjective level_objective;
-        //
-
+        WMap map;
 };
 
 

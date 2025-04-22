@@ -12,6 +12,7 @@ public:
         int Y;
         int Width;
         int Height;
+        bool Active;
 };
 
 #endif //BOUNDARY_H
