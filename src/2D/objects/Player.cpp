@@ -83,9 +83,9 @@ void Player::update(GameTime gameTime) {
                 }
         }
 
-        // else {
-        //         changeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
-        // }
+        else {
+                changeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
+        }
 
         TextureEntry& robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
         robeQuad[0].texCoords = robe.texQuad[0].texCoords;

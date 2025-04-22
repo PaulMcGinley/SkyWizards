@@ -62,6 +62,12 @@ add_executable(LoSW___BftS main.cpp
         Envir/WMObject.h
         3rdParty/pugixml/pugiconfig.hpp
         3rdParty/pugixml/pugixml.cpp
+        models/LevelObject/Boundary.h
+        models/LevelObject/BoundaryGroup.h
+        models/LevelObject/Graphic.h
+        models/LevelObject/OLibrary.h
+        models/MapObject/WMObject.h
+        models/MapObject/WMap.h
 )
 
 
