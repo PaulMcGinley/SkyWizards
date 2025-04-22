@@ -56,6 +56,12 @@ add_executable(LoSW___BftS main.cpp
         models/Level.h
         Envir/SWS.cpp
         Envir/SWS.h
+        Envir/WMap.cpp
+        Envir/WMap.h
+        Envir/WMObject.cpp
+        Envir/WMObject.h
+        3rdParty/pugixml/pugiconfig.hpp
+        3rdParty/pugixml/pugixml.cpp
 )
 
 

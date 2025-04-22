@@ -13,6 +13,7 @@ public class WMap
     public int ParallaxBackgroundIndex { get; set; } = -1;
     public int MountainsBackgroundIndex { get; set; } = -1;
     public List<WMObject> LevelObjects { get; set; } = [];
+    public List<string> Scripts { get; set; } = [];
 
     /// <summary>
     /// Open the map from the file path specified in FilePath.
