@@ -6,7 +6,7 @@
 #define IANIMATE_H
 
 #include <map>
-#include "enums/AniType.h"
+#include "Enumerators/AniType.h"
 #include "models/AniSequence.h"
 #include "models/GameTime.h"
 

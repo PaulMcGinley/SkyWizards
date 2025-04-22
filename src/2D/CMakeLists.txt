@@ -20,8 +20,8 @@ add_executable(LoSW___BftS main.cpp
         models/TextureLibrary.h
         objects/Player.cpp
         objects/Player.h
-        enums/AniType.h
-        enums/FaceDirection.h
+        Enumerators/AniType.h
+        Enumerators/FaceDirection.h
         managers/AssetManager.cpp
         models/ParallaxBackground.h
         objects/mobs/ChestMonster.cpp
@@ -39,7 +39,7 @@ add_executable(LoSW___BftS main.cpp
         models/BackgroundSceneryObject.h
         models/BackgroundSceneryObject.cpp
         managers/SceneManager.cpp
-        enums/SceneType.h
+        Enumerators/SceneType.h
         os/GetExecutionDirectory.h
         os/PlatformPaths.h
         models/Island.h
@@ -64,6 +64,10 @@ add_executable(LoSW___BftS main.cpp
         models/LevelObject/OLibrary.h
         models/MapObject/WMObject.h
         models/MapObject/WMap.h
+        models/LevelObject/OLibrary.cpp
+        models/LevelObject/Boundary.cpp
+        models/LevelObject/BoundaryGroup.cpp
+        models/LevelObject/Graphic.cpp
 )
 
 

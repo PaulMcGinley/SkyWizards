@@ -5,13 +5,16 @@
 #ifndef BOUNDARYGROUP_H
 #define BOUNDARYGROUP_H
 
+#include <3rdParty/pugixml/pugixml.hpp>
 #include <vector>
+
 #include "Boundary.h"
 
 class BoundaryGroup {
 public:
         int Layer;
         std::vector<Boundary> Boundaries;
+        bool deserialize(const pugi::xml_node &node);
 };
 
 #endif //BOUNDARYGROUP_H

@@ -8,7 +8,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
-#include "enums/FaceDirection.h"
+#include "Enumerators/FaceDirection.h"
 #include "interfaces/IAnimate.h"
 #include "interfaces/IDraw.h"
 #include "interfaces/IUpdate.h"

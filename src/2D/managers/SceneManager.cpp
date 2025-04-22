@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "enums/SceneType.h"
-#include "interfaces/IScene.h"
 #include <unordered_map>
 #include <utility>
+#include "Enumerators/SceneType.h"
+#include "interfaces/IScene.h"
 
 class SceneManager : public IUpdate, public IDraw {
 public:

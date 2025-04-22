@@ -5,6 +5,7 @@
 #ifndef GRAPHIC_H
 #define GRAPHIC_H
 
+#include <3rdParty/pugixml/pugixml.hpp>
 #include <string>
 
 class Graphic {
@@ -18,6 +19,7 @@ public:
         int X;
         int Y;
         int DrawLayer;
+        bool deserialize(const pugi::xml_node &node);
 };
 
 #endif //GRAPHIC_H

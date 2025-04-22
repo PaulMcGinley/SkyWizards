@@ -6,6 +6,7 @@
 
 #include "IDraw.h"
 #include "IUpdate.h"
+#include "managers/GameManager.cpp"
 
 class IScene : public IUpdate, public IDraw {
 public:
@@ -22,6 +23,8 @@ public:
         virtual void destroyScene() = 0;
         virtual void onScene_Active() = 0;
         virtual void onScene_Deactivate() = 0;
+
+        GameManager& game_manager = GameManager::getInstance();
 
 private:
         bool initialized = false;

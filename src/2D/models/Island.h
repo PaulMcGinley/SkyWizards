@@ -12,7 +12,7 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 
-#include "enums/AniType.h"
+#include "Enumerators/AniType.h"
 #include "interfaces/IAnimate.h"
 
 class Island : public IUpdate, public IDraw, public IAnimate {
@@ -28,8 +28,7 @@ public:
 
 
         void update(GameTime gameTime) override {
-                // Middle image in animation is front, eather shide should have an equal amount of frames
-                // These frames should be drawn based on the middle of the image being centered on screen
+
         }
 
         void draw(sf::RenderWindow& window, GameTime gameTime) override = 0;

@@ -14,42 +14,42 @@
 
 class SplashScreen : public IScene {
 public:
-    SplashScreen();
-    ~SplashScreen() override = default;
+        SplashScreen();
+        ~SplashScreen() override = default;
 
-    void update(GameTime gameTime) override;
-    void lateUpdate(GameTime gameTime) override;
-    void draw(sf::RenderWindow& window, GameTime gameTime) override;
-    void initializeScene() override;
-    void destroyScene() override;
-    void onScene_Active() override;
-    void onScene_Deactivate() override;
+        void update(GameTime gameTime) override;
+        void lateUpdate(GameTime gameTime) override;
+        void draw(sf::RenderWindow& window, GameTime gameTime) override;
+        void initializeScene() override;
+        void destroyScene() override;
+        void onScene_Active() override;
+        void onScene_Deactivate() override;
 
 private:
-   // AssetManager& assetManager = AssetManager::getInstance();
+        // Progress bar variables
+        int TargetValue = 12;
+        int CurrentValue = 0;
 
-    // Progress bar variables
-    int TargetValue = 9;
-    int CurrentValue = 0;
+        // Text variables
+        sf::Font font;
+        sf::Text text;
+        int textYPoisition = 900;
 
-    // Text variables
-    sf::Font font;
-    sf::Text text;
-    int textYPoisition = 900;
+        sf::Font copyrightFont;
+        sf::Text copyRightText;
 
-    sf::Font copyrightFont;
-    sf::Text copyRightText;
+        // Textures
+        sf::Texture background;
+        sf::Texture frame;
+        sf::Texture progress;
 
-    // Textures
-    sf::Texture background;
-    sf::Texture frame;
-    sf::Texture progress;
+        sf::VertexArray backgroundQuad = sf::VertexArray(sf::Quads, 4);
+        sf::VertexArray frameQuad = sf::VertexArray(sf::Quads, 4);
+        sf::VertexArray progressQuad = sf::VertexArray(sf::Quads, 4);
 
-    sf::VertexArray backgroundQuad = sf::VertexArray(sf::Quads, 4);
-    sf::VertexArray frameQuad = sf::VertexArray(sf::Quads, 4);
-    sf::VertexArray progressQuad = sf::VertexArray(sf::Quads, 4);
+        float loadCompletionTime = -1;
 
-    float loadCompltionTime = -1;
+        void loadLevelObjects(const std::string& directoryPath);
 };
 
 

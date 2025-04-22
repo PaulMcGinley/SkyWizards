@@ -1,6 +1,7 @@
 //
 // Created by Paul McGinley on 26/01/2025.
 //
+#pragma once // Inclusion guard to prevent multiple includes
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <string>

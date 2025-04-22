@@ -4,9 +4,11 @@
 
 #pragma once // Inclusion sguard to prevent multiple includes
 
+#include <map>
+#include "models/LevelObject/OLibrary.h"
 #include "models/TextureLibrary.h"
-#include <filesystem>
-#include <iostream>
+
+#include "models/MapObject/WMap.h"
 
 class AssetManager {
 public:
@@ -43,6 +45,9 @@ public:
         TextureLibrary hearts = TextureLibrary("");
         TextureLibrary backgroundIslands = TextureLibrary("");
         TextureLibrary programUsage = TextureLibrary("");
+
+        std::map<std::string, OLibrary> ObjectLibraries;
+        std::map<std::string, WMap> Maps;
 
 private:
         // Private constructor to prevent instancing

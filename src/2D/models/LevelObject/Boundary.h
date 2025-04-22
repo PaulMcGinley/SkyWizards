@@ -5,6 +5,8 @@
 #ifndef BOUNDARY_H
 #define BOUNDARY_H
 
+#include <3rdParty/pugixml/pugixml.hpp>
+
 class Boundary {
 public:
         int Frame;
@@ -13,6 +15,7 @@ public:
         int Width;
         int Height;
         bool Active;
+        bool deserialize(const pugi::xml_node &node);
 };
 
 #endif //BOUNDARY_H
