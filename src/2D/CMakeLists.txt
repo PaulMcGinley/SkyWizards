@@ -68,6 +68,8 @@ add_executable(LoSW___BftS main.cpp
         models/LevelObject/Boundary.cpp
         models/LevelObject/BoundaryGroup.cpp
         models/LevelObject/Graphic.cpp
+        models/MapObject/WMap.cpp
+        models/MapObject/WMObject.cpp
 )
 
 

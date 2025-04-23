@@ -17,6 +17,7 @@ public:
         int MountainsBackgroundIndex;
         std::vector<WMObject> LevelObjects;
         std::vector<std::string> Scripts;
+        bool deserialize(const pugi::xml_node &node);
 };
 
 #endif //WMAP_H

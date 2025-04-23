@@ -50,6 +50,7 @@ private:
         float loadCompletionTime = -1;
 
         void loadLevelObjects(const std::string& directoryPath);
+        void loadMaps(const std::string & directoryPath);
 };
 
 

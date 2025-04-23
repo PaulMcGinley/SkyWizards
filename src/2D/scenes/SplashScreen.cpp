@@ -92,14 +92,14 @@ void SplashScreen::update(GameTime gameTime) {
         }
 
 
-        // Map Objects
-        // if (asset_manager.Maps.empty()) {
-        //         loadMaps(exeDir + "/resources/maps/");
-        //         CurrentValue++;
-        //         text.setString("Loading Complete...!");
-        //         text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
-        //         return;
-        // }
+        // Maps
+        if (asset_manager.Maps.empty()) {
+                loadMaps(exeDir + "/resources/maps/");
+                CurrentValue++;
+                text.setString("Loading Complete...!");
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                return;
+        }
 
         // We can only get to this point if everything is loaded into memory
         // TODO: Don't load everything into memory!
@@ -211,9 +211,9 @@ void SplashScreen::onScene_Deactivate() {
         // When the scene ends
 }
 
-void SplashScreen::loadLevelObjects(const std::string& directoryPath) {
+void SplashScreen::loadLevelObjects(const std::string &directoryPath) {
         // Load all the Olibrary files
-        for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
+        for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
                 if (entry.is_regular_file() && entry.path().extension() == ".olx") {
                         std::string filePath = entry.path().string();
                         std::string fileNameWithoutExtension = entry.path().stem().string();
@@ -229,19 +229,59 @@ void SplashScreen::loadLevelObjects(const std::string& directoryPath) {
                                         std::cerr << "Failed to deserialize Olibrary: " << filePath << std::endl;
                                 }
                         } else {
-                                std::cerr << "Failed to load OLibrary: " << filePath << " Error: " << result.description() << std::endl;
+                                std::cerr << "Failed to load OLibrary: " << filePath
+                                          << " Error: " << result.description() << std::endl;
                         }
                 }
         }
 
         // DEBUG: Print loaded OLibrary names and their contents
-        for (const auto& [name, library] : asset_manager.ObjectLibraries) {
-                std::cout << "Loaded OLibrary: " << name << std::endl;
-                for (const auto& graphic : library.Images) {
-                        std::cout << "  Graphic: " << graphic.BackImageLibrary << " Index: " << graphic.BackIndex << std::endl;
+        // for (const auto &[name, library]: asset_manager.ObjectLibraries) {
+        //         std::cout << "Loaded OLibrary: " << name << std::endl;
+        //         for (const auto &graphic: library.Images) {
+        //                 std::cout << "  Graphic: " << graphic.BackImageLibrary << " Index: " << graphic.BackIndex
+        //                           << std::endl;
+        //         }
+        //         for (const auto &boundaryGroup: library.BoundaryGroups) {
+        //                 std::cout << "  BoundaryGroup with " << boundaryGroup.Boundaries.size() << " boundaries."
+        //                           << std::endl;
+        //         }
+        // }
+}
+void SplashScreen::loadMaps(const std::string &directoryPath) {
+        // Load all the map files
+        for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
+                if (entry.is_regular_file() && entry.path().extension() == ".wmap") {
+                        std::string filePath = entry.path().string();
+                        std::string fileNameWithoutExtension = entry.path().stem().string();
+
+                        pugi::xml_document doc;
+                        pugi::xml_parse_result result = doc.load_file(filePath.c_str());
+
+                        if (result) {
+                                WMap map;
+                                if (map.deserialize(doc)) {
+                                        asset_manager.Maps[fileNameWithoutExtension] = map;
+                                } else {
+                                        std::cerr << "Failed to deserialize Map: " << filePath << std::endl;
+                                }
+                        } else {
+                                std::cerr << "Failed to load Map: " << filePath
+                                          << " Error: " << result.description() << std::endl;
+                        }
                 }
-                for (const auto& boundaryGroup : library.BoundaryGroups) {
-                        std::cout << "  BoundaryGroup with " << boundaryGroup.Boundaries.size() << " boundaries." << std::endl;
+        }
+
+        // DEBUG: Print loaded map names and their contents
+        for (const auto &[name, map]: asset_manager.Maps) {
+                std::cout << "Loaded Map: " << name << std::endl;
+                for (const auto &object: map.LevelObjects) {
+                        std::cout << "  ObjectLibrary: " << object.ObjectLibrary
+                                  << " Position: (" << object.Position.x << ", " << object.Position.y << ")"
+                                  << std::endl;
+                }
+                for (const auto &script: map.Scripts) {
+                        std::cout << "  Script: " << script << std::endl;
                 }
         }
 }
