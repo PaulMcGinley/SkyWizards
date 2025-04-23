@@ -69,6 +69,7 @@ add_executable(LoSW___BftS main.cpp
         models/MapObject/WMap.cpp
         models/MapObject/WMObject.cpp
         managers/SceneManager.h
+        managers/Random.h
 )
 
 
