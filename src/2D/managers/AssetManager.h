@@ -44,8 +44,11 @@ private:
 
         // Create a static instance of the AssetManager
         static AssetManager* instance;
-        
+
+        // Only textures required for gameplay will be loaded
         std::map<std::string, TextureLibrary> TextureLibraries;
+
+        // As these files are tiny, all will be loaded into memory
         std::map<std::string, OLibrary> ObjectLibraries;
         std::map<std::string, WMap> Maps;
 };
