@@ -3,7 +3,7 @@
 #include "managers/AssetManager.h"
 //#include "managers/GameManager.cpp"   // This is included in Game.h
 #include "managers/InputManager.cpp"
-#include "managers/SceneManager.cpp"
+#include "managers/SceneManager.h"
 
 int main(int argc, char* argv[]) {
 
@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
         AssetManager const& asset_manager =  AssetManager::GetInstance();       // It is important to call this before the game starts otherwise the graphics will glitch at the start
         GameManager const& game_manager = GameManager::getInstance();
         InputManager const& input_manager = InputManager::getInstance();
-        SceneManager const& scene_manager = SceneManager::getInstance();
+        SceneManager const& scene_manager = SceneManager::GetInstance();
 
         // TODO: Read settings from file
 

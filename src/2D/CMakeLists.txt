@@ -68,6 +68,7 @@ add_executable(LoSW___BftS main.cpp
         models/LevelObject/Graphic.cpp
         models/MapObject/WMap.cpp
         models/MapObject/WMObject.cpp
+        managers/SceneManager.h
 )
 
 

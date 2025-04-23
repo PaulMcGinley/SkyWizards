@@ -2,124 +2,109 @@
 // Created by Paul McGinley on 10/10/2024.
 //
 
-#pragma once
+#include "SceneManager.h"
 
-#include <unordered_map>
-#include <utility>
-#include "Enumerators/SceneType.h"
-#include "interfaces/IScene.h"
+// Method to get the instance of the singleton
+SceneManager& SceneManager::GetInstance() {
+    static SceneManager instance; // Guaranteed to be destroyed.
+    // Instantiated on first use.
+    return instance;
+}
 
-class SceneManager : public IUpdate, public IDraw {
-public:
-        // Method to get the instance of the singleton
-        static SceneManager& getInstance() {
-                static SceneManager instance; // Guaranteed to be destroyed.
-                // Instantiated on first use.
-                return instance;
-        }
+// Add scene to the scene manager map
+void SceneManager::AddScene(const SceneType name, std::shared_ptr<IScene> scene) {
+    // Move the scene into the map
+    scenes[name] = std::move(scene);
 
-        // Delete copy constructor and assignment operator to prevent copies
-        SceneManager(const SceneManager&) = delete;
-        void operator=(const SceneManager&) = delete;
+    // Initialize the scene
+    InitializeScene(name);
+}
 
-        // Add scene to the scene manager map
-        void addScene(const SceneType name, std::shared_ptr<IScene> scene) {
+// Initialize a scene by name (enum SceneType)
+void SceneManager::InitializeScene(const SceneType name) {
+    // Check if the scene exists
+    if (scenes.find(name) == scenes.end())
+        return;
 
-                // Move the scene into the map
-                scenes[name] = std::move(scene);
+    // Check if the scene is already initialized
+    if (scenes[name]->IsInitialized())
+        return;
 
-                // Initialize the scene
-                initializeScene(name);
-        }
+    // Initialize the scene
+    scenes[name]->initializeScene();
+}
 
-        // Initialize a scene by name (enum SceneType)
-        void initializeScene(const SceneType name) {
+// Get a scene by name (enum SceneType) as a shared pointer
+std::shared_ptr<IScene> SceneManager::GetScene(const SceneType name) {
+     if (scenes.find(name) != scenes.end()) {
+        return scenes[name];
+    }
+    return nullptr; // Or handle error appropriately
+}
 
-                // Check if the scene exists
-                if (!scenes.contains(name))
-                        return;
+// Remove a scene by name (enum SceneType)
+void SceneManager::RemoveScene(const SceneType name) {
+    // Check if the scene exists
+    if (scenes.find(name) == scenes.end())
+        return;
 
-                // Check if the scene is already initialized
-                if (scenes[name]->IsInitialized())
-                        return;
+    // If the scene to be removed is the current scene, deactivate and clear it
+    if (currentScene == scenes[name]) {
+        currentScene->onScene_Deactivate();
+        currentScene = nullptr;
+    }
 
-                // Initialize the scene
-                scenes[name]->initializeScene();
-        }
+    // Destroy the scene
+    scenes[name]->destroyScene();
 
-        // Get a scene by name (enum SceneType) as a shared pointer
-        std::shared_ptr<IScene> getScene(const SceneType name) {
-                return scenes[name];
-        }
+    // Remove the scene from the map
+    scenes.erase(name);
+}
 
-        // Remove a scene by name (enum SceneType)
-        void removeScene(const SceneType name) {
+// Change the current scene by name (enum SceneType)
+void SceneManager::ChangeScene(const SceneType name) {
+    // Check if the scene exists
+    if (scenes.find(name) == scenes.end())
+        return;
 
-                // Check if the scene exists
-                if (!scenes.contains(name))
-                        return;
+    // Check if there is an active scene, then deactivate it
+    if (currentScene)
+        currentScene->onScene_Deactivate();
 
-                // Destroy the scene
-                scenes[name]->destroyScene();
+    // Set the current scene to the new scene
+    currentScene = scenes[name];
 
-                // Remove the scene from the map
-                scenes.erase(name);
-        }
+    // Ensure the new scene is initialized
+    if (!currentScene->IsInitialized()) {
+        currentScene->initializeScene();
+    }
 
-        // Change the current scene by name (enum SceneType)
-        void changeScene(const SceneType name) {
+    // Activate the new scene
+    currentScene->onScene_Active();
+}
 
-                // Check if the scene exists
-                if (!scenes.contains(name))
-                        return;
+// Get the current scene as a shared pointer
+std::shared_ptr<IScene> SceneManager::GetCurrentScene() {
+    return currentScene;
+}
 
-                // Check if there is an active scene, then deactivate it
-                if (currentScene)
-                        currentScene->onScene_Deactivate();
+// Update the current scene
+void SceneManager::Update(const GameTime game_time) {
+    // Check if there is a current scene, then call the update
+    if (currentScene)
+        currentScene->Update(game_time);
+}
 
-                // Set the current scene to the new scene
-                currentScene = scenes[name];
+// Late update the current scene
+void SceneManager::LateUpdate(const GameTime game_time) {
+    // Check if there is a current scene, then call the late update
+    if (currentScene)
+        currentScene->LateUpdate(game_time);
+}
 
-                // Activate the new scene
-                currentScene->onScene_Active();
-        }
-
-        // Get the current scene as a shared pointer
-        std::shared_ptr<IScene> getCurrentScene() {
-                return currentScene;
-        }
-
-        // Update the current scene
-        void Update(const GameTime game_time) override {
-
-                // Check if there is a current scene, then call the update
-                if (currentScene)
-                        currentScene->Update(game_time);
-        }
-
-        // Late update the current scene
-        void LateUpdate(const GameTime game_time) override {
-
-                // Check if there is a current scene, then call the late update
-                if (currentScene)
-                        currentScene->LateUpdate(game_time);
-        }
-
-        // Draw the current scene
-        void Draw(sf::RenderWindow& window, const GameTime game_time) override {
-
-                // Check if there is a current scene, then call the draw
-                if (currentScene)
-                        currentScene->Draw(window, game_time);
-        }
-
-private:
-        // Private constructor to prevent instancing
-        SceneManager() = default;
-
-        // Map to hold scenes <SceneType, IScene>
-        std::unordered_map<SceneType, std::shared_ptr<IScene>> scenes;
-
-        // Pointer to the current scene
-        std::shared_ptr<IScene> currentScene;
-};
+// Draw the current scene
+void SceneManager::Draw(sf::RenderWindow& window, const GameTime game_time) {
+    // Check if there is a current scene, then call the draw
+    if (currentScene)
+        currentScene->Draw(window, game_time);
+}

@@ -6,7 +6,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "managers/SceneManager.cpp"
+#include "managers/SceneManager.h"
 #include "managers/InputManager.cpp"
 #include "scenes/DevScene.h"
 #include "scenes/MainMenu.h"
@@ -15,17 +15,15 @@
 void Game::Run() {
         // Create a reference to the game manager for easy access
 
-
-
         // All scenes are managed by the scene manager and are added here
-        scene_manager.addScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());
-        scene_manager.addScene(SceneType::SCENE_DEV, std::make_shared<DevScene>());
-        scene_manager.addScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
+        scene_manager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());
+        scene_manager.AddScene(SceneType::SCENE_DEV, std::make_shared<DevScene>());
+        scene_manager.AddScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
 
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes
         // The assets for this scene are kept as external files to prevent decompression delays
-        scene_manager.changeScene(SceneType::SCENE_SPLASH);
+        scene_manager.ChangeScene(SceneType::SCENE_SPLASH);
 
 
         // Main game loop

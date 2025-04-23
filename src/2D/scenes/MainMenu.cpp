@@ -4,11 +4,11 @@
 
 #include "MainMenu.h"
 #include "managers/InputManager.cpp"
-#include "managers/SceneManager.cpp"
+#include "managers/SceneManager.h"
 
 void MainMenu::Update(GameTime gameTime) {
         if(InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space)) {
-                SceneManager::getInstance().changeScene(SceneType::SCENE_DEV);
+                SceneManager::GetInstance().ChangeScene(SceneType::SCENE_DEV);
         }
 
 }

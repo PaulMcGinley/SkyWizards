@@ -6,7 +6,7 @@
 
 #include <3rdParty/pugixml/pugixml.hpp>
 
-#include "managers/SceneManager.cpp"
+#include "managers/SceneManager.h"
 #include "models/LevelObject/OLibrary.h"
 #include "os/GetExecutionDirectory.h"
 
@@ -117,7 +117,7 @@ void SplashScreen::LateUpdate(GameTime gameTime) {
         if (gameTime.TimeElapsed(loadCompletionTime)) {
                 // Load the next scene
                 std::cout << "Loading Complete" << std::endl;
-                SceneManager::getInstance().changeScene(SceneType::SCENE_MAIN_MENU);
+                SceneManager::GetInstance().ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 }
 
