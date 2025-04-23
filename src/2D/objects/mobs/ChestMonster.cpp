@@ -77,10 +77,10 @@ void ChestMonster::update(GameTime gameTime) {
 }
 
 void ChestMonster::lateUpdate(GameTime gameTime) {
-        tickAnimation(gameTime);
+        TickAnimation(gameTime);
 }
 
-void ChestMonster::draw(sf::RenderWindow& window, GameTime gameTime) {
+void ChestMonster::Draw(sf::RenderWindow& window, GameTime gameTime) {
         window.draw(
             texture_quads,
             &asset_manager.getChestMonsterFrame_ptr(frame())->texture

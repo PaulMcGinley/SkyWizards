@@ -25,17 +25,17 @@ void DevScene::lateUpdate(GameTime gameTime) {
     floatingIsland.lateUpdate(gameTime);
 }
 
-void DevScene::draw(sf::RenderWindow& window, GameTime gameTime) {
+void DevScene::Draw(sf::RenderWindow& window, GameTime gameTime) {
         // Set the view
         window.setView(viewport);
 
         // Draw the scenery
-        floatingIsland.draw(window, gameTime);
-        player.draw(window, gameTime);
+        floatingIsland.Draw(window, gameTime);
+        player.Draw(window, gameTime);
 
         // Draw the UI
         window.setView(window.getDefaultView());
-        player.health.draw(window, gameTime);
+        player.health.Draw(window, gameTime);
 }
 
 void DevScene::initializeScene() {

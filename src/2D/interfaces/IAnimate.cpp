@@ -8,7 +8,7 @@
 
 // Move to the next frame in the animation sequence
 // If we reach the end of the sequence, loop back to the start
-void IAnimate::tickAnimation(const GameTime gameTime) {
+void IAnimate::TickAnimation(const GameTime gameTime) {
 
         if (!gameTime.TimeElapsed(next_frame_time))
                 return;
@@ -24,7 +24,7 @@ void IAnimate::tickAnimation(const GameTime gameTime) {
 }
 
 // Change the current animation sequence
-bool IAnimate::changeAnimation(const AnimationType next_animation, const GameTime game_time, const bool force_new_animation) {
+bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTime game_time, const bool force_new_animation) {
 
         if (!game_time.TimeElapsed(next_animation_time) && !force_new_animation)
                 return false;

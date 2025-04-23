@@ -38,12 +38,6 @@ public:
         TextureLibrary programUsage = TextureLibrary("");
 
 
-private:
-        // Private constructor to prevent instancing
-        AssetManager();
-
-        // Create a static instance of the AssetManager
-        static AssetManager* instance;
 
         // Only textures required for gameplay will be loaded
         std::map<std::string, TextureLibrary> TextureLibraries;
@@ -51,6 +45,12 @@ private:
         // As these files are tiny, all will be loaded into memory
         std::map<std::string, OLibrary> ObjectLibraries;
         std::map<std::string, WMap> Maps;
+private:
+        // Private constructor to prevent instancing
+        AssetManager();
+
+        // Create a static instance of the AssetManager
+        static AssetManager* instance;
 };
 
 // This line declares a global variable named 'asset_manager'.

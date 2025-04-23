@@ -31,10 +31,10 @@ public:
 
         }
 
-        void draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
+        void Draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
 
         void lateUpdate(GameTime gameTime) override {
-                tickAnimation(gameTime);
+                TickAnimation(gameTime);
         }
 
 private:

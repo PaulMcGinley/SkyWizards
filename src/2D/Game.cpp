@@ -42,7 +42,7 @@ void Game::Run() {
                 game_time += (clock.restart().asSeconds());
                 scene_manager.update(game_time);
                 game_manager.window->clear(sf::Color(255,255,255,255));
-                scene_manager.draw(*game_manager.window, game_time);
+                scene_manager.Draw(*game_manager.window, game_time);
                 game_manager.window->display();
                 scene_manager.lateUpdate(game_time);
         }

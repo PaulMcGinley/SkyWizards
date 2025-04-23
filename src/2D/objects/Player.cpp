@@ -61,10 +61,10 @@ void Player::update(GameTime gameTime) {
                 faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                    changeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                     position.x -= RUNNING_SPEED * gameTime.delta_time;
                 } else {
-                    changeAnimation(AnimationType::ANIMATION_WALK, gameTime);
+                    ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime);
                     position.x -= WALKING_SPEED * gameTime.delta_time;
                 }
         }
@@ -73,16 +73,16 @@ void Player::update(GameTime gameTime) {
                 faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                    changeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                     position.x += RUNNING_SPEED * gameTime.delta_time;
                 } else {
-                    changeAnimation(AnimationType::ANIMATION_WALK, gameTime);
+                    ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime);
                     position.x += WALKING_SPEED * gameTime.delta_time;
                 }
         }
 
         else {
-                changeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
+                ChangeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
         }
 
         TextureEntry& robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
@@ -113,10 +113,10 @@ void Player::update(GameTime gameTime) {
 void Player::lateUpdate(GameTime gameTime) {
 
         health.lateUpdate(gameTime);
-        tickAnimation(gameTime);
+        TickAnimation(gameTime);
 }
 
-void Player::draw(sf::RenderWindow& window, GameTime gameTime) {
+void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
 
         window.draw(
                 robeQuad,
@@ -129,8 +129,8 @@ void Player::draw(sf::RenderWindow& window, GameTime gameTime) {
         );
 }
 
-void Player::tickAnimation(GameTime gameTime) {
-        IAnimate::tickAnimation(gameTime);
+void Player::TickAnimation(GameTime gameTime) {
+        IAnimate::TickAnimation(gameTime);
 
         if (sequences[current_animation].onFrame != nullptr)
                 sequences[current_animation].onFrame(current_animation_frame);

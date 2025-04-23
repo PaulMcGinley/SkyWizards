@@ -69,7 +69,7 @@ public:
                 //     target_health = 0;
         }
 
-        void draw(sf::RenderWindow &window, GameTime gameTime) override {
+        void Draw(sf::RenderWindow &window, GameTime gameTime) override {
 
                 // Calculate heart texture size, used for positioning and scaling
                 // TODO: Refactor this into the constructor

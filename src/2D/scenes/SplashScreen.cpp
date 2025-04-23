@@ -121,7 +121,7 @@ void SplashScreen::lateUpdate(GameTime gameTime) {
         }
 }
 
-void SplashScreen::draw(sf::RenderWindow& window, GameTime gameTime) {
+void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
         window.draw(backgroundQuad, &background); // Draw the background
         window.draw(progressQuad, &progress); // Draw the progress bar
         window.draw(frameQuad, &frame); // Draw the frame

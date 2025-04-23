@@ -15,7 +15,7 @@ void MainMenu::update(GameTime gameTime) {
 void MainMenu::lateUpdate(GameTime gameTime) {
 
 }
-void MainMenu::draw(sf::RenderWindow &window, GameTime gameTime) {
+void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
         window.draw(backgroundQuad, &AssetManager::getInstance().programUsage.entries[0].texture);
 }

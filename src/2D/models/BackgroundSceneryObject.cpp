@@ -17,7 +17,7 @@ BackgroundSceneryObject::BackgroundSceneryObject(TextureLibrary& library, const 
         };
 
         // Set the current animation of the object to idle
-        changeAnimation(AnimationType::ANIMATION_IDLE, GameTime(), true);
+        ChangeAnimation(AnimationType::ANIMATION_IDLE, GameTime(), true);
 
         // Load the shader
         if (blurShader.loadFromFile("resources/shaders/blur.frag", sf::Shader::Fragment)) {
@@ -45,14 +45,14 @@ void BackgroundSceneryObject::update(GameTime game_time) {
         sprite.setTexture(library.entries[frame_index].texture, true);
 
         // Call the base class update method which handles the tick of the animation
-        IAnimate::tickAnimation(game_time);
+        IAnimate::TickAnimation(game_time);
 }
 
 void BackgroundSceneryObject::lateUpdate(GameTime gameTime) {
         // Late update the background scenery object
 }
 
-void BackgroundSceneryObject::draw(sf::RenderWindow& window, GameTime gameTime) {
+void BackgroundSceneryObject::Draw(sf::RenderWindow& window, GameTime gameTime) {
 
         // Check if the shader has been loaded and draw based on that
         if (shaderLoaded) {

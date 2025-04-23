@@ -28,8 +28,8 @@ public:
         // Time until the next animation can be played
         float next_animation_time = 0;
 
-        virtual void tickAnimation(GameTime gameTime);
-        bool changeAnimation(AnimationType next_animation, GameTime game_time, bool force_new_animation = false);
+        virtual void TickAnimation(GameTime gameTime);
+        bool ChangeAnimation(AnimationType next_animation, GameTime game_time, bool force_new_animation = false);
 };
 
 #endif //IANIMATE_H

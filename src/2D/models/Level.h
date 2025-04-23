@@ -17,7 +17,7 @@ public:
 
         void update(GameTime gameTime) override;
         void lateUpdate(GameTime gameTime) override;
-        void draw(sf::RenderWindow &window, GameTime gameTime) override;
+        void Draw(sf::RenderWindow &window, GameTime gameTime) override;
 
 private:
         WMap map;

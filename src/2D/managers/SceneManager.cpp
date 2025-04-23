@@ -106,11 +106,11 @@ public:
         }
 
         // Draw the current scene
-        void draw(sf::RenderWindow& window, const GameTime game_time) override {
+        void Draw(sf::RenderWindow& window, const GameTime game_time) override {
 
                 // Check if there is a current scene, then call the draw
                 if (currentScene)
-                        currentScene->draw(window, game_time);
+                        currentScene->Draw(window, game_time);
         }
 
 private:

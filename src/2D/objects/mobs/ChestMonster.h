@@ -19,7 +19,7 @@ public:
 
     void update(GameTime gameTime) override;
     void lateUpdate(GameTime gameTime) override;
-    void draw(sf::RenderWindow& window, GameTime gameTime) override;
+    void Draw(sf::RenderWindow& window, GameTime gameTime) override;
 
     FaceDirection face_direction = FaceDirection::FACE_DIRECTION_LEFT;
     sf::Vector2f position = {0, 0};

@@ -27,9 +27,6 @@ add_executable(LoSW___BftS main.cpp
         models/ParallaxBackground.h
         objects/mobs/ChestMonster.cpp
         objects/mobs/ChestMonster.h
-        models/Dev/TessellatedBackground.cpp
-        models/Dev/TessellatedBackground.h
-        models/Dev/TessellatedFloor.cpp
         models/Health.h
         models/ParallaxObject.h
         interfaces/IScene.h

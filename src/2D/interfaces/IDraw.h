@@ -13,7 +13,7 @@ class IDraw {
 public:
     virtual ~IDraw() = default;
 
-    virtual void draw(sf::RenderWindow& window, GameTime gameTime) = 0;
+    virtual void Draw(sf::RenderWindow& window, GameTime gameTime) = 0;
 
     AssetManager& asset_manager = AssetManager::getInstance();
 };
