@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Game.h"
-#include "managers/AssetManager.cpp"
+#include "managers/AssetManager.h"
 //#include "managers/GameManager.cpp"   // This is included in Game.h
 #include "managers/InputManager.cpp"
 #include "managers/SceneManager.cpp"

@@ -2,54 +2,44 @@
 // Created by Paul McGinley on 30/09/2024.
 //
 
-#pragma once // Inclusion sguard to prevent multiple includes
+#include "AssetManager.h"
 
-#include <map>
-#include "models/LevelObject/OLibrary.h"
-#include "models/TextureLibrary.h"
+// Initialize the static member
+AssetManager* AssetManager::instance = nullptr;
 
-#include "models/MapObject/WMap.h"
+// Define the constructor
+AssetManager::AssetManager() {
+        // Constructor implementation
+}
 
-class AssetManager {
-public:
-        // Method to get the instance of the singleton
-        static AssetManager& getInstance() {
-            static AssetManager instance; // Guaranteed to be destroyed.
-            // Instantiated on first use.
-            return instance;
+// Define the singleton getter
+AssetManager& AssetManager::getInstance() {
+        if (!instance) {
+                instance = new AssetManager();
         }
+        return *instance;
+}
 
-        // Delete copy constructor and assignment operator to prevent copies
-        AssetManager(const AssetManager&) = delete;
-        void operator=(const AssetManager&) = delete;
+// Define the global reference
+AssetManager& asset_manager = AssetManager::getInstance();
 
-        TextureEntry* getRobeFrame_ptr(const int lib, const int cell) {
-                return &robes[lib].entries[cell];
-        }
-        TextureEntry* getStaffFrame_ptr(const int lib, const int cell) {
-                return &staffs[lib].entries[cell];
-        }
-        TextureEntry* getChestMonsterFrame_ptr(const int cell) {
-                return &chestMonster.entries[cell];
-        }
-        TextureEntry* getHeartImage_ptr(const int cell) {
-                return &hearts.entries[cell];
-        }
-        TextureEntry* getProgramUseImage_ptr(const int cell) {
-                return &programUsage.entries[cell];
-        }
+// Implementation of member functions
+TextureEntry* AssetManager::getRobeFrame_ptr(int lib, int cell) {
+        return &robes[lib].entries[cell];
+}
 
-        std::vector<TextureLibrary> robes;
-        std::vector<TextureLibrary> staffs;
-        TextureLibrary chestMonster = TextureLibrary("");
-        TextureLibrary hearts = TextureLibrary("");
-        TextureLibrary backgroundIslands = TextureLibrary("");
-        TextureLibrary programUsage = TextureLibrary("");
+TextureEntry* AssetManager::getStaffFrame_ptr(int lib, int cell) {
+        return &staffs[lib].entries[cell];
+}
 
-        std::map<std::string, OLibrary> ObjectLibraries;
-        std::map<std::string, WMap> Maps;
+TextureEntry* AssetManager::getChestMonsterFrame_ptr(int cell) {
+        return &chestMonster.entries[cell];
+}
 
-private:
-        // Private constructor to prevent instancing
-        AssetManager() = default;
-};
+TextureEntry* AssetManager::getHeartImage_ptr(int cell) {
+        return &hearts.entries[cell];
+}
+
+TextureEntry* AssetManager::getProgramUseImage_ptr(int cell) {
+        return &programUsage.entries[cell];
+}

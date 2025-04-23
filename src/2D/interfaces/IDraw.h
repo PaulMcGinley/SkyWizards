@@ -7,7 +7,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "models/GameTime.h"
-#include "managers/AssetManager.cpp"
+#include "managers/AssetManager.h"
 
 class IDraw {
 public:

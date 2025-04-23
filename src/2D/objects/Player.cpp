@@ -6,9 +6,7 @@
 
 #include <iostream>
 #include <SFML/Window/Keyboard.hpp>
-
-#include "managers/AssetManager.cpp"
-
+#include "managers/AssetManager.h"
 
 Player::Player() {
         // Set the animation sequences for the player

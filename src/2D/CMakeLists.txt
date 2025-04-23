@@ -22,6 +22,7 @@ add_executable(LoSW___BftS main.cpp
         objects/Player.h
         Enumerators/AniType.h
         Enumerators/FaceDirection.h
+        managers/AssetManager.h
         managers/AssetManager.cpp
         models/ParallaxBackground.h
         objects/mobs/ChestMonster.cpp
