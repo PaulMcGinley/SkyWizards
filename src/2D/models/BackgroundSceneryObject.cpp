@@ -29,10 +29,10 @@ BackgroundSceneryObject::BackgroundSceneryObject(TextureLibrary& library, const 
         blurShader.setUniform("blur_radius", blurRadius); // Set the blur radius property of the shader
 }
 
-void BackgroundSceneryObject::update(GameTime game_time) {
+void BackgroundSceneryObject::Update(GameTime game_time) {
 
         // Calculate the frame index
-        const int frame_index = sequences[current_animation].startFrame + current_animation_frame;
+        const int frame_index = sequences[currentAnimation].startFrame + currentAnimationFrame;
 
         // Calculate the position of the object in the world
         const float drawX = position.x + library.entries[frame_index].xOffset;
@@ -48,7 +48,7 @@ void BackgroundSceneryObject::update(GameTime game_time) {
         IAnimate::TickAnimation(game_time);
 }
 
-void BackgroundSceneryObject::lateUpdate(GameTime gameTime) {
+void BackgroundSceneryObject::LateUpdate(GameTime gameTime) {
         // Late update the background scenery object
 }
 

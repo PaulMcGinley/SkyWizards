@@ -14,8 +14,8 @@
 class DevScene : public IScene {
 
 public:
-        void update(GameTime gameTime) override;
-        void lateUpdate(GameTime gameTime) override;
+        void Update(GameTime gameTime) override;
+        void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void initializeScene() override;
         void destroyScene() override;
@@ -23,7 +23,7 @@ public:
         void onScene_Deactivate() override;
 
 private:
-        TextureLibrary& floatingIslandLibrary = AssetManager::getInstance().backgroundIslands;
+        TextureLibrary& floatingIslandLibrary = AssetManager::GetInstance().backgroundIslands;
         BackgroundSceneryObject floatingIsland = BackgroundSceneryObject(floatingIslandLibrary, 0, 36, 50, sf::Vector2f(0, -500));
         Player player = Player();
         sf::View viewport;

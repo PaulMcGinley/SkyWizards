@@ -13,7 +13,7 @@ AssetManager::AssetManager() {
 }
 
 // Define the singleton getter
-AssetManager& AssetManager::getInstance() {
+AssetManager& AssetManager::GetInstance() {
         if (!instance) {
                 instance = new AssetManager();
         }
@@ -21,7 +21,7 @@ AssetManager& AssetManager::getInstance() {
 }
 
 // Define the global reference
-AssetManager& asset_manager = AssetManager::getInstance();
+AssetManager& asset_manager = AssetManager::GetInstance();
 
 // Implementation of member functions
 TextureEntry* AssetManager::getRobeFrame_ptr(int lib, int cell) {

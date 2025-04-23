@@ -15,8 +15,8 @@ public:
 
         [[nodiscard]] bool IsInitialized() const { return initialized; }
 
-        void update(GameTime gameTime) override = 0;
-        void lateUpdate(GameTime gameTime) override = 0;
+        void Update(GameTime gameTime) override = 0;
+        void LateUpdate(GameTime gameTime) override = 0;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
 
         virtual void initializeScene() { initialized = true; };

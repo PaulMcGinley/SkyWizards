@@ -17,8 +17,8 @@ public:
         BackgroundSceneryObject(TextureLibrary &library, int start_index, int length, int tick, sf::Vector2f position);
         ~BackgroundSceneryObject() override = default;
 
-        void update(GameTime gameTime) override;
-        void lateUpdate(GameTime gameTime) override;
+        void Update(GameTime gameTime) override;
+        void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
 
 private:

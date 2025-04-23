@@ -18,15 +18,16 @@ public:
         std::map<AnimationType, AnimationSequence> sequences;
 
         // Current animation sequence of the entity
-        AnimationType current_animation = AnimationType::ANIMATION_IDLE;
+        AnimationType currentAnimation = AnimationType::ANIMATION_IDLE;
 
         // Current frame of the animation sequence
-        int current_animation_frame = 0;
+        int currentAnimationFrame = 0;
 
-        // Time until the next frame of the animation
-        float next_frame_time = 0;
-        // Time until the next animation can be played
-        float next_animation_time = 0;
+        // Time when the next frame of the animation will be played
+        float nextFrameTime = 0;
+
+        // Time when the next animation will be played
+        float nextAnimationTime = 0;
 
         virtual void TickAnimation(GameTime gameTime);
         bool ChangeAnimation(AnimationType next_animation, GameTime game_time, bool force_new_animation = false);

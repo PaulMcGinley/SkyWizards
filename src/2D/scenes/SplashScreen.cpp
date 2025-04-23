@@ -14,7 +14,7 @@ SplashScreen::SplashScreen() {
         // Constructor
 }
 
-void SplashScreen::update(GameTime gameTime) {
+void SplashScreen::Update(GameTime gameTime) {
         std::string exeDir = getExecutableDirectory();
         unsigned int centerScreenX = game_manager.getResolutionWidth() / 2;
 
@@ -109,7 +109,7 @@ void SplashScreen::update(GameTime gameTime) {
         }
 }
 
-void SplashScreen::lateUpdate(GameTime gameTime) {
+void SplashScreen::LateUpdate(GameTime gameTime) {
         if (loadCompletionTime < 0) {
                 return;
         }

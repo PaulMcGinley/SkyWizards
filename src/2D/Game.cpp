@@ -40,10 +40,10 @@ void Game::Run() {
                 InputManager::getInstance().update();
 
                 game_time += (clock.restart().asSeconds());
-                scene_manager.update(game_time);
+                scene_manager.Update(game_time);
                 game_manager.window->clear(sf::Color(255,255,255,255));
                 scene_manager.Draw(*game_manager.window, game_time);
                 game_manager.window->display();
-                scene_manager.lateUpdate(game_time);
+                scene_manager.LateUpdate(game_time);
         }
 }

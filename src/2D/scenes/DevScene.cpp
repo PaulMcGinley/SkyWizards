@@ -6,13 +6,13 @@
 
 // Viewport reference: https://www.sfml-dev.org/tutorials/3.0/graphics/view/#defining-what-the-view-views
 
-void DevScene::update(GameTime gameTime) {
+void DevScene::Update(GameTime gameTime) {
 
         // Update Scenery
-        floatingIsland.update(gameTime);
+        floatingIsland.Update(gameTime);
 
         // Update entities
-        player.update(gameTime);
+        player.Update(gameTime);
 
         // Update the camera
         sf::Vector2f viewCenter = player.position + sf::Vector2f(250,0);
@@ -20,9 +20,9 @@ void DevScene::update(GameTime gameTime) {
         //viewport.setCenter(player.position);
 }
 
-void DevScene::lateUpdate(GameTime gameTime) {
-    player.lateUpdate(gameTime);
-    floatingIsland.lateUpdate(gameTime);
+void DevScene::LateUpdate(GameTime gameTime) {
+    player.LateUpdate(gameTime);
+    floatingIsland.LateUpdate(gameTime);
 }
 
 void DevScene::Draw(sf::RenderWindow& window, GameTime gameTime) {

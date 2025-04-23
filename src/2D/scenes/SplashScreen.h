@@ -17,8 +17,8 @@ public:
         SplashScreen();
         ~SplashScreen() override = default;
 
-        void update(GameTime gameTime) override;
-        void lateUpdate(GameTime gameTime) override;
+        void Update(GameTime gameTime) override;
+        void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void initializeScene() override;
         void destroyScene() override;

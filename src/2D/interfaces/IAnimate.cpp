@@ -10,34 +10,34 @@
 // If we reach the end of the sequence, loop back to the start
 void IAnimate::TickAnimation(const GameTime gameTime) {
 
-        if (!gameTime.TimeElapsed(next_frame_time))
+        if (!gameTime.TimeElapsed(nextFrameTime))
                 return;
 
         // Increment the current frame
-        current_animation_frame++;
+        currentAnimationFrame++;
 
         // Loop back to the start of the sequence if we reach the end
-        if (current_animation_frame >= sequences[current_animation].length)
-                current_animation_frame = 0;
+        if (currentAnimationFrame >= sequences[currentAnimation].length)
+                currentAnimationFrame = 0;
 
-        next_frame_time = gameTime.NowAddMilliseconds(sequences[current_animation].interval);
+        nextFrameTime = gameTime.NowAddMilliseconds(sequences[currentAnimation].interval);
 }
 
 // Change the current animation sequence
 bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTime game_time, const bool force_new_animation) {
 
-        if (!game_time.TimeElapsed(next_animation_time) && !force_new_animation)
+        if (!game_time.TimeElapsed(nextAnimationTime) && !force_new_animation)
                 return false;
 
-        if(current_animation == next_animation)
+        if(currentAnimation == next_animation)
                 return false;
 
         // Change the current animation sequence
-        current_animation = next_animation;
-        current_animation_frame = 0;
-        next_frame_time = 0;
+        currentAnimation = next_animation;
+        currentAnimationFrame = 0;
+        nextFrameTime = 0;
 
-        const float new_next_animation_time = game_time.NowAddMilliseconds(sequences[current_animation].interval * sequences[current_animation].length);
+        const float new_next_animation_time = game_time.NowAddMilliseconds(sequences[currentAnimation].interval * sequences[currentAnimation].length);
 
         // if (next_animation == AnimationType::ANIMATION_ATTACK) {
         //         next_animation_time = new_next_animation_time;

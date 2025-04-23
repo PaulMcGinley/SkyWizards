@@ -28,11 +28,11 @@ ChestMonster::ChestMonster()
         // ChangeAni(AniType::Taunt, GameTime());
 }
 
-void ChestMonster::update(GameTime gameTime) {
+void ChestMonster::Update(GameTime gameTime) {
         // AI Code here
 
         // Walk AI
-        if (current_animation == AnimationType::ANIMATION_WALK) {
+        if (currentAnimation == AnimationType::ANIMATION_WALK) {
                 // Calculate how much to move
                 float moveDistance =  WALK_SPEED * gameTime.delta_time;
 
@@ -48,7 +48,7 @@ void ChestMonster::update(GameTime gameTime) {
         }
 
         // Run AI
-        if (current_animation == AnimationType::ANIMATION_RUN) {
+        if (currentAnimation == AnimationType::ANIMATION_RUN) {
                 // Calculate how much to move
                 float moveDistance =  RUN_SPEED * gameTime.delta_time;
 
@@ -76,7 +76,7 @@ void ChestMonster::update(GameTime gameTime) {
         texture_quads[3].position = entry->texQuad[3].position + position;
 }
 
-void ChestMonster::lateUpdate(GameTime gameTime) {
+void ChestMonster::LateUpdate(GameTime gameTime) {
         TickAnimation(gameTime);
 }
 

@@ -17,14 +17,14 @@ public:
 
     sf::VertexArray texture_quads{sf::Quads, 4};
 
-    void update(GameTime gameTime) override;
-    void lateUpdate(GameTime gameTime) override;
+    void Update(GameTime gameTime) override;
+    void LateUpdate(GameTime gameTime) override;
     void Draw(sf::RenderWindow& window, GameTime gameTime) override;
 
     FaceDirection face_direction = FaceDirection::FACE_DIRECTION_LEFT;
     sf::Vector2f position = {0, 0};
     int frame() {
-        return sequences[current_animation].startFrame + current_animation_frame + face_direction;
+        return sequences[currentAnimation].startFrame + currentAnimationFrame + face_direction;
     }
 
 private:

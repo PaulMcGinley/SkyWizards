@@ -90,19 +90,19 @@ public:
         }
 
         // Update the current scene
-        void update(const GameTime game_time) override {
+        void Update(const GameTime game_time) override {
 
                 // Check if there is a current scene, then call the update
                 if (currentScene)
-                        currentScene->update(game_time);
+                        currentScene->Update(game_time);
         }
 
         // Late update the current scene
-        void lateUpdate(const GameTime game_time) override {
+        void LateUpdate(const GameTime game_time) override {
 
                 // Check if there is a current scene, then call the late update
                 if (currentScene)
-                        currentScene->lateUpdate(game_time);
+                        currentScene->LateUpdate(game_time);
         }
 
         // Draw the current scene

@@ -27,13 +27,13 @@ public:
         ~Island() override = default;
 
 
-        void update(GameTime gameTime) override {
+        void Update(GameTime gameTime) override {
 
         }
 
         void Draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
 
-        void lateUpdate(GameTime gameTime) override {
+        void LateUpdate(GameTime gameTime) override {
                 TickAnimation(gameTime);
         }
 

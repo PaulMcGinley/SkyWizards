@@ -35,7 +35,7 @@ Player::Player() {
         GameTime gameTime;
 }
 
-void Player::update(GameTime gameTime) {
+void Player::Update(GameTime gameTime) {
 
 
         // DEBUG
@@ -107,12 +107,12 @@ void Player::update(GameTime gameTime) {
         staffQuad[2].position = staff.texQuad[2].position + position;
         staffQuad[3].position = staff.texQuad[3].position + position;
 
-        health.update(gameTime);
+        health.Update(gameTime);
 }
 
-void Player::lateUpdate(GameTime gameTime) {
+void Player::LateUpdate(GameTime gameTime) {
 
-        health.lateUpdate(gameTime);
+        health.LateUpdate(gameTime);
         TickAnimation(gameTime);
 }
 
@@ -132,7 +132,7 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
 void Player::TickAnimation(GameTime gameTime) {
         IAnimate::TickAnimation(gameTime);
 
-        if (sequences[current_animation].onFrame != nullptr)
-                sequences[current_animation].onFrame(current_animation_frame);
+        if (sequences[currentAnimation].onFrame != nullptr)
+                sequences[currentAnimation].onFrame(currentAnimationFrame);
 }
 

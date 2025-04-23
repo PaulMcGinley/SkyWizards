@@ -41,7 +41,7 @@ public:
                 target_health = std::clamp(target_health, 0, maximum_health);
         }
 
-        void update(const GameTime gameTime) override {
+        void Update(const GameTime gameTime) override {
 
                 // If the target health is equal to the current health, return
                 if (target_health == current_health)
@@ -60,7 +60,7 @@ public:
                 }
         }
 
-        void lateUpdate(GameTime gameTime) override {
+        void LateUpdate(GameTime gameTime) override {
                 // DEV CODE
                 // if (current_health == 0)
                 //     target_health = maximum_health;

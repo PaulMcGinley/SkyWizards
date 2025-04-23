@@ -6,18 +6,18 @@
 #include "managers/InputManager.cpp"
 #include "managers/SceneManager.cpp"
 
-void MainMenu::update(GameTime gameTime) {
+void MainMenu::Update(GameTime gameTime) {
         if(InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space)) {
                 SceneManager::getInstance().changeScene(SceneType::SCENE_DEV);
         }
 
 }
-void MainMenu::lateUpdate(GameTime gameTime) {
+void MainMenu::LateUpdate(GameTime gameTime) {
 
 }
 void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
-        window.draw(backgroundQuad, &AssetManager::getInstance().programUsage.entries[0].texture);
+        window.draw(backgroundQuad, &AssetManager::GetInstance().programUsage.entries[0].texture);
 }
 void MainMenu::initializeScene() {
 
