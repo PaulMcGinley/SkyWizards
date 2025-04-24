@@ -4,6 +4,8 @@
 
 #include "GameScene.h"
 
+#include <iostream>
+
 #include "managers/SceneManager.h"
 
 GameScene::GameScene(std::string name)

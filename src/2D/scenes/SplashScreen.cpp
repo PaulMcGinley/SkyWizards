@@ -5,6 +5,7 @@
 #include "SplashScreen.h"
 
 #include <3rdParty/pugixml/pugixml.hpp>
+#include <__filesystem/directory_iterator.h>
 
 #include "managers/SceneManager.h"
 #include "models/LevelObject/OLibrary.h"

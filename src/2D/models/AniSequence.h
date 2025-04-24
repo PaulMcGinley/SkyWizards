@@ -23,7 +23,7 @@ struct AnimationSequence {
         std::function<void()> onComplete;
 
         // Function to call on each frame of the animation sequence
-        std::function<void(int)> onFrame;
+        std::function<void(int frame)> onFrame;
 };
 
 #endif //ANISEQUENCE_H

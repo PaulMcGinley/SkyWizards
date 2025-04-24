@@ -133,6 +133,6 @@ void Player::TickAnimation(GameTime gameTime) {
         IAnimate::TickAnimation(gameTime);
 
         if (sequences[currentAnimation].onFrame != nullptr)
-                sequences[currentAnimation].onFrame(currentAnimationFrame);
+                sequences[currentAnimation].onFrame(currentAnimationFrame /*<< = _frame*/);
 }
 

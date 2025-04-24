@@ -4,6 +4,8 @@
 
 #include "AssetManager.h"
 
+#include <iostream>
+
 // Initialize the static member
 AssetManager *AssetManager::instance = nullptr;
 

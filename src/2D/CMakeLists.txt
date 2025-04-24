@@ -73,6 +73,7 @@ add_executable(LoSW___BftS main.cpp
         managers/GameManager.h
         scenes/GameScene.cpp
         scenes/GameScene.h
+        models/TextureLibrary.cpp
 )
 
 
