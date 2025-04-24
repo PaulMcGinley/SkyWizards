@@ -62,10 +62,12 @@ void AssetManager::LoadLibrary(std::string fileName) {
 
         // Create and load the library
         auto library = std::make_unique<TextureLibrary>(fileName);
-        if (library->entries.empty()) {
+        if (library->entryCount == 0) {
                 std::cerr << "Failed to load library: " << fileName << std::endl;
                 return;
         }
+        // TESTING:
+        library->LoadIndices({}); // Load all entries
 
         // Add the library to the map
         TextureLibraries[fileName] = std::move(library); // std::move to transfer ownership

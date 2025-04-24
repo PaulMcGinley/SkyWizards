@@ -26,8 +26,11 @@ void SplashScreen::Update(GameTime gameTime) {
         // Robe Textures
         if (asset_manager.robes.empty()) {
                 asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobeBlue.lib"));
+                asset_manager.robes[0].LoadIndices({});
                 asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobeGreen.lib"));
+                asset_manager.robes[1].LoadIndices({});
                 asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobePurple.lib"));
+                asset_manager.robes[2].LoadIndices({});
 
                 CurrentValue+=3;
                 text.setString("Loading Staff Textures...");
@@ -38,8 +41,11 @@ void SplashScreen::Update(GameTime gameTime) {
         // Staff Textures
         if (asset_manager.staffs.empty()) {
                 asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff1.lib"));
+                asset_manager.staffs[0].LoadIndices({});
                 asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff2.lib"));
+                asset_manager.staffs[1].LoadIndices({});
                 asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff3.lib"));
+                asset_manager.staffs[2].LoadIndices({});
 
                 CurrentValue+=3;
                 text.setString("Loading Chest Monster Textures...");
@@ -48,8 +54,9 @@ void SplashScreen::Update(GameTime gameTime) {
         }
 
         // Chest Monster Textures
-        if (asset_manager.chestMonster.entries.empty()) {
+        if (asset_manager.chestMonster.entryCount == 0) {
                 asset_manager.chestMonster = TextureLibrary(exeDir + "/resources/ChestMonster.lib");
+                asset_manager.chestMonster.LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Heart Textures...");
                 text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
@@ -57,8 +64,9 @@ void SplashScreen::Update(GameTime gameTime) {
         }
 
         // Heart Textures
-        if (asset_manager.hearts.entries.empty()) {
+        if (asset_manager.hearts.entryCount == 0) {
                 asset_manager.hearts = TextureLibrary(exeDir + "/resources/Hearts.lib");
+                asset_manager.hearts.LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Background Islands Textures...");
                 text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
@@ -66,8 +74,9 @@ void SplashScreen::Update(GameTime gameTime) {
         }
 
         // Background Islands
-        if (asset_manager.backgroundIslands.entries.empty()) {
+        if (asset_manager.backgroundIslands.entryCount == 0) {
                 asset_manager.backgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
+                asset_manager.backgroundIslands.LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Game UI Elements!");
                 text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
@@ -75,8 +84,9 @@ void SplashScreen::Update(GameTime gameTime) {
         }
 
         // Program Usage (PrgUse)
-        if (asset_manager.programUsage.entries.empty()) {
+        if (asset_manager.programUsage.entryCount == 0) {
                 asset_manager.programUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
+                asset_manager.programUsage.LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Level Objects!");
                 text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);

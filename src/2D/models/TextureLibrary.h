@@ -8,8 +8,17 @@
 class TextureLibrary {
 public:
         TextureLibrary(const std::string& path);
+        ~TextureLibrary();
 
-        std::vector<TextureEntry> entries;
+        TextureEntry* entries;
+        int entryCount;
+
+        void LoadIndices(const std::vector<int>& indices);
+
+private:
+        std::string path;
+        std::streampos* fat; // File Allocation Table (kinda)
+        void UnloadIndices(const std::vector<int>& requiredIndices);
 };
 
 #endif // TEXTURELIBRARY_H
