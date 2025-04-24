@@ -19,7 +19,7 @@ void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
         window.draw(backgroundQuad, &AssetManager::GetInstance().programUsage.entries[0].texture);
 }
-void MainMenu::initializeScene() {
+void MainMenu::InitializeScene() {
 
         // Set up the background quad to cover the entire window
         backgroundQuad[0].position = sf::Vector2f(0, 0);
@@ -32,14 +32,14 @@ void MainMenu::initializeScene() {
         backgroundQuad[2].texCoords = sf::Vector2f(1920, 1080);
         backgroundQuad[3].texCoords = sf::Vector2f(0, 1080);
 
-        IScene::initializeScene(); // Call the parent class to set the scene as initialized
+        IScene::InitializeScene(); // Call the parent class to set the scene as initialized
 }
-void MainMenu::destroyScene() {
+void MainMenu::DestroyScene() {
 
 }
-void MainMenu::onScene_Active() {
+void MainMenu::OnScene_Active() {
 
 }
-void MainMenu::onScene_Deactivate() {
+void MainMenu::OnScene_Deactivate() {
 
 }

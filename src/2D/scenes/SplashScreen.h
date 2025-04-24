@@ -20,10 +20,10 @@ public:
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
-        void initializeScene() override;
-        void destroyScene() override;
-        void onScene_Active() override;
-        void onScene_Deactivate() override;
+        void InitializeScene() override;
+        void DestroyScene() override;
+        void OnScene_Active() override;
+        void OnScene_Deactivate() override;
 
 private:
         // Progress bar variables

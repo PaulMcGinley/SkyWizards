@@ -38,7 +38,7 @@ void DevScene::Draw(sf::RenderWindow& window, GameTime gameTime) {
         player.health.Draw(window, gameTime);
 }
 
-void DevScene::initializeScene() {
+void DevScene::InitializeScene() {
         // Initialize the player
         player.position = sf::Vector2f(620, 590);
 
@@ -46,18 +46,18 @@ void DevScene::initializeScene() {
         viewport.setSize(sf::Vector2f(1920,1080)); // Set the view size to the window size TODO: Change this from hardcoded
         viewport.setCenter(player.position); // Center the viewport on the player
 
-        IScene::initializeScene(); // Call the parent class to set the scene as initialized
+        IScene::InitializeScene(); // Call the parent class to set the scene as initialized
 }
 
-void DevScene::destroyScene() {
+void DevScene::DestroyScene() {
     // When the scene is finished
 }
 
-void DevScene::onScene_Active() {
+void DevScene::OnScene_Active() {
     // When the scene starts
 }
 
-void DevScene::onScene_Deactivate() {
+void DevScene::OnScene_Deactivate() {
     // When the scene ends
 }
 

@@ -129,7 +129,7 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
         window.draw(copyRightText); // Draw the copy right text
 }
 
-void SplashScreen::initializeScene() {
+void SplashScreen::InitializeScene() {
         std::string exeDir = getExecutableDirectory();
 
         if (!font.loadFromFile(exeDir + "/resources/fonts/Simple Santa.otf")) {
@@ -196,18 +196,18 @@ void SplashScreen::initializeScene() {
         progressQuad[2].texCoords = {static_cast<float>(progress.getSize().x), static_cast<float>(progress.getSize().y)};
         progressQuad[3].texCoords = {0, static_cast<float>(progress.getSize().y)};
 
-        IScene::initializeScene(); // Call the parent class to set the scene as initialized
+        IScene::InitializeScene(); // Call the parent class to set the scene as initialized
 }
 
-void SplashScreen::destroyScene() {
+void SplashScreen::DestroyScene() {
         // When the scene is finished
 }
 
-void SplashScreen::onScene_Active() {
+void SplashScreen::OnScene_Active() {
         // When the scene starts
 }
 
-void SplashScreen::onScene_Deactivate() {
+void SplashScreen::OnScene_Deactivate() {
         // When the scene ends
 }
 

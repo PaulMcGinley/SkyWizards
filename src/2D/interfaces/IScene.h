@@ -6,7 +6,7 @@
 
 #include "IDraw.h"
 #include "IUpdate.h"
-#include "managers/GameManager.cpp"
+#include "managers/GameManager.h"
 
 class IScene : public IUpdate, public IDraw {
 public:
@@ -19,10 +19,10 @@ public:
         void LateUpdate(GameTime gameTime) override = 0;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override = 0;
 
-        virtual void initializeScene() { initialized = true; };
-        virtual void destroyScene() = 0;
-        virtual void onScene_Active() = 0;
-        virtual void onScene_Deactivate() = 0;
+        virtual void InitializeScene() { initialized = true; };
+        virtual void DestroyScene() = 0;
+        virtual void OnScene_Active() = 0;
+        virtual void OnScene_Deactivate() = 0;
 
         GameManager& game_manager = GameManager::getInstance();
 

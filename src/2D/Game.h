@@ -7,7 +7,7 @@
 
 #include "models/GameTime.h"
 #include "managers/SceneManager.h"
-#include "managers/GameManager.cpp"
+#include "managers/GameManager.h"
 
 class Game {
 public:

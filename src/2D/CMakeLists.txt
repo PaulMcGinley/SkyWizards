@@ -70,6 +70,9 @@ add_executable(LoSW___BftS main.cpp
         models/MapObject/WMObject.cpp
         managers/SceneManager.h
         managers/Random.h
+        managers/GameManager.h
+        scenes/GameScene.cpp
+        scenes/GameScene.h
 )
 
 

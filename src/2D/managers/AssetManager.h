@@ -40,11 +40,15 @@ public:
 
 
         // Only textures required for gameplay will be loaded
-        std::map<std::string, TextureLibrary> TextureLibraries;
+        std::map<std::string, std::unique_ptr<TextureLibrary>> TextureLibraries;
 
         // As these files are tiny, all will be loaded into memory
         std::map<std::string, OLibrary> ObjectLibraries;
         std::map<std::string, WMap> Maps;
+
+        void LoadLibrary(std::string fileName);
+        void LoadLibraryImages(std::string fileName, std::vector<int> indices);
+
 private:
         // Private constructor to prevent instancing
         AssetManager();

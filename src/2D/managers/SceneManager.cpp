@@ -31,7 +31,7 @@ void SceneManager::InitializeScene(const SceneType name) {
         return;
 
     // Initialize the scene
-    scenes[name]->initializeScene();
+    scenes[name]->InitializeScene();
 }
 
 // Get a scene by name (enum SceneType) as a shared pointer
@@ -50,12 +50,12 @@ void SceneManager::RemoveScene(const SceneType name) {
 
     // If the scene to be removed is the current scene, deactivate and clear it
     if (currentScene == scenes[name]) {
-        currentScene->onScene_Deactivate();
+        currentScene->OnScene_Deactivate();
         currentScene = nullptr;
     }
 
     // Destroy the scene
-    scenes[name]->destroyScene();
+    scenes[name]->DestroyScene();
 
     // Remove the scene from the map
     scenes.erase(name);
@@ -69,18 +69,18 @@ void SceneManager::ChangeScene(const SceneType name) {
 
     // Check if there is an active scene, then deactivate it
     if (currentScene)
-        currentScene->onScene_Deactivate();
+        currentScene->OnScene_Deactivate();
 
     // Set the current scene to the new scene
     currentScene = scenes[name];
 
     // Ensure the new scene is initialized
     if (!currentScene->IsInitialized()) {
-        currentScene->initializeScene();
+        currentScene->InitializeScene();
     }
 
     // Activate the new scene
-    currentScene->onScene_Active();
+    currentScene->OnScene_Active();
 }
 
 // Get the current scene as a shared pointer
