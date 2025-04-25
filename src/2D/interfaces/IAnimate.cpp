@@ -17,8 +17,13 @@ void IAnimate::TickAnimation(const GameTime gameTime) {
         currentAnimationFrame++;
 
         // Loop back to the start of the sequence if we reach the end
-        if (currentAnimationFrame >= sequences[currentAnimation].length)
+        if (currentAnimationFrame >= sequences[currentAnimation].length) {
                 currentAnimationFrame = 0;
+                // Call the onComplete function if it exists
+                if (sequences[currentAnimation].onComplete != nullptr) {
+                        sequences[currentAnimation].onComplete();
+                }
+        }
 
         nextFrameTime = gameTime.NowAddMilliseconds(sequences[currentAnimation].interval);
 }

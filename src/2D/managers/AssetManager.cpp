@@ -46,18 +46,13 @@ TextureEntry* AssetManager::getProgramUseImage_ptr(int cell) {
         return &programUsage.entries[cell];
 }
 
-// Loads a library in its entirety
-// This will be used for single set images (Armours, weapons, monsters, etc.)
+// Loads a library to memory without the image data
 // I am creating the libraries as unique_ptrs to ensure they are deleted when the program ends ;)
 // This also prevents them from going out of scope when the function ends
 void AssetManager::LoadLibrary(std::string fileName) {
         // Check if the map entry already exists
         if (TextureLibraries.contains(fileName)) {
                 return; // Library exists, no need to load again
-
-                // Future Paul: If we ever need to reload the library, uncomment this and comment the return above
-                // TextureLibraries.erase(fileName); // (Automatically deletes the old object)
-                // std::cout << "Removed library: " << fileName << std::endl;
         }
 
         // Create and load the library
@@ -66,18 +61,11 @@ void AssetManager::LoadLibrary(std::string fileName) {
                 std::cerr << "Failed to load library: " << fileName << std::endl;
                 return;
         }
-        // TESTING:
-        library->LoadIndices({}); // Load all entries
+
+        fileName = fileName.substr(fileName.find_last_of("/\\") + 1);   // Get the file name
+        fileName = fileName.substr(0, fileName.find_last_of('.'));      // Drop the extension
 
         // Add the library to the map
         TextureLibraries[fileName] = std::move(library); // std::move to transfer ownership
         std::cout << "Loaded library: " << fileName << std::endl;
-}
-
-// Load a library with only the specified indices (image entries from the library)
-// This will be used for pulling map specific images from the library
-// The library will be initialized with the full size of the library, but only the specified indices will be loaded
-// This is to save memory and loading time and for map switching it will save recreating the library
-void AssetManager::LoadLibraryImages(std::string fileName, std::vector<int> indices) {
-        // TODO: Refactor TextureLibrary loader to allow for partial loading
 }

@@ -12,6 +12,7 @@
 #include "os/GetExecutionDirectory.h"
 
 SplashScreen::SplashScreen() {
+        InitializeLibraries(); // Load the libraries
         // Constructor
 }
 
@@ -220,6 +221,24 @@ void SplashScreen::OnScene_Active() {
 
 void SplashScreen::OnScene_Deactivate() {
         // When the scene ends
+}
+
+// Load all the .lib files into the map
+// This will initialize the arrays in the AssetManager and populate the FAT
+// No image data is loaded at this point
+void SplashScreen::InitializeLibraries() {
+        std::string resourcesDir = getExecutableDirectory() + "/resources/";
+
+        // Get all .lib files in the resources directory
+        for (const auto &entry: std::filesystem::directory_iterator(resourcesDir)) {
+                if (entry.is_regular_file() && entry.path().extension() == ".lib") {
+                        std::string filePath = entry.path().string();
+                        std::string fileNameWithoutExtension = entry.path().stem().string();
+
+                        // Load the library
+                        asset_manager.LoadLibrary(filePath);
+                }
+        }
 }
 
 void SplashScreen::loadLevelObjects(const std::string &directoryPath) {

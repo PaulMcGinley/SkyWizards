@@ -49,6 +49,7 @@ private:
 
         float loadCompletionTime = -1;
 
+        void InitializeLibraries();
         void loadLevelObjects(const std::string& directoryPath);
         void loadMaps(const std::string & directoryPath);
 };

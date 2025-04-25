@@ -22,7 +22,7 @@ public:
         static AssetManager& GetInstance();
 
         // Method declarations only, no implementations here
-        // TODO: Deprecate these in favor of the TextureLibrary class
+        // TODO: Deprecate these in favor of the TextureLibraries map
         TextureEntry* getRobeFrame_ptr(int lib, int cell);
         TextureEntry* getStaffFrame_ptr(int lib, int cell);
         TextureEntry* getChestMonsterFrame_ptr(int cell);
@@ -30,7 +30,7 @@ public:
         TextureEntry* getProgramUseImage_ptr(int cell);
 
         // Data members
-        // TODO: Deprecate these in favor of the TextureLibrary class
+        // TODO: Deprecate these in favor of the TextureLibraries map
         std::vector<TextureLibrary> robes;
         std::vector<TextureLibrary> staffs;
         TextureLibrary chestMonster = TextureLibrary("");
@@ -47,7 +47,6 @@ public:
         std::map<std::string, WMap> Maps;
 
         void LoadLibrary(std::string fileName);
-        void LoadLibraryImages(std::string fileName, std::vector<int> indices);
 
 private:
         // Private constructor to prevent instancing
