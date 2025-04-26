@@ -11,7 +11,7 @@
 #include "interfaces/IDraw.h"
 #include "interfaces/IUpdate.h"
 
-class WMap : public IDraw, public IUpdate{
+class WMap : public IDraw, public IUpdate {
 public:
         virtual ~WMap();
         std::string FileName;

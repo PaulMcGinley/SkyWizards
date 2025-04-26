@@ -9,8 +9,8 @@
 #include <vector>
 #include "models/TextureLibrary.h"
 #include "models/LevelObject/OLibrary.h"
-//#include "models/MapObject/WMap.h"
 
+// Forward declarations to avoid circular dependencies
 class WMap;
 
 class AssetManager {
