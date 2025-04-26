@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 #include "managers/SceneManager.h"
+#include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
 
 GameScene::GameScene(std::string name)
@@ -102,14 +103,14 @@ void GameScene::LoadAssets() {
 
                 const auto& oLibrary = asset_manager.ObjectLibraries.at(objectLibrary);
 
-                for (const auto& graphic : oLibrary.Images) {
+                for (const auto& graphic : oLibrary->Images) {
                         // Skip graphics without an associated library
                         if (graphic.BackImageLibrary.empty()) {
                                 std::cerr << "Graphic in library " << objectLibrary << " has no associated BackImageLibrary." << std::endl;
                                 continue;
                         }
 
-                        if ( graphic.BackIndex < 0 || graphic.BackIndex >= oLibrary.Images.size()) {
+                        if ( graphic.BackIndex < 0 || graphic.BackIndex >= oLibrary->Images.size()) {
                                 std::cerr << "Graphic in library " << objectLibrary << " has invalid BackIndex." << std::endl;
                                 continue;
                         }

@@ -255,7 +255,7 @@ void SplashScreen::loadLevelObjects(const std::string &directoryPath) {
                         if (result) {
                                 OLibrary objectLibrary;
                                 if (objectLibrary.deserialize(doc)) {
-                                        asset_manager.ObjectLibraries[fileNameWithoutExtension] = objectLibrary;
+                                        asset_manager.ObjectLibraries[fileNameWithoutExtension] = std::make_unique<OLibrary>(std::move(objectLibrary));
                                 } else {
                                         std::cerr << "Failed to deserialize Olibrary: " << filePath << std::endl;
                                 }

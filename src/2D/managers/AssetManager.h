@@ -8,10 +8,10 @@
 #include <map>
 #include <vector>
 #include "models/TextureLibrary.h"
-#include "models/LevelObject/OLibrary.h"
 
 // Forward declarations to avoid circular dependencies
 class WMap;
+class OLibrary;
 
 class AssetManager {
 
@@ -45,7 +45,7 @@ public:
         std::map<std::string, std::unique_ptr<TextureLibrary>> TextureLibraries;
 
         // As these files are tiny, all will be loaded into memory
-        std::map<std::string, OLibrary> ObjectLibraries;
+        std::map<std::string, std::unique_ptr<OLibrary>> ObjectLibraries;
         std::map<std::string, std::unique_ptr<WMap>> Maps;
 
         void LoadLibrary(std::string fileName);

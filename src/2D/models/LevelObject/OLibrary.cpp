@@ -40,32 +40,32 @@ bool OLibrary::deserialize(const pugi::xml_document &doc) {
 
         return true; // Successfully deserialized
 }
-// void OLibrary::Update(GameTime gameTime) {
-//         // TODO: Change to for i loop to match to boundary groups
-//         for (auto& image : Images) {
-//                 // Not animated
-//                 if (image.BackEndIndex == -1)
-//                         continue;
-//
-//                 // Not ready for next frame
-//                 if (gameTime.total_game_time < image.nextFrameTime)
-//                         continue;
-//
-//                 // Update the next frame time
-//                 image.currentFrame++;
-//                 if (image.currentFrame >= image.BackEndIndex) {
-//                         image.currentFrame = image.BackIndex; // Loop back to the start
-//                 }
-//
-//                 // Update next frame time
-//                 image.nextFrameTime = gameTime.total_game_time + image.BackAnimationSpeed;
-//         }
-//
-//         // TODO: Update the boundary groups
-// }
-// void OLibrary::LateUpdate(GameTime gameTime) {
-//         // Not implemented
-// }
-// void OLibrary::Draw(sf::RenderWindow &window, GameTime gameTime) {
-//
-// }
+void OLibrary::Update(GameTime gameTime) {
+        // TODO: Change to for i loop to match to boundary groups
+        for (auto& image : Images) {
+                // Not animated
+                if (image.BackEndIndex == -1)
+                        continue;
+
+                // Not ready for next frame
+                if (gameTime.total_game_time < image.nextFrameTime)
+                        continue;
+
+                // Update the next frame time
+                image.currentFrame++;
+                if (image.currentFrame >= image.BackEndIndex) {
+                        image.currentFrame = image.BackIndex; // Loop back to the start
+                }
+
+                // Update next frame time
+                image.nextFrameTime = gameTime.total_game_time + image.BackAnimationSpeed;
+        }
+
+        // TODO: Update the boundary groups
+}
+void OLibrary::LateUpdate(GameTime gameTime) {
+        // Not implemented
+}
+void OLibrary::Draw(sf::RenderWindow &window, GameTime gameTime) {
+
+}
