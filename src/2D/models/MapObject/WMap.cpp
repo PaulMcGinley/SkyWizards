@@ -2,10 +2,12 @@
 // Created by Paul McGinley on 23/04/2025.
 //
 
-#include <iostream>
 #include "WMap.h"
+#include <iostream>
 
-bool WMap::deserialize(const pugi::xml_node& node) {
+#include <unordered_set>
+
+bool WMap::deserialize(const pugi::xml_node &node) {
         if (!node) {
                 std::cerr << "Error: Invalid XML node provided for deserialization." << std::endl;
                 return false;
@@ -39,7 +41,7 @@ bool WMap::deserialize(const pugi::xml_node& node) {
         // Deserialize LevelObjects
         pugi::xml_node levelObjectsNode = root.child("LevelObjects");
         if (levelObjectsNode) {
-                for (pugi::xml_node objectNode : levelObjectsNode.children("WMObject")) {
+                for (pugi::xml_node objectNode: levelObjectsNode.children("WMObject")) {
                         WMObject levelObject;
                         if (levelObject.deserialize(objectNode)) {
                                 LevelObjects.push_back(levelObject);
@@ -57,3 +59,16 @@ bool WMap::deserialize(const pugi::xml_node& node) {
         std::cout << "Successfully deserialized WMap." << std::endl;
         return true; // Successfully deserialized
 }
+// void WMap::Update(GameTime gameTime) {
+//         std::unordered_set<std::string> uniqueLibraries;
+//         for (const auto& wmObject : LevelObjects) {
+//                 uniqueLibraries.insert(wmObject.ObjectLibraryFile);
+//         }
+//
+//         // Load the libraries
+//         for (const auto& library : uniqueLibraries) {
+//                 asset_manager.ObjectLibraries[library].Update(gameTime);
+//         }
+// }
+// void WMap::LateUpdate(GameTime gameTime) {}
+// void WMap::Draw(sf::RenderWindow &window, GameTime gameTime) { }

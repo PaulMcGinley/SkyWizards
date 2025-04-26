@@ -19,6 +19,9 @@ public:
         int X;
         int Y;
         int DrawLayer;
+
+        int currentFrame;
+        float nextFrameTime;
         bool deserialize(const pugi::xml_node &node);
 };
 

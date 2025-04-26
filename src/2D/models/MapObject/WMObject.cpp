@@ -12,7 +12,7 @@ bool WMObject::deserialize(const pugi::xml_node& node) {
         // Deserialize ObjectLibrary
         pugi::xml_node objectLibraryNode = node.child("ObjectLibrary");
         if (objectLibraryNode) {
-                ObjectLibrary = objectLibraryNode.text().as_string();
+                ObjectLibraryFile = objectLibraryNode.text().as_string();
         } else {
                 return false; // ObjectLibrary is required
         }

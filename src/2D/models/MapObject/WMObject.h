@@ -11,7 +11,7 @@
 
 class WMObject {
 public:
-        std::string ObjectLibrary;
+        std::string ObjectLibraryFile;
         sf::Vector2f Position;
         bool deserialize(const pugi::xml_node &node);
 };

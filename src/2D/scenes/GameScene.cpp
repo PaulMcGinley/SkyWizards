@@ -31,6 +31,9 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 return;
         }
 
+        // Set the view
+        window.setView(viewport);
+
         // Draw game
 }
 
@@ -88,7 +91,7 @@ void GameScene::LoadAssets() {
         std::unordered_map<std::string, std::unordered_set<int>> libraryToIndices;
 
         for (const auto& wmObject : map->LevelObjects) {
-                const auto& objectLibrary = wmObject.ObjectLibrary;
+                const auto& objectLibrary = wmObject.ObjectLibraryFile;
 
                 // Skip if library doesn't exist
                 if (!asset_manager.ObjectLibraries.contains(objectLibrary)) {

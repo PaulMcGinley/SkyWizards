@@ -306,7 +306,7 @@ void SplashScreen::loadMaps(const std::string &directoryPath) {
         for (const auto &[name, map]: asset_manager.Maps) {
                 std::cout << "Loaded Map: " << name << std::endl;
                 for (const auto &object: map.LevelObjects) {
-                        std::cout << "  ObjectLibrary: " << object.ObjectLibrary
+                        std::cout << "  ObjectLibrary: " << object.ObjectLibraryFile
                                   << " Position: (" << object.Position.x << ", " << object.Position.y << ")"
                                   << std::endl;
                 }

@@ -8,8 +8,10 @@
 #include <string>
 #include <vector>
 #include "WMObject.h"
+// #include "interfaces/IDraw.h"
+// #include "interfaces/IUpdate.h"
 
-class WMap {
+class WMap /*: public IDraw, public IUpdate*/{
 public:
         std::string FileName;
 
@@ -18,6 +20,10 @@ public:
         std::vector<WMObject> LevelObjects;
         std::vector<std::string> Scripts;
         bool deserialize(const pugi::xml_node &node);
+
+        // void Update(GameTime gameTime) override;
+        // void LateUpdate(GameTime gameTime) override;
+        // void Draw(sf::RenderWindow &window, GameTime gameTime) override;
 };
 
 #endif //WMAP_H
