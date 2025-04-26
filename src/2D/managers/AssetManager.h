@@ -9,7 +9,9 @@
 #include <vector>
 #include "models/TextureLibrary.h"
 #include "models/LevelObject/OLibrary.h"
-#include "models/MapObject/WMap.h"
+//#include "models/MapObject/WMap.h"
+
+class WMap;
 
 class AssetManager {
 
@@ -44,7 +46,7 @@ public:
 
         // As these files are tiny, all will be loaded into memory
         std::map<std::string, OLibrary> ObjectLibraries;
-        std::map<std::string, WMap> Maps;
+        std::map<std::string, std::unique_ptr<WMap>> Maps;
 
         void LoadLibrary(std::string fileName);
 

@@ -9,6 +9,7 @@
 
 #include "managers/SceneManager.h"
 #include "models/LevelObject/OLibrary.h"
+#include "models/MapObject/WMap.h"
 #include "os/GetExecutionDirectory.h"
 
 SplashScreen::SplashScreen() {
@@ -289,30 +290,30 @@ void SplashScreen::loadMaps(const std::string &directoryPath) {
                         pugi::xml_parse_result result = doc.load_file(filePath.c_str());
 
                         if (result) {
-                                WMap map;
-                                if (map.deserialize(doc)) {
-                                        asset_manager.Maps[fileNameWithoutExtension] = map;
+                                auto map = std::make_unique<WMap>();
+                                if (map->deserialize(doc)) {
+                                        asset_manager.Maps[fileNameWithoutExtension] = std::move(map);
                                 } else {
                                         std::cerr << "Failed to deserialize Map: " << filePath << std::endl;
                                 }
-                        } else {
-                                std::cerr << "Failed to load Map: " << filePath
-                                          << " Error: " << result.description() << std::endl;
+                        }
+                        else {
+                                std::cerr << "Failed to load Map: " << filePath << " Error: " << result.description() << std::endl;
                         }
                 }
         }
 
         // DEBUG: Print loaded map names and their contents
-        for (const auto &[name, map]: asset_manager.Maps) {
-                std::cout << "Loaded Map: " << name << std::endl;
-                for (const auto &object: map.LevelObjects) {
-                        std::cout << "  ObjectLibrary: " << object.ObjectLibraryFile
-                                  << " Position: (" << object.Position.x << ", " << object.Position.y << ")"
-                                  << std::endl;
-                }
-                for (const auto &script: map.Scripts) {
-                        std::cout << "  Script: " << script << std::endl;
-                }
-        }
+        // for (const auto &[name, map]: asset_manager.Maps) {
+        //         std::cout << "Loaded Map: " << name << std::endl;
+        //         for (const auto &object: map.LevelObjects) {
+        //                 std::cout << "  ObjectLibrary: " << object.ObjectLibraryFile
+        //                           << " Position: (" << object.Position.x << ", " << object.Position.y << ")"
+        //                           << std::endl;
+        //         }
+        //         for (const auto &script: map.Scripts) {
+        //                 std::cout << "  Script: " << script << std::endl;
+        //         }
+        // }
 }
 

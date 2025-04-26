@@ -8,11 +8,12 @@
 #include <string>
 #include <vector>
 #include "WMObject.h"
-// #include "interfaces/IDraw.h"
-// #include "interfaces/IUpdate.h"
+#include "interfaces/IDraw.h"
+#include "interfaces/IUpdate.h"
 
-class WMap /*: public IDraw, public IUpdate*/{
+class WMap : public IDraw, public IUpdate{
 public:
+        virtual ~WMap();
         std::string FileName;
 
         int ParallaxBackgroundIndex;
@@ -21,9 +22,9 @@ public:
         std::vector<std::string> Scripts;
         bool deserialize(const pugi::xml_node &node);
 
-        // void Update(GameTime gameTime) override;
-        // void LateUpdate(GameTime gameTime) override;
-        // void Draw(sf::RenderWindow &window, GameTime gameTime) override;
+        void Update(GameTime gameTime) override;
+        void LateUpdate(GameTime gameTime) override;
+        void Draw(sf::RenderWindow &window, GameTime gameTime) override;
 };
 
 #endif //WMAP_H

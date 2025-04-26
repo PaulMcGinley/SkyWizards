@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 #include "managers/SceneManager.h"
+#include "models/MapObject/WMap.h"
 
 GameScene::GameScene(std::string name)
         : IScene()
@@ -60,7 +61,7 @@ void GameScene::LoadAssets() {
         // Check if the map exists in the asset manager
         if (asset_manager.Maps.contains(mapName)) {
                 // Get the map from the asset manager
-                map = &asset_manager.Maps[mapName];
+                map = asset_manager.Maps[mapName].get();
         } else {
                 std::cerr << "Map " << mapName << " does not exist in the asset manager." << std::endl;
                 SceneManager::GetInstance().ChangeScene(SceneType::SCENE_MAIN_MENU);

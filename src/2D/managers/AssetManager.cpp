@@ -3,6 +3,7 @@
 //
 
 #include "AssetManager.h"
+#include "models/MapObject/WMap.h"
 
 #include <iostream>
 
