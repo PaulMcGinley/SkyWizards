@@ -6,9 +6,10 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "managers/SceneManager.h"
 #include "managers/InputManager.cpp"
+#include "managers/SceneManager.h"
 #include "scenes/DevScene.h"
+#include "scenes/GameScene.h"
 #include "scenes/MainMenu.h"
 #include "scenes/SplashScreen.h"
 
@@ -19,6 +20,7 @@ void Game::Run() {
         scene_manager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());
         scene_manager.AddScene(SceneType::SCENE_DEV, std::make_shared<DevScene>());
         scene_manager.AddScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
+        scene_manager.AddScene(SceneType::SCENE_GAME, std::make_shared<GameScene>());
 
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes

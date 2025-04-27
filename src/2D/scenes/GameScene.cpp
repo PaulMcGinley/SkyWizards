@@ -12,9 +12,8 @@
 #include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
 
-GameScene::GameScene(std::string name)
+GameScene::GameScene()
         : IScene()
-        , mapName(std::move(name))
         , map(nullptr) {
 
 }
@@ -34,15 +33,18 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         }
 
         // Set the view
-        window.setView(viewport);
+        //window.setView(viewport);
 
         // Draw game
+
+        // Draw the parallax background
+        window.draw(skyBoxSprite);
+        window.draw(mountainsSprite);
 }
 
 void GameScene::InitializeScene() {
-        LoadAssets();
+       // LoadAssets();
 
-        // TODO: Don't initialize the scene if assets are loading
         IScene::InitializeScene();
 }
 
@@ -75,8 +77,9 @@ void GameScene::LoadAssets() {
 
         // Load the parallax background texture
         asset_manager.TextureLibraries["sky"]->LoadIndices({map->ParallaxBackgroundIndex});
-        skyBoxTexture = &asset_manager.TextureLibraries["sky"]->entries[0].texture;
+        skyBoxTexture = &asset_manager.TextureLibraries["sky"]->entries[map->ParallaxBackgroundIndex].texture;
         skyBoxSprite.setTexture(*skyBoxTexture, true);
+        skyBoxSprite.setPosition(0, 0); // Set the position of the skyBoxSprite to the top left corner
 
         // Check if the mountains background index is valid
         if (map->MountainsBackgroundIndex < 0 || map->MountainsBackgroundIndex >= asset_manager.TextureLibraries["mountains"]->entryCount)

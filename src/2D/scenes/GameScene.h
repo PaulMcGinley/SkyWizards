@@ -10,8 +10,12 @@
 
 class GameScene : public IScene {
 public:
-        GameScene(std::string name);
+        GameScene();
 
+        void LoadMap(std::string name) {
+                mapName = std::move(name);
+                LoadAssets();
+        }
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
