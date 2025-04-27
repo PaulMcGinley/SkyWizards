@@ -35,6 +35,9 @@ private:
         sf::Texture* mountainsTexture;
         sf::Sprite mountainsSprite;
 
+        void ValidateMap();
+        void LoadSky();
+        void LoadMountains();
         void LoadAssets();
         // void CalculateRectangle();
 

@@ -5,17 +5,27 @@
 #ifndef IDRAW_H
 #define IDRAW_H
 
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include "models/GameTime.h"
 #include "managers/AssetManager.h"
+#include "models/GameTime.h"
 
 class IDraw {
 public:
-    virtual ~IDraw() = default;
+        virtual ~IDraw() = default;
 
-    virtual void Draw(sf::RenderWindow& window, GameTime gameTime) = 0;
+        virtual void Draw(sf::RenderWindow& window, GameTime gameTime) = 0;
 
-    AssetManager& asset_manager = AssetManager::GetInstance();
+        void Draw(sf::RenderWindow& window, const std::string& textureLibraryName, int index, sf::Vector2f position) const {
+                auto sizeU = asset_manager.TextureLibraries[textureLibraryName]->entries[index].texture.getSize();
+                sf::Vector2f size(static_cast<float>(sizeU.x), static_cast<float>(sizeU.y));
+                sf::RectangleShape rect(size);
+                rect.setTexture(&asset_manager.TextureLibraries[textureLibraryName]->entries[index].texture);
+                rect.setPosition(position);
+                window.draw(rect);
+        }
+
+        AssetManager& asset_manager = AssetManager::GetInstance();
 };
 
 #endif //IDRAW_H

@@ -55,6 +55,7 @@ TextureLibrary::TextureLibrary(const std::string &path)
 
         // Read the entry count (number of cells) in the library
         file.read(reinterpret_cast<char *>(&entryCount), sizeof(entryCount));
+        std::cout << "Library: " << path << "Entry count: " << entryCount << std::endl;
 
         // if (entries != nullptr) // Check if the entries array already exists
         //         delete[] entries; // Delete the old entries array if it exists
