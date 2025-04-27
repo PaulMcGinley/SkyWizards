@@ -115,6 +115,8 @@ void GameScene::LoadAssets() {
 
                         if ( graphic.BackIndex < 0 || graphic.BackIndex >= oLibrary->Images.size()) {
                                 std::cerr << "Graphic in library " << objectLibrary << " has invalid BackIndex." << std::endl;
+                                std::cerr << "Expected range: [0, " << oLibrary->Images.size() << "]" << std::endl;
+                                std::cerr << "Actual BackIndex: " << graphic.BackIndex << std::endl;
                                 continue;
                         }
 
