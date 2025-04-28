@@ -14,9 +14,11 @@ class IDraw {
 public:
         virtual ~IDraw() = default;
 
+        // Unhandled draw function: This function should be implemented by the derived class
         virtual void Draw(sf::RenderWindow& window, GameTime gameTime) = 0;
 
-        void Draw(sf::RenderWindow& window, const std::string& textureLibraryName, int index, sf::Vector2f position) const {
+        // Handled draw function: Pass in a texture library name, index, and position to draw the texture
+        void Draw(sf::RenderWindow& window, const std::string& textureLibraryName, const int index, const sf::Vector2f position) const {
                 auto sizeU = asset_manager.TextureLibraries[textureLibraryName]->entries[index].texture.getSize();
                 sf::Vector2f size(static_cast<float>(sizeU.x), static_cast<float>(sizeU.y));
                 sf::RectangleShape rect(size);
