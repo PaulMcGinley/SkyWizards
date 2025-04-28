@@ -74,6 +74,8 @@ add_executable(LoSW___BftS main.cpp
         scenes/GameScene.cpp
         scenes/GameScene.h
         models/TextureLibrary.cpp
+        scenes/Overlays/DebugOverlay.cpp
+        scenes/Overlays/DebugOverlay.h
 )
 
 

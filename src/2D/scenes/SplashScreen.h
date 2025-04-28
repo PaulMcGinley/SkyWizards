@@ -52,8 +52,7 @@ private:
         void InitializeLibraries();
         void loadLevelObjects(const std::string& directoryPath);
         void loadMaps(const std::string & directoryPath);
+        void loadFonts(const std::string & directoryPath);
 };
-
-
 
 #endif //SPLASHSCREEN_H

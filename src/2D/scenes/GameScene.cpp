@@ -22,6 +22,9 @@ void GameScene::Update(GameTime gameTime) {
         player.Update(gameTime);
         sf::Vector2f viewCenter = player.position + sf::Vector2f(250,0);
         viewport.setCenter(viewCenter); // Center the viewport on the player
+
+        for (auto const & obj: map->LevelObjects)
+                asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
 }
 
 void GameScene::LateUpdate(GameTime gameTime) {
@@ -34,14 +37,8 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 return;
         }
 
+        CalculateParallaxBackground();
         window.setView(viewport);
-
-        // Set the view
-        //window.setView(viewport);
-
-        // Draw game
-
-        // Draw the parallax background
         window.draw(skyBoxSprite);
         window.draw(mountainsSprite);
 
@@ -55,6 +52,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 }
 
 void GameScene::InitializeScene() {
+        player.position = sf::Vector2f(0, 5000); // Set the player position
         viewport.setSize(sf::Vector2f(1920, 1080)); // Set the view size to the window size TODO: Change this from hardcoded
         viewport.setCenter(player.position); // Center the viewport on the player
 
@@ -163,12 +161,46 @@ void GameScene::LoadAssets() {
         }
 }
 
+void GameScene::CalculateParallaxBackground() {
+        // TODO: Get values from the map and game manager
+        const float worldWidth = 100000.0f;
+        const float worldHeight = 10000.0f;
+        const float screenWidth = game_manager.getResolution().x;
+        const float screenHeight = game_manager.getResolution().y;
+
+        // Get parallax texture sizes
+        sf::Vector2u skySize = skyBoxTexture->getSize();
+        sf::Vector2u mountainsSize = mountainsTexture->getSize();
+
+        // Get players position as a normal (0 - 1)
+        float normalX = std::clamp(viewport.getCenter().x / worldWidth, 0.0f, 1.0f);
+        float normalY = std::clamp(viewport.getCenter().y / worldHeight, 0.0f, 1.0f);
+
+        // Parallax factors
+        float skyParallax = 1.f;
+        float mountainsParallax = 1.f;
+
+        // Calculate background X and Y offsets
+        int skyX = static_cast<int>((skySize.x - screenWidth) * normalX * skyParallax);
+        int skyY = static_cast<int>((skySize.y - screenHeight) * normalY * skyParallax);
+        int mountainsX = static_cast<int>((mountainsSize.x - screenWidth) * normalX * mountainsParallax);
+        int mountainsY = static_cast<int>((mountainsSize.y - screenHeight) * normalY * mountainsParallax);
+
+        // Set texture rects to crop the background images
+        skyBoxSprite.setTextureRect(sf::IntRect(skyX, skyY, screenWidth, screenHeight));
+        mountainsSprite.setTextureRect(sf::IntRect(mountainsX, mountainsY, screenWidth, screenHeight));
+
+        // Always draw at (viewport left, top)
+        skyBoxSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
+        mountainsSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
+}
+
 void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 0; layer <= 3; ++layer)
                 for (auto const & obj: map->LevelObjects)
                         for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
                                 if (entry.DrawLayer == layer)
-                                        IDraw::Draw(window, entry.BackImageLibrary, entry.BackIndex, sf::Vector2f(obj.Position.x, obj.Position.y));
+                                        IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x, obj.Position.y));
 }
 
 void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
@@ -180,5 +212,5 @@ void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTim
                 for (auto const & obj: map->LevelObjects)
                         for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
                                 if (entry.DrawLayer == layer)
-                                        IDraw::Draw(window, entry.BackImageLibrary, entry.BackIndex, sf::Vector2f(obj.Position.x, obj.Position.y));
+                                        IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x, obj.Position.y));
 }

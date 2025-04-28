@@ -40,10 +40,10 @@ private:
         void LoadMountains();
         void LoadAssets();
 
+        void CalculateParallaxBackground();
         void DrawBehindEntities(sf::RenderWindow& window, GameTime gameTime);
         void DrawEntities(sf::RenderWindow& window, GameTime gameTime);
         void DrawInFrontOfEntities(sf::RenderWindow& window, GameTime gameTime);
-        // void CalculateRectangle();
 
         Player player = Player();
         sf::View viewport;

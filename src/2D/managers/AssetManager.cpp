@@ -6,6 +6,7 @@
 #include "models/MapObject/WMap.h"
 #include "models/LevelObject/OLibrary.h"
 
+#include <__filesystem/directory_iterator.h>
 #include <iostream>
 
 // Initialize the static member
@@ -64,10 +65,26 @@ void AssetManager::LoadLibrary(std::string fileName) {
                 return;
         }
 
-        fileName = fileName.substr(fileName.find_last_of("/\\") + 1);   // Get the file name
-        fileName = fileName.substr(0, fileName.find_last_of('.'));      // Drop the extension
+        fileName = fileName.substr(fileName.find_last_of("/\\") + 1); // Get the file name
+        fileName = fileName.substr(0, fileName.find_last_of('.')); // Drop the extension
 
         // Add the library to the map
         TextureLibraries[fileName] = std::move(library); // std::move to transfer ownership
         std::cout << "Loaded library: " << fileName << std::endl;
+}
+void AssetManager::LoadFonts(std::string directoryPath) {
+        for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
+                if (entry.is_regular_file() && entry.path().extension() == ".ttf") {
+                        std::string filePath = entry.path().string();
+                        std::string fileNameWithoutExtension = entry.path().stem().string();
+
+                        auto font = std::make_unique<sf::Font>();
+                        if (font->loadFromFile(filePath)) {
+                                asset_manager.Fonts[fileNameWithoutExtension] = std::move(font);
+                                std::cout << "Loaded font: " << fileNameWithoutExtension << std::endl;
+                        } else {
+                                std::cerr << "Failed to load font: " << filePath << std::endl;
+                        }
+                }
+        }
 }

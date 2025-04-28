@@ -5,9 +5,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "models/GameTime.h"
-#include "managers/SceneManager.h"
 #include "managers/GameManager.h"
+#include "managers/SceneManager.h"
+#include "models/GameTime.h"
+#include "scenes/Overlays/DebugOverlay.h"
 
 class Game {
 public:
@@ -24,6 +25,9 @@ private:
         // Clock and game time using for tracking the game loop time
         sf::Clock clock;        // Clock tracks delta time and feeds the data to gameTime
         GameTime game_time;     // game_time tracks all time related data for the game
+
+        // DEBUG:
+        DebugOverlay debugOverlay = DebugOverlay(); // Overlay for debugging
 };
 
 #endif //GAME_H

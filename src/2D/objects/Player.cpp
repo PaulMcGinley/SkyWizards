@@ -81,6 +81,30 @@ void Player::Update(GameTime gameTime) {
                 }
         }
 
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                    position.y -= RUNNING_SPEED * gameTime.delta_time;
+                } else {
+                    ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime);
+                    position.y -= WALKING_SPEED * gameTime.delta_time;
+                }
+        }
+
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                    ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                    position.y += RUNNING_SPEED * gameTime.delta_time;
+                } else {
+                    ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime);
+                    position.y += WALKING_SPEED * gameTime.delta_time;
+                }
+        }
+
         else {
                 ChangeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
         }

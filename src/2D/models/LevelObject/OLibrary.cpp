@@ -58,7 +58,7 @@ void OLibrary::Update(GameTime gameTime) {
                 }
 
                 // Update next frame time
-                image.nextFrameTime = gameTime.total_game_time + image.BackAnimationSpeed;
+                image.nextFrameTime = gameTime.total_game_time + (static_cast<float>(image.BackAnimationSpeed) / 1000.0f);
         }
 
         // TODO: Update the boundary groups

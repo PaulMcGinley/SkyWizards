@@ -1,9 +1,9 @@
 #include <iostream>
 #include "Game.h"
 #include "managers/AssetManager.h"
-//#include "managers/GameManager.cpp"   // This is included in Game.h
 #include "managers/InputManager.cpp"
 #include "managers/SceneManager.h"
+#include "os/GetExecutionDirectory.h"
 
 int main(int argc, char* argv[]) {
 
@@ -12,6 +12,8 @@ int main(int argc, char* argv[]) {
         GameManager const& game_manager = GameManager::getInstance();
         InputManager const& input_manager = InputManager::getInstance();
         SceneManager const& scene_manager = SceneManager::GetInstance();
+
+       AssetManager::GetInstance().LoadFonts(getExecutableDirectory() + "/resources/fonts/");
 
         // TODO: Read settings from file
 

@@ -265,20 +265,8 @@ void SplashScreen::loadLevelObjects(const std::string &directoryPath) {
                         }
                 }
         }
-
-        // DEBUG: Print loaded OLibrary names and their contents
-        // for (const auto &[name, library]: asset_manager.ObjectLibraries) {
-        //         std::cout << "Loaded OLibrary: " << name << std::endl;
-        //         for (const auto &graphic: library.Images) {
-        //                 std::cout << "  Graphic: " << graphic.BackImageLibrary << " Index: " << graphic.BackIndex
-        //                           << std::endl;
-        //         }
-        //         for (const auto &boundaryGroup: library.BoundaryGroups) {
-        //                 std::cout << "  BoundaryGroup with " << boundaryGroup.Boundaries.size() << " boundaries."
-        //                           << std::endl;
-        //         }
-        // }
 }
+
 void SplashScreen::loadMaps(const std::string &directoryPath) {
         // Load all the map files
         for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
@@ -296,24 +284,10 @@ void SplashScreen::loadMaps(const std::string &directoryPath) {
                                 } else {
                                         std::cerr << "Failed to deserialize Map: " << filePath << std::endl;
                                 }
-                        }
-                        else {
-                                std::cerr << "Failed to load Map: " << filePath << " Error: " << result.description() << std::endl;
+                        } else {
+                                std::cerr << "Failed to load Map: " << filePath << " Error: " << result.description()
+                                          << std::endl;
                         }
                 }
         }
-
-        // DEBUG: Print loaded map names and their contents
-        // for (const auto &[name, map]: asset_manager.Maps) {
-        //         std::cout << "Loaded Map: " << name << std::endl;
-        //         for (const auto &object: map.LevelObjects) {
-        //                 std::cout << "  ObjectLibrary: " << object.ObjectLibraryFile
-        //                           << " Position: (" << object.Position.x << ", " << object.Position.y << ")"
-        //                           << std::endl;
-        //         }
-        //         for (const auto &script: map.Scripts) {
-        //                 std::cout << "  Script: " << script << std::endl;
-        //         }
-        // }
 }
-

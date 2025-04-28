@@ -8,7 +8,11 @@
 #include <map>
 #include <vector>
 #include "models/TextureLibrary.h"
+#include <SFML/Graphics/Font.hpp>
 
+namespace sf {
+        class Font;
+}
 // Forward declarations to avoid circular dependencies
 class WMap;
 class OLibrary;
@@ -48,7 +52,11 @@ public:
         std::map<std::string, std::unique_ptr<OLibrary>> ObjectLibraries;
         std::map<std::string, std::unique_ptr<WMap>> Maps;
 
+        // Fonts
+        std::map<std::string, std::unique_ptr<sf::Font>> Fonts;
+
         void LoadLibrary(std::string fileName);
+        void LoadFonts(std::string directoryPath);
 
 private:
         // Private constructor to prevent instancing
