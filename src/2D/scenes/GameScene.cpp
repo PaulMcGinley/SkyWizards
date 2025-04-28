@@ -19,11 +19,13 @@ GameScene::GameScene()
 }
 
 void GameScene::Update(GameTime gameTime) {
-
+        player.Update(gameTime);
+        sf::Vector2f viewCenter = player.position + sf::Vector2f(250,0);
+        viewport.setCenter(viewCenter); // Center the viewport on the player
 }
 
 void GameScene::LateUpdate(GameTime gameTime) {
-
+        player.LateUpdate(gameTime);
 }
 
 void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
@@ -31,6 +33,8 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 // Draw loading screen
                 return;
         }
+
+        window.setView(viewport);
 
         // Set the view
         //window.setView(viewport);
@@ -41,33 +45,18 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.draw(skyBoxSprite);
         window.draw(mountainsSprite);
 
-        for (int layer = 0; layer <= 3; ++layer) {
-                for (auto obj: map->LevelObjects) {
-                        for (auto entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images) {
-                                if (entry.DrawLayer == layer) {
-                                        IDraw::Draw(window, entry.BackImageLibrary, entry.BackIndex, sf::Vector2f(obj.Position.x, obj.Position.y));
-                                }
+        DrawBehindEntities(window, gameTime);
+        DrawEntities(window, gameTime);
+        DrawInFrontOfEntities(window, gameTime);
 
-                        }
-                }
-        }
-
-        // Layer 4 - Player and entities
-
-        for (int layer = 5; layer <= 7; ++layer) {
-                for (auto obj: map->LevelObjects) {
-                        for (auto entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images) {
-                                if (entry.DrawLayer == layer) {
-                                        IDraw::Draw(window, entry.BackImageLibrary, entry.BackIndex, sf::Vector2f(obj.Position.x, obj.Position.y));
-                                }
-
-                        }
-                }
-        }
+        // Draw the UI
+        window.setView(window.getDefaultView());
+        player.health.Draw(window, gameTime);
 }
 
 void GameScene::InitializeScene() {
-       // LoadAssets();
+        viewport.setSize(sf::Vector2f(1920, 1080)); // Set the view size to the window size TODO: Change this from hardcoded
+        viewport.setCenter(player.position); // Center the viewport on the player
 
         IScene::InitializeScene();
 }
@@ -125,8 +114,8 @@ void GameScene::LoadAssets() {
         // Map from texture library name to set of unique indices
         std::unordered_map<std::string, std::unordered_set<int>> libraryToIndices;
 
-        for (const auto& wmObject : map->LevelObjects) {
-                const auto& oLibraryName = wmObject.ObjectLibraryFile;
+        for (const auto &wmObject: map->LevelObjects) {
+                const auto &oLibraryName = wmObject.ObjectLibraryFile;
 
                 // Skip if library doesn't exist
                 if (!asset_manager.ObjectLibraries.contains(oLibraryName)) {
@@ -134,17 +123,20 @@ void GameScene::LoadAssets() {
                         continue;
                 }
 
-                const auto& oLibrary = asset_manager.ObjectLibraries.at(oLibraryName);
+                const auto &oLibrary = asset_manager.ObjectLibraries.at(oLibraryName);
 
-                for (const auto& graphic : oLibrary->Images) {
+                for (const auto &graphic: oLibrary->Images) {
                         // Skip graphics without an associated library
                         if (graphic.BackImageLibrary.empty()) {
-                                std::cerr << "Graphic in library " << oLibraryName << " has no associated BackImageLibrary." << std::endl;
+                                std::cerr << "Graphic in library " << oLibraryName
+                                          << " has no associated BackImageLibrary." << std::endl;
                                 continue;
                         }
 
-                        if (graphic.BackIndex < 0 || graphic.BackIndex >= asset_manager.TextureLibraries[graphic.BackImageLibrary]->entryCount) {
-                                std::cerr << "Graphic in library " << oLibraryName << " has invalid BackIndex." << std::endl;
+                        if (graphic.BackIndex < 0 ||
+                            graphic.BackIndex >= asset_manager.TextureLibraries[graphic.BackImageLibrary]->entryCount) {
+                                std::cerr << "Graphic in library " << oLibraryName << " has invalid BackIndex."
+                                          << std::endl;
                                 std::cerr << "Expected range: [0, " << oLibrary->Images.size() << "]" << std::endl;
                                 std::cerr << "Actual BackIndex: " << graphic.BackIndex << std::endl;
                                 continue;
@@ -163,10 +155,30 @@ void GameScene::LoadAssets() {
         }
 
         // Load the indices for each texture library
-        for (const auto& [libraryName, indicesSet] : libraryToIndices) {
+        for (const auto &[libraryName, indicesSet]: libraryToIndices) {
                 if (asset_manager.TextureLibraries.contains(libraryName)) {
                         std::vector<int> indices(indicesSet.begin(), indicesSet.end());
                         asset_manager.TextureLibraries[libraryName]->LoadIndices(indices);
                 }
         }
+}
+
+void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
+        for (int layer = 0; layer <= 3; ++layer)
+                for (auto const & obj: map->LevelObjects)
+                        for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
+                                if (entry.DrawLayer == layer)
+                                        IDraw::Draw(window, entry.BackImageLibrary, entry.BackIndex, sf::Vector2f(obj.Position.x, obj.Position.y));
+}
+
+void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
+        player.Draw(window, gameTime);
+}
+
+void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTime) {
+        for (int layer = 5; layer <= 7; ++layer)
+                for (auto const & obj: map->LevelObjects)
+                        for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
+                                if (entry.DrawLayer == layer)
+                                        IDraw::Draw(window, entry.BackImageLibrary, entry.BackIndex, sf::Vector2f(obj.Position.x, obj.Position.y));
 }

@@ -39,6 +39,10 @@ private:
         void LoadSky();
         void LoadMountains();
         void LoadAssets();
+
+        void DrawBehindEntities(sf::RenderWindow& window, GameTime gameTime);
+        void DrawEntities(sf::RenderWindow& window, GameTime gameTime);
+        void DrawInFrontOfEntities(sf::RenderWindow& window, GameTime gameTime);
         // void CalculateRectangle();
 
         Player player = Player();
