@@ -40,6 +40,13 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         CalculateParallaxBackground();
         window.setView(viewport);
         window.draw(skyBoxSprite);
+
+        // Nice to have feature
+        // Could tile accross the sky, alter the opacity with sin (0.1 - 0.3)
+        // window.setView(window.getDefaultView());
+        // DrawBlend(window, "alpha_textures", 242, sf::Vector2f(0, 0), sf::BlendAdd);
+        // window.setView(viewport);
+
         window.draw(mountainsSprite);
 
         DrawBehindEntities(window, gameTime);
@@ -159,6 +166,8 @@ void GameScene::LoadAssets() {
                         asset_manager.TextureLibraries[libraryName]->LoadIndices(indices);
                 }
         }
+
+        asset_manager.TextureLibraries["alpha_textures"]->LoadIndices({242}); // Stars
 }
 
 void GameScene::CalculateParallaxBackground() {

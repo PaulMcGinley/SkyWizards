@@ -11,7 +11,7 @@ DebugOverlay::DebugOverlay() {
         fpsText.setFont(*fpsFont);
         fpsText.setCharacterSize(24);
         fpsText.setFillColor(sf::Color::Black);
-        fpsText.setPosition(50, 50);
+        fpsText.setPosition(1920-100, 5);
 }
 void DebugOverlay::Update(GameTime gameTime) {
         fpsTimer += gameTime.delta_time;
@@ -21,6 +21,7 @@ void DebugOverlay::Update(GameTime gameTime) {
                 fpsCounter = 0;
                 fpsTimer -= 1.0f;
                 fpsText.setString("FPS: " + std::to_string(currentFps));
+                fpsText.setPosition(game_manager.getResolutionWidth() - fpsText.getGlobalBounds().width - 10, 5);
         }
 }
 void DebugOverlay::LateUpdate(GameTime gameTime) {}

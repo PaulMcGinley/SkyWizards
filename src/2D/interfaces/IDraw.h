@@ -30,6 +30,18 @@ public:
                 window.draw(rect);
         }
 
+        void DrawBlend(sf::RenderWindow& window, const std::string& textureLibraryName, const int index, const sf::Vector2f position, const sf::BlendMode &blend) const {
+                auto sizeU = asset_manager.TextureLibraries[textureLibraryName]->entries[index].texture.getSize();
+                sf::Vector2f size(static_cast<float>(sizeU.x), static_cast<float>(sizeU.y));
+                sf::RectangleShape rect(size);
+                rect.setTexture(&asset_manager.TextureLibraries[textureLibraryName]->entries[index].texture);
+                sf::Vector2f drawPosition = position;
+                drawPosition.x += asset_manager.TextureLibraries[textureLibraryName]->entries[index].xOffset;
+                drawPosition.y += asset_manager.TextureLibraries[textureLibraryName]->entries[index].yOffset;
+                rect.setPosition(drawPosition);
+                window.draw(rect, blend);
+        }
+
         AssetManager& asset_manager = AssetManager::GetInstance();
 };
 
