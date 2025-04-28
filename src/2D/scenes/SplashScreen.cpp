@@ -36,7 +36,7 @@ void SplashScreen::Update(GameTime gameTime) {
 
                 CurrentValue+=3;
                 text.setString("Loading Staff Textures...");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -51,7 +51,7 @@ void SplashScreen::Update(GameTime gameTime) {
 
                 CurrentValue+=3;
                 text.setString("Loading Chest Monster Textures...");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -61,7 +61,7 @@ void SplashScreen::Update(GameTime gameTime) {
                 asset_manager.chestMonster.LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Heart Textures...");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -71,7 +71,7 @@ void SplashScreen::Update(GameTime gameTime) {
                 asset_manager.hearts.LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Background Islands Textures...");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -81,7 +81,7 @@ void SplashScreen::Update(GameTime gameTime) {
                 asset_manager.backgroundIslands.LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Game UI Elements!");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -91,7 +91,7 @@ void SplashScreen::Update(GameTime gameTime) {
                 asset_manager.programUsage.LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Level Objects!");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -100,7 +100,7 @@ void SplashScreen::Update(GameTime gameTime) {
                 loadLevelObjects(exeDir + "/resources/levelobjects/");
                 CurrentValue++;
                 text.setString("Loading Map Objects!");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -110,7 +110,7 @@ void SplashScreen::Update(GameTime gameTime) {
                 loadMaps(exeDir + "/resources/maps/");
                 CurrentValue++;
                 text.setString("Loading Complete...!");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPoisition);
+                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -151,7 +151,7 @@ void SplashScreen::InitializeScene() {
 
         text.setFont(font);
         text.setString("Loading Robe Textures...");
-        text.setPosition((game_manager.getResolutionWidth()/2) - (text.getGlobalBounds().width/2), textYPoisition);
+        text.setPosition((game_manager.getResolutionWidth()/2) - (text.getGlobalBounds().width/2), textYPosition);
         text.setCharacterSize(24);
         text.setFillColor(sf::Color::White);
         text.setStyle(sf::Text::Regular);

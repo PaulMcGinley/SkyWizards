@@ -33,7 +33,7 @@ private:
         // Text variables
         sf::Font font;
         sf::Text text;
-        int textYPoisition = 900;
+        int textYPosition = 900;
 
         sf::Font copyrightFont;
         sf::Text copyRightText;
