@@ -50,40 +50,40 @@ void SplashScreen::Update(GameTime gameTime) {
                 asset_manager.staffs[2].LoadIndices({});
 
                 CurrentValue+=3;
-                text.setString("Loading Chest Monster Textures...");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
-                return;
-        }
-
-        // Chest Monster Textures
-        if (asset_manager.chestMonster.entryCount == 0) {
-                asset_manager.chestMonster = TextureLibrary(exeDir + "/resources/ChestMonster.lib");
-                asset_manager.chestMonster.LoadIndices({});
-                CurrentValue++;
                 text.setString("Loading Heart Textures...");
                 text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
+
+        // // Chest Monster Textures
+        // if (asset_manager.chestMonster.entryCount == 0) {
+        //         asset_manager.chestMonster = TextureLibrary(exeDir + "/resources/ChestMonster.lib");
+        //         asset_manager.chestMonster.LoadIndices({});
+        //         CurrentValue++;
+        //         text.setString("Loading Heart Textures...");
+        //         text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
+        //         return;
+        // }
 
         // Heart Textures
         if (asset_manager.hearts.entryCount == 0) {
                 asset_manager.hearts = TextureLibrary(exeDir + "/resources/Hearts.lib");
                 asset_manager.hearts.LoadIndices({});
                 CurrentValue++;
-                text.setString("Loading Background Islands Textures...");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
-                return;
-        }
-
-        // Background Islands
-        if (asset_manager.backgroundIslands.entryCount == 0) {
-                asset_manager.backgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
-                asset_manager.backgroundIslands.LoadIndices({});
-                CurrentValue++;
                 text.setString("Loading Game UI Elements!");
                 text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
+
+        // // Background Islands
+        // if (asset_manager.backgroundIslands.entryCount == 0) {
+        //         asset_manager.backgroundIslands = TextureLibrary(exeDir + "/resources/BackgroundIslands.lib");
+        //         asset_manager.backgroundIslands.LoadIndices({});
+        //         CurrentValue++;
+        //         text.setString("Loading Game UI Elements!");
+        //         text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
+        //         return;
+        // }
 
         // Program Usage (PrgUse)
         if (asset_manager.programUsage.entryCount == 0) {

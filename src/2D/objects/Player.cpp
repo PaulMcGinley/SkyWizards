@@ -30,7 +30,7 @@ Player::Player() {
                 {AnimationType::ANIMATION_JUMP_UP, {225, 4, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_PICKUP, {229, 20, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_RUN, {249, 10, 80, nullptr, nullptr, nullptr}},
-                {AnimationType::ANIMATION_WALK, {259, 16, 65, nullptr, nullptr, [](const int _frame){std::cout << "Walking frame: " << _frame << std::endl;}}} // Debug output
+                {AnimationType::ANIMATION_WALK, {259, 16, 65, nullptr, nullptr, nullptr /*[](const int _frame){std::cout << "Walking frame: " << _frame << std::endl;}*/}} // Debug output
         };
         GameTime gameTime;
 }

@@ -47,7 +47,6 @@ public:
                 if (!viewBounds.intersects(objectBounds))
                         return;
 
-
                 // Draw the texture
                 sf::RectangleShape rect(size);
                 rect.setTexture(&texture);
