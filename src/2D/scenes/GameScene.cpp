@@ -4,6 +4,8 @@
 
 #include "GameScene.h"
 
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -19,6 +21,14 @@ GameScene::GameScene()
 }
 
 void GameScene::Update(GameTime gameTime) {
+
+        // DEV: Zoom in and out will use to ensure tiles are only loaded when in view
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
+                viewport.zoom(0.99f); // Zoom in
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
+                viewport.zoom(1.01f); // Zoom out
+        }
+
         player.Update(gameTime);
         sf::Vector2f viewCenter = player.position + sf::Vector2f(250,0);
         viewport.setCenter(viewCenter); // Center the viewport on the player
