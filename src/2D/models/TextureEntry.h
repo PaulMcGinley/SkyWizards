@@ -8,6 +8,7 @@
 #include <vector>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <cstdint>
 
 struct TextureEntry {
         int xOffset = 0;

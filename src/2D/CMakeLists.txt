@@ -84,8 +84,3 @@ include_directories(${CMAKE_SOURCE_DIR}) # Allows me to add code from the root d
 # Link SFML libraries
 target_link_libraries(LoSW___BftS sfml-graphics sfml-window sfml-system) # Add SFML libraries
 
-# Copy SFML libraries to the build directory
-add_custom_command(TARGET LoSW___BftS POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${SFML_DIR}/../../../lib $<TARGET_FILE_DIR:LoSW___BftS>/lib
-)

@@ -6,7 +6,7 @@
 #include "models/MapObject/WMap.h"
 #include "models/LevelObject/OLibrary.h"
 
-#include <__filesystem/directory_iterator.h>
+#include <filesystem>
 #include <iostream>
 
 // Initialize the static member
@@ -52,7 +52,7 @@ TextureEntry* AssetManager::getProgramUseImage_ptr(int cell) {
 // Loads a library to memory without the image data
 // I am creating the libraries as unique_ptrs to ensure they are deleted when the program ends ;)
 // This also prevents them from going out of scope when the function ends
-void AssetManager::LoadLibrary(std::string fileName) {
+void AssetManager::LoadTextureLibrary(std::string fileName) {
         // Check if the map entry already exists
         if (TextureLibraries.contains(fileName)) {
                 return; // Library exists, no need to load again

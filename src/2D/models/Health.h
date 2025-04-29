@@ -8,6 +8,7 @@
 #include "interfaces/IDraw.h"
 #include "interfaces/IUpdate.h"
 #include "managers/AssetManager.h"
+#include <cmath>
 
 #include <SFML/Graphics/Sprite.hpp>
 

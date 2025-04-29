@@ -5,7 +5,7 @@
 #include "Game.h"
 
 #include <SFML/Graphics.hpp>
-#include <__filesystem/directory_iterator.h>
+#include <filesystem>
 #include "managers/InputManager.cpp"
 #include "managers/SceneManager.h"
 #include "scenes/DevScene.h"

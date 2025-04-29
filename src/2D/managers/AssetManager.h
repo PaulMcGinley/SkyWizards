@@ -9,6 +9,7 @@
 #include <vector>
 #include "models/TextureLibrary.h"
 #include <SFML/Graphics/Font.hpp>
+#include <memory>
 
 namespace sf {
         class Font;
@@ -55,7 +56,7 @@ public:
         // Fonts
         std::map<std::string, std::unique_ptr<sf::Font>> Fonts;
 
-        void LoadLibrary(std::string fileName);
+        void LoadTextureLibrary(std::string fileName);
         void LoadFonts(std::string directoryPath);
 
 private:

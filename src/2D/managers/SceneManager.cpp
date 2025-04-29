@@ -4,6 +4,8 @@
 
 #include "SceneManager.h"
 
+#include <memory>
+
 // Method to get the instance of the singleton
 SceneManager& SceneManager::GetInstance() {
     static SceneManager instance; // Guaranteed to be destroyed.

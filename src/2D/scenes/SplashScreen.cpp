@@ -5,7 +5,7 @@
 #include "SplashScreen.h"
 
 #include <3rdParty/pugixml/pugixml.hpp>
-#include <__filesystem/directory_iterator.h>
+#include <filesystem>
 
 #include "managers/SceneManager.h"
 #include "models/LevelObject/OLibrary.h"
@@ -237,7 +237,7 @@ void SplashScreen::InitializeLibraries() {
                         std::string fileNameWithoutExtension = entry.path().stem().string();
 
                         // Load the library
-                        asset_manager.LoadLibrary(filePath);
+                        asset_manager.LoadTextureLibrary(filePath);
                 }
         }
 }
