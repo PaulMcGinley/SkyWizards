@@ -14,7 +14,7 @@ public:
         int Y;
         int Width;
         int Height;
-        bool Active;
+        bool Active; // Editor only, not used in game
         bool deserialize(const pugi::xml_node &node);
 };
 

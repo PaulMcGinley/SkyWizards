@@ -61,10 +61,10 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.draw(mountainsSprite);
 
         // Draw the background shade at 0,0
-        backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
-                                    viewport.getCenter().y - game_manager.getResolution().y / 2);
-        backgroundShade.setFillColor(sf::Color(0, 0, 0, 50));
-        window.draw(backgroundShade);
+        // backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
+        //                             viewport.getCenter().y - game_manager.getResolution().y / 2);
+        // backgroundShade.setFillColor(sf::Color(0, 0, 0, 50));
+        // window.draw(backgroundShade);
 
         DrawBehindEntities(window, gameTime);
         DrawEntities(window, gameTime);
@@ -226,13 +226,13 @@ void GameScene::CalculateParallaxBackground() {
 
 void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 0; layer <= 3; ++layer) {
-                if (layer == 2) {
-                        // Draw the background shade at 0,0
-                        backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
-                                                    viewport.getCenter().y - game_manager.getResolution().y / 2);
-                        backgroundShade.setFillColor(sf::Color(0, 0, 0, 100));
-                        window.draw(backgroundShade);
-                }
+                // if (layer == 2) {
+                //         // Draw the background shade at 0,0
+                //         backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
+                //                                     viewport.getCenter().y - game_manager.getResolution().y / 2);
+                //         backgroundShade.setFillColor(sf::Color(0, 0, 0, 100));
+                //         window.draw(backgroundShade);
+                // }
 
                 for (auto const & obj: map->LevelObjects)
                         for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
@@ -255,21 +255,62 @@ void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTim
 }
 
 void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameTime) {
-        for (auto const & obj: map->LevelObjects) {
+        auto localBoundaries = getLocalBoundaries();
+        for (auto const &boundary: localBoundaries) {
+                sf::RectangleShape rect(sf::Vector2f(boundary.Width, boundary.Height));
+                rect.setPosition(boundary.X, boundary.Y);
+                rect.setFillColor(sf::Color(255, 0, 0, 128));
+                rect.setOutlineColor(sf::Color::Red);
+                rect.setOutlineThickness(1.0f);
+                window.draw(rect);
+        }
+
+}
+
+// Function to get all boundaries in the current viewport
+std::vector<Boundary> GameScene::getLocalBoundaries() const {
+        // List of boundaries to return
+        std::vector<Boundary> localBoundaries;
+
+        // Get the actual viewport bounds in world coordinates
+        // TODO: Maybe refactor this into a function
+        const sf::FloatRect viewBounds(
+            viewport.getCenter().x - viewport.getSize().x/2,
+            viewport.getCenter().y - viewport.getSize().y/2,
+            viewport.getSize().x,
+            viewport.getSize().y
+        );
+
+        for (auto const &obj: map->LevelObjects) {
                 for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images) {
                         if (entry.Boundaries == nullptr || entry.Boundaries->empty())
                                 continue;
 
                         // Calculate the current frame relative to the start index
                         const int currentFrame = entry.currentFrame - entry.BackIndex;
-                        auto [Frame, X, Y, Width, Height, Active] = entry.Boundaries->at(currentFrame);
+                        if (currentFrame < 0 || currentFrame >= entry.Boundaries->size())
+                                continue;
 
-                        sf::RectangleShape rect(sf::Vector2f(Width, Height));
-                        rect.setPosition((obj.Position.x + X), (obj.Position.y + Y));
-                        rect.setFillColor(sf::Color(255, 0, 0, 128)); // Semi-transparent red
-                        rect.setOutlineColor(sf::Color::Red);
-                        rect.setOutlineThickness(1.0f);
-                        window.draw(rect);
-                } // End loop through obj Images
-        } // End loop through map objects
+                        const Boundary boundary = entry.Boundaries->at(currentFrame);
+
+                        // Adjust boundary position based on the object position
+                        sf::FloatRect boundaryRect(
+                            obj.Position.x + boundary.X,
+                            obj.Position.y + boundary.Y,
+                            boundary.Width,
+                            boundary.Height
+                        );
+
+                        // Check if the boundary is within the viewport
+                        if (viewBounds.intersects(boundaryRect)) {
+                                // Create a copy with adjusted position
+                                Boundary adjustedBoundary = boundary;
+                                adjustedBoundary.X = obj.Position.x + boundary.X;
+                                adjustedBoundary.Y = obj.Position.y + boundary.Y;
+                                localBoundaries.push_back(adjustedBoundary);
+                        }
+                }
+        }
+
+        return localBoundaries;
 }

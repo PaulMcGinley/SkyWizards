@@ -5,6 +5,7 @@
 #ifndef GAMESCENE_H
 #define GAMESCENE_H
 #include "interfaces/IScene.h"
+#include "models/LevelObject/Boundary.h"
 #include "objects/Player.h"
 
 
@@ -47,6 +48,7 @@ private:
         void DrawEntities(sf::RenderWindow& window, GameTime gameTime);
         void DrawInFrontOfEntities(sf::RenderWindow& window, GameTime gameTime);
         void DEBUG_DrawMapBoundaries(sf::RenderWindow& window, GameTime gameTime);
+        std::vector<Boundary> getLocalBoundaries() const;
 
         Player player = Player();
         sf::View viewport;
