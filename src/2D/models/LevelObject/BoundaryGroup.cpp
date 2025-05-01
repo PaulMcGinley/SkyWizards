@@ -8,6 +8,7 @@ bool BoundaryGroup::deserialize(const pugi::xml_node& node) {
         if (!node) {
                 return false; // Node is invalid
         }
+
         // Deserialize Layer
         pugi::xml_node layerNode = node.child("Layer");
         if (layerNode) {
@@ -17,7 +18,13 @@ bool BoundaryGroup::deserialize(const pugi::xml_node& node) {
         }
 
         // Deserialize Boundaries
-        for (pugi::xml_node boundaryNode : node.children("Boundary")) {
+        pugi::xml_node boundariesNode = node.child("Boundaries");
+        if (!boundariesNode) {
+                return false; // Boundaries container is required
+        }
+
+        // Iterate through the Boundary elements inside the Boundaries container
+        for (pugi::xml_node boundaryNode : boundariesNode.children("Boundary")) {
                 Boundary boundary;
                 if (boundary.deserialize(boundaryNode)) {
                         Boundaries.push_back(boundary);

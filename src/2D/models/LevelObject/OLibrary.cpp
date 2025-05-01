@@ -31,9 +31,26 @@ bool OLibrary::deserialize(const pugi::xml_document &doc) {
         for (pugi::xml_node boundaryGroupNode: root.child("BoundaryGroups").children("BoundaryGroup")) {
                 BoundaryGroup boundaryGroup;
                 if (boundaryGroup.deserialize(boundaryGroupNode)) {
-                        BoundaryGroups.push_back(boundaryGroup);
                         int layer = boundaryGroup.Layer;
-                        Images[layer].Boundaries = &BoundaryGroups.back().Boundaries; // Link the boundaries to the graphic
+
+                        // Find the corresponding Image by layer index
+                        bool foundMatchingLayer = false;
+                        for (size_t i = 0; i < Images.size(); ++i) {
+                                if (i == static_cast<size_t>(layer)) {
+                                        // Add the boundary group to our collection first
+                                        BoundaryGroups.push_back(boundaryGroup);
+                                        // Then establish the link (after it's safely in the vector)
+                                        Images[i].Boundaries = &BoundaryGroups.back().Boundaries;
+                                        foundMatchingLayer = true;
+                                        std::cout << "Found matching layer: " << layer << std::endl;
+                                        break;
+                                }
+                        }
+
+                        if (!foundMatchingLayer) {
+                                std::cerr << "Warning: BoundaryGroup references non-existent layer " << layer << std::endl;
+                                BoundaryGroups.push_back(boundaryGroup);
+                        }
                 } else {
                         std::cerr << "Failed to deserialize a BoundaryGroup" << std::endl;
                         return false; // Failed to deserialize a BoundaryGroup
@@ -50,7 +67,7 @@ void OLibrary::Update(GameTime gameTime) {
                         continue;
 
                 // Not ready for next frame
-                if(gameTime.TimeElapsed(image.nextFrameTime))
+                if(!gameTime.TimeElapsed(image.nextFrameTime))
                         continue;
                 // if (gameTime.total_game_time < image.nextFrameTime)
                 //         continue;

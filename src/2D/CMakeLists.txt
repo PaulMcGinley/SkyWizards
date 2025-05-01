@@ -24,23 +24,18 @@ add_executable(LoSW___BftS main.cpp
         Enumerators/FaceDirection.h
         managers/AssetManager.h
         managers/AssetManager.cpp
-        models/ParallaxBackground.h
         objects/mobs/ChestMonster.cpp
         objects/mobs/ChestMonster.h
         models/Health.h
-        models/ParallaxObject.h
         interfaces/IScene.h
         scenes/SplashScreen.cpp
         scenes/SplashScreen.h
         scenes/DevScene.cpp
         scenes/DevScene.h
-        models/BackgroundSceneryObject.h
-        models/BackgroundSceneryObject.cpp
         managers/SceneManager.cpp
         Enumerators/SceneType.h
         os/GetExecutionDirectory.h
         os/PlatformPaths.h
-        models/Island.h
         managers/Random.cpp
         managers/InputManager.cpp
         scenes/MainMenu.cpp
@@ -50,8 +45,6 @@ add_executable(LoSW___BftS main.cpp
         managers/IOManager.h
         IO/GameSettingsFile.cpp
         IO/GameSettingsFile.h
-        models/Level.cpp
-        models/Level.h
         Envir/SWS.cpp
         Envir/SWS.h
         3rdParty/pugixml/pugiconfig.hpp

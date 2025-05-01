@@ -51,6 +51,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.setView(viewport);
         window.draw(skyBoxSprite);
 
+
         // Nice to have feature
         // Could tile accross the sky, alter the opacity with sin (0.1 - 0.3)
         // window.setView(window.getDefaultView());
@@ -58,6 +59,12 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // window.setView(viewport);
 
         window.draw(mountainsSprite);
+
+        // Draw the background shade at 0,0
+        backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
+                                    viewport.getCenter().y - game_manager.getResolution().y / 2);
+        backgroundShade.setFillColor(sf::Color(0, 0, 0, 50));
+        window.draw(backgroundShade);
 
         DrawBehindEntities(window, gameTime);
         DrawEntities(window, gameTime);
@@ -218,11 +225,20 @@ void GameScene::CalculateParallaxBackground() {
 }
 
 void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
-        for (int layer = 0; layer <= 3; ++layer)
+        for (int layer = 0; layer <= 3; ++layer) {
+                if (layer == 2) {
+                        // Draw the background shade at 0,0
+                        backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
+                                                    viewport.getCenter().y - game_manager.getResolution().y / 2);
+                        backgroundShade.setFillColor(sf::Color(0, 0, 0, 100));
+                        window.draw(backgroundShade);
+                }
+
                 for (auto const & obj: map->LevelObjects)
                         for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
                                 if (entry.DrawLayer == layer)
                                         IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x, obj.Position.y));
+        }
 }
 
 void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
@@ -237,22 +253,31 @@ void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTim
                                         IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame,
                                                     sf::Vector2f(obj.Position.x, obj.Position.y));
 }
+
 void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameTime) {
-        for (auto const & obj: map->LevelObjects)
-                for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images){
-                        int currentFrame = entry.currentFrame;
-                        // Draw Image->Boundaries[currentFrame]
-                        if (entry.Boundaries == nullptr)
-                                continue;
-                        if(entry.Boundaries->size() <= currentFrame)
+        for (auto const & obj: map->LevelObjects) {
+                for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images) {
+                        if (entry.Boundaries == nullptr || entry.Boundaries->empty())
                                 continue;
 
-                        Boundary boundary = entry.Boundaries->at(currentFrame);
+                        // Calculate the current frame relative to the start index
+                        int currentFrame = entry.currentFrame - entry.BackIndex;
 
-                        sf::RectangleShape rect(sf::Vector2f(boundary.Width, boundary.Height));
-                        rect.setPosition(obj.Position.x + boundary.X, obj.Position.y + boundary.Y);
-                        rect.setFillColor(sf::Color(255, 0, 0, 100)); // Semi-transparent red
-                        std::cout << "Drawing boundary at: " << rect.getPosition().x << ", " << rect.getPosition().y << std::endl;
-                        window.draw(rect);
+                        // Loop through all boundaries in the boundary collection
+                        for (const auto& boundary : *(entry.Boundaries)) {
+                                // Check if this boundary is for the current frame and is active
+                                //if (boundary.Frame == currentFrame && boundary.Active) {
+                                        sf::RectangleShape rect(sf::Vector2f(boundary.Width, boundary.Height));
+                                        rect.setPosition(obj.Position.x + boundary.X, obj.Position.y + boundary.Y);
+                                        rect.setFillColor(sf::Color(255, 0, 0, 255)); // Semi-transparent red
+                                        rect.setOutlineColor(sf::Color::Red);
+                                        rect.setOutlineThickness(1.0f);
+                                        window.draw(rect);
+                                std::cout << "Drawing boundary at: " << obj.Position.x + boundary.X << ", " << obj.Position.y + boundary.Y
+                                          << " with size: " << boundary.Width << "x" << boundary.Height << std::endl;
+                              //  }
+
+                        }
                 }
+        }
 }

@@ -13,7 +13,7 @@
 struct TextureEntry {
         int xOffset = 0;
         int yOffset = 0;
-        std::vector<uint8_t> data; // PNG data as byte array // TODO: Load this as dynamic memory so we can delete the pointer and not have an empty variable hanging around
+        std::vector<uint8_t> data; // PNG data as byte array
         sf::Texture texture;
         sf::VertexArray texQuad{sf::Quads, 4};
 

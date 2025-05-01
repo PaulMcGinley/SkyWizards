@@ -35,6 +35,8 @@ private:
         sf::Texture* mountainsTexture;
         sf::Sprite mountainsSprite;
 
+        sf::RectangleShape backgroundShade = sf::RectangleShape(sf::Vector2f(1920, 1080));
+
         void ValidateMap();
         void LoadSky();
         void LoadMountains();

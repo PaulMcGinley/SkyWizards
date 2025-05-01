@@ -6,7 +6,6 @@
 #define DEVSCENE_H
 
 #include "interfaces/IScene.h"
-#include "models/BackgroundSceneryObject.h"
 #include "objects/Player.h"
 
 #include <SFML/Graphics/Shader.hpp>
@@ -23,8 +22,6 @@ public:
         void OnScene_Deactivate() override;
 
 private:
-        TextureLibrary& floatingIslandLibrary = AssetManager::GetInstance().backgroundIslands;
-        BackgroundSceneryObject floatingIsland = BackgroundSceneryObject(floatingIslandLibrary, 0, 36, 50, sf::Vector2f(0, -500));
         Player player = Player();
         sf::View viewport;
 };

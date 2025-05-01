@@ -8,9 +8,6 @@
 
 void DevScene::Update(GameTime gameTime) {
 
-        // Update Scenery
-        floatingIsland.Update(gameTime);
-
         // Update entities
         player.Update(gameTime);
 
@@ -22,7 +19,6 @@ void DevScene::Update(GameTime gameTime) {
 
 void DevScene::LateUpdate(GameTime gameTime) {
     player.LateUpdate(gameTime);
-    floatingIsland.LateUpdate(gameTime);
 }
 
 void DevScene::Draw(sf::RenderWindow& window, GameTime gameTime) {
@@ -30,7 +26,6 @@ void DevScene::Draw(sf::RenderWindow& window, GameTime gameTime) {
         window.setView(viewport);
 
         // Draw the scenery
-        floatingIsland.Draw(window, gameTime);
         player.Draw(window, gameTime);
 
         // Draw the UI
