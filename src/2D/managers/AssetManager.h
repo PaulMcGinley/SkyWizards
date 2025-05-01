@@ -45,7 +45,6 @@ public:
         TextureLibrary backgroundIslands = TextureLibrary("");
         TextureLibrary programUsage = TextureLibrary("");
 
-
         // Only textures required for gameplay will be loaded
         std::map<std::string, std::unique_ptr<TextureLibrary>> TextureLibraries;
 

@@ -62,6 +62,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         DrawBehindEntities(window, gameTime);
         DrawEntities(window, gameTime);
         DrawInFrontOfEntities(window, gameTime);
+        DEBUG_DrawMapBoundaries(window, gameTime);
 
         // Draw the UI
         window.setView(window.getDefaultView());
@@ -69,8 +70,10 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 }
 
 void GameScene::InitializeScene() {
-        player.position = sf::Vector2f(0, 5000); // Set the player position
-        viewport.setSize(sf::Vector2f(1920, 1080)); // Set the view size to the window size TODO: Change this from hardcoded
+        player.position = sf::Vector2f(500, 5000); // Set the player position
+        float screenWidth = game_manager.getResolution().x;
+        float screenHeight = game_manager.getResolution().y;
+        viewport.setSize(sf::Vector2f(screenWidth, screenHeight)); // Set the view size to the window size TODO: Change this from hardcoded
         viewport.setCenter(player.position); // Center the viewport on the player
 
         IScene::InitializeScene();
@@ -228,8 +231,28 @@ void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
 
 void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 5; layer <= 7; ++layer)
-                for (auto const & obj: map->LevelObjects)
+                for (auto const &obj: map->LevelObjects)
                         for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
                                 if (entry.DrawLayer == layer)
-                                        IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x, obj.Position.y));
+                                        IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame,
+                                                    sf::Vector2f(obj.Position.x, obj.Position.y));
+}
+void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameTime) {
+        for (auto const & obj: map->LevelObjects)
+                for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images){
+                        int currentFrame = entry.currentFrame;
+                        // Draw Image->Boundaries[currentFrame]
+                        if (entry.Boundaries == nullptr)
+                                continue;
+                        if(entry.Boundaries->size() <= currentFrame)
+                                continue;
+
+                        Boundary boundary = entry.Boundaries->at(currentFrame);
+
+                        sf::RectangleShape rect(sf::Vector2f(boundary.Width, boundary.Height));
+                        rect.setPosition(obj.Position.x + boundary.X, obj.Position.y + boundary.Y);
+                        rect.setFillColor(sf::Color(255, 0, 0, 100)); // Semi-transparent red
+                        std::cout << "Drawing boundary at: " << rect.getPosition().x << ", " << rect.getPosition().y << std::endl;
+                        window.draw(rect);
+                }
 }

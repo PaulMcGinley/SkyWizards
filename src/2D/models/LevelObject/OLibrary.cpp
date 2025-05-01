@@ -32,6 +32,8 @@ bool OLibrary::deserialize(const pugi::xml_document &doc) {
                 BoundaryGroup boundaryGroup;
                 if (boundaryGroup.deserialize(boundaryGroupNode)) {
                         BoundaryGroups.push_back(boundaryGroup);
+                        int layer = boundaryGroup.Layer;
+                        Images[layer].Boundaries = &BoundaryGroups.back().Boundaries; // Link the boundaries to the graphic
                 } else {
                         std::cerr << "Failed to deserialize a BoundaryGroup" << std::endl;
                         return false; // Failed to deserialize a BoundaryGroup
@@ -48,8 +50,10 @@ void OLibrary::Update(GameTime gameTime) {
                         continue;
 
                 // Not ready for next frame
-                if (gameTime.total_game_time < image.nextFrameTime)
+                if(gameTime.TimeElapsed(image.nextFrameTime))
                         continue;
+                // if (gameTime.total_game_time < image.nextFrameTime)
+                //         continue;
 
                 // Update the next frame time
                 image.currentFrame++;

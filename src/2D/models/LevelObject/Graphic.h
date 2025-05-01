@@ -7,6 +7,9 @@
 
 #include <3rdParty/pugixml/pugixml.hpp>
 #include <string>
+#include <vector>
+
+#include "Boundary.h"
 
 class Graphic {
 public:
@@ -23,6 +26,8 @@ public:
         int currentFrame;
         float nextFrameTime;
         bool deserialize(const pugi::xml_node &node);
+
+        std::vector<Boundary>* Boundaries = nullptr; // Pointer to the boundaries for this graphic
 };
 
 #endif //GRAPHIC_H

@@ -44,6 +44,7 @@ private:
         void DrawBehindEntities(sf::RenderWindow& window, GameTime gameTime);
         void DrawEntities(sf::RenderWindow& window, GameTime gameTime);
         void DrawInFrontOfEntities(sf::RenderWindow& window, GameTime gameTime);
+        void DEBUG_DrawMapBoundaries(sf::RenderWindow& window, GameTime gameTime);
 
         Player player = Player();
         sf::View viewport;

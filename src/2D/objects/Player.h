@@ -46,6 +46,10 @@ public:
         void SetIsFalling(const bool falling) { isFalling = falling; }
 
 private:
+        const sf::IntRect collisionBox = {225, 200, 50, 150};
+        const sf::Vector2f collisionOffset() { return position + sf::Vector2f(collisionBox.left, collisionBox.top); }
+        const float feetPosition() { return position.y + collisionBox.top + collisionBox.height; }
+
         const int WALKING_SPEED = 128;
         const int RUNNING_SPEED = 400;
 
