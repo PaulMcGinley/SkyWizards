@@ -261,23 +261,15 @@ void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameT
                                 continue;
 
                         // Calculate the current frame relative to the start index
-                        int currentFrame = entry.currentFrame - entry.BackIndex;
+                        const int currentFrame = entry.currentFrame - entry.BackIndex;
+                        auto [Frame, X, Y, Width, Height, Active] = entry.Boundaries->at(currentFrame);
 
-                        // Loop through all boundaries in the boundary collection
-                        for (const auto& boundary : *(entry.Boundaries)) {
-                                // Check if this boundary is for the current frame and is active
-                                //if (boundary.Frame == currentFrame && boundary.Active) {
-                                        sf::RectangleShape rect(sf::Vector2f(boundary.Width, boundary.Height));
-                                        rect.setPosition(obj.Position.x + boundary.X, obj.Position.y + boundary.Y);
-                                        rect.setFillColor(sf::Color(255, 0, 0, 255)); // Semi-transparent red
-                                        rect.setOutlineColor(sf::Color::Red);
-                                        rect.setOutlineThickness(1.0f);
-                                        window.draw(rect);
-                                std::cout << "Drawing boundary at: " << obj.Position.x + boundary.X << ", " << obj.Position.y + boundary.Y
-                                          << " with size: " << boundary.Width << "x" << boundary.Height << std::endl;
-                              //  }
-
-                        }
-                }
-        }
+                        sf::RectangleShape rect(sf::Vector2f(Width, Height));
+                        rect.setPosition((obj.Position.x + X), (obj.Position.y + Y));
+                        rect.setFillColor(sf::Color(255, 0, 0, 128)); // Semi-transparent red
+                        rect.setOutlineColor(sf::Color::Red);
+                        rect.setOutlineThickness(1.0f);
+                        window.draw(rect);
+                } // End loop through obj Images
+        } // End loop through map objects
 }
