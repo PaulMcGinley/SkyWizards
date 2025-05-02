@@ -22,17 +22,22 @@ GameScene::GameScene()
 
 void GameScene::Update(GameTime gameTime) {
 
-        // DEV: Zoom in and out will use to ensure tiles are only loaded when in view
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
-                viewport.zoom(0.99f); // Zoom in
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
-                viewport.zoom(1.01f); // Zoom out
-        }
+        // // DEV: Zoom in and out will use to ensure tiles are only loaded when in view
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
+        //         viewport.zoom(0.99f); // Zoom in
+        // } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
+        //         viewport.zoom(1.01f); // Zoom out
+        // }
 
+        // Pass boundaries to Player and calculate the physics state
+        player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
         player.Update(gameTime);
+
+        // Update the camera
         sf::Vector2f viewCenter = player.position + sf::Vector2f(250,0);
         viewport.setCenter(viewCenter); // Center the viewport on the player
 
+        // Update the map objects
         for (auto const & obj: map->LevelObjects)
                 asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
 }
@@ -77,7 +82,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 }
 
 void GameScene::InitializeScene() {
-        player.position = sf::Vector2f(500, 5000); // Set the player position
+        player.position = sf::Vector2f(1200, 3500); // Set the player position
         float screenWidth = game_manager.getResolution().x;
         float screenHeight = game_manager.getResolution().y;
         viewport.setSize(sf::Vector2f(screenWidth, screenHeight)); // Set the view size to the window size TODO: Change this from hardcoded

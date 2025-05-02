@@ -50,3 +50,17 @@ bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTim
 
         return true;
 }
+
+bool IAnimate::ChangeAnimation(const AnimationType next_animation) {
+
+        if(currentAnimation == next_animation)
+                return false;
+
+        // Change the current animation sequence
+        currentAnimation = next_animation;
+        currentAnimationFrame = 0;
+        nextFrameTime = 0;
+
+
+        return true;
+}

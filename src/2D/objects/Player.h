@@ -14,6 +14,7 @@
 #include "interfaces/IUpdate.h"
 #include "models/GameTime.h"
 #include "models/Health.h"
+#include "models/LevelObject/Boundary.h"
 #include "models/TextureEntry.h"
 
 class AssetManager;
@@ -28,6 +29,7 @@ public:
         int staffLibrary = 0;
         sf::VertexArray staffQuad{sf::Quads, 4};
 
+        void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime);
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
@@ -45,23 +47,27 @@ public:
         [[nodiscard]] bool IsFalling() const { return isFalling; }
         void SetIsFalling(const bool falling) { isFalling = falling; }
 
-private:
+        const sf::IntRect collisionBox = {225, 200, 50, 150};
+        const sf::Vector2f collisionOffset() { return position + sf::Vector2f(collisionBox.left, collisionBox.top); }
+        const float feetPosition() { return position.y + collisionBox.top + collisionBox.height; }
         // Velocity
         sf::Vector2f velocity = {0, 0};
         sf::Vector2f acceleration = {0, 0};
         sf::Vector2f deceleration = {0, 0};
-        sf::Vector2f maxVelocity = {400, 800};
+        sf::Vector2f maxVelocity = {1000, 2000};
 
-        const sf::IntRect collisionBox = {225, 200, 50, 150};
-        const sf::Vector2f collisionOffset() { return position + sf::Vector2f(collisionBox.left, collisionBox.top); }
-        const float feetPosition() { return position.y + collisionBox.top + collisionBox.height; }
+private:
+
+
 
         const int WALKING_SPEED = 128;
-        const int RUNNING_SPEED = 400;
-        const int FALLING_SPEED = 800;
-        const int JUMPING_SPEED = 400;
+        const int RUNNING_SPEED = 800;
+        const int FALLING_SPEED = 1200;
+        const int JUMPING_SPEED = 700;
+        const int JUMPING_HEIGHT = 20000;
 
         bool isFalling = false;
+        bool isJumping = false;
 };
 
 
