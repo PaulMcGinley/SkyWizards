@@ -33,7 +33,6 @@ Player::Player() {
                 {AnimationType::ANIMATION_RUN, {249, 10, 80, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_WALK, {259, 16, 65, nullptr, nullptr, nullptr /*[](const int _frame){std::cout << "Walking frame: " << _frame << std::endl;}*/}} // Debug output
         };
-        GameTime gameTime;
 }
 
 void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) {
@@ -196,22 +195,25 @@ void Player::Update(GameTime gameTime) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
                 faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
                 isMoving = true;
-                targetSpeed = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !isFalling && !isJumping) ? -RUNNING_SPEED : -WALKING_SPEED;
-        }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                targetSpeed = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !isFalling && !isJumping)
+                                              ? -RUNNING_SPEED
+                                              : -WALKING_SPEED;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                 faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
                 isMoving = true;
-                targetSpeed = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !isFalling && !isJumping) ? RUNNING_SPEED : WALKING_SPEED;
+                targetSpeed = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !isFalling && !isJumping)
+                                              ? RUNNING_SPEED
+                                              : WALKING_SPEED;
         }
 
         // Apply acceleration or deceleration to horizontal movement
         if (isMoving) {
                 // Calculate acceleration based on target speed
-                const float accelRate = 500.0f;
+                const float accelRate = 800.0f;
                 acceleration.x = accelRate * ((targetSpeed - velocity.x) / maxVelocity.x);
         } else {
                 // Apply deceleration when not moving
-                deceleration.x = 1000.0f;
+                deceleration.x = 1500.0f;
                 if (velocity.x > 0) {
                         velocity.x = std::max(0.0f, velocity.x - deceleration.x * gameTime.delta_time);
                 } else if (velocity.x < 0) {
@@ -234,22 +236,27 @@ void Player::Update(GameTime gameTime) {
         // Update animation based on movement state
         if (isJumping && velocity.y < 0) {
                 ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
-        }
-        else if (isFalling) {
-                ChangeAnimation(AnimationType::ANIMATION_JUMP_AIR, gameTime, false);
-        }
-        else if (std::abs(velocity.x) > 0.1f) {
+        } else if (isFalling) {
+                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
+        } else if (std::abs(velocity.x) > 0.1f) {
                 if (std::abs(velocity.x) > WALKING_SPEED + 50) {
                         ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                 } else {
                         ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime);
                 }
         } else {
-                ChangeAnimation(AnimationType::ANIMATION_IDLE2, gameTime);
+                ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime);
         }
 
+
+        UpdateQuads();
+        health.Update(gameTime);
+}
+
+// Update Robe and Staff texture quads (position, texture coordinates)
+void Player::UpdateQuads() {
         // Update texture quads
-        TextureEntry& robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
+        TextureEntry &robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
         robeQuad[0].texCoords = robe.texQuad[0].texCoords;
         robeQuad[1].texCoords = robe.texQuad[1].texCoords;
         robeQuad[2].texCoords = robe.texQuad[2].texCoords;
@@ -260,7 +267,7 @@ void Player::Update(GameTime gameTime) {
         robeQuad[2].position = robe.texQuad[2].position + position;
         robeQuad[3].position = robe.texQuad[3].position + position;
 
-        TextureEntry& staff = *asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame());
+        TextureEntry &staff = *asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame());
         staffQuad[0].texCoords = staff.texQuad[0].texCoords;
         staffQuad[1].texCoords = staff.texQuad[1].texCoords;
         staffQuad[2].texCoords = staff.texQuad[2].texCoords;
@@ -270,18 +277,14 @@ void Player::Update(GameTime gameTime) {
         staffQuad[1].position = staff.texQuad[1].position + position;
         staffQuad[2].position = staff.texQuad[2].position + position;
         staffQuad[3].position = staff.texQuad[3].position + position;
-
-        health.Update(gameTime);
 }
 
 void Player::LateUpdate(GameTime gameTime) {
-
         health.LateUpdate(gameTime);
         TickAnimation(gameTime);
 }
 
 void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
-
         window.draw(
                 robeQuad,
                 &asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame())->texture

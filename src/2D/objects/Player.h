@@ -31,6 +31,7 @@ public:
 
         void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime);
         void Update(GameTime gameTime) override;
+        void UpdateQuads();
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void TickAnimation(GameTime gameTime) override;
