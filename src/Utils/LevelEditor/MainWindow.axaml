@@ -19,7 +19,7 @@
         <MenuItem Header="Level" FontWeight="Bold">
             <MenuItem Header="New"/>
             <Separator/>
-            <MenuItem Header="Open"/>
+            <MenuItem Header="Open" Click="mnuOpen_Click"/>
             <Separator/>
             <MenuItem Header="Save" Click="mnuSave_Click"/>
             <MenuItem Header="Save As"/>

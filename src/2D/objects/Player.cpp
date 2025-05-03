@@ -213,11 +213,13 @@ void Player::Update(GameTime gameTime) {
                 acceleration.x = accelRate * ((targetSpeed - velocity.x) / maxVelocity.x);
         } else {
                 // Apply deceleration when not moving
-                deceleration.x = 1500.0f;
-                if (velocity.x > 0) {
-                        velocity.x = std::max(0.0f, velocity.x - deceleration.x * gameTime.delta_time);
-                } else if (velocity.x < 0) {
-                        velocity.x = std::min(0.0f, velocity.x + deceleration.x * gameTime.delta_time);
+                if (!isFalling && !isJumping) {
+                        deceleration.x = 1500.0f;
+                        if (velocity.x > 0) {
+                                velocity.x = std::max(0.0f, velocity.x - deceleration.x * gameTime.delta_time);
+                        } else if (velocity.x < 0) {
+                                velocity.x = std::min(0.0f, velocity.x + deceleration.x * gameTime.delta_time);
+                        }
                 }
         }
 

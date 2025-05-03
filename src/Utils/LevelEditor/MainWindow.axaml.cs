@@ -8,6 +8,8 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using libType;
+using System.IO;
+using Avalonia.Platform.Storage;
 
 namespace LevelEditor;
 
@@ -444,5 +446,40 @@ public partial class MainWindow : Window
         
         if (err != null)
             Console.WriteLine(err);
+    }
+
+    private async void mnuOpen_Click(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("Open clicked");
+        var storageProvider = StorageProvider;
+        var fileOptions = new FilePickerOpenOptions
+        {
+            Title = "Open Map",
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("Wizard Map Files")
+                {
+                    Patterns = new[] { "*.wmap" },
+                    MimeTypes = new[] { "application/x-wmap" }
+                }
+            }
+        };
+        var file = await storageProvider.OpenFilePickerAsync(fileOptions);
+        if (file == null)
+            return;
+        
+        // Open the selected file
+        _map.SetFilePath(file[0].Path.LocalPath);
+        _map.Open(out string? err);
+        
+        if (err != null)
+        {
+            Console.WriteLine(err);
+            return;
+        }
+
+        UpdateItemList();
+        DrawScene();
+        
     }
 }
