@@ -14,6 +14,12 @@ public class WMap
     public int MountainsBackgroundIndex { get; set; } = -1;
     public List<WMObject> LevelObjects { get; set; } = [];
     public List<string> Scripts { get; set; } = [];
+    public float startXPos { get; set; } = 0;
+    public float startYPos { get; set; } = 0;
+    public float endXPos { get; set; } = 0;
+    public float endYPos { get; set; } = 0;
+    public int endWidth { get; set; } = 0;
+    public int endHeight { get; set; } = 0;
 
     /// <summary>
     /// Open the map from the file path specified in FilePath.

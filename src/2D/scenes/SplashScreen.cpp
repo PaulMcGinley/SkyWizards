@@ -113,11 +113,35 @@ void SplashScreen::LateUpdate(GameTime gameTime) {
 }
 
 void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
-        window.draw(backgroundQuad, &background); // Draw the background
-        window.draw(progressQuad, &progress); // Draw the progress bar
-        window.draw(frameQuad, &frame); // Draw the frame
-        window.draw(text); // Draw the text
-        window.draw(copyRightText); // Draw the copy right text
+        // Draw the background
+        window.draw(backgroundQuad, &background);
+
+        // Calculate progress percentage
+        float progressPercentage = static_cast<float>(CurrentValue) / static_cast<float>(TargetValue);
+
+        // Frame sprite
+        sf::Sprite frameSprite(frame);
+        float frameX = (game_manager.getResolutionWidth() - frameSprite.getGlobalBounds().width) / 2;
+        float frameY = game_manager.getResolutionHeight() * 0.75f;
+        frameSprite.setPosition(frameX, frameY);
+
+
+        // Progress bar
+        sf::RectangleShape progressBar;
+        float progressBarWidth = frameSprite.getGlobalBounds().width * 0.9f;
+        float progressBarHeight = frameSprite.getGlobalBounds().height * 0.4f;
+
+        float progressX = frameX + (frameSprite.getGlobalBounds().width - progressBarWidth) / 2;
+        float progressY = frameY + (frameSprite.getGlobalBounds().height - progressBarHeight) / 2;
+
+        progressBar.setSize(sf::Vector2f(progressBarWidth * progressPercentage, progressBarHeight));
+        progressBar.setPosition(progressX, progressY);
+        progressBar.setFillColor(sf::Color(50, 50, 180));
+
+        window.draw(progressBar);
+        window.draw(frameSprite);
+        window.draw(text);
+        window.draw(copyRightText);
 }
 
 void SplashScreen::InitializeScene() {

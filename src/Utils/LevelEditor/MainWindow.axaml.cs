@@ -113,7 +113,7 @@ public partial class MainWindow : Window
     private async void ChangeSkyBox_OnTapped(object? sender, TappedEventArgs e)
     {
         // Get a reference to the library first
-        var backgroundsLibrary = LibraryManager.Libraries["sky.lib"];
+        var backgroundsLibrary = LibraryManager.Libraries["sky"];
 
         LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
         await imageSelector.ShowDialog(this);
@@ -477,9 +477,51 @@ public partial class MainWindow : Window
             Console.WriteLine(err);
             return;
         }
-
+        
+        var backgroundsLibrary = LibraryManager.Libraries["sky"];
+        LImage img = backgroundsLibrary.Content.Images[_map.ParallaxBackgroundIndex];
+        using var memoryStream = new System.IO.MemoryStream(img.Data);
+        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
+        SkyboxPreview.Source = bitmap;
+        
+        var backgroundsLibrary2 = LibraryManager.Libraries["mountains"];
+        LImage img2 = backgroundsLibrary2.Content.Images[_map.MountainsBackgroundIndex];
+        using var memoryStream2 = new System.IO.MemoryStream(img2.Data);
+        var bitmap2 = new Avalonia.Media.Imaging.Bitmap(memoryStream2);
+        MountainsPreview.Source = bitmap2;
+        
         UpdateItemList();
         DrawScene();
         
+    }
+
+    private void ChangeMountains_OnTapped(object? sender, TappedEventArgs e)
+    {
+        // Get a reference to the mountains library
+        var backgroundsLibrary = LibraryManager.Libraries["mountains"];
+
+        // Show the image selector dialog
+        LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
+        imageSelector.ShowDialog(this);
+
+        // Check if a valid image was selected
+        if (imageSelector.SelectedIndex == -1)
+        {
+            Console.WriteLine("No mountain image selected");
+            return;
+        }
+
+        // Update the map with the selected index
+        _map.MountainsBackgroundIndex = imageSelector.SelectedIndex;
+
+        // Change the picture box image to the selected image
+        LImage img = backgroundsLibrary.Content.Images[imageSelector.SelectedIndex];
+
+        // Convert byte array to stream before creating Bitmap
+        using var memoryStream = new System.IO.MemoryStream(img.Data);
+        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
+
+        // Update the MountainPreview image
+        MountainsPreview.Source = bitmap;
     }
 }

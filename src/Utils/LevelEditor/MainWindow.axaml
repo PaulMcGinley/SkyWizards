@@ -48,22 +48,57 @@
                   HorizontalScrollBarVisibility="Disabled" 
                   VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="2">
+            <Expander Header="Goals" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                <StackPanel Margin="10" Spacing="8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Start Position Row -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Start Position:"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   x:Name="StartPositionLabel"
+                                   Text="Click to set" Foreground="Blue"
+                                   Cursor="Hand"/>
+
+                        <!-- End Position Row -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="End Position:"
+                                   VerticalAlignment="Center" Margin="0,8,8,0"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,8,0,0"
+                                   x:Name="EndPositionLabel"
+                                   Text="Click to set" Foreground="Blue"
+                                   Cursor="Hand"/>
+                    </Grid>
+                </StackPanel>
+            </Expander>
             <Expander Header="Skybox" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
                     <Border BorderBrush="Gray" BorderThickness="1" Width="230" Height="130" CornerRadius="5"  ClipToBounds="True">
                         <Panel>
-                                <Image x:Name="SkyboxPreview" Stretch="UniformToFill" />
+                            <Image x:Name="SkyboxPreview" Stretch="UniformToFill" />
                             <Rectangle Fill="Transparent" Cursor="Hand" Tapped="ChangeSkyBox_OnTapped"/>
                         </Panel>
                     </Border>
                 </Grid>
             </Expander>
-            <Expander Header="Parallax Foreground" HorizontalAlignment="Stretch" Margin="0,0,0,2">
-                <StackPanel Margin="10">
-                    <TextBlock Text="placeholder" />
-                </StackPanel>
+            <Expander Header="Mountains" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
+                    <Border BorderBrush="Gray" BorderThickness="1" Width="230" Height="130" CornerRadius="5"  ClipToBounds="True">
+                        <Panel>
+                            <Image x:Name="MountainsPreview" Stretch="UniformToFill" />
+                            <Rectangle Fill="Transparent" Cursor="Hand" Tapped="ChangeMountains_OnTapped"/>
+                        </Panel>
+                    </Border>
+                </Grid>
             </Expander>
-            <Expander Header="Expander 3" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+            <Expander Header="Parallax Foreground" HorizontalAlignment="Stretch" Margin="0,0,0,2">
                 <StackPanel Margin="10">
                     <TextBlock Text="placeholder" />
                 </StackPanel>

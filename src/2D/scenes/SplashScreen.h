@@ -10,6 +10,7 @@
 #include "interfaces/IScene.h"
 
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
 class SplashScreen : public IScene {
@@ -27,13 +28,13 @@ public:
 
 private:
         // Progress bar variables
-        int TargetValue = 12;
+        int TargetValue = 10;
         int CurrentValue = 0;
 
         // Text variables
         sf::Font font;
         sf::Text text;
-        int textYPosition = 900;
+        int textYPosition = 857;
 
         sf::Font copyrightFont;
         sf::Text copyRightText;
