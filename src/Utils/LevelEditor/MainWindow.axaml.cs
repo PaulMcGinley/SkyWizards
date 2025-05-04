@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using libType;
 using System.IO;
+using Avalonia;
+using Avalonia.Controls.Shapes;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Point = Avalonia.Point;
 
 namespace LevelEditor;
 
@@ -17,6 +20,7 @@ public partial class MainWindow : Window
 {
     private LevelObjectManager _objManager;
     private WMap _map;
+    
 
     #region This Form
 
@@ -356,6 +360,17 @@ public partial class MainWindow : Window
             SetupDragHandlers(imageControl);
         }
         
+        // Create the start position box
+        CreateStartPositionBox();
+    
+        // Connect the label click event to focus on start position
+        StartPositionLabel.Tapped += (s, e) => {
+            ScrollViewerContainer.Offset = new Vector(
+                _map.startXPos - (ScrollViewerContainer.Viewport.Width / 2),
+                _map.startYPos - (ScrollViewerContainer.Viewport.Height / 2)
+            );
+        };
+        
         DrawGuideLine();
     }
 
@@ -416,7 +431,75 @@ public partial class MainWindow : Window
             }
         };
     }
+    
+    private Rectangle _startPositionBox;
+    private bool _isDraggingStartPosition;
+    private Point _startPositionDragOffset;
+    private void CreateStartPositionBox()
+    {
+        // Create the blue box representing start position
+        _startPositionBox = new Avalonia.Controls.Shapes.Rectangle
+        {
+            Width = 50,
+            Height = 150,
+            Fill = new SolidColorBrush(Colors.Blue, 0.5),
+            Stroke = Brushes.Blue,
+            StrokeThickness = 2,
+            Cursor = new Cursor(StandardCursorType.Hand)
+        };
 
+        // Position the box based on map start position values
+        Canvas.SetLeft(_startPositionBox, _map.startXPos);
+        Canvas.SetTop(_startPositionBox, _map.startYPos);
+
+        // Add drag functionality
+        _startPositionBox.PointerPressed += StartPositionBox_PointerPressed;
+        _startPositionBox.PointerMoved += StartPositionBox_PointerMoved;
+        _startPositionBox.PointerReleased += StartPositionBox_PointerReleased;
+
+        // Add the box to the canvas
+        DrawingCanvas.Children.Add(_startPositionBox);
+
+        // Update the label text
+        StartPositionLabel.Text = $"X: {_map.startXPos}, Y: {_map.startYPos}";
+    }
+
+    private void StartPositionBox_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        _isDraggingStartPosition = true;
+        var position = e.GetPosition(_startPositionBox);
+        _startPositionDragOffset = position;
+        e.Pointer.Capture(_startPositionBox);
+        e.Handled = true;
+    }
+
+    private void StartPositionBox_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_isDraggingStartPosition) return;
+
+        var position = e.GetPosition(DrawingCanvas);
+        var newLeft = position.X - _startPositionDragOffset.X;
+        var newTop = position.Y - _startPositionDragOffset.Y;
+
+        Canvas.SetLeft(_startPositionBox, newLeft);
+        Canvas.SetTop(_startPositionBox, newTop);
+
+        // Update the map values
+        _map.startXPos = (float)newLeft;
+        _map.startYPos = (float)newTop;
+
+        // Update the text label
+        StartPositionLabel.Text = $"X: {Math.Round(_map.startXPos)}, Y: {Math.Round(_map.startYPos)}";
+
+        e.Handled = true;
+    }
+
+    private void StartPositionBox_PointerReleased(object? sender, PointerReleasedEventArgs e)
+{
+    _isDraggingStartPosition = false;
+    e.Pointer.Capture(null);
+    e.Handled = true;
+}
     #endregion
 
     private async void mnuSave_Click(object? sender, RoutedEventArgs e)
@@ -490,9 +573,25 @@ public partial class MainWindow : Window
         var bitmap2 = new Avalonia.Media.Imaging.Bitmap(memoryStream2);
         MountainsPreview.Source = bitmap2;
         
+        UpdateStartPositionBox();
         UpdateItemList();
         DrawScene();
         
+    }
+
+    private void UpdateStartPositionBox()
+    {
+        if (_startPositionBox != null)
+        {
+            Canvas.SetLeft(_startPositionBox, _map.startXPos);
+            Canvas.SetTop(_startPositionBox, _map.startYPos);
+            StartPositionLabel.Text = $"X: {_map.startXPos}, Y: {_map.startYPos}";
+        }
+        else
+        {
+            CreateStartPositionBox();
+            UpdateStartPositionBox();
+        }
     }
 
     private void ChangeMountains_OnTapped(object? sender, TappedEventArgs e)

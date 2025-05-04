@@ -25,6 +25,9 @@ public:
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow &window, GameTime gameTime) override;
+
+        sf::Vector2f startPosition = {0, 0};
+        sf::RectangleShape endPosition;
 };
 
 #endif //WMAP_H

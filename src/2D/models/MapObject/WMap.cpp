@@ -20,6 +20,60 @@ bool WMap::deserialize(const pugi::xml_node &node) {
                 return false; // Root node not found
         }
 
+        pugi::xml_node startXNode = root.child("startXPos");
+        if (startXNode) {
+                startPosition.x = startXNode.text().as_float();
+                std::cout << "Start X Position: " << startPosition.x << std::endl;
+        } else {
+                std::cerr << "Error: Missing 'startXPos' node." << std::endl;
+                return false; // startXPos is required
+        }
+
+        pugi::xml_node startYNode = root.child("startYPos");
+        if (startYNode) {
+                startPosition.y = startYNode.text().as_float();
+                std::cout << "Start Y Position: " << startPosition.y << std::endl;
+        } else {
+                std::cerr << "Error: Missing 'startYPos' node." << std::endl;
+                return false; // startYPos is required
+        }
+
+        pugi::xml_node endXNode = root.child("endXPos");
+        if (endXNode) {
+                endPosition.setPosition(endXNode.text().as_float(), endPosition.getPosition().y);
+                std::cout << "End X Position: " << endPosition.getPosition().x << std::endl;
+        } else {
+                std::cerr << "Error: Missing 'endXPos' node." << std::endl;
+                return false; // endXPos is required
+        }
+
+        pugi::xml_node endYNode = root.child("endYPos");
+        if (endYNode) {
+                endPosition.setPosition(endPosition.getPosition().x, endYNode.text().as_float());
+                std::cout << "End Y Position: " << endPosition.getPosition().y << std::endl;
+        } else {
+                std::cerr << "Error: Missing 'endYPos' node." << std::endl;
+                return false; // endYPos is required
+        }
+
+        pugi::xml_node endWidthNode = root.child("endWidth");
+        if (endWidthNode) {
+                endPosition.setSize(sf::Vector2f(endWidthNode.text().as_float(), endPosition.getSize().y));
+                std::cout << "End Width: " << endPosition.getSize().x << std::endl;
+        } else {
+                std::cerr << "Error: Missing 'endWidth' node." << std::endl;
+                return false; // endWidth is required
+        }
+
+        pugi::xml_node endHeightNode = root.child("endHeight");
+        if (endHeightNode) {
+                endPosition.setSize(sf::Vector2f(endPosition.getSize().x, endHeightNode.text().as_float()));
+                std::cout << "End Height: " << endPosition.getSize().y << std::endl;
+        } else {
+                std::cerr << "Error: Missing 'endHeight' node." << std::endl;
+                return false; // endHeight is required
+        }
+
         // Deserialize ParallaxBackgroundIndex
         pugi::xml_node parallaxNode = root.child("ParallaxBackgroundIndex");
         if (parallaxNode) {

@@ -44,6 +44,13 @@ public class WMap
             ParallaxBackgroundIndex = deserializedMap.ParallaxBackgroundIndex;
             MountainsBackgroundIndex = deserializedMap.MountainsBackgroundIndex;
             LevelObjects = deserializedMap.LevelObjects;
+            Scripts = deserializedMap.Scripts;
+            startXPos = deserializedMap.startXPos;
+            startYPos = deserializedMap.startYPos;
+            endXPos = deserializedMap.endXPos;
+            endYPos = deserializedMap.endYPos;
+            endWidth = deserializedMap.endWidth;
+            endHeight = deserializedMap.endHeight;
         }
         catch (Exception e) when (e is TimeoutException                 // HDD Failure
                                       or AccessViolationException       // File is in use

@@ -191,30 +191,44 @@ void Player::Update(GameTime gameTime) {
         // Handle horizontal movement
         bool isMoving = false;
         float targetSpeed = 0.0f;
+        float directionChangeMultiplier = 1.0f;
+        const float runThreshold = WALKING_SPEED * 1.4f; // Speed threshold to transition to running
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
                 faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
                 isMoving = true;
-                targetSpeed = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !isFalling && !isJumping)
-                                              ? -RUNNING_SPEED
-                                              : -WALKING_SPEED;
+                // Always target running speed, but will take time to reach it
+                targetSpeed = -RUNNING_SPEED;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                 faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
                 isMoving = true;
-                targetSpeed = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !isFalling && !isJumping)
-                                              ? RUNNING_SPEED
-                                              : WALKING_SPEED;
+                // Always target running speed, but will take time to reach it
+                targetSpeed = RUNNING_SPEED;
         }
 
         // Apply acceleration or deceleration to horizontal movement
         if (isMoving) {
-                // Calculate acceleration based on target speed
-                const float accelRate = 800.0f;
-                acceleration.x = accelRate * ((targetSpeed - velocity.x) / maxVelocity.x);
+                // Calculate acceleration based on target speed with a gradual ramp-up
+                float accelRate = 800.0f;
+
+                // Check if changing direction
+                if ((velocity.x > 0 && targetSpeed < 0) || (velocity.x < 0 && targetSpeed > 0)) {
+                        // Apply a multiplier to acceleration when changing direction to simulate inertia
+                        directionChangeMultiplier = 2.5f;
+                } else {
+                        directionChangeMultiplier = 1.0f;
+                        // If we're already moving, maintain a steady acceleration
+                        if ((velocity.x > 0 && targetSpeed > 0) || (velocity.x < 0 && targetSpeed < 0)) {
+                                // Slightly increase acceleration as speed increases to simulate momentum
+                                accelRate += std::abs(velocity.x) * 0.5f;
+                        }
+                }
+
+                acceleration.x = accelRate * directionChangeMultiplier * ((targetSpeed - velocity.x) / maxVelocity.x);
         } else {
                 // Apply deceleration when not moving
                 if (!isFalling && !isJumping) {
-                        deceleration.x = 1500.0f;
+                        deceleration.x = 2000.0f;
                         if (velocity.x > 0) {
                                 velocity.x = std::max(0.0f, velocity.x - deceleration.x * gameTime.delta_time);
                         } else if (velocity.x < 0) {
@@ -241,7 +255,8 @@ void Player::Update(GameTime gameTime) {
         } else if (isFalling) {
                 ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
         } else if (std::abs(velocity.x) > 0.1f) {
-                if (std::abs(velocity.x) > WALKING_SPEED + 50) {
+                // If speed is above runThreshold, switch to run animation
+                if (std::abs(velocity.x) > runThreshold) {
                         ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
                 } else {
                         ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime);
@@ -249,7 +264,6 @@ void Player::Update(GameTime gameTime) {
         } else {
                 ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime);
         }
-
 
         UpdateQuads();
         health.Update(gameTime);

@@ -58,9 +58,6 @@ public:
         sf::Vector2f maxVelocity = {1000, 2000};
 
 private:
-
-
-
         const int WALKING_SPEED = 128;
         const int RUNNING_SPEED = 800;
         const int FALLING_SPEED = 1200;

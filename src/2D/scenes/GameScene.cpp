@@ -21,7 +21,6 @@ GameScene::GameScene()
 }
 
 void GameScene::Update(GameTime gameTime) {
-
         // // DEV: Zoom in and out will use to ensure tiles are only loaded when in view
         // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
         //         viewport.zoom(0.99f); // Zoom in
@@ -82,7 +81,6 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 }
 
 void GameScene::InitializeScene() {
-        player.position = sf::Vector2f(1200, 3500); // Set the player position
         float screenWidth = game_manager.getResolution().x;
         float screenHeight = game_manager.getResolution().y;
         viewport.setSize(sf::Vector2f(screenWidth, screenHeight)); // Set the view size to the window size TODO: Change this from hardcoded
@@ -97,6 +95,7 @@ void GameScene::DestroyScene() {
 
 void GameScene::OnScene_Active() {
 
+        player.position = map->startPosition;
 }
 
 void GameScene::OnScene_Deactivate() {}
