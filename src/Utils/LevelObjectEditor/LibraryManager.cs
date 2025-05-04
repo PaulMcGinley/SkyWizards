@@ -33,11 +33,12 @@ namespace LevelObjectEditor
             foreach (var file in files)
             {
                 string path = Path.Combine(resourcesPath, file);
-                Libraries[file] = new Library()
+                string key = Path.GetFileNameWithoutExtension(file);
+                Libraries[key] = new Library()
                 {
                     Content = new PLibrary(path)
                 };
-                Libraries[file].Content.Open(out string err);
+                Libraries[key].Content.Open(out string err);
             }
         }
         
