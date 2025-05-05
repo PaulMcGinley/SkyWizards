@@ -328,6 +328,7 @@ public partial class MainWindow : Window
         // Draw each map object
         foreach (var mapObject in _map.LevelObjects)
         {
+            WMObject obj = mapObject;
             string key = mapObject.ObjectLibrary;
 
             // Skip if we don't have this object's image
@@ -345,10 +346,12 @@ public partial class MainWindow : Window
                 Width = objectImage.PixelSize.Width,
                 Height = objectImage.PixelSize.Height
             };
-
+            
             // Apply the map object position
             Canvas.SetLeft(imageControl, mapObject.Position[0]);
             Canvas.SetTop(imageControl, mapObject.Position[1]);
+            
+            
 
             // Add the image to the canvas
             DrawingCanvas.Children.Add(imageControl);

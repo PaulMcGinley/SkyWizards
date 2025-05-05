@@ -15,34 +15,24 @@
 #include "models/MapObject/WMap.h"
 
 GameScene::GameScene()
-        : IScene()
-        , map(nullptr) {
+        : IScene(),
+        map(nullptr),
+        UpdateLoop(&GameScene::Update_Loading){}
 
+void GameScene::LoadMap(std::string name)  {
+        mapName = std::move(name);
+        LoadAssets();
+        player.position = map->startPosition - sf::Vector2f(250, 0);
+        viewport.setCenter(player.position + sf::Vector2f(250,0));
 }
 
 void GameScene::Update(GameTime gameTime) {
-        // // DEV: Zoom in and out will use to ensure tiles are only loaded when in view
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
-        //         viewport.zoom(0.99f); // Zoom in
-        // } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
-        //         viewport.zoom(1.01f); // Zoom out
-        // }
-
-        // Pass boundaries to Player and calculate the physics state
-        player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
-        player.Update(gameTime);
-
-        // Update the camera
-        sf::Vector2f viewCenter = player.position + sf::Vector2f(250,0);
-        viewport.setCenter(viewCenter); // Center the viewport on the player
-
-        // Update the map objects
-        for (auto const & obj: map->LevelObjects)
-                asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
+        (this->*UpdateLoop)(gameTime);
 }
 
 void GameScene::LateUpdate(GameTime gameTime) {
         player.LateUpdate(gameTime);
+        viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
 }
 
 void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
@@ -79,27 +69,44 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.setView(window.getDefaultView());
         player.health.Draw(window, gameTime);
 }
-
 void GameScene::InitializeScene() {
         float screenWidth = game_manager.getResolution().x;
         float screenHeight = game_manager.getResolution().y;
         viewport.setSize(sf::Vector2f(screenWidth, screenHeight)); // Set the view size to the window size TODO: Change this from hardcoded
-        viewport.setCenter(player.position); // Center the viewport on the player
+        //viewport.setCenter(player.position); // Center the viewport on the player
 
         IScene::InitializeScene();
 }
-
 void GameScene::DestroyScene() {
 
 }
-
-void GameScene::OnScene_Active() {
-
-        player.position = map->startPosition;
-}
-
+void GameScene::OnScene_Active() {}
 void GameScene::OnScene_Deactivate() {}
+void GameScene::Update_Loading(GameTime gameTime) {
+        // HACK: ----------------------------------------------------
+        // There is an issue with delta time while the map is loading
+        // This caused the player to be launched down the map
+        // This is a temporary fix to allow the game to load
+        // TODO: Play a level start sequence to allow for delta time
+        // to stabilize
+        if (startTime == 0.f)
+                startTime = gameTime.NowAddMilliseconds(1000);
 
+        if (!gameTime.TimeElapsed(startTime))
+                UpdateLoop = &GameScene::Update_Game;
+        // END HACK: ------------------------------------------------
+}
+void GameScene::Update_Game(GameTime gameTime) {
+        // Update the map objects
+        for (auto const & obj: map->LevelObjects)
+                asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
+
+        viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
+        // Pass boundaries to Player and calculate the physics state
+        player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
+        player.Update(gameTime);
+        viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
+}
 void GameScene::ValidateMap() {
         // Check if the map exists in the asset manager
         if (asset_manager.Maps.contains(mapName)) {
@@ -110,7 +117,6 @@ void GameScene::ValidateMap() {
                 SceneManager::GetInstance().ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 }
-
 void GameScene::LoadSky() {
         // Check if the ParallaxBackgroundIndex is valid
         if (map->ParallaxBackgroundIndex < 0 || map->ParallaxBackgroundIndex >= asset_manager.TextureLibraries["sky"]->entryCount)
@@ -122,7 +128,6 @@ void GameScene::LoadSky() {
         skyBoxSprite.setTexture(*skyBoxTexture, true);
         skyBoxSprite.setPosition(0, 0); // Set the position of the skyBoxSprite to the top left corner // TODO: Chaange this to be parallax
 }
-
 void GameScene::LoadMountains() {
         // Check if the mountains background index is valid
         if (map->MountainsBackgroundIndex < 0 || map->MountainsBackgroundIndex >= asset_manager.TextureLibraries["mountains"]->entryCount)
@@ -133,7 +138,6 @@ void GameScene::LoadMountains() {
         mountainsTexture = &asset_manager.TextureLibraries["mountains"]->entries[0].texture;
         mountainsSprite.setTexture(*mountainsTexture, true);
 }
-
 void GameScene::LoadAssets() {
         ValidateMap();
         LoadSky();
@@ -193,7 +197,6 @@ void GameScene::LoadAssets() {
 
         asset_manager.TextureLibraries["alpha_textures"]->LoadIndices({242}); // Stars
 }
-
 void GameScene::CalculateParallaxBackground() {
         // TODO: Get values from the map and game manager
         const float worldWidth = 100000.0f;
@@ -227,7 +230,6 @@ void GameScene::CalculateParallaxBackground() {
         skyBoxSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
         mountainsSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
 }
-
 void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 0; layer <= 3; ++layer) {
                 // if (layer == 2) {
@@ -244,11 +246,9 @@ void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) 
                                         IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x, obj.Position.y));
         }
 }
-
 void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
         player.Draw(window, gameTime);
 }
-
 void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 5; layer <= 7; ++layer)
                 for (auto const &obj: map->LevelObjects)
@@ -257,7 +257,6 @@ void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTim
                                         IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame,
                                                     sf::Vector2f(obj.Position.x, obj.Position.y));
 }
-
 void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameTime) {
         auto localBoundaries = getLocalBoundaries();
         for (auto const &boundary: localBoundaries) {
@@ -270,7 +269,6 @@ void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameT
         }
 
 }
-
 // Function to get all boundaries in the current viewport
 std::vector<Boundary> GameScene::getLocalBoundaries() const {
         // List of boundaries to return

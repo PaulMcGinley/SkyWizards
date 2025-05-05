@@ -36,13 +36,18 @@ Player::Player() {
 }
 
 void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) {
-        // Get world position of collision box
+        // Get current world position of collision box
         sf::FloatRect playerBox(
             position.x + collisionBox.left,
             position.y + collisionBox.top,
             collisionBox.width,
             collisionBox.height
         );
+
+        // Store the previous position before applying velocity
+        sf::FloatRect prevPlayerBox = playerBox;
+        prevPlayerBox.left -= velocity.x * gametime.delta_time;
+        prevPlayerBox.top -= velocity.y * gametime.delta_time;
 
         // Calculate predicted next position based on velocity
         sf::FloatRect nextPlayerBox = playerBox;
@@ -60,20 +65,36 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                     boundary.Height
                 );
 
-                // Check if standing on this boundary
-                if (((playerBox.left + playerBox.width) > boundaryRect.left) && (playerBox.left < (boundaryRect.left + boundaryRect.width))) {
+                // Check if player is horizontally aligned with this boundary
+                bool horizontalOverlap = (playerBox.left + playerBox.width > boundaryRect.left) &&
+                                         (playerBox.left < boundaryRect.left + boundaryRect.width);
 
-                        // Check for feet touching or slightly above the boundary (within a small threshold)
+                if (horizontalOverlap) {
+                        // Check for tunneling through - when feet were above platform in previous frame but below it now
+                        float prevFeetY = prevPlayerBox.top + prevPlayerBox.height;
+                        float currentFeetY = playerBox.top + playerBox.height;
+
+                        if (prevFeetY <= boundaryRect.top && currentFeetY >= boundaryRect.top) {
+                                // Player has tunneled through the platform - place them on top
+                                onGround = true;
+                                position.y = boundaryRect.top - collisionBox.top - collisionBox.height;
+                                velocity.y = 0;
+                                isFalling = false;
+                                isJumping = false;
+                                break;
+                        }
+
+                        // Regular ground detection
                         float feetY = playerBox.top + playerBox.height;
-                        float groundThreshold = 2.0f; // Small threshold to avoid floating issues
+                        float groundThreshold = 2.0f;
 
                         if (feetY >= boundaryRect.top - groundThreshold && feetY <= boundaryRect.top + groundThreshold) {
                                 onGround = true;
                                 position.y = boundaryRect.top - collisionBox.top - collisionBox.height;
                                 velocity.y = 0;
-                                break; // Landed
-                            }
-                    }
+                                break;
+                        }
+                }
         }
 
         // Update falling/jumping state based on ground detection
@@ -121,6 +142,7 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                                 position.y = boundaryRect.top + boundaryRect.height - collisionBox.top;
                                 velocity.y = 0;
                                 isJumping = false;
+                                isFalling = true;
                         }
                         else if (minOverlap == overlapLeft && velocity.x >= 0) {
                                 // Push left
@@ -129,6 +151,19 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                         }
                         else if (minOverlap == overlapRight && velocity.x <= 0) {
                                 // Push right
+                                position.x = boundaryRect.left + boundaryRect.width - collisionBox.left;
+                                velocity.x = 0;
+                        }
+                }
+
+                // Check for tunneling through walls
+                else if (!playerBox.intersects(boundaryRect) && prevPlayerBox.intersects(boundaryRect)) {
+                        // Detect which side was crossed
+                        if (velocity.x > 0 && prevPlayerBox.left + prevPlayerBox.width <= boundaryRect.left + 2) {
+                                position.x = boundaryRect.left - collisionBox.left - collisionBox.width;
+                                velocity.x = 0;
+                        }
+                        else if (velocity.x < 0 && prevPlayerBox.left >= boundaryRect.left + boundaryRect.width - 2) {
                                 position.x = boundaryRect.left + boundaryRect.width - collisionBox.left;
                                 velocity.x = 0;
                         }

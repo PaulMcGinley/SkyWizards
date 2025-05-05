@@ -13,10 +13,7 @@ class GameScene : public IScene {
 public:
         GameScene();
 
-        void LoadMap(std::string name) {
-                mapName = std::move(name);
-                LoadAssets();
-        }
+        void LoadMap(std::string name);
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
@@ -26,6 +23,11 @@ public:
         void OnScene_Deactivate() override;
 
 private:
+        void (GameScene::*UpdateLoop)(GameTime);
+        void Update_Loading(GameTime gameTime);
+        void Update_Game(GameTime gameTime);
+        float startTime =0.f;
+
         std::string mapName;
         WMap* map;
         int mapWidth; // Used to track the map width (End point + 50)
@@ -51,6 +53,7 @@ private:
         std::vector<Boundary> getLocalBoundaries() const;
 
         Player player = Player();
+        bool playerFirstLand = false;
         sf::View viewport;
 
 };
