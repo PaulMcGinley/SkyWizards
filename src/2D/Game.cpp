@@ -22,6 +22,7 @@ void Game::Run() {
         scene_manager.AddScene(SceneType::SCENE_DEV, std::make_shared<DevScene>());
         scene_manager.AddScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
         scene_manager.AddScene(SceneType::SCENE_GAME, std::make_shared<GameScene>());
+        scene_manager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
 
 
         // Set the current scene
@@ -29,6 +30,8 @@ void Game::Run() {
         // The assets for this scene are kept as external files to prevent decompression delays
         scene_manager.ChangeScene(SceneType::SCENE_SPLASH);
 
+        std::shared_ptr<DebugOverlay> debugOverlay =
+                        std::dynamic_pointer_cast<DebugOverlay>(scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY));
 
         // Main game loop
         sf::Event windowEvent{};
@@ -46,8 +49,8 @@ void Game::Run() {
                 game_manager.window->clear(sf::Color(255, 255, 255, 255));
                 scene_manager.Draw(*game_manager.window, game_time);
 
-                debugOverlay.Update(game_time);
-                debugOverlay.Draw(*game_manager.window, game_time);
+                debugOverlay->Update(game_time);
+                debugOverlay->Draw(*game_manager.window, game_time);
 
                 game_manager.window->display();
                 scene_manager.LateUpdate(game_time);

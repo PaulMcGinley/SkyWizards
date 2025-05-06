@@ -24,14 +24,14 @@ void DebugOverlay::Update(GameTime gameTime) {
                 fpsText.setPosition(game_manager.getResolutionWidth() - fpsText.getGlobalBounds().width - 10, 5);
         }
 
-        AddInfoRight("FPS", std::to_string(currentFps));
+        AddInfoTopRight("FPS", std::to_string(currentFps));
 }
 void DebugOverlay::LateUpdate(GameTime gameTime) {}
 void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
         // Draw the debug info
         int yOffset = 0;
-        for (const auto& [key, value] : debugInfo_Left) {
+        for (const auto& [key, value] : debugInfo_TopLeft) {
                 sf::Text text;
                 text.setFont(*fpsFont);
                 text.setCharacterSize(24);
@@ -43,7 +43,7 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
         }
 
         yOffset = 0;
-        for (const auto& [key, value] : debugInfo_Right) {
+        for (const auto& [key, value] : debugInfo_TopRight) {
                 sf::Text text;
                 text.setFont(*fpsFont);
                 text.setCharacterSize(24);
@@ -52,6 +52,30 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 text.setPosition(game_manager.getResolutionWidth() - text.getGlobalBounds().width - 10, 10 + yOffset);
                 window.draw(text);
                 yOffset += 30;
+        }
+
+        yOffset = game_manager.getResolutionHeight() - 30;
+        for (const auto& [key, value] : debugInfo_BottomLeft) {
+                sf::Text text;
+                text.setFont(*fpsFont);
+                text.setCharacterSize(24);
+                text.setFillColor(sf::Color::Black);
+                text.setString(key + ": " + value);
+                text.setPosition(10, yOffset - 30);
+                window.draw(text);
+                yOffset -= 30;
+        }
+
+        yOffset = game_manager.getResolutionHeight() - 30;
+        for (const auto& [key, value] : debugInfo_BottomRight) {
+                sf::Text text;
+                text.setFont(*fpsFont);
+                text.setCharacterSize(24);
+                text.setFillColor(sf::Color::Black);
+                text.setString(key + ": " + value);
+                text.setPosition(game_manager.getResolutionWidth() - text.getGlobalBounds().width - 10, yOffset - 30);
+                window.draw(text);
+                yOffset -= 30;
         }
 }
 void DebugOverlay::InitializeScene() { IScene::InitializeScene(); }

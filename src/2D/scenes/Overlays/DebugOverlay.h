@@ -23,16 +23,37 @@ public:
         void OnScene_Active() override;
         void OnScene_Deactivate() override;
 
-        void AddInfoLeft(const std::string& key, const std::string_view& value) {
-                debugInfo_Left[key] = value;
+        void AddInfoTopLeft(const std::string& key, const std::string_view& value) {
+                debugInfo_TopLeft[key] = value;
         }
-        void AddInfoRight(const std::string& key, const std::string_view& value) {
-                debugInfo_Right[key] = value;
+        void AddInfoTopRight(const std::string& key, const std::string_view& value) {
+                debugInfo_TopRight[key] = value;
+        }
+        void AddInfoBottomLeft(const std::string& key, const std::string_view& value) {
+                debugInfo_BottomLeft[key] = value;
+        }
+        void AddInfoBottomRight(const std::string& key, const std::string_view& value) {
+                debugInfo_BottomRight[key] = value;
+        }
+
+        void RemoveInfoTopLeft(const std::string& key) {
+                debugInfo_TopLeft.erase(key);
+        }
+        void RemoveInfoTopRight(const std::string& key) {
+                debugInfo_TopRight.erase(key);
+        }
+        void RemoveInfoBottomLeft(const std::string& key) {
+                debugInfo_BottomLeft.erase(key);
+        }
+        void RemoveInfoBottomRight(const std::string& key) {
+                debugInfo_BottomRight.erase(key);
         }
 
 private:
-        std::map<std::string, std::string> debugInfo_Right;
-        std::map<std::string, std::string> debugInfo_Left;
+        std::map<std::string, std::string> debugInfo_TopRight;
+        std::map<std::string, std::string> debugInfo_TopLeft;
+        std::map<std::string, std::string> debugInfo_BottomLeft;
+        std::map<std::string, std::string> debugInfo_BottomRight;
         sf::Font *fpsFont;
         sf::Text fpsText;
 

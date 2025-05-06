@@ -27,7 +27,7 @@ private:
         GameTime game_time;     // game_time tracks all time related data for the game
 
         // DEBUG:
-        DebugOverlay debugOverlay = DebugOverlay(); // Overlay for debugging
+        //DebugOverlay debugOverlay = DebugOverlay(); // Overlay for debugging
 };
 
 #endif //GAME_H

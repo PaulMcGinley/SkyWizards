@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "scenes/Overlays/DebugOverlay.h"
+
+class DebugOverlay;
 // Method to get the instance of the singleton
 SceneManager& SceneManager::GetInstance() {
     static SceneManager instance; // Guaranteed to be destroyed.
@@ -66,24 +69,32 @@ void SceneManager::RemoveScene(const SceneType name) {
 
 // Change the current scene by name (enum SceneType)
 void SceneManager::ChangeScene(const SceneType name) {
-    // Check if the scene exists
-    if (scenes.find(name) == scenes.end())
-        return;
+        // Check if the scene exists
+        if (scenes.find(name) == scenes.end())
+                return;
 
-    // Check if there is an active scene, then deactivate it
-    if (currentScene)
-        currentScene->OnScene_Deactivate();
+        // Check if there is an active scene, then deactivate it
+        if (currentScene)
+                currentScene->OnScene_Deactivate();
 
-    // Set the current scene to the new scene
-    currentScene = scenes[name];
+        // Set the current scene to the new scene
+        currentScene = scenes[name];
 
-    // Ensure the new scene is initialized
-    if (!currentScene->IsInitialized()) {
-        currentScene->InitializeScene();
-    }
+        // Ensure the new scene is initialized
+        if (!currentScene->IsInitialized()) {
+                currentScene->InitializeScene();
+        }
 
-    // Activate the new scene
-    currentScene->OnScene_Active();
+        // Activate the new scene
+        currentScene->OnScene_Active();
+
+        auto debugOverlay = GetScene(SceneType::SCENE_DEBUG_OVERLAY);
+        if (debugOverlay) {
+                auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay);
+                if (debugOverlayPtr) {
+                        debugOverlayPtr->AddInfoBottomRight("Current Scene", std::to_string(static_cast<int>(name)));
+                }
+        }
 }
 
 // Get the current scene as a shared pointer

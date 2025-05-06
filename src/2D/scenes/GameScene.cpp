@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "Overlays/DebugOverlay.h"
 #include "managers/SceneManager.h"
 #include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
@@ -28,6 +29,19 @@ void GameScene::LoadMap(std::string name)  {
 
 void GameScene::Update(GameTime gameTime) {
         (this->*UpdateLoop)(gameTime);
+
+        // DEBUG:
+        auto debugOverlay =  scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY);
+        if (debugOverlay) {
+                auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay);
+                if (debugOverlayPtr) {
+                        debugOverlayPtr->AddInfoTopLeft("Player X", std::to_string(player.position.x));
+                        debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
+                        debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
+                        debugOverlayPtr->AddInfoTopLeft("Player Velocity Y", std::to_string(player.velocity.y));
+                }
+        }
+        // END DEBUG ^
 }
 
 void GameScene::LateUpdate(GameTime gameTime) {
@@ -80,8 +94,34 @@ void GameScene::InitializeScene() {
 void GameScene::DestroyScene() {
 
 }
-void GameScene::OnScene_Active() {}
-void GameScene::OnScene_Deactivate() {}
+void GameScene::OnScene_Active() {
+        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+                if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
+                        debugOverlayPtr->AddInfoBottomLeft("End Position Y", std::to_string(map->endPosition.getPosition().y));
+                        debugOverlayPtr->AddInfoBottomLeft("End Position X", std::to_string(map->endPosition.getPosition().x));
+                        debugOverlayPtr->AddInfoBottomLeft("Start Position Y", std::to_string(map->startPosition.y));
+                        debugOverlayPtr->AddInfoBottomLeft("Start Position X", std::to_string(map->startPosition.x));
+                        debugOverlayPtr->AddInfoBottomLeft("Map", mapName);
+                        //debugOverlayPtr->AddInfoBottomLeft("Map", map->FileName);
+                }
+        }
+}
+void GameScene::OnScene_Deactivate() {
+        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+                if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
+                        debugOverlayPtr->RemoveInfoBottomLeft("Map");
+                        debugOverlayPtr->RemoveInfoBottomLeft("Start Position X");
+                        debugOverlayPtr->RemoveInfoBottomLeft("Start Position Y");
+                        debugOverlayPtr->RemoveInfoBottomLeft("End Position X");
+                        debugOverlayPtr->RemoveInfoBottomLeft("End Position Y");
+
+                        debugOverlayPtr->RemoveInfoTopLeft("Player X");
+                        debugOverlayPtr->RemoveInfoTopLeft("Player Y");
+                        debugOverlayPtr->RemoveInfoTopLeft("Player Velocity X");
+                        debugOverlayPtr->RemoveInfoTopLeft("Player Velocity Y");
+                }
+        }
+}
 void GameScene::Update_Loading(GameTime gameTime) {
         // HACK: ----------------------------------------------------
         // There is an issue with delta time while the map is loading
