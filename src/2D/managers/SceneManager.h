@@ -8,10 +8,11 @@
 #include <unordered_map>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "Enumerators/SceneType.h"
-#include "interfaces/IScene.h"
 #include "interfaces/IUpdate.h"
 #include "interfaces/IDraw.h"
 #include "models/GameTime.h"
+
+class IScene;
 
 class SceneManager final : public IUpdate, public IDraw {
 public:

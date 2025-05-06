@@ -10,12 +10,12 @@
 
 void MainMenu::Update(GameTime gameTime) {
         if (InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space)) {
-                auto scenePtr = SceneManager::GetInstance().GetScene(SceneType::SCENE_GAME);
+                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_GAME);
                 auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
                 if (gameScene) {
                         gameScene->LoadMap("test2");
                 }
-                SceneManager::GetInstance().ChangeScene(SceneType::SCENE_GAME);
+                scene_manager.ChangeScene(SceneType::SCENE_GAME);
         }
 }
 void MainMenu::LateUpdate(GameTime gameTime) {}

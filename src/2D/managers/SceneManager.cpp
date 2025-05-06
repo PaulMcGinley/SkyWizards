@@ -3,6 +3,7 @@
 //
 
 #include "SceneManager.h"
+#include "interfaces/IScene.h"
 
 #include <memory>
 

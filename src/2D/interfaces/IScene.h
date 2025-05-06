@@ -7,6 +7,7 @@
 #include "IDraw.h"
 #include "IUpdate.h"
 #include "managers/GameManager.h"
+#include "managers/SceneManager.h"
 
 class IScene : public IUpdate, public IDraw {
 public:
@@ -25,6 +26,7 @@ public:
         virtual void OnScene_Deactivate() = 0;
 
         GameManager& game_manager = GameManager::getInstance();
+        SceneManager& scene_manager = SceneManager::GetInstance();
 
 private:
         bool initialized = false;
