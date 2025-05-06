@@ -146,7 +146,26 @@ void GameScene::Update_Game(GameTime gameTime) {
 
         if (player.position.y > 7000)
                 player.position = map->startPosition - sf::Vector2f(250, 0);
+
         viewport.setCenter(player.position + sf::Vector2f(250,250)); // Center the viewport on the player
+
+        // Check if player gets to the end of the level
+        sf::IntRect endPosRect;
+        endPosRect.left = map->endPosition.getPosition().x;
+        endPosRect.top = map->endPosition.getPosition().y;
+        endPosRect.width = map->endPosition.getSize().x;
+        endPosRect.height = map->endPosition.getSize().y;
+
+        sf::IntRect playerRect;
+        playerRect.left = player.position.x + player.collisionBox.getPosition().x;
+        playerRect.top = player.position.y + player.collisionBox.getPosition().y;
+        playerRect.width = player.collisionBox.getSize().x;
+        playerRect.height = player.collisionBox.getSize().y;
+
+        if (playerRect.intersects(endPosRect)) {
+                // TODO: Implement a level transition
+                scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
+        }
 }
 void GameScene::ValidateMap() {
         // Check if the map exists in the asset manager

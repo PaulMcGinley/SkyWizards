@@ -20,7 +20,7 @@ public partial class MainWindow : Window
 {
     private LevelObjectManager _objManager;
     private WMap _map;
-    
+
 
     #region This Form
 
@@ -47,7 +47,7 @@ public partial class MainWindow : Window
         UpdateItemList();
         SetupObjectsListBoxEvents();
         SetupItemListBoxEvents();
-        ScrollToGuideLine(null,null);
+        ScrollToGuideLine(null, null);
     }
 
     #endregion
@@ -142,6 +142,36 @@ public partial class MainWindow : Window
         SkyboxPreview.Source = bitmap;
     }
 
+    private void ChangeMountains_OnTapped(object? sender, TappedEventArgs e)
+    {
+        // Get a reference to the mountains library
+        var backgroundsLibrary = LibraryManager.Libraries["mountains"];
+
+        // Show the image selector dialog
+        LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
+        imageSelector.ShowDialog(this);
+
+        // Check if a valid image was selected
+        if (imageSelector.SelectedIndex == -1)
+        {
+            Console.WriteLine("No mountain image selected");
+            return;
+        }
+
+        // Update the map with the selected index
+        _map.MountainsBackgroundIndex = imageSelector.SelectedIndex;
+
+        // Change the picture box image to the selected image
+        LImage img = backgroundsLibrary.Content.Images[imageSelector.SelectedIndex];
+
+        // Convert byte array to stream before creating Bitmap
+        using var memoryStream = new System.IO.MemoryStream(img.Data);
+        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
+
+        // Update the MountainPreview image
+        MountainsPreview.Source = bitmap;
+    }
+    
     #endregion
 
     #region Map Objects
@@ -163,7 +193,7 @@ public partial class MainWindow : Window
             string key = mapObject.ObjectLibrary;
 
             // Check if we have this library
-            if (!_objManager.LibraryObjects.TryGetValue(key, out  _))
+            if (!_objManager.LibraryObjects.TryGetValue(key, out _))
                 continue;
 
             // Get the preview for this library
@@ -208,7 +238,8 @@ public partial class MainWindow : Window
             if (scrollViewer != null)
             {
                 // Scroll to the object's position
-                scrollViewer.Offset = new Avalonia.Vector(x - (scrollViewer.Viewport.Width / 2), y - (scrollViewer.Viewport.Height / 2));
+                scrollViewer.Offset = new Avalonia.Vector(x - (scrollViewer.Viewport.Width / 2),
+                    y - (scrollViewer.Viewport.Height / 2));
             }
         }
     }
@@ -222,30 +253,30 @@ public partial class MainWindow : Window
                 // Get the current scroll position of the canvas
                 var horizontalOffset = ScrollViewerContainer.Offset.X;
                 var verticalOffset = ScrollViewerContainer.Offset.Y;
-            
+
                 // Calculate the center of the viewport
                 var viewportWidth = ScrollViewerContainer.Viewport.Width;
                 var viewportHeight = ScrollViewerContainer.Viewport.Height;
-            
+
                 // Position the new object at the center of the current view
                 float posX = (float)(horizontalOffset + (viewportWidth / 2));
                 float posY = (float)(verticalOffset + (viewportHeight / 2));
-            
+
                 // Create the new map object
                 var newObject = new WMObject
                 {
                     ObjectLibrary = selectedObject.Name,
                     Position = new float[] { posX, posY }
                 };
-            
+
                 // Add it to the map
                 if (_map != null && _map.LevelObjects != null)
                 {
                     _map.LevelObjects.Add(newObject);
-                
+
                     // Refresh the scene to show the new object
                     DrawScene();
-                
+
                     // Also update the ItemListBox to include the new object
                     UpdateItemList();
                 }
@@ -257,6 +288,71 @@ public partial class MainWindow : Window
 
     #region Canvas
 
+    void DrawScene()
+    {
+        // Clear all children
+        DrawingCanvas.Children.Clear();
+
+        // Ensure we have a map and objects to draw
+        if (_map == null || _map.LevelObjects == null || _objManager == null)
+            return;
+
+        // Draw each map object
+        foreach (var mapObject in _map.LevelObjects)
+        {
+            WMObject obj = mapObject;
+            string key = mapObject.ObjectLibrary;
+
+            // Skip if we don't have this object's image
+            if (!_objManager.ObjectImages.TryGetValue(key, out var objectImage) || objectImage == null)
+                continue;
+
+            // Get the library object to access its image references
+            if (!_objManager.LibraryObjects.TryGetValue(key, out _))
+                continue;
+
+            // Create an Image control for the object
+            var imageControl = new Avalonia.Controls.Image
+            {
+                Source = objectImage,
+                Width = objectImage.PixelSize.Width,
+                Height = objectImage.PixelSize.Height
+            };
+
+            // Apply the map object position
+            Canvas.SetLeft(imageControl, mapObject.Position[0]);
+            Canvas.SetTop(imageControl, mapObject.Position[1]);
+
+
+
+            // Add the image to the canvas
+            DrawingCanvas.Children.Add(imageControl);
+
+            // Tag the image with its associated map object for dragging
+            imageControl.Tag = mapObject;
+
+            // Add drag event handlers to the image
+            SetupDragHandlers(imageControl);
+        }
+
+        // Create the start position box
+        CreateStartPositionBox();
+
+        // Create the end position box
+        CreateEndPositionBox();
+
+        // Connect the label click event to focus on start position
+        StartPositionLabel.Tapped += (s, e) =>
+        {
+            ScrollViewerContainer.Offset = new Vector(
+                _map.startXPos - (ScrollViewerContainer.Viewport.Width / 2),
+                _map.startYPos - (ScrollViewerContainer.Viewport.Height / 2)
+            );
+        };
+
+        DrawGuideLine();
+    }
+    
     /// <summary>
     /// The guideline helps keep the level on the same y-axis.
     /// Start and finish should land on this line and any splitting in paths should return to this line.
@@ -310,73 +406,6 @@ public partial class MainWindow : Window
         // Wait until layout is completed, then scroll to show the line
         //this.LayoutUpdated += ScrollToGuideLine;
     }
-
-    private WMObject _currentlyDraggedObject = null;
-    private Point _dragStartPosition;
-    private Point _originalObjectPosition;
-    private Image _currentDragImage;
-
-    void DrawScene()
-    {
-        // Clear all children
-        DrawingCanvas.Children.Clear();
-
-        // Ensure we have a map and objects to draw
-        if (_map == null || _map.LevelObjects == null || _objManager == null)
-            return;
-
-        // Draw each map object
-        foreach (var mapObject in _map.LevelObjects)
-        {
-            WMObject obj = mapObject;
-            string key = mapObject.ObjectLibrary;
-
-            // Skip if we don't have this object's image
-            if (!_objManager.ObjectImages.TryGetValue(key, out var objectImage) || objectImage == null)
-                continue;
-
-            // Get the library object to access its image references
-            if (!_objManager.LibraryObjects.TryGetValue(key, out _))
-                continue;
-
-            // Create an Image control for the object
-            var imageControl = new Avalonia.Controls.Image
-            {
-                Source = objectImage,
-                Width = objectImage.PixelSize.Width,
-                Height = objectImage.PixelSize.Height
-            };
-            
-            // Apply the map object position
-            Canvas.SetLeft(imageControl, mapObject.Position[0]);
-            Canvas.SetTop(imageControl, mapObject.Position[1]);
-            
-            
-
-            // Add the image to the canvas
-            DrawingCanvas.Children.Add(imageControl);
-
-            // Tag the image with its associated map object for dragging
-            imageControl.Tag = mapObject;
-
-            // Add drag event handlers to the image
-            SetupDragHandlers(imageControl);
-        }
-        
-        // Create the start position box
-        CreateStartPositionBox();
-    
-        // Connect the label click event to focus on start position
-        StartPositionLabel.Tapped += (s, e) => {
-            ScrollViewerContainer.Offset = new Vector(
-                _map.startXPos - (ScrollViewerContainer.Viewport.Width / 2),
-                _map.startYPos - (ScrollViewerContainer.Viewport.Height / 2)
-            );
-        };
-        
-        DrawGuideLine();
-    }
-
     private void SetupDragHandlers(Image imageControl)
     {
         // mouse down
@@ -435,6 +464,12 @@ public partial class MainWindow : Window
         };
     }
     
+    private WMObject _currentlyDraggedObject = null;
+    private Point _dragStartPosition;
+    private Point _originalObjectPosition;
+    private Image _currentDragImage;
+
+
     private Rectangle _startPositionBox;
     private bool _isDraggingStartPosition;
     private Point _startPositionDragOffset;
@@ -466,7 +501,6 @@ public partial class MainWindow : Window
         // Update the label text
         StartPositionLabel.Text = $"X: {_map.startXPos}, Y: {_map.startYPos}";
     }
-
     private void StartPositionBox_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         _isDraggingStartPosition = true;
@@ -475,7 +509,6 @@ public partial class MainWindow : Window
         e.Pointer.Capture(_startPositionBox);
         e.Handled = true;
     }
-
     private void StartPositionBox_PointerMoved(object? sender, PointerEventArgs e)
     {
         if (!_isDraggingStartPosition) return;
@@ -496,19 +529,207 @@ public partial class MainWindow : Window
 
         e.Handled = true;
     }
-
     private void StartPositionBox_PointerReleased(object? sender, PointerReleasedEventArgs e)
-{
-    _isDraggingStartPosition = false;
-    e.Pointer.Capture(null);
-    e.Handled = true;
-}
+    {
+        _isDraggingStartPosition = false;
+        e.Pointer.Capture(null);
+        e.Handled = true;
+    }
+
+    private Rectangle _endPositionBox;
+    private bool _isDraggingEndPosition;
+    private Point _endPositionDragOffset;
+    private bool _isResizingEndPosition;
+    private Point _resizeStartPoint;
+    private Size _originalEndBoxSize;
+    private void CreateEndPositionBox()
+    {
+        // Default position if not set
+        if (_map.endXPos == 0 && _map.endYPos == 0)
+        {
+            _map.endXPos = _map.startXPos + 500;
+            _map.endYPos = _map.startYPos;
+        }
+
+        // Default size if not set
+        if (_map.endWidth <= 0 || _map.endHeight <= 0)
+        {
+            _map.endWidth = 50;
+            _map.endHeight = 150;
+        }
+
+        // Create the panel first
+        var panel = new Panel();
+
+        // Create the green box representing end position
+        _endPositionBox = new Rectangle
+        {
+            Width = _map.endWidth,
+            Height = _map.endHeight,
+            Fill = new SolidColorBrush(Colors.Green, 0.5),
+            Stroke = Brushes.Green,
+            StrokeThickness = 2
+        };
+
+        panel.Children.Add(_endPositionBox);
+
+        // Add the resize handle at bottom right
+        var resizeHandle = new Rectangle
+        {
+            Width = 10,
+            Height = 10,
+            Fill = Brushes.Green,
+            Stroke = Brushes.White,
+            StrokeThickness = 1,
+            Cursor = new Cursor(StandardCursorType.BottomRightCorner)
+        };
+
+        panel.Children.Add(resizeHandle);
+
+        // Position the handle in the bottom right corner of the panel
+        Canvas.SetLeft(resizeHandle, _map.endWidth - 10);
+        Canvas.SetTop(resizeHandle, _map.endHeight - 10);
+
+        // Add panel to canvas
+        DrawingCanvas.Children.Add(panel);
+        Canvas.SetLeft(panel, _map.endXPos);
+        Canvas.SetTop(panel, _map.endYPos);
+
+        // Add drag functionality to the panel
+        panel.Cursor = new Cursor(StandardCursorType.Hand);
+        panel.PointerPressed += EndPositionBox_PointerPressed;
+        panel.PointerMoved += EndPositionBox_PointerMoved;
+        panel.PointerReleased += EndPositionBox_PointerReleased;
+
+        // Add resize functionality to the resize handle
+        resizeHandle.PointerPressed += ResizeHandle_PointerPressed;
+        resizeHandle.PointerMoved += ResizeHandle_PointerMoved;
+        resizeHandle.PointerReleased += ResizeHandle_PointerReleased;
+
+        // Update label text
+        EndPositionLabel.Text = $"X: {_map.endXPos}, Y: {_map.endYPos}";
+
+        // Connect label click event to focus
+        EndPositionLabel.Tapped += (s, e) =>
+        {
+            ScrollViewerContainer.Offset = new Vector(
+                _map.endXPos - (ScrollViewerContainer.Viewport.Width / 2),
+                _map.endYPos - (ScrollViewerContainer.Viewport.Height / 2)
+            );
+        };
+    }
+    private void EndPositionBox_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not Panel panel) return;
+
+        _isDraggingEndPosition = true;
+        var position = e.GetPosition(panel);
+        _endPositionDragOffset = position;
+        e.Pointer.Capture(panel);
+        e.Handled = true;
+    }
+    private void EndPositionBox_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_isDraggingEndPosition || sender is not Panel panel) return;
+
+        var position = e.GetPosition(DrawingCanvas);
+        var newLeft = position.X - _endPositionDragOffset.X;
+        var newTop = position.Y - _endPositionDragOffset.Y;
+
+        Canvas.SetLeft(panel, newLeft);
+        Canvas.SetTop(panel, newTop);
+
+        // Update the map values
+        _map.endXPos = (float)newLeft;
+        _map.endYPos = (float)newTop;
+
+        // Update the text label
+        EndPositionLabel.Text = $"X: {Math.Round(_map.endXPos)}, Y: {Math.Round(_map.endYPos)}";
+
+        e.Handled = true;
+    }
+    private void EndPositionBox_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        _isDraggingEndPosition = false;
+        e.Pointer.Capture(null);
+        e.Handled = true;
+    }
+    private void ResizeHandle_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        _isResizingEndPosition = true;
+        _resizeStartPoint = e.GetPosition(DrawingCanvas);
+        _originalEndBoxSize = new Size(_endPositionBox.Width, _endPositionBox.Height);
+        e.Pointer.Capture(sender as IInputElement);
+        e.Handled = true;
+    }
+    private void ResizeHandle_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_isResizingEndPosition) return;
+
+        var position = e.GetPosition(DrawingCanvas);
+        var deltaX = position.X - _resizeStartPoint.X;
+        var deltaY = position.Y - _resizeStartPoint.Y;
+
+        var newWidth = Math.Max(20, _originalEndBoxSize.Width + deltaX);
+        var newHeight = Math.Max(20, _originalEndBoxSize.Height + deltaY);
+
+        _endPositionBox.Width = newWidth;
+        _endPositionBox.Height = newHeight;
+
+        // Store size in map data if needed
+        _map.endWidth = (int)newWidth;
+        _map.endHeight = (int)newHeight;
+
+        e.Handled = true;
+    }
+    private void ResizeHandle_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        _isResizingEndPosition = false;
+        e.Pointer.Capture(null);
+        e.Handled = true;
+    }
+    private void UpdateEndPositionBox()
+    {
+        // Get the panel that contains the end position box
+        var panel = DrawingCanvas.Children.OfType<Panel>()
+            .FirstOrDefault(p => p.Children.Contains(_endPositionBox));
+
+        if (panel != null)
+        {
+            Canvas.SetLeft(panel, _map.endXPos);
+            Canvas.SetTop(panel, _map.endYPos);
+
+            // Set size if stored in map data
+            if (_map.endWidth > 0 && _map.endHeight > 0)
+            {
+                _endPositionBox.Width = _map.endWidth;
+                _endPositionBox.Height = _map.endHeight;
+
+                // Update resize handle position
+                var resizeHandle = panel.Children.OfType<Rectangle>()
+                    .FirstOrDefault(r => r != _endPositionBox);
+
+                if (resizeHandle != null)
+                {
+                    Canvas.SetLeft(resizeHandle, _map.endWidth - 10);
+                    Canvas.SetTop(resizeHandle, _map.endHeight - 10);
+                }
+            }
+
+            EndPositionLabel.Text = $"X: {_map.endXPos}, Y: {_map.endYPos}";
+        }
+        else
+        {
+            CreateEndPositionBox();
+        }
+    }
+
     #endregion
 
     private async void mnuSave_Click(object? sender, RoutedEventArgs e)
     {
         var storageProvider = StorageProvider;
-    
+
         var fileOptions = new FilePickerSaveOptions
         {
             Title = "Save Map",
@@ -522,14 +743,14 @@ public partial class MainWindow : Window
             },
             DefaultExtension = "wmap"
         };
-    
+
         var file = await storageProvider.SaveFilePickerAsync(fileOptions);
 
         if (file == null)
             return;
-        
+
         _map.SaveAs(file.Path.LocalPath, out string? err, true);
-        
+
         if (err != null)
             Console.WriteLine(err);
     }
@@ -553,33 +774,34 @@ public partial class MainWindow : Window
         var file = await storageProvider.OpenFilePickerAsync(fileOptions);
         if (file == null)
             return;
-        
+
         // Open the selected file
         _map.SetFilePath(file[0].Path.LocalPath);
         _map.Open(out string? err);
-        
+
         if (err != null)
         {
             Console.WriteLine(err);
             return;
         }
-        
+
         var backgroundsLibrary = LibraryManager.Libraries["sky"];
         LImage img = backgroundsLibrary.Content.Images[_map.ParallaxBackgroundIndex];
         using var memoryStream = new System.IO.MemoryStream(img.Data);
         var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
         SkyboxPreview.Source = bitmap;
-        
+
         var backgroundsLibrary2 = LibraryManager.Libraries["mountains"];
         LImage img2 = backgroundsLibrary2.Content.Images[_map.MountainsBackgroundIndex];
         using var memoryStream2 = new System.IO.MemoryStream(img2.Data);
         var bitmap2 = new Avalonia.Media.Imaging.Bitmap(memoryStream2);
         MountainsPreview.Source = bitmap2;
-        
+
         UpdateStartPositionBox();
+        UpdateEndPositionBox();
         UpdateItemList();
         DrawScene();
-        
+
     }
 
     private void UpdateStartPositionBox()
@@ -597,33 +819,4 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ChangeMountains_OnTapped(object? sender, TappedEventArgs e)
-    {
-        // Get a reference to the mountains library
-        var backgroundsLibrary = LibraryManager.Libraries["mountains"];
-
-        // Show the image selector dialog
-        LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
-        imageSelector.ShowDialog(this);
-
-        // Check if a valid image was selected
-        if (imageSelector.SelectedIndex == -1)
-        {
-            Console.WriteLine("No mountain image selected");
-            return;
-        }
-
-        // Update the map with the selected index
-        _map.MountainsBackgroundIndex = imageSelector.SelectedIndex;
-
-        // Change the picture box image to the selected image
-        LImage img = backgroundsLibrary.Content.Images[imageSelector.SelectedIndex];
-
-        // Convert byte array to stream before creating Bitmap
-        using var memoryStream = new System.IO.MemoryStream(img.Data);
-        var bitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
-
-        // Update the MountainPreview image
-        MountainsPreview.Source = bitmap;
-    }
 }
