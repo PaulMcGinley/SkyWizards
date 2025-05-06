@@ -17,6 +17,7 @@ using Avalonia.Threading;
 using LevelObjectEditor.Dialogs;
 using libType;
 using System.Linq;
+using Path = System.IO.Path;
 
 namespace LevelObjectEditor;
 
@@ -1941,111 +1942,114 @@ public partial class MainWindow : Window
     }
 
     private async void mnuCreateFromTiles_OnClick(object? sender, RoutedEventArgs e)
-{
-    Console.WriteLine("Creating from tiles...");
-    
-    // Debug: Show all available libraries
-    Console.WriteLine($"Available libraries: {string.Join(", ", LibraryManager.Libraries.Keys)}");
-    
-    int startIndex = 0;
-    int endIndex = 0;
-
-    try
     {
-        // Show the library selector dialog
-        var result = await SelectLibrary();
-        Console.WriteLine($"Selected library: {result}");
-        
-        if (result == null)
-        {
-            Console.WriteLine("No library selected, returning");
-            return;
-        }
+        Console.WriteLine("Creating from tiles...");
 
-        // Check if the library exists in the dictionary (case-sensitive check)
-        if (!LibraryManager.Libraries.ContainsKey(result))
+        // Debug: Show all available libraries
+        Console.WriteLine($"Available libraries: {string.Join(", ", LibraryManager.Libraries.Keys)}");
+
+        int startIndex = 0;
+        int endIndex = 0;
+
+        try
         {
-            Console.WriteLine($"Library '{result}' not found in LibraryManager.Libraries");
-            
-            // Try to find a case-insensitive match
-            var matchingKey = LibraryManager.Libraries.Keys.FirstOrDefault(k => 
-                string.Equals(k, result, StringComparison.OrdinalIgnoreCase));
-                
-            if (matchingKey != null)
+            // Show the library selector dialog
+            var result = await SelectLibrary();
+            Console.WriteLine($"Selected library: {result}");
+
+            if (result == null)
             {
-                Console.WriteLine($"Found case-insensitive match: '{matchingKey}'");
-                result = matchingKey;
+                Console.WriteLine("No library selected, returning");
+                return;
+            }
+            
+            // Remove file extension if present
+            result = Path.GetFileNameWithoutExtension(result);
+
+            // Check if the library exists in the dictionary (case-sensitive check)
+            if (!LibraryManager.Libraries.ContainsKey(result))
+            {
+                Console.WriteLine($"Library '{result}' not found in LibraryManager.Libraries");
+
+                // Try to find a case-insensitive match
+                var matchingKey = LibraryManager.Libraries.Keys.FirstOrDefault(k =>
+                    string.Equals(k, result, StringComparison.OrdinalIgnoreCase));
+
+                if (matchingKey != null)
+                {
+                    Console.WriteLine($"Found case-insensitive match: '{matchingKey}'");
+                    result = matchingKey;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            // Get the selected library
+            Console.WriteLine($"Retrieving library content for: {result}");
+            PLibrary lib = LibraryManager.Libraries[result].Content;
+
+            // Show the image selector dialog for start index
+            Console.WriteLine("Opening first image selector dialog");
+            LibraryImageSelector imageSelector = new(ref lib);
+            await imageSelector.ShowDialog(this);
+
+            // Check if a valid image was selected
+            if (imageSelector.SelectedIndex == -1)
+            {
+                Console.WriteLine("No start image selected, returning");
+                return;
+            }
+
+            startIndex = imageSelector.SelectedIndex;
+            Console.WriteLine($"Starting index: {startIndex}");
+
+            // Show the image selector dialog for end index
+            Console.WriteLine("Opening second image selector dialog");
+            imageSelector = new(ref lib);
+            await imageSelector.ShowDialog(this);
+
+            if (imageSelector.SelectedIndex == -1)
+            {
+                Console.WriteLine("No end image selected, using start index instead");
+                endIndex = startIndex;
             }
             else
             {
-                return;
+                endIndex = imageSelector.SelectedIndex;
             }
-        }
-        
-        // Get the selected library
-        Console.WriteLine($"Retrieving library content for: {result}");
-        PLibrary lib = LibraryManager.Libraries[result].Content;
-        
-        // Show the image selector dialog for start index
-        Console.WriteLine("Opening first image selector dialog");
-        LibraryImageSelector imageSelector = new(ref lib);
-        await imageSelector.ShowDialog(this);
 
-        // Check if a valid image was selected
-        if (imageSelector.SelectedIndex == -1)
-        {
-            Console.WriteLine("No start image selected, returning");
-            return;
-        }
+            Console.WriteLine($"Ending index: {endIndex}");
 
-        startIndex = imageSelector.SelectedIndex;
-        Console.WriteLine($"Starting index: {startIndex}");
-
-        // Show the image selector dialog for end index
-        Console.WriteLine("Opening second image selector dialog");
-        imageSelector = new(ref lib);
-        await imageSelector.ShowDialog(this);
-        
-        if (imageSelector.SelectedIndex == -1)
-        {
-            Console.WriteLine("No end image selected, using start index instead");
-            endIndex = startIndex;
-        }
-        else
-        {
-            endIndex = imageSelector.SelectedIndex;
-        }
-        
-        Console.WriteLine($"Ending index: {endIndex}");
-
-        // Create a new graphic layer for each tile
-        for (int i = startIndex; i <= endIndex; i++)
-        {
-            // Create a new graphic layer
-            var graphic = new libType.Graphic
+            // Create a new graphic layer for each tile
+            for (int i = startIndex; i <= endIndex; i++)
             {
-                BackImageLibrary = result, // Use the validated key
-                BackIndex = i,
-                BackEndIndex = -1,
-                BackAnimationSpeed = 0,
-                X = 0,
-                Y = 0,
-                DrawLayer = 0
-            };
+                // Create a new graphic layer
+                var graphic = new libType.Graphic
+                {
+                    BackImageLibrary = result, // Use the validated key
+                    BackIndex = i,
+                    BackEndIndex = -1,
+                    BackAnimationSpeed = 0,
+                    X = 0,
+                    Y = 0,
+                    DrawLayer = 0
+                };
 
-            // Add the graphic layer to the object library
-            objectLibrary.Images.Add(graphic);
+                // Add the graphic layer to the object library
+                objectLibrary.Images.Add(graphic);
+            }
+
+            // Update the UI
+            UpdateUI(updateLayers: true);
+            // Select the last added graphic layer
+            LayersList.SelectedIndex = objectLibrary.Images.Count - 1;
         }
-
-        // Update the UI
-        UpdateUI(updateLayers: true);
-        // Select the last added graphic layer
-        LayersList.SelectedIndex = objectLibrary.Images.Count - 1;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in mnuCreateFromTiles_OnClick: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error in mnuCreateFromTiles_OnClick: {ex.Message}");
-        Console.WriteLine($"Stack trace: {ex.StackTrace}");
-    }
-}
 }

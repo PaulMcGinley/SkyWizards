@@ -37,6 +37,8 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 text.setCharacterSize(24);
                 text.setFillColor(sf::Color::Black);
                 text.setString(key + ": " + value);
+                text.setOutlineColor(sf::Color::White);
+                text.setOutlineThickness(2.f);
                 text.setPosition(10, 10 + yOffset);
                 window.draw(text);
                 yOffset += 30;
@@ -49,6 +51,8 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 text.setCharacterSize(24);
                 text.setFillColor(sf::Color::Black);
                 text.setString(key + ": " + value);
+                text.setOutlineColor(sf::Color::White);
+                text.setOutlineThickness(2.f);
                 text.setPosition(game_manager.getResolutionWidth() - text.getGlobalBounds().width - 10, 10 + yOffset);
                 window.draw(text);
                 yOffset += 30;
@@ -61,6 +65,8 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 text.setCharacterSize(24);
                 text.setFillColor(sf::Color::Black);
                 text.setString(key + ": " + value);
+                text.setOutlineColor(sf::Color::White);
+                text.setOutlineThickness(2.f);
                 text.setPosition(10, yOffset - 30);
                 window.draw(text);
                 yOffset -= 30;
@@ -73,6 +79,8 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 text.setCharacterSize(24);
                 text.setFillColor(sf::Color::Black);
                 text.setString(key + ": " + value);
+                text.setOutlineColor(sf::Color::White);
+                text.setOutlineThickness(2.f);
                 text.setPosition(game_manager.getResolutionWidth() - text.getGlobalBounds().width - 10, yOffset - 30);
                 window.draw(text);
                 yOffset -= 30;
