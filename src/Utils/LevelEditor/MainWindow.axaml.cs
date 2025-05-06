@@ -66,7 +66,6 @@ public partial class MainWindow : Window
             scrollViewer.Offset = new Avalonia.Vector(0, 4500);
         }
     }
-
     private void InitializeObjectLibraryList()
     {
         _objManager = new LevelObjectManager();
@@ -468,8 +467,7 @@ public partial class MainWindow : Window
     private Point _dragStartPosition;
     private Point _originalObjectPosition;
     private Image _currentDragImage;
-
-
+    
     private Rectangle _startPositionBox;
     private bool _isDraggingStartPosition;
     private Point _startPositionDragOffset;
@@ -535,7 +533,21 @@ public partial class MainWindow : Window
         e.Pointer.Capture(null);
         e.Handled = true;
     }
-
+    private void UpdateStartPositionBox()
+    {
+        if (_startPositionBox != null)
+        {
+            Canvas.SetLeft(_startPositionBox, _map.startXPos);
+            Canvas.SetTop(_startPositionBox, _map.startYPos);
+            StartPositionLabel.Text = $"X: {_map.startXPos}, Y: {_map.startYPos}";
+        }
+        else
+        {
+            CreateStartPositionBox();
+            UpdateStartPositionBox();
+        }
+    }
+    
     private Rectangle _endPositionBox;
     private bool _isDraggingEndPosition;
     private Point _endPositionDragOffset;
@@ -726,6 +738,8 @@ public partial class MainWindow : Window
 
     #endregion
 
+    #region Menu
+
     private async void mnuSave_Click(object? sender, RoutedEventArgs e)
     {
         var storageProvider = StorageProvider;
@@ -754,7 +768,6 @@ public partial class MainWindow : Window
         if (err != null)
             Console.WriteLine(err);
     }
-
     private async void mnuOpen_Click(object? sender, RoutedEventArgs e)
     {
         Console.WriteLine("Open clicked");
@@ -803,20 +816,6 @@ public partial class MainWindow : Window
         DrawScene();
 
     }
-
-    private void UpdateStartPositionBox()
-    {
-        if (_startPositionBox != null)
-        {
-            Canvas.SetLeft(_startPositionBox, _map.startXPos);
-            Canvas.SetTop(_startPositionBox, _map.startYPos);
-            StartPositionLabel.Text = $"X: {_map.startXPos}, Y: {_map.startYPos}";
-        }
-        else
-        {
-            CreateStartPositionBox();
-            UpdateStartPositionBox();
-        }
-    }
-
+    
+    #endregion
 }
