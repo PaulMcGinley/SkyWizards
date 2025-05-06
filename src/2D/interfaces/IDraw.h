@@ -33,6 +33,10 @@ public:
                 drawPosition.x += asset_manager.TextureLibraries[textureLibraryName]->entries[index].xOffset;
                 drawPosition.y += asset_manager.TextureLibraries[textureLibraryName]->entries[index].yOffset;
 
+                // Round to integer pixel positions to prevent row / column misalignment
+                drawPosition.x = std::round(drawPosition.x);
+                drawPosition.y = std::round(drawPosition.y);
+
                 // Get the current view bounds
                 sf::View currentView = window.getView();
                 sf::FloatRect viewBounds(

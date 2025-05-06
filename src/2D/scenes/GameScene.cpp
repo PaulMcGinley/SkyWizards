@@ -31,10 +31,8 @@ void GameScene::Update(GameTime gameTime) {
         (this->*UpdateLoop)(gameTime);
 
         // DEBUG:
-        auto debugOverlay =  scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY);
-        if (debugOverlay) {
-                auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay);
-                if (debugOverlayPtr) {
+        if (auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+                if (auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
                         debugOverlayPtr->AddInfoTopLeft("Player X", std::to_string(player.position.x));
                         debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
                         debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
@@ -145,7 +143,10 @@ void GameScene::Update_Game(GameTime gameTime) {
         // Pass boundaries to Player and calculate the physics state
         player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
         player.Update(gameTime);
-        viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
+
+        if (player.position.y > 7000)
+                player.position = map->startPosition - sf::Vector2f(250, 0);
+        viewport.setCenter(player.position + sf::Vector2f(250,250)); // Center the viewport on the player
 }
 void GameScene::ValidateMap() {
         // Check if the map exists in the asset manager

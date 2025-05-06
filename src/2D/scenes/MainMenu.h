@@ -6,12 +6,15 @@
 #define MAINMENU_H
 
 
+#include <SFML/Graphics/Sprite.hpp>
+
+
 #include "interfaces/IScene.h"
 
 
 class MainMenu : public IScene {
 public:
-        // MainMenu();
+        MainMenu();
 
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
@@ -23,6 +26,14 @@ public:
 
 private:
         sf::VertexArray backgroundQuad{sf::Quads, 4};
+
+        sf::Texture* title1Texture;
+        sf::Texture* title2Texture;
+        sf::Texture* title3Texture;
+
+        sf::Sprite title1Sprite;
+        sf::Sprite title2Sprite;
+        sf::Sprite title3Sprite;
 };
 
 
