@@ -129,8 +129,13 @@ void GameScene::LoadSky() {
         skyBoxSprite.setPosition(0, 0); // Set the position of the skyBoxSprite to the top left corner // TODO: Chaange this to be parallax
 }
 void GameScene::LoadMountains() {
+        if (map->MountainsBackgroundIndex < 0) {
+                std::cout << "MountainsBackgroundIndex is -1, skipping mountains background loading." << std::endl;
+                return;
+        }
+
         // Check if the mountains background index is valid
-        if (map->MountainsBackgroundIndex < 0 || map->MountainsBackgroundIndex >= asset_manager.TextureLibraries["mountains"]->entryCount)
+        if (map->MountainsBackgroundIndex >= asset_manager.TextureLibraries["mountains"]->entryCount)
                 map->MountainsBackgroundIndex = 0; // Default to 0 if invalid
 
         // Load the mountains background texture
@@ -197,6 +202,7 @@ void GameScene::LoadAssets() {
 
         asset_manager.TextureLibraries["alpha_textures"]->LoadIndices({242}); // Stars
 }
+// TODO: Split the sky and mountain
 void GameScene::CalculateParallaxBackground() {
         // TODO: Get values from the map and game manager
         const float worldWidth = 100000.0f;
@@ -206,7 +212,10 @@ void GameScene::CalculateParallaxBackground() {
 
         // Get parallax texture sizes
         sf::Vector2u skySize = skyBoxTexture->getSize();
-        sf::Vector2u mountainsSize = mountainsTexture->getSize();
+
+        sf::Vector2u mountainsSize = {0,0};
+        if (map->MountainsBackgroundIndex >= 0)
+                mountainsTexture->getSize();
 
         // Get players position as a normal (0 - 1)
         float normalX = std::clamp(viewport.getCenter().x / worldWidth, 0.0f, 1.0f);
@@ -224,11 +233,14 @@ void GameScene::CalculateParallaxBackground() {
 
         // Set texture rects to crop the background images
         skyBoxSprite.setTextureRect(sf::IntRect(skyX, skyY, screenWidth, screenHeight));
-        mountainsSprite.setTextureRect(sf::IntRect(mountainsX, mountainsY, screenWidth, screenHeight));
+
+        if (map->MountainsBackgroundIndex >= 0)
+                mountainsSprite.setTextureRect(sf::IntRect(mountainsX, mountainsY, screenWidth, screenHeight));
 
         // Always draw at (viewport left, top)
         skyBoxSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
-        mountainsSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
+        if (map->MountainsBackgroundIndex >= 0)
+                mountainsSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
 }
 void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 0; layer <= 3; ++layer) {

@@ -17,36 +17,28 @@ void MainMenu::Update(GameTime gameTime) {
                 }
                 SceneManager::GetInstance().ChangeScene(SceneType::SCENE_GAME);
         }
-
 }
-void MainMenu::LateUpdate(GameTime gameTime) {
-
-}
+void MainMenu::LateUpdate(GameTime gameTime) {}
 void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
-
         window.draw(backgroundQuad, &AssetManager::GetInstance().programUsage.entries[0].texture);
 }
 void MainMenu::InitializeScene() {
+        float screenWidth = game_manager.getResolution().x;
+        float screenHeight = game_manager.getResolution().y;
 
         // Set up the background quad to cover the entire window
         backgroundQuad[0].position = sf::Vector2f(0, 0);
-        backgroundQuad[1].position = sf::Vector2f(1920, 0);
-        backgroundQuad[2].position = sf::Vector2f(1920, 1080);
-        backgroundQuad[3].position = sf::Vector2f(0, 1080);
+        backgroundQuad[1].position = sf::Vector2f(screenWidth, 0);
+        backgroundQuad[2].position = sf::Vector2f(screenWidth, screenHeight);
+        backgroundQuad[3].position = sf::Vector2f(0, screenHeight);
 
         backgroundQuad[0].texCoords = sf::Vector2f(0, 0);
-        backgroundQuad[1].texCoords = sf::Vector2f(1920, 0);
-        backgroundQuad[2].texCoords = sf::Vector2f(1920, 1080);
-        backgroundQuad[3].texCoords = sf::Vector2f(0, 1080);
+        backgroundQuad[1].texCoords = sf::Vector2f(screenWidth, 0);
+        backgroundQuad[2].texCoords = sf::Vector2f(screenWidth, screenHeight);
+        backgroundQuad[3].texCoords = sf::Vector2f(0, screenHeight);
 
         IScene::InitializeScene(); // Call the parent class to set the scene as initialized
 }
-void MainMenu::DestroyScene() {
-
-}
-void MainMenu::OnScene_Active() {
-
-}
-void MainMenu::OnScene_Deactivate() {
-
-}
+void MainMenu::DestroyScene() {}
+void MainMenu::OnScene_Active() {}
+void MainMenu::OnScene_Deactivate() {}

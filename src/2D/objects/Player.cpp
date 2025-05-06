@@ -221,13 +221,14 @@ void Player::Update(GameTime gameTime) {
         // Apply gravity if falling or jumping
         if (isFalling || isJumping) {
                 acceleration.y += FALLING_SPEED;
+                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
         }
 
         // Handle horizontal movement
         bool isMoving = false;
         float targetSpeed = 0.0f;
         float directionChangeMultiplier = 1.0f;
-        const float runThreshold = WALKING_SPEED * 1.4f; // Speed threshold to transition to running
+        const float runThreshold = WALKING_SPEED * 2.f; // Speed threshold to transition to running
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
                 faceDirection = FaceDirection::FACE_DIRECTION_LEFT;

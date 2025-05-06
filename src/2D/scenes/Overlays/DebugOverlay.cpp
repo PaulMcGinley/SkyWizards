@@ -23,9 +23,37 @@ void DebugOverlay::Update(GameTime gameTime) {
                 fpsText.setString("FPS: " + std::to_string(currentFps));
                 fpsText.setPosition(game_manager.getResolutionWidth() - fpsText.getGlobalBounds().width - 10, 5);
         }
+
+        AddInfoRight("FPS", std::to_string(currentFps));
 }
 void DebugOverlay::LateUpdate(GameTime gameTime) {}
-void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) { window.draw(fpsText); }
+void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
+
+        // Draw the debug info
+        int yOffset = 0;
+        for (const auto& [key, value] : debugInfo_Left) {
+                sf::Text text;
+                text.setFont(*fpsFont);
+                text.setCharacterSize(24);
+                text.setFillColor(sf::Color::Black);
+                text.setString(key + ": " + value);
+                text.setPosition(10, 10 + yOffset);
+                window.draw(text);
+                yOffset += 30;
+        }
+
+        yOffset = 0;
+        for (const auto& [key, value] : debugInfo_Right) {
+                sf::Text text;
+                text.setFont(*fpsFont);
+                text.setCharacterSize(24);
+                text.setFillColor(sf::Color::Black);
+                text.setString(key + ": " + value);
+                text.setPosition(game_manager.getResolutionWidth() - text.getGlobalBounds().width - 10, 10 + yOffset);
+                window.draw(text);
+                yOffset += 30;
+        }
+}
 void DebugOverlay::InitializeScene() { IScene::InitializeScene(); }
 void DebugOverlay::DestroyScene() {}
 void DebugOverlay::OnScene_Active() {}

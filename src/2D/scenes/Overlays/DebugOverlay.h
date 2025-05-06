@@ -23,7 +23,16 @@ public:
         void OnScene_Active() override;
         void OnScene_Deactivate() override;
 
+        void AddInfoLeft(const std::string& key, const std::string_view& value) {
+                debugInfo_Left[key] = value;
+        }
+        void AddInfoRight(const std::string& key, const std::string_view& value) {
+                debugInfo_Right[key] = value;
+        }
+
 private:
+        std::map<std::string, std::string> debugInfo_Right;
+        std::map<std::string, std::string> debugInfo_Left;
         sf::Font *fpsFont;
         sf::Text fpsText;
 
