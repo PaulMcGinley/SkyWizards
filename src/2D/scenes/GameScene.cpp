@@ -265,42 +265,43 @@ void GameScene::LoadAssets() {
 // TODO: Split the sky and mountain
 void GameScene::CalculateParallaxBackground() {
         // TODO: Get values from the map and game manager
-        const float worldWidth = 100000.0f;
-        const float worldHeight = 10000.0f;
-        const float screenWidth = game_manager.getResolution().x;
-        const float screenHeight = game_manager.getResolution().y;
+        float worldWidth = map->endPosition.getPosition().x + 1000.f;
+        float worldHeight = 10000.0f;
+
+        const auto screenSize = game_manager.getResolution();
+        const float screenWidth = static_cast<float>(screenSize.x);
+        const float screenHeight = static_cast<float>(screenSize.y);
 
         // Get parallax texture sizes
-        sf::Vector2u skySize = skyBoxTexture->getSize();
-
-        sf::Vector2u mountainsSize = {0,0};
-        if (map->MountainsBackgroundIndex >= 0)
-                mountainsTexture->getSize();
+        const sf::Vector2u skySize = skyBoxTexture ? skyBoxTexture->getSize() : sf::Vector2u(0, 0);
+        const sf::Vector2u mountainsSize = (mountainsTexture && map->MountainsBackgroundIndex >= 0)
+                ? mountainsTexture->getSize()
+                : sf::Vector2u(0, 0);
 
         // Get players position as a normal (0 - 1)
-        float normalX = std::clamp(viewport.getCenter().x / worldWidth, 0.0f, 1.0f);
-        float normalY = std::clamp(viewport.getCenter().y / worldHeight, 0.0f, 1.0f);
+        const sf::Vector2f center = viewport.getCenter();
+        const float normalX = std::clamp(center.x / worldWidth, 0.0f, 1.0f);
+        const float normalY = std::clamp(center.y / worldHeight, 0.0f, 1.0f);
 
         // Parallax factors
-        float skyParallax = 1.f;
-        float mountainsParallax = 1.f;
+        constexpr float skyParallax = 1.f;
+        constexpr float mountainsParallax = 1.f;
 
-        // Calculate background X and Y offsets
-        int skyX = static_cast<int>((skySize.x - screenWidth) * normalX * skyParallax);
-        int skyY = static_cast<int>((skySize.y - screenHeight) * normalY * skyParallax);
-        int mountainsX = static_cast<int>((mountainsSize.x - screenWidth) * normalX * mountainsParallax);
-        int mountainsY = static_cast<int>((mountainsSize.y - screenHeight) * normalY * mountainsParallax);
+        // Calculate offsets
+        const int skyX = static_cast<int>((skySize.x - screenWidth) * normalX * skyParallax);
+        const int skyY = static_cast<int>((skySize.y - screenHeight) * normalY * skyParallax);
+        const int mountainsX = static_cast<int>((mountainsSize.x - screenWidth) * normalX * mountainsParallax);
+        const int mountainsY = static_cast<int>((mountainsSize.y - screenHeight) * normalY * mountainsParallax);
 
-        // Set texture rects to crop the background images
-        skyBoxSprite.setTextureRect(sf::IntRect(skyX, skyY, screenWidth, screenHeight));
-
-        if (map->MountainsBackgroundIndex >= 0)
-                mountainsSprite.setTextureRect(sf::IntRect(mountainsX, mountainsY, screenWidth, screenHeight));
-
-        // Always draw at (viewport left, top)
-        skyBoxSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
-        if (map->MountainsBackgroundIndex >= 0)
-                mountainsSprite.setPosition(viewport.getCenter().x - screenWidth / 2, viewport.getCenter().y - screenHeight / 2);
+        // Set texture rects and positions only if valid
+        if (skyBoxTexture) {
+                skyBoxSprite.setTextureRect(sf::IntRect(skyX, skyY, static_cast<int>(screenWidth), static_cast<int>(screenHeight)));
+                skyBoxSprite.setPosition(center.x - screenWidth / 2, center.y - screenHeight / 2);
+        }
+        if (mountainsTexture && map->MountainsBackgroundIndex >= 0) {
+                mountainsSprite.setTextureRect(sf::IntRect(mountainsX, mountainsY, static_cast<int>(screenWidth), static_cast<int>(screenHeight)));
+                mountainsSprite.setPosition(center.x - screenWidth / 2, center.y - screenHeight / 2);
+        }
 }
 void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 0; layer <= 3; ++layer) {
@@ -343,31 +344,35 @@ void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameT
 }
 // Function to get all boundaries in the current viewport
 std::vector<Boundary> GameScene::getLocalBoundaries() const {
-        // List of boundaries to return
         std::vector<Boundary> localBoundaries;
+        localBoundaries.reserve(map->LevelObjects.size());
 
-        // Get the actual viewport bounds in world coordinates
-        // TODO: Maybe refactor this into a function
         const sf::FloatRect viewBounds(
-            viewport.getCenter().x - viewport.getSize().x/2,
-            viewport.getCenter().y - viewport.getSize().y/2,
+            viewport.getCenter().x - viewport.getSize().x / 2,
+            viewport.getCenter().y - viewport.getSize().y / 2,
             viewport.getSize().x,
             viewport.getSize().y
         );
 
-        for (auto const &obj: map->LevelObjects) {
-                for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images) {
-                        if (entry.Boundaries == nullptr || entry.Boundaries->empty())
+        for (const auto& obj : map->LevelObjects) {
+                const auto& objLibIt = asset_manager.ObjectLibraries.find(obj.ObjectLibraryFile);
+                if (objLibIt == asset_manager.ObjectLibraries.end())
+                        continue;
+                const auto& images = objLibIt->second->Images;
+
+                for (const auto& entry : images) {
+                        if (!entry.Boundaries || entry.Boundaries->empty())
                                 continue;
 
-                        // Calculate the current frame relative to the start index
                         const int currentFrame = entry.currentFrame - entry.BackIndex;
-                        if (currentFrame < 0 || currentFrame >= entry.Boundaries->size())
+                        if (currentFrame < 0 || currentFrame >= static_cast<int>(entry.Boundaries->size()))
                                 continue;
 
-                        const Boundary boundary = entry.Boundaries->at(currentFrame);
+                        const Boundary& boundary = entry.Boundaries->at(currentFrame);
 
-                        // Adjust boundary position based on the object position
+                        if (!boundary.Active)
+                                continue;
+
                         sf::FloatRect boundaryRect(
                             obj.Position.x + boundary.X,
                             obj.Position.y + boundary.Y,
@@ -375,7 +380,9 @@ std::vector<Boundary> GameScene::getLocalBoundaries() const {
                             boundary.Height
                         );
 
-                        // Check if the boundary is within the viewport
+                        // TODO: Maybe just use FloatRec since its already created
+                        // Or maybe implement a check within the boundary class
+                        // NOTE: Probally not gonna do it unless its a performance issue
                         if (viewBounds.intersects(boundaryRect)) {
                                 // Create a copy with adjusted position
                                 Boundary adjustedBoundary = boundary;
@@ -385,6 +392,5 @@ std::vector<Boundary> GameScene::getLocalBoundaries() const {
                         }
                 }
         }
-
         return localBoundaries;
 }

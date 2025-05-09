@@ -16,6 +16,7 @@ public:
         int Height;
         bool Active; // Editor only, not used in game
         bool deserialize(const pugi::xml_node &node);
+        Boundary() = default;
 };
 
 #endif //BOUNDARY_H

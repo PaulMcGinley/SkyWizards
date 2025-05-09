@@ -352,6 +352,8 @@ public partial class MainWindow : Window
         if (index < 0 || objectLibrary == null)
             return;
 
+        result =  Path.GetFileNameWithoutExtension(result);
+        
         var graphic = objectLibrary.Images[index];
         graphic.BackImageLibrary = result;
         graphic.BackIndex = -1;

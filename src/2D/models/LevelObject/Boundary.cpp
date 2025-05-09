@@ -4,7 +4,7 @@
 
 #include "Boundary.h"
 
-bool Boundary::deserialize(const pugi::xml_node& node) {
+bool Boundary::deserialize(const pugi::xml_node &node) {
         if (!node) {
                 return false; // Node is invalid
         }

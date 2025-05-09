@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.29)
 project(LoSW___BftS)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+set(SFML_DIR "/opt/homebrew/opt/sfml@2/lib/cmake/SFML")
 # Find SFML package
 find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
 

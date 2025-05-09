@@ -14,7 +14,7 @@ void MainMenu::Update(GameTime gameTime) {
                 auto scenePtr = scene_manager.GetScene(SceneType::SCENE_GAME);
                 auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
                 if (gameScene) {
-                        gameScene->LoadMap("test2");
+                        gameScene->LoadMap("test4");
                 }
                 scene_manager.ChangeScene(SceneType::SCENE_GAME);
         }
