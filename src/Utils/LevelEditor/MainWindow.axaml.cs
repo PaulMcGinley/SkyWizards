@@ -818,4 +818,61 @@ public partial class MainWindow : Window
     }
     
     #endregion
+
+    private void btnRemoveLayer(object? sender, TappedEventArgs e)
+    {
+        if (ItemListBox.SelectedItem is ListItemViewModel selectedItem)
+        {
+            if (selectedItem.Tag is WMObject mapObject)
+            {
+                _map.LevelObjects.Remove(mapObject);
+                UpdateItemList();
+                DrawScene();
+            }
+        }
+    }
+
+    private void btnMoveLayerUp(object? sender, TappedEventArgs e)
+    {
+        if (ItemListBox.SelectedItem is ListItemViewModel selectedItem)
+        {
+            if (selectedItem.Tag is WMObject mapObject)
+            {
+                int index = _map.LevelObjects.IndexOf(mapObject);
+                if (index > 0)
+                {
+                    _map.LevelObjects.RemoveAt(index);
+                    _map.LevelObjects.Insert(index - 1, mapObject);
+                    UpdateItemList();
+                    DrawScene();
+                    
+                    // Set the selected item to the moved object
+                    ItemListBox.SelectedItem = selectedItem;
+                    ItemListBox.ScrollIntoView(selectedItem);
+                }
+            }
+        }
+    }
+
+    private void btnMoveLayerDown(object? sender, TappedEventArgs e)
+    {
+        if (ItemListBox.SelectedItem is ListItemViewModel selectedItem)
+        {
+            if (selectedItem.Tag is WMObject mapObject)
+            {
+                int index = _map.LevelObjects.IndexOf(mapObject);
+                if (index < _map.LevelObjects.Count - 1)
+                {
+                    _map.LevelObjects.RemoveAt(index);
+                    _map.LevelObjects.Insert(index + 1, mapObject);
+                    UpdateItemList();
+                    DrawScene();
+
+                    // Set the selected item to the moved object
+                    ItemListBox.SelectedItem = selectedItem;
+                    ItemListBox.ScrollIntoView(selectedItem);
+                }
+            }
+        }
+    }
 }

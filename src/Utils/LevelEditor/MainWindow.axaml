@@ -154,9 +154,9 @@
         <!-- Layer Controls Menu -->
         <Menu Grid.Row="1" BorderBrush="Gray" BorderThickness="0,1,0,0">
             <!-- <MenuItem Header="+" ToolTip.Tip="Add new object"/> -->
-            <MenuItem Header="-" ToolTip.Tip="Remove selected object"/>
-            <MenuItem Header="▲" ToolTip.Tip="Move selected object up"/>
-            <MenuItem Header="▼" ToolTip.Tip="Move selected object down" />
+            <MenuItem Header="-" ToolTip.Tip="Remove selected object" Tapped="btnRemoveLayer"/>
+            <MenuItem Header="▲" ToolTip.Tip="Move selected object up" Tapped="btnMoveLayerUp"/>
+            <MenuItem Header="▼" ToolTip.Tip="Move selected object down" Tapped="btnMoveLayerDown" />
             <MenuItem Header="ƒ×" ToolTip.Tip="Object Script"/>
         </Menu>
     </Grid>
