@@ -21,7 +21,6 @@ public partial class MainWindow : Window
     private LevelObjectManager _objManager;
     private WMap _map;
 
-
     #region This Form
 
     public MainWindow()
@@ -38,11 +37,11 @@ public partial class MainWindow : Window
 
         // Load the map
         _map = new WMap();
-        _map.LevelObjects.Add(new WMObject()
-        {
-            ObjectLibrary = "cliff_06",
-            Position = new[] { 0f, 0f }
-        });
+        // _map.LevelObjects.Add(new WMObject()
+        // {
+        //     ObjectLibrary = "cliff_06",
+        //     Position = new[] { 0f, 0f }
+        // });
         DrawScene();
         UpdateItemList();
         SetupObjectsListBoxEvents();
@@ -141,14 +140,14 @@ public partial class MainWindow : Window
         SkyboxPreview.Source = bitmap;
     }
 
-    private void ChangeMountains_OnTapped(object? sender, TappedEventArgs e)
+    private async void ChangeMountains_OnTapped(object? sender, TappedEventArgs e)
     {
         // Get a reference to the mountains library
         var backgroundsLibrary = LibraryManager.Libraries["mountains"];
 
         // Show the image selector dialog
         LibraryImageSelector imageSelector = new(ref backgroundsLibrary.Content);
-        imageSelector.ShowDialog(this);
+        await imageSelector.ShowDialog(this);
 
         // Check if a valid image was selected
         if (imageSelector.SelectedIndex == -1)
