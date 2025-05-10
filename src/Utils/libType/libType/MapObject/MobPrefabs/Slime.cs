@@ -2,7 +2,7 @@ namespace libType.MobPrefabs;
 
 public class Slime : WMMob
 {
-    Slime()
+    public Slime()
     {
         Name = "Slime";
         Position[0] = 0;

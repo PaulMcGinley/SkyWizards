@@ -281,7 +281,7 @@ void GameScene::CalculateParallaxBackground() {
         const float normalY = std::clamp(center.y / worldHeight, 0.0f, 1.0f);
 
         // Parallax factors
-        constexpr float skyParallax = 1.f;
+        constexpr float skyParallax = 0.1f;
         constexpr float mountainsParallax = 1.f;
 
         // Calculate offsets

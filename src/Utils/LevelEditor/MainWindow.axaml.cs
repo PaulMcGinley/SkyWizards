@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Avalonia.Controls;
@@ -12,6 +13,7 @@ using Avalonia;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using libType.MobPrefabs;
 using Point = Avalonia.Point;
 
 namespace LevelEditor;
@@ -65,6 +67,7 @@ public partial class MainWindow : Window
             scrollViewer.Offset = new Avalonia.Vector(0, 4500);
         }
     }
+
     private void InitializeObjectLibraryList()
     {
         _objManager = new LevelObjectManager();
@@ -169,7 +172,7 @@ public partial class MainWindow : Window
         // Update the MountainPreview image
         MountainsPreview.Source = bitmap;
     }
-    
+
     #endregion
 
     #region Map Objects
@@ -350,7 +353,7 @@ public partial class MainWindow : Window
 
         DrawGuideLine();
     }
-    
+
     /// <summary>
     /// The guideline helps keep the level on the same y-axis.
     /// Start and finish should land on this line and any splitting in paths should return to this line.
@@ -404,6 +407,7 @@ public partial class MainWindow : Window
         // Wait until layout is completed, then scroll to show the line
         //this.LayoutUpdated += ScrollToGuideLine;
     }
+
     private void SetupDragHandlers(Image imageControl)
     {
         // mouse down
@@ -461,15 +465,16 @@ public partial class MainWindow : Window
             }
         };
     }
-    
+
     private WMObject _currentlyDraggedObject = null;
     private Point _dragStartPosition;
     private Point _originalObjectPosition;
     private Image _currentDragImage;
-    
+
     private Rectangle _startPositionBox;
     private bool _isDraggingStartPosition;
     private Point _startPositionDragOffset;
+
     private void CreateStartPositionBox()
     {
         // Create the blue box representing start position
@@ -498,6 +503,7 @@ public partial class MainWindow : Window
         // Update the label text
         StartPositionLabel.Text = $"X: {_map.startXPos}, Y: {_map.startYPos}";
     }
+
     private void StartPositionBox_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         _isDraggingStartPosition = true;
@@ -506,6 +512,7 @@ public partial class MainWindow : Window
         e.Pointer.Capture(_startPositionBox);
         e.Handled = true;
     }
+
     private void StartPositionBox_PointerMoved(object? sender, PointerEventArgs e)
     {
         if (!_isDraggingStartPosition) return;
@@ -526,12 +533,14 @@ public partial class MainWindow : Window
 
         e.Handled = true;
     }
+
     private void StartPositionBox_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         _isDraggingStartPosition = false;
         e.Pointer.Capture(null);
         e.Handled = true;
     }
+
     private void UpdateStartPositionBox()
     {
         if (_startPositionBox != null)
@@ -546,13 +555,14 @@ public partial class MainWindow : Window
             UpdateStartPositionBox();
         }
     }
-    
+
     private Rectangle _endPositionBox;
     private bool _isDraggingEndPosition;
     private Point _endPositionDragOffset;
     private bool _isResizingEndPosition;
     private Point _resizeStartPoint;
     private Size _originalEndBoxSize;
+
     private void CreateEndPositionBox()
     {
         // Default position if not set
@@ -629,6 +639,7 @@ public partial class MainWindow : Window
             );
         };
     }
+
     private void EndPositionBox_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Panel panel) return;
@@ -639,6 +650,7 @@ public partial class MainWindow : Window
         e.Pointer.Capture(panel);
         e.Handled = true;
     }
+
     private void EndPositionBox_PointerMoved(object? sender, PointerEventArgs e)
     {
         if (!_isDraggingEndPosition || sender is not Panel panel) return;
@@ -659,12 +671,14 @@ public partial class MainWindow : Window
 
         e.Handled = true;
     }
+
     private void EndPositionBox_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         _isDraggingEndPosition = false;
         e.Pointer.Capture(null);
         e.Handled = true;
     }
+
     private void ResizeHandle_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         _isResizingEndPosition = true;
@@ -673,6 +687,7 @@ public partial class MainWindow : Window
         e.Pointer.Capture(sender as IInputElement);
         e.Handled = true;
     }
+
     private void ResizeHandle_PointerMoved(object? sender, PointerEventArgs e)
     {
         if (!_isResizingEndPosition) return;
@@ -693,12 +708,14 @@ public partial class MainWindow : Window
 
         e.Handled = true;
     }
+
     private void ResizeHandle_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         _isResizingEndPosition = false;
         e.Pointer.Capture(null);
         e.Handled = true;
     }
+
     private void UpdateEndPositionBox()
     {
         // Get the panel that contains the end position box
@@ -767,6 +784,7 @@ public partial class MainWindow : Window
         if (err != null)
             Console.WriteLine(err);
     }
+
     private async void mnuOpen_Click(object? sender, RoutedEventArgs e)
     {
         Console.WriteLine("Open clicked");
@@ -815,7 +833,7 @@ public partial class MainWindow : Window
         DrawScene();
 
     }
-    
+
     #endregion
 
     private void btnRemoveLayer(object? sender, TappedEventArgs e)
@@ -844,7 +862,7 @@ public partial class MainWindow : Window
                     _map.LevelObjects.Insert(index - 1, mapObject);
                     UpdateItemList();
                     DrawScene();
-                    
+
                     // Set the selected item to the moved object
                     ItemListBox.SelectedItem = selectedItem;
                     ItemListBox.ScrollIntoView(selectedItem);
@@ -874,4 +892,85 @@ public partial class MainWindow : Window
             }
         }
     }
+
+    #region Entities
+
+    private void AddEntity_Click(object? sender, RoutedEventArgs e)
+    {
+        string entityType = ((ComboBoxItem)EntityTypeComboBox.SelectedItem)?.Content.ToString() ?? "Slime";
+
+        WMMob newEntity = entityType switch
+        {
+            "ChestMonster" => new ChestMonster(),
+            "Slime" => new Slime(),
+            _ => new Slime()
+        };
+
+        _map.Mobs.Add(newEntity);
+        UpdateEntityList();
+    }
+
+    private void DeleteEntity_Click(object? sender, RoutedEventArgs e)
+    {
+        if (EntitiesListBox.SelectedItem is EntityItemViewModel selectedEntity)
+        {
+            _map.Mobs.Remove(selectedEntity.Entity);
+            UpdateEntityList();
+        }
+    }
+
+    private void MoveEntityUp_Click(object? sender, RoutedEventArgs e)
+    {
+        if (EntitiesListBox.SelectedItem is EntityItemViewModel selectedEntity)
+        {
+            int index = _map.Mobs.IndexOf(selectedEntity.Entity);
+            if (index > 0)
+            {
+                _map.Mobs.RemoveAt(index);
+                _map.Mobs.Insert(index - 1, selectedEntity.Entity);
+                UpdateEntityList();
+
+                // Re-select the item
+                EntitiesListBox.SelectedIndex = index - 1;
+            }
+        }
+    }
+
+    private void MoveEntityDown_Click(object? sender, RoutedEventArgs e)
+    {
+        if (EntitiesListBox.SelectedItem is EntityItemViewModel selectedEntity)
+        {
+            int index = _map.Mobs.IndexOf(selectedEntity.Entity);
+            if (index < _map.Mobs.Count - 1)
+            {
+                _map.Mobs.RemoveAt(index);
+                _map.Mobs.Insert(index + 1, selectedEntity.Entity);
+                UpdateEntityList();
+
+                // Re-select the item
+                EntitiesListBox.SelectedIndex = index + 1;
+            }
+        }
+    }
+
+    private void UpdateEntityList()
+    {
+        var entityItems = new ObservableCollection<EntityItemViewModel>();
+
+        foreach (var mob in _map.Mobs)
+        {
+            entityItems.Add(new EntityItemViewModel(mob));
+        }
+
+        EntityItemsControl.ItemsSource = entityItems;
+        DrawScene(); // Redraw to show entities
+    }
+
+    #endregion
+
+
+
+
+
+
 }

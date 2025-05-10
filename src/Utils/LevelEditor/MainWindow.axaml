@@ -227,7 +227,57 @@
             </TabControl>
         </TabItem>
         <TabItem Header="Entities">
-            <TextBlock Text="Content for Tab 2" />
+            <Grid>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- Entity Type Selection -->
+    <StackPanel Grid.Row="0" Margin="10" Orientation="Horizontal" Spacing="10">
+        <TextBlock Text="Entity Type:" VerticalAlignment="Center"/>
+        <ComboBox x:Name="EntityTypeComboBox" Width="150">
+            <ComboBoxItem Content="ChestMonster"/>
+            <ComboBoxItem Content="Slime"/>
+        </ComboBox>
+        <Button x:Name="AddEntityButton" Content="Add Entity" Click="AddEntity_Click"/>
+    </StackPanel>
+
+    <!-- Entity List -->
+    <Border Grid.Row="1" Margin="10" BorderBrush="LightGray" BorderThickness="1">
+        <ScrollViewer>
+            <ItemsControl x:Name="EntityItemsControl">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:EntityItemViewModel}">
+                        <Expander Header="{Binding Name}" Margin="5">
+                            <Grid Margin="10" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                                <!-- Common Properties -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Position X:" Margin="0,5,5,5"/>
+                                <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding PosX}" Margin="0,5,0,5"/>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Position Y:" Margin="0,5,5,5"/>
+                                <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding PosY}" Margin="0,5,0,5"/>
+                                
+                                <!-- Entity-specific properties (template will be used based on type) -->
+                                <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
+                                                Content="{Binding}" 
+                                                ContentTemplate="{Binding EntityTemplate}"/>
+                            </Grid>
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Border>
+
+    <!-- Entity Control Buttons -->
+    <StackPanel Grid.Row="2" Margin="10" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
+        <Button Content="Delete Selected" Click="DeleteEntity_Click"/>
+        <Button Content="Move Up" Click="MoveEntityUp_Click"/>
+        <Button Content="Move Down" Click="MoveEntityDown_Click"/>
+    </StackPanel>
+</Grid>
         </TabItem>
         <TabItem Header="Scripts">
             <TextBlock Text="Content for Tab 3" />

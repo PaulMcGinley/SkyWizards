@@ -2,7 +2,7 @@ namespace libType.MobPrefabs;
 
 public class ChestMonster : WMMob
 {
-    ChestMonster()
+    public ChestMonster()
     {
         Name = "Chest Monster";
         Position[0] = 0;
