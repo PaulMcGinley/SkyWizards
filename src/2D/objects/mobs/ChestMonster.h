@@ -13,7 +13,7 @@
 
 class ChestMonster final : public IAnimate, public IUpdate, public IDraw {
 public:
-    ChestMonster();
+    ChestMonster(sf::Vector2f position);
 
     sf::VertexArray texture_quads{sf::Quads, 4};
 

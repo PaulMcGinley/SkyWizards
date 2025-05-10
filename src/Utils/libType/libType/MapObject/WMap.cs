@@ -13,6 +13,7 @@ public class WMap
     public int ParallaxBackgroundIndex { get; set; } = -1;
     public int MountainsBackgroundIndex { get; set; } = -1;
     public List<WMObject> LevelObjects { get; set; } = [];
+    public List<WMMob> Mobs { get; set; } = [];
     public List<string> Scripts { get; set; } = [];
     public float startXPos { get; set; } = 0;
     public float startYPos { get; set; } = 0;

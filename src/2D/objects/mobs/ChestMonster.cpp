@@ -6,23 +6,21 @@
 
 #include "models/TextureEntry.h"
 
-ChestMonster::ChestMonster()
-        : position({1000,520}) {
+ChestMonster::ChestMonster(sf::Vector2f spawnPosition) : position(spawnPosition) {
 
-        sequences = {
-                {AnimationType::ANIMATION_ATTACK, {0, 10, 100}},
-                {AnimationType::ANIMATION_ATTACK2, {10, 9, 100}},
-                {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
-                {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
-                {AnimationType::ANIMATION_DEATH, {35, 12, 100}},
-                {AnimationType::ANIMATION_DIZZY, {47, 16, 100}},
-                {AnimationType::ANIMATION_IDLE, {63, 16, 60}},
-                {AnimationType::ANIMATION_STATIC, {79 , 1, 100}}, // should be length 1
-                {AnimationType::ANIMATION_RUN, {87, 7, 100}},
-                {AnimationType::ANIMATION_SENSE_SOMETHING, {95, 56, 100}},
-                {AnimationType::ANIMATION_TAUNT, {151, 24, 100}},
-                {AnimationType::ANIMATION_VICTORY, {185, 12, 100}},
-                {AnimationType::ANIMATION_WALK, {187, 12, 100}}
+        sequences = {{AnimationType::ANIMATION_ATTACK, {0, 10, 100}},
+                     {AnimationType::ANIMATION_ATTACK2, {10, 9, 100}},
+                     {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
+                     {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
+                     {AnimationType::ANIMATION_DEATH, {35, 12, 100}},
+                     {AnimationType::ANIMATION_DIZZY, {47, 16, 100}},
+                     {AnimationType::ANIMATION_IDLE, {63, 16, 60}},
+                     {AnimationType::ANIMATION_STATIC, {79, 1, 100}}, // should be length 1
+                     {AnimationType::ANIMATION_RUN, {87, 7, 100}},
+                     {AnimationType::ANIMATION_SENSE_SOMETHING, {95, 56, 100}},
+                     {AnimationType::ANIMATION_TAUNT, {151, 24, 100}},
+                     {AnimationType::ANIMATION_VICTORY, {185, 12, 100}},
+                     {AnimationType::ANIMATION_WALK, {187, 12, 100}}
 
         };
         // ChangeAni(AniType::Taunt, GameTime());
