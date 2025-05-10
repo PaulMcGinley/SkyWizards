@@ -184,24 +184,25 @@ void GameScene::LoadSky() {
                 map->ParallaxBackgroundIndex = 0; // Default to 0 if invalid
 
         // Load the parallax background texture
-        asset_manager.TextureLibraries["sky"]->LoadIndices({map->ParallaxBackgroundIndex});
-        skyBoxTexture = &asset_manager.TextureLibraries["sky"]->entries[map->ParallaxBackgroundIndex].texture;
+        auto &skyLibrary = *asset_manager.TextureLibraries["sky"];
+        skyLibrary.LoadIndices({map->ParallaxBackgroundIndex});
+        skyBoxTexture = &skyLibrary.entries[map->ParallaxBackgroundIndex].texture;
+
+        // Set the position of the skyBoxSprite to the top-left corner
         skyBoxSprite.setTexture(*skyBoxTexture, true);
-        skyBoxSprite.setPosition(0, 0); // Set the position of the skyBoxSprite to the top left corner // TODO: Chaange this to be parallax
+        skyBoxSprite.setPosition(0, 0);
 }
 void GameScene::LoadMountains() {
-        if (map->MountainsBackgroundIndex < 0) {
-                std::cout << "MountainsBackgroundIndex is -1, skipping mountains background loading." << std::endl;
-                return;
-        }
-
-        // Check if the mountains background index is valid
-        if (map->MountainsBackgroundIndex >= asset_manager.TextureLibraries["mountains"]->entryCount)
+        if (map->MountainsBackgroundIndex < 0 || map->MountainsBackgroundIndex >= asset_manager.TextureLibraries["mountains"]->entryCount) {
                 map->MountainsBackgroundIndex = 0; // Default to 0 if invalid
+            }
 
         // Load the mountains background texture
-        asset_manager.TextureLibraries["mountains"]->LoadIndices({map->MountainsBackgroundIndex});
-        mountainsTexture = &asset_manager.TextureLibraries["mountains"]->entries[0].texture;
+        auto &mountainsLibrary = *asset_manager.TextureLibraries["mountains"];
+        mountainsLibrary.LoadIndices({map->MountainsBackgroundIndex});
+        mountainsTexture = &mountainsLibrary.entries[map->MountainsBackgroundIndex].texture;
+
+        // Set the texture for the mountains sprite
         mountainsSprite.setTexture(*mountainsTexture, true);
 }
 void GameScene::LoadAssets() {
@@ -265,21 +266,16 @@ void GameScene::LoadAssets() {
 }
 // TODO: Split the sky and mountain
 void GameScene::CalculateParallaxBackground() {
-        // TODO: Get values from the map and game manager
+        // Get world dimensions
         float worldWidth = map->endPosition.getPosition().x + 1000.f;
         float worldHeight = 10000.0f;
 
+        // Get screen dimensions
         const auto screenSize = game_manager.getResolution();
         const float screenWidth = static_cast<float>(screenSize.x);
         const float screenHeight = static_cast<float>(screenSize.y);
 
-        // Get parallax texture sizes
-        const sf::Vector2u skySize = skyBoxTexture ? skyBoxTexture->getSize() : sf::Vector2u(0, 0);
-        const sf::Vector2u mountainsSize = (mountainsTexture && map->MountainsBackgroundIndex >= 0)
-                ? mountainsTexture->getSize()
-                : sf::Vector2u(0, 0);
-
-        // Get players position as a normal (0 - 1)
+        // Get player's position as a normalized value (0 - 1)
         const sf::Vector2f center = viewport.getCenter();
         const float normalX = std::clamp(center.x / worldWidth, 0.0f, 1.0f);
         const float normalY = std::clamp(center.y / worldHeight, 0.0f, 1.0f);
@@ -289,20 +285,19 @@ void GameScene::CalculateParallaxBackground() {
         constexpr float mountainsParallax = 1.f;
 
         // Calculate offsets
+        const sf::Vector2u skySize = skyBoxTexture->getSize();
+        const sf::Vector2u mountainsSize = mountainsTexture->getSize();
         const int skyX = static_cast<int>((skySize.x - screenWidth) * normalX * skyParallax);
         const int skyY = static_cast<int>((skySize.y - screenHeight) * normalY * skyParallax);
         const int mountainsX = static_cast<int>((mountainsSize.x - screenWidth) * normalX * mountainsParallax);
         const int mountainsY = static_cast<int>((mountainsSize.y - screenHeight) * normalY * mountainsParallax);
 
-        // Set texture rects and positions only if valid
-        if (skyBoxTexture) {
-                skyBoxSprite.setTextureRect(sf::IntRect(skyX, skyY, static_cast<int>(screenWidth), static_cast<int>(screenHeight)));
-                skyBoxSprite.setPosition(center.x - screenWidth / 2, center.y - screenHeight / 2);
-        }
-        if (mountainsTexture && map->MountainsBackgroundIndex >= 0) {
-                mountainsSprite.setTextureRect(sf::IntRect(mountainsX, mountainsY, static_cast<int>(screenWidth), static_cast<int>(screenHeight)));
-                mountainsSprite.setPosition(center.x - screenWidth / 2, center.y - screenHeight / 2);
-        }
+        // Set texture rects and positions
+        skyBoxSprite.setTextureRect(sf::IntRect(skyX, skyY, static_cast<int>(screenWidth), static_cast<int>(screenHeight)));
+        skyBoxSprite.setPosition(center.x - screenWidth / 2, center.y - screenHeight / 2);
+
+        mountainsSprite.setTextureRect(sf::IntRect(mountainsX, mountainsY, static_cast<int>(screenWidth), static_cast<int>(screenHeight)));
+        mountainsSprite.setPosition(center.x - screenWidth / 2, center.y - screenHeight / 2);
 }
 void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 0; layer <= 3; ++layer) {
@@ -343,7 +338,7 @@ void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameT
         }
 
 }
-// Function to get all boundaries in the current viewport
+//Function to get all boundaries in the current viewport
 std::vector<Boundary> GameScene::getLocalBoundaries() const {
         std::vector<Boundary> localBoundaries;
         localBoundaries.reserve(map->LevelObjects.size());
