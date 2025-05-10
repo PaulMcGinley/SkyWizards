@@ -348,12 +348,12 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
         );
 
         // Draw collision box
-        sf::RectangleShape collisionBoxShape(sf::Vector2f(collisionBox.width, collisionBox.height));
-        collisionBoxShape.setPosition(collisionOffset());
-        collisionBoxShape.setFillColor(sf::Color(255, 0, 0, 100)); // Transparent fill
-        collisionBoxShape.setOutlineThickness(1);
-        collisionBoxShape.setOutlineColor(sf::Color::Red);
-        window.draw(collisionBoxShape);
+        // sf::RectangleShape collisionBoxShape(sf::Vector2f(collisionBox.width, collisionBox.height));
+        // collisionBoxShape.setPosition(collisionOffset());
+        // collisionBoxShape.setFillColor(sf::Color(255, 0, 0, 100)); // Transparent fill
+        // collisionBoxShape.setOutlineThickness(1);
+        // collisionBoxShape.setOutlineColor(sf::Color::Red);
+        // window.draw(collisionBoxShape);
 }
 
 void Player::TickAnimation(GameTime gameTime) {

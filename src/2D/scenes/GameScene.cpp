@@ -23,8 +23,7 @@ GameScene::GameScene()
 void GameScene::LoadMap(std::string name)  {
         mapName = std::move(name);
         LoadAssets();
-        player.position = map->startPosition - sf::Vector2f(250, 0);
-        viewport.setCenter(player.position + sf::Vector2f(250,0));
+        SpawnPlayer();
 }
 
 void GameScene::Update(GameTime gameTime) {
@@ -75,7 +74,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         DrawBehindEntities(window, gameTime);
         DrawEntities(window, gameTime);
         DrawInFrontOfEntities(window, gameTime);
-        DEBUG_DrawMapBoundaries(window, gameTime);
+        //DEBUG_DrawMapBoundaries(window, gameTime);
 
         // Draw the UI
         window.setView(window.getDefaultView());
@@ -144,8 +143,9 @@ void GameScene::Update_Game(GameTime gameTime) {
         player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
         player.Update(gameTime);
 
-        if (player.position.y > 7000)
-                player.position = map->startPosition - sf::Vector2f(250, 0);
+        if (player.position.y > 6000)
+                SpawnPlayer();
+                //player.position = map->startPosition - sf::Vector2f(250, 0);
 
         viewport.setCenter(player.position + sf::Vector2f(250,250)); // Center the viewport on the player
 
@@ -164,6 +164,7 @@ void GameScene::Update_Game(GameTime gameTime) {
 
         if (playerRect.intersects(endPosRect)) {
                 // TODO: Implement a level transition
+                SpawnPlayer();
                 scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 }
@@ -347,20 +348,17 @@ std::vector<Boundary> GameScene::getLocalBoundaries() const {
         std::vector<Boundary> localBoundaries;
         localBoundaries.reserve(map->LevelObjects.size());
 
-        const sf::FloatRect viewBounds(
-            viewport.getCenter().x - viewport.getSize().x / 2,
-            viewport.getCenter().y - viewport.getSize().y / 2,
-            viewport.getSize().x,
-            viewport.getSize().y
-        );
+        const sf::FloatRect viewBounds(viewport.getCenter().x - viewport.getSize().x / 2,
+                                       viewport.getCenter().y - viewport.getSize().y / 2, viewport.getSize().x,
+                                       viewport.getSize().y);
 
-        for (const auto& obj : map->LevelObjects) {
-                const auto& objLibIt = asset_manager.ObjectLibraries.find(obj.ObjectLibraryFile);
+        for (const auto &obj: map->LevelObjects) {
+                const auto &objLibIt = asset_manager.ObjectLibraries.find(obj.ObjectLibraryFile);
                 if (objLibIt == asset_manager.ObjectLibraries.end())
                         continue;
-                const auto& images = objLibIt->second->Images;
+                const auto &images = objLibIt->second->Images;
 
-                for (const auto& entry : images) {
+                for (const auto &entry: images) {
                         if (!entry.Boundaries || entry.Boundaries->empty())
                                 continue;
 
@@ -368,17 +366,13 @@ std::vector<Boundary> GameScene::getLocalBoundaries() const {
                         if (currentFrame < 0 || currentFrame >= static_cast<int>(entry.Boundaries->size()))
                                 continue;
 
-                        const Boundary& boundary = entry.Boundaries->at(currentFrame);
+                        const Boundary &boundary = entry.Boundaries->at(currentFrame);
 
                         if (!boundary.Active)
                                 continue;
 
-                        sf::FloatRect boundaryRect(
-                            obj.Position.x + boundary.X,
-                            obj.Position.y + boundary.Y,
-                            boundary.Width,
-                            boundary.Height
-                        );
+                        sf::FloatRect boundaryRect(obj.Position.x + boundary.X, obj.Position.y + boundary.Y,
+                                                   boundary.Width, boundary.Height);
 
                         // TODO: Maybe just use FloatRec since its already created
                         // Or maybe implement a check within the boundary class
@@ -393,4 +387,11 @@ std::vector<Boundary> GameScene::getLocalBoundaries() const {
                 }
         }
         return localBoundaries;
+}
+void GameScene::SpawnPlayer() {
+        player.position = map->startPosition - sf::Vector2f(250, 0);
+        player.velocity = sf::Vector2f(0, 0);
+        player.acceleration = sf::Vector2f(0, 0);
+        player.deceleration = sf::Vector2f(0, 0);
+        viewport.setCenter(player.position + sf::Vector2f(250,0));
 }

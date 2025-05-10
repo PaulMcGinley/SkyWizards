@@ -53,6 +53,7 @@ private:
         std::vector<Boundary> getLocalBoundaries() const;
 
         Player player = Player();
+        void SpawnPlayer();
         bool playerFirstLand = false;
         sf::View viewport;
 
