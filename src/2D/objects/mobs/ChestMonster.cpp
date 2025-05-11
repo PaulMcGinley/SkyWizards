@@ -6,8 +6,8 @@
 
 #include "models/TextureEntry.h"
 
-ChestMonster::ChestMonster(sf::Vector2f spawnPosition) : position(spawnPosition) {
-
+ChestMonster::ChestMonster(sf::Vector2f spawnPosition, float viewRange, float moveSpeed, int health) :
+    position(spawnPosition), ViewRange(viewRange), WALK_SPEED(moveSpeed), Health(health) {
         sequences = {{AnimationType::ANIMATION_ATTACK, {0, 10, 100}},
                      {AnimationType::ANIMATION_ATTACK2, {10, 9, 100}},
                      {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
@@ -20,10 +20,24 @@ ChestMonster::ChestMonster(sf::Vector2f spawnPosition) : position(spawnPosition)
                      {AnimationType::ANIMATION_SENSE_SOMETHING, {95, 56, 100}},
                      {AnimationType::ANIMATION_TAUNT, {151, 24, 100}},
                      {AnimationType::ANIMATION_VICTORY, {185, 12, 100}},
-                     {AnimationType::ANIMATION_WALK, {187, 12, 100}}
+                     {AnimationType::ANIMATION_WALK, {187, 12, 100}}};
+}
 
-        };
-        // ChangeAni(AniType::Taunt, GameTime());
+void ChestMonster::UpdateKnowledge(sf::Vector2f playerPosition) {
+        // Ceck if the player is within the view range
+        // Calculate distance to player
+        float distance = std::abs(playerPosition.x - position.x);
+
+        if (distance < ViewRange / 2) {
+                // Player is within chase range
+                ChangeAnimation(AnimationType::ANIMATION_RUN);
+        } else if (distance < ViewRange) {
+                // Player is within view range
+                ChangeAnimation(AnimationType::ANIMATION_SENSE_SOMETHING);
+        } else {
+                // Player is out of view range
+                ChangeAnimation(AnimationType::ANIMATION_IDLE);
+        }
 }
 
 void ChestMonster::Update(GameTime gameTime) {
@@ -61,7 +75,7 @@ void ChestMonster::Update(GameTime gameTime) {
                 }
         }
 
-        TextureEntry* entry = asset_manager.getChestMonsterFrame_ptr(frame());
+        TextureEntry* entry = &asset_manager.TextureLibraries["ChestMonster"]->entries[frame()];
 
         texture_quads[0].texCoords = entry->texQuad[0].texCoords;
         texture_quads[1].texCoords = entry->texQuad[1].texCoords;
@@ -79,8 +93,9 @@ void ChestMonster::LateUpdate(GameTime gameTime) {
 }
 
 void ChestMonster::Draw(sf::RenderWindow& window, GameTime gameTime) {
+
         window.draw(
             texture_quads,
-            &asset_manager.getChestMonsterFrame_ptr(frame())->texture
+            &asset_manager.TextureLibraries["ChestMonster"]->entries[frame()].texture
         );
 }

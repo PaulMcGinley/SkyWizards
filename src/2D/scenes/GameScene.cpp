@@ -167,6 +167,8 @@ void GameScene::Update_Game(GameTime gameTime) {
                 SpawnPlayer();
                 scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
+
+        UpdateMobs(gameTime);
 }
 void GameScene::ValidateMap() {
         // Check if the map exists in the asset manager
@@ -209,6 +211,7 @@ void GameScene::LoadAssets() {
         ValidateMap();
         LoadSky();
         LoadMountains();
+        LoadMobs();
 
         // Load required assets
         // Map from texture library name to set of unique indices
@@ -264,6 +267,36 @@ void GameScene::LoadAssets() {
 
         asset_manager.TextureLibraries["alpha_textures"]->LoadIndices({242}); // Stars
 }
+void GameScene::LoadMobs() {
+        for (const auto &mob: map->Mobs) {
+                // Check if the mob library exists
+                if (!asset_manager.TextureLibraries.contains(mob.MonsterName)) {
+                        std::cerr << "Mob library " << mob.MonsterName << " does not exist." << std::endl;
+                        continue;
+                }
+                asset_manager.TextureLibraries[mob.MonsterName]->LoadIndices(
+                                {}); // Load all indices for the mob library
+
+                if (mob.MonsterName == "ChestMonster") {
+                        chestMonsters.emplace_back(std::make_unique<ChestMonster>(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                }
+                // else if (mob.MonsterName == "SlimeMonster") {
+                //     slimeMonsters.emplace_back(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health);
+                // }
+                else {
+                        std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
+                }
+        }
+}
+void GameScene::UpdateMobs(GameTime gameTime) {
+        for (auto &chestMonster: chestMonsters) {
+                chestMonster->UpdateKnowledge(player.position);
+                chestMonster->Update(gameTime);
+        }
+        // for (auto &slimeMonster: slimeMonsters) {
+        //     slimeMonster.Update(gameTime);
+        // }
+}
 // TODO: Split the sky and mountain
 void GameScene::CalculateParallaxBackground() {
         // Get world dimensions
@@ -317,6 +350,9 @@ void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) 
 }
 void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
         player.Draw(window, gameTime);
+        for (auto& chestMonster : chestMonsters) {
+                chestMonster->Draw(window, gameTime);
+        }
 }
 void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 5; layer <= 7; ++layer)

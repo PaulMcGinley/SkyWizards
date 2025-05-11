@@ -120,6 +120,9 @@ void TextureLibrary::LoadIndices(const std::vector<int> &indices) {
 
         // If loading all, process as before for all entries
         if (loadAll) {
+                if (fullyLoaded)
+                        return;
+
                 for (int i = 0; i < entryCount; ++i) {
                         file.seekg(fat[i], std::ios::beg);
 
@@ -139,6 +142,8 @@ void TextureLibrary::LoadIndices(const std::vector<int> &indices) {
 
                         entries[i] = entry;
                 }
+
+                fullyLoaded = true; // Mark as fully loaded
         } else {
                 // Only load specified indices
                 for (int idx : indices) {

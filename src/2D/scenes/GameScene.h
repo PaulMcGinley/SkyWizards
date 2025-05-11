@@ -7,6 +7,7 @@
 #include "interfaces/IScene.h"
 #include "models/LevelObject/Boundary.h"
 #include "objects/Player.h"
+#include "objects/mobs/ChestMonster.h"
 
 
 class GameScene : public IScene {
@@ -44,6 +45,8 @@ private:
         void LoadSky();
         void LoadMountains();
         void LoadAssets();
+        void LoadMobs();
+        void UpdateMobs(GameTime game_time);
 
         void CalculateParallaxBackground();
         void DrawBehindEntities(sf::RenderWindow& window, GameTime gameTime);
@@ -56,6 +59,9 @@ private:
         void SpawnPlayer();
         bool playerFirstLand = false;
         sf::View viewport;
+
+        std::vector<std::unique_ptr<ChestMonster>> chestMonsters;
+        // std::vector<Slime> slimeMonsters;
 
 };
 

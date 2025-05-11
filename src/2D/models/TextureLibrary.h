@@ -14,6 +14,7 @@ public:
         int entryCount;
 
         void LoadIndices(const std::vector<int>& indices);
+        bool fullyLoaded = false;
 
 private:
         std::string path;
