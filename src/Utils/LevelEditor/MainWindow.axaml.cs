@@ -11,9 +11,11 @@ using libType;
 using System.IO;
 using Avalonia;
 using Avalonia.Controls.Shapes;
+using Avalonia.Controls.Templates;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Point = Avalonia.Point;
+using Avalonia.Controls.Primitives;
 
 namespace LevelEditor;
 
@@ -21,6 +23,8 @@ public partial class MainWindow : Window
 {
     private LevelObjectManager _objManager;
     private WMap _map;
+    private EntityManager _entityManager;
+    private WMMob _currentlyDraggedMob = null;
 
     #region This Form
 
@@ -36,6 +40,11 @@ public partial class MainWindow : Window
         LibraryManager.LoadAllFuckingLibraries();
         InitializeObjectLibraryList();
 
+        // Initialize entity manager
+        _entityManager = new EntityManager();
+        _entityManager.LoadAllEntities();
+        InitializeEntityLibraryList();
+
         // Load the map
         _map = new WMap();
         // _map.LevelObjects.Add(new WMObject()
@@ -45,8 +54,11 @@ public partial class MainWindow : Window
         // });
         DrawScene();
         UpdateItemList();
+        UpdateEntityList();
         SetupObjectsListBoxEvents();
         SetupItemListBoxEvents();
+        SetupEntitiesListBoxEvents();
+        SetupEntityTabListBoxEvents();
         ScrollToGuideLine(null, null);
     }
 
@@ -349,6 +361,40 @@ public partial class MainWindow : Window
                 _map.startYPos - (ScrollViewerContainer.Viewport.Height / 2)
             );
         };
+
+        // Draw each mob
+        if (_map?.Mobs != null)
+        {
+            foreach (var mob in _map.Mobs)
+            {
+                string key = mob.ObjectLibrary;
+
+                // Skip if we don't have this entity's image
+                if (!_entityManager.EntityImages.TryGetValue(key, out var entityImage) || entityImage == null)
+                    continue;
+
+                // Create an Image control for the entity
+                var imageControl = new Avalonia.Controls.Image
+                {
+                    Source = entityImage,
+                    Width = entityImage.PixelSize.Width,
+                    Height = entityImage.PixelSize.Height
+                };
+
+                // Apply the mob position
+                Canvas.SetLeft(imageControl, mob.Position[0]);
+                Canvas.SetTop(imageControl, mob.Position[1]);
+
+                // Add the image to the canvas
+                DrawingCanvas.Children.Add(imageControl);
+
+                // Tag the image with its associated mob for dragging
+                imageControl.Tag = mob;
+
+                // Add drag event handlers to the image
+                SetupMobDragHandlers(imageControl);
+            }
+        }
 
         DrawGuideLine();
     }
@@ -829,6 +875,7 @@ public partial class MainWindow : Window
         UpdateStartPositionBox();
         UpdateEndPositionBox();
         UpdateItemList();
+        UpdateEntityList();
         DrawScene();
 
     }
@@ -891,7 +938,204 @@ public partial class MainWindow : Window
             }
         }
     }
-    
+
+
+
+    #region Entities
+
+    private void InitializeEntityLibraryList()
+    {
+        // Create view models for each entity
+        var entityItems = new List<EntityItemViewModel>();
+        foreach (var kvp in _entityManager.LibraryEntities)
+        {
+            var key = kvp.Key;
+            var lib = kvp.Value;
+            var preview = _entityManager.EntityPreviews.TryGetValue(key, out var p) ? p : null;
+
+            entityItems.Add(new EntityItemViewModel
+            {
+                Name = key,
+                Library = lib,
+                Preview = preview
+            });
+        }
+
+        EntityTabListBox.ItemsSource = entityItems;
+
+        // Setup search functionality
+        EntitySearchBox.TextChanged += (s, e) =>
+        {
+            var searchText = EntitySearchBox.Text?.ToLower() ?? "";
+
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                EntityTabListBox.ItemsSource = entityItems;
+            }
+            else
+            {
+                EntityTabListBox.ItemsSource = entityItems
+                    .Where(item => item.Name.ToLower().Contains(searchText))
+                    .ToList();
+            }
+        };
+    }
+
+    private void SetupMobDragHandlers(Image imageControl)
+    {
+        // mouse down
+        imageControl.PointerPressed += (sender, e) =>
+        {
+            if (sender is Image image && image.Tag is WMMob mob)
+            {
+                _currentlyDraggedMob = mob;
+                _currentDragImage = image;
+                _dragStartPosition = e.GetPosition(DrawingCanvas);
+                _originalObjectPosition = new Point(mob.Position[0], mob.Position[1]);
+
+                // capture pointer for drag operation
+                e.Pointer.Capture(image);
+                e.Handled = true;
+            }
+        };
+
+        // mouse move
+        imageControl.PointerMoved += (sender, e) =>
+        {
+            if (_currentlyDraggedMob != null && sender is Image image)
+            {
+                var currentPosition = e.GetPosition(DrawingCanvas);
+                var delta = currentPosition - _dragStartPosition;
+
+                // update the image position
+                var newX = _originalObjectPosition.X + delta.X;
+                var newY = _originalObjectPosition.Y + delta.Y;
+
+                Canvas.SetLeft(image, newX);
+                Canvas.SetTop(image, newY);
+
+                e.Handled = true;
+            }
+        };
+
+        // mouse up
+        imageControl.PointerReleased += (sender, e) =>
+        {
+            if (_currentlyDraggedMob != null)
+            {
+                // update the mob position in the map data
+                var currentPosition = e.GetPosition(DrawingCanvas);
+                var delta = currentPosition - _dragStartPosition;
+
+                _currentlyDraggedMob.Position[0] = (float)(_originalObjectPosition.X + delta.X);
+                _currentlyDraggedMob.Position[1] = (float)(_originalObjectPosition.Y + delta.Y);
+
+                // release pointer and reset
+                e.Pointer.Capture(null);
+                _currentlyDraggedMob = null;
+                _currentDragImage = null;
+                e.Handled = true;
+            }
+        };
+    }
+
+    private void UpdateEntityList()
+    {
+        if (_map == null || _map.Mobs == null || _entityManager == null)
+        {
+            EntitiesListBox.ItemsSource = new List<ListItemViewModel>();
+            return;
+        }
+
+        // Create view models for each mob
+        var items = new List<ListItemViewModel>();
+
+        foreach (var mob in _map.Mobs)
+        {
+            string key = mob.ObjectLibrary;
+
+            // Get the preview for this entity
+            var preview = _entityManager.EntityPreviews.TryGetValue(key, out var p) ? p : null;
+
+            // Create the view model
+            items.Add(new ListItemViewModel
+            {
+                Label = key,
+                Icon = preview,
+                Tag = mob
+            });
+        }
+
+        // Set the ItemsSource
+        EntitiesListBox.ItemsSource = items;
+    }
+
+    private void SetupEntitiesListBoxEvents()
+    {
+        // Handle selection change in the entities list box (right panel)
+        EntitiesListBox.SelectionChanged += (sender, e) =>
+        {
+            if (EntitiesListBox.SelectedItem is ListItemViewModel selectedItem)
+            {
+                // Handle the selected item click event
+                Console.WriteLine($"Selected entity: {selectedItem.Label}");
+
+                // Check if the selected item is a mob
+                if (selectedItem.Tag is WMMob mob)
+                {
+                    // Scroll to the position of the selected mob
+                    ScrollViewerContainer.Offset = new Vector(
+                        mob.Position[0] - (ScrollViewerContainer.Viewport.Width / 2),
+                        mob.Position[1] - (ScrollViewerContainer.Viewport.Height / 2));
+                }
+            }
+        };
+    }
+
+    private void SetupEntityTabListBoxEvents()
+    {
+        // Find the entity tab list box in the bottom panel
+        var entitiesTabListBox = this.FindControl<ListBox>("EntityTabListBox");
+        if (entitiesTabListBox == null) return;
+
+        // Set up double-tap event to add entities to the map
+        entitiesTabListBox.DoubleTapped += (sender, e) =>
+        {
+            if (entitiesTabListBox.SelectedItem is EntityItemViewModel selectedEntity)
+            {
+                // Get the current scroll position
+                var horizontalOffset = ScrollViewerContainer.Offset.X;
+                var verticalOffset = ScrollViewerContainer.Offset.Y;
+
+                // Calculate viewport center
+                var viewportWidth = ScrollViewerContainer.Viewport.Width;
+                var viewportHeight = ScrollViewerContainer.Viewport.Height;
+
+                // Position at center of view
+                float posX = (float)(horizontalOffset + (viewportWidth / 2));
+                float posY = (float)(verticalOffset + (viewportHeight / 2));
+
+                // Create new mob
+                var newMob = new WMMob
+                {
+                    ObjectLibrary = selectedEntity.Name,
+                    Position = new float[] { posX, posY },
+                    MoveSpeed = 400,
+                    ViewRange = 400,
+                    Health = 1
+                };
+
+                // Add to map
+                _map.Mobs.Add(newMob);
+
+                // Refresh scene and list
+                DrawScene();
+                UpdateEntityList();
+            }
+        };
+    }
+
+    #endregion
 
 
 }

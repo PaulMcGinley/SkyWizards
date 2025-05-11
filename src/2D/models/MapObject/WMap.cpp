@@ -112,6 +112,20 @@ bool WMap::deserialize(const pugi::xml_node &node) {
                 return false; // LevelObjects are required
         }
 
+        pugi::xml_node mobsNode = root.child("Mobs");
+        if (mobsNode) {
+                for (pugi::xml_node mobNode: mobsNode.children("WMMob")) {
+                        WMMob mob;
+                        if (mob.deserialize(mobNode)) {
+                                Mobs.push_back(mob);
+                                std::cout << "Successfully deserialized a WMMob." << std::endl;
+                        } else {
+                                std::cerr << "Error: Failed to deserialize a WMMob." << std::endl;
+                                return false;
+                        }
+                }
+        }
+
         std::cout << "Successfully deserialized WMap." << std::endl;
         return true; // Successfully deserialized
 }

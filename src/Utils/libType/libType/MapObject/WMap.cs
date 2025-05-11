@@ -45,6 +45,7 @@ public class WMap
             ParallaxBackgroundIndex = deserializedMap.ParallaxBackgroundIndex;
             MountainsBackgroundIndex = deserializedMap.MountainsBackgroundIndex;
             LevelObjects = deserializedMap.LevelObjects;
+            Mobs = deserializedMap.Mobs;
             Scripts = deserializedMap.Scripts;
             startXPos = deserializedMap.startXPos;
             startYPos = deserializedMap.startYPos;

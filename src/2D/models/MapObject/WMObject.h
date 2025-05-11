@@ -8,7 +8,6 @@
 #include <3rdParty/pugixml/pugixml.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <string>
-// #include "models/LevelObject/OLibrary.h"
 
 class WMObject {
 public:

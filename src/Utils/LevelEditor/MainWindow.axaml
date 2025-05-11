@@ -228,10 +228,35 @@
         </TabItem>
         <TabItem Header="Entities">
             <Grid>
-                <TextBlock Text="Entities Tab - Under Construction" 
-                           HorizontalAlignment="Center" 
-                           VerticalAlignment="Center"
-                           FontSize="24"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBox Grid.Row="0" x:Name="EntitySearchBox" Watermark="Search entities..." Margin="5"/>
+
+                <ListBox Grid.Row="1" x:Name="EntityTabListBox" Margin="5">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:EntityItemViewModel}">
+                            <StackPanel Width="140" Margin="5" VerticalAlignment="Top">
+                                <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3">
+                                    <Image Source="{Binding Preview}" Width="128" Height="128" 
+                                           Stretch="Uniform" />
+                                </Border>
+                                <TextBlock Text="{Binding Name}" 
+                                           TextAlignment="Center" 
+                                           TextWrapping="Wrap"
+                                           MaxWidth="128"
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
         </TabItem>
         <TabItem Header="Scripts">
