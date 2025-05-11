@@ -13,7 +13,6 @@ using Avalonia;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
-using libType.MobPrefabs;
 using Point = Avalonia.Point;
 
 namespace LevelEditor;
@@ -892,85 +891,7 @@ public partial class MainWindow : Window
             }
         }
     }
-
-    #region Entities
-
-    private void AddEntity_Click(object? sender, RoutedEventArgs e)
-    {
-        string entityType = ((ComboBoxItem)EntityTypeComboBox.SelectedItem)?.Content.ToString() ?? "Slime";
-
-        WMMob newEntity = entityType switch
-        {
-            "ChestMonster" => new ChestMonster(),
-            "Slime" => new Slime(),
-            _ => new Slime()
-        };
-
-        _map.Mobs.Add(newEntity);
-        UpdateEntityList();
-    }
-
-    private void DeleteEntity_Click(object? sender, RoutedEventArgs e)
-    {
-        if (EntitiesListBox.SelectedItem is EntityItemViewModel selectedEntity)
-        {
-            _map.Mobs.Remove(selectedEntity.Entity);
-            UpdateEntityList();
-        }
-    }
-
-    private void MoveEntityUp_Click(object? sender, RoutedEventArgs e)
-    {
-        if (EntitiesListBox.SelectedItem is EntityItemViewModel selectedEntity)
-        {
-            int index = _map.Mobs.IndexOf(selectedEntity.Entity);
-            if (index > 0)
-            {
-                _map.Mobs.RemoveAt(index);
-                _map.Mobs.Insert(index - 1, selectedEntity.Entity);
-                UpdateEntityList();
-
-                // Re-select the item
-                EntitiesListBox.SelectedIndex = index - 1;
-            }
-        }
-    }
-
-    private void MoveEntityDown_Click(object? sender, RoutedEventArgs e)
-    {
-        if (EntitiesListBox.SelectedItem is EntityItemViewModel selectedEntity)
-        {
-            int index = _map.Mobs.IndexOf(selectedEntity.Entity);
-            if (index < _map.Mobs.Count - 1)
-            {
-                _map.Mobs.RemoveAt(index);
-                _map.Mobs.Insert(index + 1, selectedEntity.Entity);
-                UpdateEntityList();
-
-                // Re-select the item
-                EntitiesListBox.SelectedIndex = index + 1;
-            }
-        }
-    }
-
-    private void UpdateEntityList()
-    {
-        var entityItems = new ObservableCollection<EntityItemViewModel>();
-
-        foreach (var mob in _map.Mobs)
-        {
-            entityItems.Add(new EntityItemViewModel(mob));
-        }
-
-        EntityItemsControl.ItemsSource = entityItems;
-        DrawScene(); // Redraw to show entities
-    }
-
-    #endregion
-
-
-
-
+    
 
 
 }
