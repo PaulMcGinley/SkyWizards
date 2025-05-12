@@ -44,6 +44,8 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
             collisionBox.height
         );
 
+
+
         // Store the previous position before applying velocity
         sf::FloatRect prevPlayerBox = playerBox;
         prevPlayerBox.left -= velocity.x * gametime.delta_time;
@@ -187,6 +189,36 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                                 velocity.y = 0;
                                 isJumping = false;
                         }
+                }
+        }
+
+        float shadowX = position.x +250 - asset_manager.TextureLibraries["PrgUse"]->entries[8].texture.getSize().x/2;
+
+        if (!isFalling && !isJumping) {
+                // player on ground
+                float shadowY = position.y + collisionBox.top + collisionBox.height - 40;
+                shadowDrawPosition = sf::Vector2f(shadowX, shadowY);
+        } else {
+                // player in ait
+                float playerFeetX = shadowX + collisionBox.left + collisionBox.width / 2;
+                float playerFeetY = position.y + collisionBox.top + collisionBox.height - 40;
+
+                // check for ground collision
+                std::optional<float> closestY; // optional allows us to check if a vlaue is valid
+                for (const auto& boundary : boundaries) {
+                        if (playerFeetX >= boundary.X && playerFeetX <= boundary.X + boundary.Width) {
+                                if (boundary.Y >= playerFeetY) {
+                                        if (!closestY || boundary.Y < *closestY) {
+                                                closestY = boundary.Y - 40;
+                                        }
+                                }
+                        }
+                }
+
+                if (closestY) { // we found a ground collision
+                        shadowDrawPosition = sf::Vector2f(shadowX, *closestY);
+                } else { // we didnt find a ground collision so send the shadow away
+                        shadowDrawPosition = sf::Vector2f(shadowX, 9001);
                 }
         }
 }
@@ -337,11 +369,17 @@ void Player::LateUpdate(GameTime gameTime) {
 }
 
 void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
+
+        // Draw shadow
+        IDraw::Draw(window, "PrgUse", 8, shadowDrawPosition);
+
+        // Draw Robe
         window.draw(
                 robeQuad,
                 &asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame())->texture
         );
 
+        // Draw Staff
         window.draw(
                 staffQuad,
                 &asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame())->texture

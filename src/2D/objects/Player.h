@@ -66,6 +66,8 @@ private:
 
         bool isFalling = false;
         bool isJumping = false;
+
+        sf::Vector2f shadowDrawPosition;
 };
 
 

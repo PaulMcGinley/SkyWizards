@@ -66,9 +66,10 @@ void SplashScreen::Update(GameTime gameTime) {
         }
 
         // Program Usage (PrgUse)
-        if (asset_manager.programUsage.entryCount == 0) {
-                asset_manager.programUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
-                asset_manager.programUsage.LoadIndices({});
+        if (!asset_manager.TextureLibraries["PrgUse"]->fullyLoaded) {
+                //asset_manager.programUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
+                //asset_manager.programUsage.LoadIndices({});
+                asset_manager.TextureLibraries["PrgUse"].get()->LoadIndices({});
                 CurrentValue++;
                 text.setString("Loading Level Objects!");
                 text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);

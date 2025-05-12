@@ -34,7 +34,7 @@ void MainMenu::Update(GameTime gameTime) {
 }
 void MainMenu::LateUpdate(GameTime gameTime) {}
 void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
-        window.draw(backgroundQuad, &AssetManager::GetInstance().programUsage.entries[0].texture);
+        window.draw(backgroundQuad, &asset_manager.TextureLibraries["PrgUse"].get()->entries[0].texture);
 
         window.draw(title1Sprite);
         window.draw(title2Sprite);
@@ -64,9 +64,9 @@ void MainMenu::OnScene_Active() {
 
         // TODO: Move this to the TextureLibraries map
         //title1Texture = &asset_manager.TextureLibraries["PrgUse"]->entries[7].texture;
-        title1Texture = &asset_manager.programUsage.entries[7].texture;
-        title2Texture = &asset_manager.programUsage.entries[6].texture;
-        title3Texture = &asset_manager.programUsage.entries[5].texture;
+        title1Texture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[7].texture;
+        title2Texture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[6].texture;
+        title3Texture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[5].texture;
 
         title1Sprite.setTexture(*title1Texture, true);
         title2Sprite.setTexture(*title2Texture, true);
