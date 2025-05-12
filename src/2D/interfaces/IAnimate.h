@@ -31,7 +31,7 @@ public:
 
         virtual void TickAnimation(GameTime gameTime);
         bool ChangeAnimation(AnimationType next_animation, GameTime game_time, bool force_new_animation = false);
-        bool ChangeAnimation(const AnimationType next_animation);
+        bool ChangeAnimation(AnimationType next_animation, bool force_new_animation = true);
 };
 
 #endif //IANIMATE_H

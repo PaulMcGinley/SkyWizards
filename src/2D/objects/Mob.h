@@ -25,6 +25,8 @@ protected:
         float runSpeed = 200;
         float viewRange = 0;
         int health = 1;
+
+        sf::FloatRect collisionBox = {0, 0, 32, 32}; // Collision box for the mob
 };
 
 

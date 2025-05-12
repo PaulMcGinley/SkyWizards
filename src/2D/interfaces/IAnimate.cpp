@@ -51,7 +51,9 @@ bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTim
         return true;
 }
 
-bool IAnimate::ChangeAnimation(const AnimationType next_animation) {
+bool IAnimate::ChangeAnimation(const AnimationType next_animation, bool force_new_animation) {
+        if (!force_new_animation)
+                return false;
 
         if(currentAnimation == next_animation)
                 return false;
