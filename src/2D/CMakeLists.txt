@@ -71,6 +71,8 @@ add_executable(LoSW___BftS main.cpp
         scenes/Overlays/DebugOverlay.h
         models/MapObject/WMMob.cpp
         models/MapObject/WMMob.h
+        objects/Mob.cpp
+        objects/Mob.h
 )
 
 

@@ -44,6 +44,11 @@ void GameScene::Update(GameTime gameTime) {
 void GameScene::LateUpdate(GameTime gameTime) {
         player.LateUpdate(gameTime);
         viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
+
+        // Call LateUpdate for each Mobj
+        for (auto const & mob: chestMonsters) {
+                mob->LateUpdate(gameTime);
+        }
 }
 
 void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {

@@ -6,8 +6,8 @@
 
 #include "models/TextureEntry.h"
 
-ChestMonster::ChestMonster(sf::Vector2f spawnPosition, float viewRange, float moveSpeed, int health) :
-    position(spawnPosition), ViewRange(viewRange), WALK_SPEED(moveSpeed), Health(health) {
+ChestMonster::ChestMonster(sf::Vector2f spawnPosition, const float viewRange, const float moveSpeed, const int health)
+        : Mob(spawnPosition, viewRange, moveSpeed, health) {
         sequences = {{AnimationType::ANIMATION_ATTACK, {0, 10, 100}},
                      {AnimationType::ANIMATION_ATTACK2, {10, 9, 100}},
                      {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
@@ -28,12 +28,18 @@ void ChestMonster::UpdateKnowledge(sf::Vector2f playerPosition) {
         // Calculate distance to player
         float distance = std::abs(playerPosition.x - position.x);
 
-        if (distance < ViewRange / 2) {
+        if (distance < viewRange / 2) {
                 // Player is within chase range
                 ChangeAnimation(AnimationType::ANIMATION_RUN);
-        } else if (distance < ViewRange) {
+        } else if (distance < viewRange) {
                 // Player is within view range
                 ChangeAnimation(AnimationType::ANIMATION_SENSE_SOMETHING);
+                // Check if the player is to the left or right
+                if (playerPosition.x < position.x) {
+                        faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
+                } else {
+                        faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER;
+                }
         } else {
                 // Player is out of view range
                 ChangeAnimation(AnimationType::ANIMATION_IDLE);
@@ -46,9 +52,9 @@ void ChestMonster::Update(GameTime gameTime) {
         // Walk AI
         if (currentAnimation == AnimationType::ANIMATION_WALK) {
                 // Calculate how much to move
-                float moveDistance =  WALK_SPEED * gameTime.delta_time;
+                const float moveDistance =  walkSpeed * gameTime.delta_time;
 
-                switch (face_direction) {
+                switch (faceDirection) {
                         case FaceDirection::FACE_DIRECTION_LEFT:
                                 position.x -= moveDistance;
                         break;
@@ -62,9 +68,9 @@ void ChestMonster::Update(GameTime gameTime) {
         // Run AI
         if (currentAnimation == AnimationType::ANIMATION_RUN) {
                 // Calculate how much to move
-                float moveDistance =  RUN_SPEED * gameTime.delta_time;
+                const float moveDistance =  runSpeed * gameTime.delta_time;
 
-                switch (face_direction) {
+                switch (faceDirection) {
                         case FaceDirection::FACE_DIRECTION_LEFT:
                                 position.x -= moveDistance;
                         break;
@@ -75,17 +81,22 @@ void ChestMonster::Update(GameTime gameTime) {
                 }
         }
 
-        TextureEntry* entry = &asset_manager.TextureLibraries["ChestMonster"]->entries[frame()];
+        TextureEntry* entry = &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()];
 
-        texture_quads[0].texCoords = entry->texQuad[0].texCoords;
-        texture_quads[1].texCoords = entry->texQuad[1].texCoords;
-        texture_quads[2].texCoords = entry->texQuad[2].texCoords;
-        texture_quads[3].texCoords = entry->texQuad[3].texCoords;
+        // texQuads[0].texCoords = entry->texQuad[0].texCoords;
+        // texQuads[1].texCoords = entry->texQuad[1].texCoords;
+        // texQuads[2].texCoords = entry->texQuad[2].texCoords;
+        // texQuads[3].texCoords = entry->texQuad[3].texCoords;
+        //
+        // texQuads[0].position = entry->texQuad[0].position + position;
+        // texQuads[1].position = entry->texQuad[1].position + position;
+        // texQuads[2].position = entry->texQuad[2].position + position;
+        // texQuads[3].position = entry->texQuad[3].position + position;
 
-        texture_quads[0].position = entry->texQuad[0].position + position;
-        texture_quads[1].position = entry->texQuad[1].position + position;
-        texture_quads[2].position = entry->texQuad[2].position + position;
-        texture_quads[3].position = entry->texQuad[3].position + position;
+        for (int i = 0; i < 4; ++i) {
+                texQuads[i].texCoords = entry->texQuad[i].texCoords;
+                texQuads[i].position = entry->texQuad[i].position + position;
+        }
 }
 
 void ChestMonster::LateUpdate(GameTime gameTime) {
@@ -95,7 +106,7 @@ void ChestMonster::LateUpdate(GameTime gameTime) {
 void ChestMonster::Draw(sf::RenderWindow& window, GameTime gameTime) {
 
         window.draw(
-            texture_quads,
-            &asset_manager.TextureLibraries["ChestMonster"]->entries[frame()].texture
+            texQuads,
+            &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()].texture
         );
 }
