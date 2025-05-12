@@ -60,7 +60,7 @@ private:
         bool playerFirstLand = false;
         sf::View viewport;
 
-        std::vector<std::unique_ptr<ChestMonster>> chestMonsters;
+        std::vector<std::unique_ptr<Mob>> monsters;
         // std::vector<Slime> slimeMonsters;
 
 };

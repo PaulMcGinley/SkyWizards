@@ -26,12 +26,12 @@ void GameScene::LoadMap(std::string name)  {
         SpawnPlayer();
 }
 
-void GameScene::Update(GameTime gameTime) {
+void GameScene::Update(const GameTime gameTime) {
         (this->*UpdateLoop)(gameTime);
 
         // DEBUG:
-        if (auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
-                if (auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
+        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+                if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
                         debugOverlayPtr->AddInfoTopLeft("Player X", std::to_string(player.position.x));
                         debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
                         debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
@@ -41,12 +41,12 @@ void GameScene::Update(GameTime gameTime) {
         // END DEBUG ^
 }
 
-void GameScene::LateUpdate(GameTime gameTime) {
+void GameScene::LateUpdate(const GameTime gameTime) {
         player.LateUpdate(gameTime);
         viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
 
         // Call LateUpdate for each Mobj
-        for (auto const & mob: chestMonsters) {
+        for (auto const & mob: monsters) {
                 mob->LateUpdate(gameTime);
         }
 }
@@ -283,7 +283,7 @@ void GameScene::LoadMobs() {
                                 {}); // Load all indices for the mob library
 
                 if (mob.MonsterName == "ChestMonster") {
-                        chestMonsters.emplace_back(std::make_unique<ChestMonster>(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                        monsters.emplace_back(std::make_unique<ChestMonster>(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 }
                 // else if (mob.MonsterName == "SlimeMonster") {
                 //     slimeMonsters.emplace_back(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health);
@@ -293,14 +293,12 @@ void GameScene::LoadMobs() {
                 }
         }
 }
+// IDE Says this is unreachable, but it is.
 void GameScene::UpdateMobs(GameTime gameTime) {
-        for (auto &chestMonster: chestMonsters) {
-                chestMonster->UpdateKnowledge(player.position);
-                chestMonster->Update(gameTime);
+        for (auto &monster: monsters) {
+                monster->UpdatePlayerPosition(player.position);
+                monster->Update(gameTime);
         }
-        // for (auto &slimeMonster: slimeMonsters) {
-        //     slimeMonster.Update(gameTime);
-        // }
 }
 // TODO: Split the sky and mountain
 void GameScene::CalculateParallaxBackground() {
@@ -355,7 +353,7 @@ void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) 
 }
 void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
         player.Draw(window, gameTime);
-        for (auto& chestMonster : chestMonsters) {
+        for (auto const & chestMonster : monsters) {
                 chestMonster->Draw(window, gameTime);
         }
 }

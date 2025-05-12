@@ -23,29 +23,6 @@ ChestMonster::ChestMonster(sf::Vector2f spawnPosition, const float viewRange, co
                      {AnimationType::ANIMATION_WALK, {187, 12, 100}}};
 }
 
-void ChestMonster::UpdateKnowledge(sf::Vector2f playerPosition) {
-        // Ceck if the player is within the view range
-        // Calculate distance to player
-        float distance = std::abs(playerPosition.x - position.x);
-
-        if (distance < viewRange / 2) {
-                // Player is within chase range
-                ChangeAnimation(AnimationType::ANIMATION_RUN);
-        } else if (distance < viewRange) {
-                // Player is within view range
-                ChangeAnimation(AnimationType::ANIMATION_SENSE_SOMETHING);
-                // Check if the player is to the left or right
-                if (playerPosition.x < position.x) {
-                        faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
-                } else {
-                        faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER;
-                }
-        } else {
-                // Player is out of view range
-                ChangeAnimation(AnimationType::ANIMATION_IDLE);
-        }
-}
-
 void ChestMonster::Update(GameTime gameTime) {
         // AI Code here
 
@@ -103,10 +80,30 @@ void ChestMonster::LateUpdate(GameTime gameTime) {
         TickAnimation(gameTime);
 }
 
-void ChestMonster::Draw(sf::RenderWindow& window, GameTime gameTime) {
+void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
-        window.draw(
-            texQuads,
-            &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()].texture
-        );
+        window.draw(texQuads,
+                    &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()].texture);
+}
+void ChestMonster::UpdatePlayerPosition(sf::Vector2f playerPosition) {
+        // Ceck if the player is within the view range
+        // Calculate distance to player
+        float distance = std::abs(playerPosition.x - position.x);
+
+        if (distance < viewRange / 2) {
+                // Player is within chase range
+                ChangeAnimation(AnimationType::ANIMATION_RUN);
+        } else if (distance < viewRange) {
+                // Player is within view range
+                ChangeAnimation(AnimationType::ANIMATION_SENSE_SOMETHING);
+                // Check if the player is to the left or right
+                if (playerPosition.x < position.x) {
+                        faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
+                } else {
+                        faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER;
+                }
+        } else {
+                // Player is out of view range
+                ChangeAnimation(AnimationType::ANIMATION_IDLE);
+        }
 }

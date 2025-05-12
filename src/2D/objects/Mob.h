@@ -15,6 +15,7 @@ public:
         Mob(sf::Vector2f position, float viewRange, float moveSpeed, int health);
 
         int GetCurrentAnimationFrame();
+        virtual void UpdatePlayerPosition(sf::Vector2f playerPosition) = 0;
 
 protected:
         sf::VertexArray texQuads{sf::Quads, 4};
