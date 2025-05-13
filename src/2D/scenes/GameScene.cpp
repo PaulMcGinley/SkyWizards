@@ -44,7 +44,7 @@ void GameScene::Update(const GameTime gameTime) {
 
 void GameScene::LateUpdate(const GameTime gameTime) {
         player.LateUpdate(gameTime);
-        viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
+        //viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
 
         // Call LateUpdate for each Mobj
         for (auto const & mob: monsters) {
@@ -165,10 +165,10 @@ void GameScene::Update_Game(GameTime gameTime) {
                 //player.position = map->startPosition - sf::Vector2f(250, 0);
 
         // This is a possible fix to the tearing issue of the tiles
-        int vpX = player.position.x + 250;
-        int vpY = player.position.y + 250;
-        viewport.setCenter(vpX, vpY); // Center the viewport on the player to int value
-        //viewport.setCenter(player.position + sf::Vector2f(250,250)); // Center the viewport on the player
+        // int vpX = player.position.x + 250;
+        // int vpY = player.position.y + 250;
+        // viewport.setCenter(vpX, vpY); // Center the viewport on the player to int value
+        viewport.setCenter(player.position + sf::Vector2f(250,250)); // Center the viewport on the player
 
         // Check if player gets to the end of the level
         sf::IntRect endPosRect;

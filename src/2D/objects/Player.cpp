@@ -351,28 +351,16 @@ void Player::Update(GameTime gameTime) {
 
 // Update Robe and Staff texture quads (position, texture coordinates)
 void Player::UpdateQuads() {
-        // Update texture quads
         TextureEntry &robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
-        robeQuad[0].texCoords = robe.texQuad[0].texCoords;
-        robeQuad[1].texCoords = robe.texQuad[1].texCoords;
-        robeQuad[2].texCoords = robe.texQuad[2].texCoords;
-        robeQuad[3].texCoords = robe.texQuad[3].texCoords;
-
-        robeQuad[0].position = robe.texQuad[0].position + position;
-        robeQuad[1].position = robe.texQuad[1].position + position;
-        robeQuad[2].position = robe.texQuad[2].position + position;
-        robeQuad[3].position = robe.texQuad[3].position + position;
-
         TextureEntry &staff = *asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame());
-        staffQuad[0].texCoords = staff.texQuad[0].texCoords;
-        staffQuad[1].texCoords = staff.texQuad[1].texCoords;
-        staffQuad[2].texCoords = staff.texQuad[2].texCoords;
-        staffQuad[3].texCoords = staff.texQuad[3].texCoords;
 
-        staffQuad[0].position = staff.texQuad[0].position + position;
-        staffQuad[1].position = staff.texQuad[1].position + position;
-        staffQuad[2].position = staff.texQuad[2].position + position;
-        staffQuad[3].position = staff.texQuad[3].position + position;
+        for (int i = 0; i < 4; ++i) {
+                robeQuad[i].texCoords = robe.texQuad[i].texCoords;
+                robeQuad[i].position = robe.texQuad[i].position + position;
+
+                staffQuad[i].texCoords = staff.texQuad[i].texCoords;
+                staffQuad[i].position = staff.texQuad[i].position + position;
+        }
 }
 
 void Player::LateUpdate(GameTime gameTime) {
