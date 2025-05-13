@@ -22,6 +22,9 @@ public:
 
         void UpdatePlayerPosition(sf::Vector2f playerPosition, GameTime gameTime) override;
 
+        sf::Vector2f leftDropDetectorPosition();
+        sf::Vector2f rightDropDetectorPosition();
+
 private:
         float nextAttackTime;
 

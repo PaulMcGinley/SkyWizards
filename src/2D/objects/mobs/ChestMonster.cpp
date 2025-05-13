@@ -4,6 +4,8 @@
 
 #include "ChestMonster.h"
 
+#include <SFML/Graphics/CircleShape.hpp>
+
 #include "models/TextureEntry.h"
 #include "scenes/GameScene.h"
 
@@ -97,6 +99,18 @@ void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         rect.setOutlineThickness(1.0f);
         window.draw(rect);
 
+        // DEBUG: Draw detector circles
+        sf::CircleShape leftDropDetector(5);
+        leftDropDetector.setFillColor(sf::Color::Green);
+        leftDropDetector.setPosition(leftDropDetectorPosition());
+        window.draw(leftDropDetector);
+        sf::CircleShape rightDropDetector(5);
+        rightDropDetector.setFillColor(sf::Color::Red);
+        rightDropDetector.setPosition(rightDropDetectorPosition());
+        window.draw(rightDropDetector);
+        // END DEBUG ^
+
+
 }
 void ChestMonster::UpdatePlayerPosition(const sf::Vector2f playerPosition, GameTime gameTime) {
         if (player->GetIsDead()) {
@@ -136,6 +150,18 @@ void ChestMonster::UpdatePlayerPosition(const sf::Vector2f playerPosition, GameT
                 // Player is out of view range
                 ChangeAnimation(AnimationType::ANIMATION_STATIC);
         }
+}
+sf::Vector2f ChestMonster::leftDropDetectorPosition() {
+        float yPos = collisionBox.top + collisionBox.height + 5;
+        float xPos =  collisionBox.left - 5;
+
+        return {xPos, yPos};
+}
+sf::Vector2f ChestMonster::rightDropDetectorPosition() {
+        float yPos = collisionBox.top + collisionBox.height + 5;
+        float xPos = collisionBox.left + collisionBox.width + 5;
+
+        return {xPos, yPos};
 }
 void ChestMonster::DamagePlayer(int amount) {
         player->health.damage(amount);
