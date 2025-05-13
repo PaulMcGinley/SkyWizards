@@ -155,7 +155,7 @@ void GameScene::Update_Game(GameTime gameTime) {
         for (auto const & obj: map->LevelObjects)
                 asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
 
-        viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
+        viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player to culling logic
         // Pass boundaries to Player and calculate the physics state
         player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
         player.Update(gameTime);
@@ -164,7 +164,11 @@ void GameScene::Update_Game(GameTime gameTime) {
                 SpawnPlayer();
                 //player.position = map->startPosition - sf::Vector2f(250, 0);
 
-        viewport.setCenter(player.position + sf::Vector2f(250,250)); // Center the viewport on the player
+        // This is a possible fix to the tearing issue of the tiles
+        int vpX = player.position.x + 250;
+        int vpY = player.position.y + 250;
+        viewport.setCenter(vpX, vpY); // Center the viewport on the player to int value
+        //viewport.setCenter(player.position + sf::Vector2f(250,250)); // Center the viewport on the player
 
         // Check if player gets to the end of the level
         sf::IntRect endPosRect;
@@ -188,7 +192,7 @@ void GameScene::Update_Game(GameTime gameTime) {
         //UpdateMobs(gameTime);
         for (auto &monster: monsters) {
                 monster->CalculatePhysicsState(getLocalBoundaries(), gameTime);
-                monster->UpdatePlayerPosition(player.position, gameTime);
+                //monster->UpdatePlayerPosition(player.position, gameTime);
                 monster->Update(gameTime);
         }
 }

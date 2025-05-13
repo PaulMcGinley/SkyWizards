@@ -21,19 +21,28 @@ public:
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) override;
 
-        void UpdatePlayerPosition(sf::Vector2f playerPosition, GameTime gameTime) override;
-
-
 private:
+        void BitePlayer();
+        void SmackPlayer();
         void DamagePlayer(int amount) override;
 
-        float nextAttackTime;
+        float nextSmackTime;
+        const float smackCooldown = 5000; // Time between smacks (ms)
 
-        sf::Vector2f leftDropDetectorPosition();
-        sf::Vector2f rightDropDetectorPosition();
+        float nextBiteTime;
+        const float biteCooldown = 750; // Time between bites (ms)
+
+        sf::Vector2f GetLeftDropDetectorPosition();
+        sf::Vector2f GetRightDropDetectorPosition();
         bool canMoveLeft;
         bool canMoveRight;
         bool onGround;
+        const float biteDistance = 110.0f;
+        const float smackDistance = 200.0f;
+        const float idleDistance = viewRange;
+        const float chaseDistance = viewRange/2;
+
+        void UpdateQuads();
 };
 
 

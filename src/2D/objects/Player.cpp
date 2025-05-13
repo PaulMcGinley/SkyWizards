@@ -265,7 +265,7 @@ void Player::Update(GameTime gameTime) {
         // Apply gravity if falling or jumping
         if (isFalling || isJumping) {
                 acceleration.y += FALLING_SPEED;
-                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
+                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, true);
         }
 
         // Handle horizontal movement
@@ -331,18 +331,18 @@ void Player::Update(GameTime gameTime) {
 
         // Update animation based on movement state
         if (isJumping && velocity.y < 0) {
-                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
+                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, true);
         } else if (isFalling) {
-                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
+                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, true);
         } else if (std::abs(velocity.x) > 0.1f) {
                 // If speed is above runThreshold, switch to run animation
                 if (std::abs(velocity.x) > runThreshold) {
-                        ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime);
+                        ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime, true);
                 } else {
-                        ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime);
+                        ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime, true);
                 }
         } else {
-                ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime);
+                ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
         }
 
         UpdateQuads();

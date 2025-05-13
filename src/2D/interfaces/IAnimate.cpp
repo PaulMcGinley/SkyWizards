@@ -45,7 +45,7 @@ bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTim
         const float new_next_animation_time = game_time.NowAddMilliseconds(sequences[currentAnimation].interval * sequences[currentAnimation].length);
 
         // if (next_animation == AnimationType::ANIMATION_ATTACK) {
-        //         next_animation_time = new_next_animation_time;
+        nextAnimationTime = new_next_animation_time;
         // }
 
         return true;
