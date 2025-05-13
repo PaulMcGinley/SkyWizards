@@ -29,6 +29,7 @@ public:
         void OnScene_Active() override;
         void OnScene_Deactivate() override;
 private:
+        int nextSceneTime;
         int CurrentValue = 0;
         int TargetValue = 0;
         WMap* map;

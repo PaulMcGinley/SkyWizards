@@ -76,19 +76,26 @@ void LoadingScene::BuildAssetQueue(const std::string& mapName) {
 }
 void LoadingScene::Update(const GameTime gameTime) {
 
-        // Load the next batch of assets
-        const auto &currentLib = AssetQueue.front();
-        auto &textureLibrary = asset_manager.TextureLibraries[currentLib.library];
-        if (textureLibrary) {
-                // Load the indices for the current library
-                textureLibrary->LoadIndices(currentLib.indices);
-                AssetQueue.pop();
-        } else {
-                std::cerr << "Texture library " << currentLib.library << " does not exist." << std::endl;
-                AssetQueue.pop();
+        if (nextSceneTime ==0) {
+                // Load the next batch of assets
+                const auto &currentLib = AssetQueue.front();
+                auto &textureLibrary = asset_manager.TextureLibraries[currentLib.library];
+                if (textureLibrary) {
+                        // Load the indices for the current library
+                        textureLibrary->LoadIndices(currentLib.indices);
+                        AssetQueue.pop();
+                } else {
+                        std::cerr << "Texture library " << currentLib.library << " does not exist." << std::endl;
+                        AssetQueue.pop();
+                }
         }
+
+        if (AssetQueue.empty() && nextSceneTime == 0) {
+                nextSceneTime = gameTime.NowAddMilliseconds(1000);
+        }
+
         // Check if the loading is complete
-        if (AssetQueue.empty()) {
+        if (AssetQueue.empty() && nextSceneTime > 0 && gameTime.TimeElapsed(nextSceneTime)) {
                 auto scenePtr = scene_manager.GetScene(SceneType::SCENE_GAME);
                 auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
                 if (gameScene) {
@@ -105,15 +112,18 @@ void LoadingScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw the loading text
         sf::Font font = *asset_manager.Fonts["OpenSans-Bold"].get();
 
+        std::string loadingTextStr;
         if (!AssetQueue.empty()) {
-                const auto &currentLib = AssetQueue.front();
-                std::string loadingTextStr = "Loading " + currentLib.library;
-                sf::Text loadingText(loadingTextStr, font, 30);
-                loadingText.setFillColor(sf::Color::White);
-                loadingText.setPosition(window.getSize().x / 2 - loadingText.getGlobalBounds().width / 2,
-                                        window.getSize().y  - 100);
-                window.draw(loadingText);
+                loadingTextStr = "Loading " + AssetQueue.front().library;
+        } else {
+                loadingTextStr = "Loading Complete";
         }
+        sf::Text loadingText(loadingTextStr, font, 30);
+        loadingText.setFillColor(sf::Color::White);
+        loadingText.setPosition(window.getSize().x / 2 - loadingText.getGlobalBounds().width / 2,
+                                window.getSize().y  - 100);
+        window.draw(loadingText);
+
 
 
         CurrentValue = TargetValue - AssetQueue.size();
@@ -145,6 +155,8 @@ void LoadingScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 void LoadingScene::LateUpdate(GameTime) {}
 void LoadingScene::DestroyScene() {}
 void LoadingScene::OnScene_Active() {
+
+        nextSceneTime = 0;
         // Unloack framerate for faster loading
         game_manager.window->setFramerateLimit(0);
 
