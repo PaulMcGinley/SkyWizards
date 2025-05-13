@@ -33,7 +33,6 @@ private:
 
         std::string mapName;
         WMap* map;
-        int mapWidth; // Used to track the map width (End point + 50)
 
         sf::Texture* skyBoxTexture;
         sf::Sprite skyBoxSprite;
@@ -59,11 +58,9 @@ private:
 
         Player player = Player();
         void SpawnPlayer();
-        bool playerFirstLand = false;
         sf::View viewport;
 
         std::vector<std::unique_ptr<Mob>> monsters;
-        // std::vector<Slime> slimeMonsters;
 
 };
 

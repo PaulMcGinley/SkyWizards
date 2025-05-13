@@ -10,6 +10,7 @@
 #include "managers/SceneManager.h"
 #include "scenes/DevScene.h"
 #include "scenes/GameScene.h"
+#include "scenes/LoadingScene.h"
 #include "scenes/MainMenu.h"
 #include "scenes/Overlays/DebugOverlay.h"
 #include "scenes/SplashScreen.h"
@@ -24,6 +25,7 @@ void Game::Run() {
         scene_manager.AddScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
         scene_manager.AddScene(SceneType::SCENE_GAME, std::make_shared<GameScene>());
         scene_manager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
+        scene_manager.AddScene(SceneType::SCENE_LOADER, std::make_shared<LoadingScene>());
 
 
         // Set the current scene

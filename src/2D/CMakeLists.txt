@@ -73,6 +73,8 @@ add_executable(LoSW___BftS main.cpp
         models/MapObject/WMMob.h
         objects/Mob.cpp
         objects/Mob.h
+        scenes/LoadingScene.cpp
+        scenes/LoadingScene.h
 )
 
 

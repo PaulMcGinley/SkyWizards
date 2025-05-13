@@ -240,57 +240,57 @@ void GameScene::LoadAssets() {
         LoadMountains();
         LoadMobs();
 
-        // Load required assets
-        // Map from texture library name to set of unique indices
-        std::unordered_map<std::string, std::unordered_set<int>> libraryToIndices;
-
-        for (const auto &wmObject: map->LevelObjects) {
-                const auto &oLibraryName = wmObject.ObjectLibraryFile;
-
-                // Skip if library doesn't exist
-                if (!asset_manager.ObjectLibraries.contains(oLibraryName)) {
-                        std::cerr << "Object library " << oLibraryName << " does not exist." << std::endl;
-                        continue;
-                }
-
-                const auto &oLibrary = asset_manager.ObjectLibraries.at(oLibraryName);
-
-                for (const auto &graphic: oLibrary->Images) {
-                        // Skip graphics without an associated library
-                        if (graphic.BackImageLibrary.empty()) {
-                                std::cerr << "Graphic in library " << oLibraryName
-                                          << " has no associated BackImageLibrary." << std::endl;
-                                continue;
-                        }
-
-                        if (graphic.BackIndex < 0 ||
-                            graphic.BackIndex >= asset_manager.TextureLibraries[graphic.BackImageLibrary]->entryCount) {
-                                std::cerr << "Graphic in library " << oLibraryName << " has invalid BackIndex."
-                                          << std::endl;
-                                std::cerr << "Expected range: [0, " << oLibrary->Images.size() << "]" << std::endl;
-                                std::cerr << "Actual BackIndex: " << graphic.BackIndex << std::endl;
-                                continue;
-                        }
-
-                        if (graphic.BackEndIndex == -1) {
-                                // If BackEndIndex is -1, only add BackIndex
-                                libraryToIndices[graphic.BackImageLibrary].insert(graphic.BackIndex);
-                        } else {
-                                // Otherwise add the range from BackIndex to BackEndIndex
-                                for (int idx = graphic.BackIndex; idx <= graphic.BackEndIndex; ++idx) {
-                                        libraryToIndices[graphic.BackImageLibrary].insert(idx);
-                                }
-                        }
-                }
-        }
-
-        // Load the indices for each texture library
-        for (const auto &[libraryName, indicesSet]: libraryToIndices) {
-                if (asset_manager.TextureLibraries.contains(libraryName)) {
-                        std::vector<int> indices(indicesSet.begin(), indicesSet.end());
-                        asset_manager.TextureLibraries[libraryName]->LoadIndices(indices);
-                }
-        }
+        // // Load required assets
+        // // Map from texture library name to set of unique indices
+        // std::unordered_map<std::string, std::unordered_set<int>> libraryToIndices;
+        //
+        // for (const auto &wmObject: map->LevelObjects) {
+        //         const auto &oLibraryName = wmObject.ObjectLibraryFile;
+        //
+        //         // Skip if library doesn't exist
+        //         if (!asset_manager.ObjectLibraries.contains(oLibraryName)) {
+        //                 std::cerr << "Object library " << oLibraryName << " does not exist." << std::endl;
+        //                 continue;
+        //         }
+        //
+        //         const auto &oLibrary = asset_manager.ObjectLibraries.at(oLibraryName);
+        //
+        //         for (const auto &graphic: oLibrary->Images) {
+        //                 // Skip graphics without an associated library
+        //                 if (graphic.BackImageLibrary.empty()) {
+        //                         std::cerr << "Graphic in library " << oLibraryName
+        //                                   << " has no associated BackImageLibrary." << std::endl;
+        //                         continue;
+        //                 }
+        //
+        //                 if (graphic.BackIndex < 0 ||
+        //                     graphic.BackIndex >= asset_manager.TextureLibraries[graphic.BackImageLibrary]->entryCount) {
+        //                         std::cerr << "Graphic in library " << oLibraryName << " has invalid BackIndex."
+        //                                   << std::endl;
+        //                         std::cerr << "Expected range: [0, " << oLibrary->Images.size() << "]" << std::endl;
+        //                         std::cerr << "Actual BackIndex: " << graphic.BackIndex << std::endl;
+        //                         continue;
+        //                 }
+        //
+        //                 if (graphic.BackEndIndex == -1) {
+        //                         // If BackEndIndex is -1, only add BackIndex
+        //                         libraryToIndices[graphic.BackImageLibrary].insert(graphic.BackIndex);
+        //                 } else {
+        //                         // Otherwise add the range from BackIndex to BackEndIndex
+        //                         for (int idx = graphic.BackIndex; idx <= graphic.BackEndIndex; ++idx) {
+        //                                 libraryToIndices[graphic.BackImageLibrary].insert(idx);
+        //                         }
+        //                 }
+        //         }
+        // }
+        //
+        // // Load the indices for each texture library
+        // for (const auto &[libraryName, indicesSet]: libraryToIndices) {
+        //         if (asset_manager.TextureLibraries.contains(libraryName)) {
+        //                 std::vector<int> indices(indicesSet.begin(), indicesSet.end());
+        //                 asset_manager.TextureLibraries[libraryName]->LoadIndices(indices);
+        //         }
+        // }
 
         asset_manager.TextureLibraries["alpha_textures"]->LoadIndices({242}); // Stars
 }

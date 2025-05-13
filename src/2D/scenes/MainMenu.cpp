@@ -5,18 +5,26 @@
 #include "MainMenu.h"
 
 #include "GameScene.h"
+#include "LoadingScene.h"
 #include "managers/InputManager.cpp"
 #include "managers/SceneManager.h"
 
 MainMenu::MainMenu() {}
 void MainMenu::Update(GameTime gameTime) {
         if (InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space)) {
-                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_GAME);
-                auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
+                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_LOADER);
+                auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
                 if (gameScene) {
-                        gameScene->LoadMap("Mob_Test");
+                        gameScene->BuildAssetQueue("Mob_Test");
                 }
-                scene_manager.ChangeScene(SceneType::SCENE_GAME);
+                scene_manager.ChangeScene(SceneType::SCENE_LOADER);
+
+                // auto scenePtr = scene_manager.GetScene(SceneType::SCENE_GAME);
+                // auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
+                // if (gameScene) {
+                //         gameScene->LoadMap("Mob_Test");
+                // }
+                // scene_manager.ChangeScene(SceneType::SCENE_GAME);
         }
 
         float t = gameTime.total_game_time;     // time in seconds
