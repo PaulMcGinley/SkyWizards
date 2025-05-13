@@ -6,14 +6,13 @@
 #include "os/GetExecutionDirectory.h"
 
 int main(int argc, char* argv[]) {
-
         // Call the getInstance() method to ensure the singleton is created before the game starts
         AssetManager const& asset_manager =  AssetManager::GetInstance();       // It is important to call this before the game starts otherwise the graphics will glitch at the start
         GameManager const& game_manager = GameManager::getInstance();
         InputManager const& input_manager = InputManager::getInstance();
         SceneManager const& scene_manager = SceneManager::GetInstance();
 
-       AssetManager::GetInstance().LoadFonts(getExecutableDirectory() + "/resources/fonts/");
+        AssetManager::GetInstance().LoadFonts(getExecutableDirectory() + "/resources/fonts/");
 
         // TODO: Read settings from file
 

@@ -14,13 +14,18 @@
 
 class ChestMonster final : public Mob {
 public:
-        ChestMonster(sf::Vector2f position, float viewRange, float moveSpeed, int health);
+        ChestMonster(Player* player, sf::Vector2f position, float viewRange, float moveSpeed, int health);
 
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime)  override;
 
-        void UpdatePlayerPosition(sf::Vector2f playerPosition) override;
+        void UpdatePlayerPosition(sf::Vector2f playerPosition, GameTime gameTime) override;
+
+private:
+        float nextAttackTime;
+
+        void DamagePlayer(int amount) override;
 };
 
 

@@ -5,20 +5,28 @@
 #include "ChestMonster.h"
 
 #include "models/TextureEntry.h"
+#include "scenes/GameScene.h"
 
-ChestMonster::ChestMonster(sf::Vector2f spawnPosition, const float viewRange, const float moveSpeed, const int health)
-        : Mob(spawnPosition, viewRange, moveSpeed, health) {
+ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const float viewRange, const float moveSpeed, const int health)
+        : Mob(player, spawnPosition, viewRange, moveSpeed, health)
+        , nextAttackTime(0) {
         sequences = {{AnimationType::ANIMATION_ATTACK, {0, 10, 100}},
-                     {AnimationType::ANIMATION_ATTACK2, {10, 9, 100}},
-                     {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100, nullptr, [this]() { ChangeAnimation(AnimationType::ANIMATION_TAUNT); }, nullptr}},
+                     {AnimationType::ANIMATION_ATTACK2, {10, 9, 100, nullptr, [this]() { DamagePlayer(1); }, nullptr}},
+                     {AnimationType::ANIMATION_BATTLE_IDLE,
+                      {19, 9, 100, nullptr, [this]() { ChangeAnimation(AnimationType::ANIMATION_TAUNT); }, nullptr}},
                      {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
                      {AnimationType::ANIMATION_DEATH, {35, 12, 100}},
                      {AnimationType::ANIMATION_DIZZY, {47, 16, 100}},
-                     {AnimationType::ANIMATION_IDLE, {63, 16, 60, nullptr, [this]() { ChangeAnimation(AnimationType::ANIMATION_BATTLE_IDLE); }, nullptr}},
+                     {AnimationType::ANIMATION_IDLE,
+                      {63, 16, 60, nullptr, [this]() { ChangeAnimation(AnimationType::ANIMATION_BATTLE_IDLE); },
+                       nullptr}},
                      {AnimationType::ANIMATION_STATIC, {79, 1, 100}}, // should be length 1
                      {AnimationType::ANIMATION_RUN, {87, 7, 100}},
-                     {AnimationType::ANIMATION_SENSE_SOMETHING, {95, 56, 100, nullptr, [this]() { ChangeAnimation(AnimationType::ANIMATION_IDLE); }, nullptr}},
-                     {AnimationType::ANIMATION_TAUNT, {151, 24, 100, nullptr, [this]() { ChangeAnimation(AnimationType::ANIMATION_SENSE_SOMETHING); }, nullptr}},
+                     {AnimationType::ANIMATION_SENSE_SOMETHING,
+                      {95, 56, 100, nullptr, [this]() { ChangeAnimation(AnimationType::ANIMATION_IDLE); }, nullptr}},
+                     {AnimationType::ANIMATION_TAUNT,
+                      {151, 24, 100, nullptr, [this]() { ChangeAnimation(AnimationType::ANIMATION_SENSE_SOMETHING); },
+                       nullptr}},
                      {AnimationType::ANIMATION_VICTORY, {185, 12, 100}},
                      {AnimationType::ANIMATION_WALK, {187, 12, 100}}};
 
@@ -90,7 +98,12 @@ void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.draw(rect);
 
 }
-void ChestMonster::UpdatePlayerPosition(const sf::Vector2f playerPosition) {
+void ChestMonster::UpdatePlayerPosition(const sf::Vector2f playerPosition, GameTime gameTime) {
+        if (player->GetIsDead()) {
+                ChangeAnimation(AnimationType::ANIMATION_STATIC);
+                return;
+        }
+
         // Check if the player is to the left or right
         if (playerPosition.x < position.x) {
                 faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
@@ -100,7 +113,7 @@ void ChestMonster::UpdatePlayerPosition(const sf::Vector2f playerPosition) {
 
         // Ceck if the player is within the view range
         // Calculate distance to player
-        float distance = std::abs((playerPosition.x + 250) - (position.x+ 250)) ; // +250 for the offset
+        float distance = std::abs((playerPosition.x + 250) - (position.x + 250)); // +250 for the offset
 
         if (distance <= 100) {
                 // Player is within attack range
@@ -108,13 +121,13 @@ void ChestMonster::UpdatePlayerPosition(const sf::Vector2f playerPosition) {
         } else if (distance < 200) {
                 // Player is within attack range
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK2); // Smack off screen
-        } else if (distance > viewRange/2 && distance < viewRange) {
+        } else if (distance > viewRange / 2 && distance < viewRange) {
                 // Player is within battle idle range
                 ChangeAnimation(AnimationType::ANIMATION_BATTLE_IDLE);
         } else if (distance < viewRange / 2) {
                 // Player is within chase range
                 ChangeAnimation(AnimationType::ANIMATION_RUN);
-        } else if (distance < viewRange ) {
+        } else if (distance < viewRange) {
                 // Player is within view range
                 if (currentAnimation == AnimationType::ANIMATION_STATIC) {
                         ChangeAnimation(AnimationType::ANIMATION_SENSE_SOMETHING);
@@ -123,4 +136,7 @@ void ChestMonster::UpdatePlayerPosition(const sf::Vector2f playerPosition) {
                 // Player is out of view range
                 ChangeAnimation(AnimationType::ANIMATION_STATIC);
         }
+}
+void ChestMonster::DamagePlayer(int amount) {
+        player->health.damage(amount);
 }

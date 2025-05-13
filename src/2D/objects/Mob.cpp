@@ -3,11 +3,13 @@
 //
 
 #include "Mob.h"
-Mob::Mob(sf::Vector2f position, float viewRange, float moveSpeed, int health)
+Mob::Mob(Player *player, sf::Vector2f position, float viewRange, float moveSpeed, int health)
         : position(position)
         , walkSpeed(moveSpeed)
         , viewRange(viewRange)
-        , health(health) {}
+        , health(health)
+        , player(player)
+{ /* Nothing in the constructor */}
 
 int Mob::GetCurrentAnimationFrame() {
         return sequences[currentAnimation].startFrame + currentAnimationFrame + faceDirection;

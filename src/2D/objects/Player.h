@@ -48,6 +48,9 @@ public:
         [[nodiscard]] bool IsFalling() const { return isFalling; }
         void SetIsFalling(const bool falling) { isFalling = falling; }
 
+        bool GetIsDead() const { return isDead; }
+        void SetIsDead(bool dead) { isDead = dead; }
+
         const sf::IntRect collisionBox = {225, 200, 50, 150};
         const sf::Vector2f collisionOffset() { return position + sf::Vector2f(collisionBox.left, collisionBox.top); }
         const float feetPosition() { return position.y + collisionBox.top + collisionBox.height; }
@@ -66,6 +69,7 @@ private:
 
         bool isFalling = false;
         bool isJumping = false;
+        bool isDead = false;
 
         sf::Vector2f shadowDrawPosition;
 };

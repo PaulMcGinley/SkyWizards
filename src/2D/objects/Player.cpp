@@ -16,10 +16,10 @@ Player::Player() {
         // Once one part of the animation is complete, it can change the ani to the next part of the animation
         // .OnComplete [](){currentAni = AniType::JumpEnd;}
         sequences = {
-                {AnimationType::ANIMATION_CONSUME,
-                 {0, 32, 100, nullptr /*[](){changeAnimation(AnimationType::ANIMATION_JUMP_AIR, nullptr, false);}*/, nullptr, nullptr}},
+                {AnimationType::ANIMATION_CONSUME, {0, 32, 100, nullptr /*[](){changeAnimation(AnimationType::ANIMATION_JUMP_AIR, nullptr, false);}*/, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DAMAGED, {32, 13, 100, nullptr, nullptr, nullptr}},
-                {AnimationType::ANIMATION_DEATH, {45, 11, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_DEATH, {45, 11, 100, nullptr, [this](){isDead=true;}, nullptr}},
+                {AnimationType::ANIMATION_Dead, {55, 1, 1000, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DIZZY, {56, 20, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_FIRE, {76, 16, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_IDLE, {92, 16, 100, nullptr, nullptr, nullptr}}, // Randomly play idle2
@@ -192,16 +192,16 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                 }
         }
 
-        float shadowX = position.x +250 - asset_manager.TextureLibraries["PrgUse"]->entries[8].texture.getSize().x/2;
+        float shadowX = position.x +250 - asset_manager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x/2;
 
         if (!isFalling && !isJumping) {
                 // player on ground
-                float shadowY = position.y + collisionBox.top + collisionBox.height - 40;
+                float shadowY = position.y + collisionBox.top + collisionBox.height - 25;
                 shadowDrawPosition = sf::Vector2f(shadowX, shadowY);
         } else {
                 // player in ait
                 float playerFeetX = shadowX + collisionBox.left + collisionBox.width / 2;
-                float playerFeetY = position.y + collisionBox.top + collisionBox.height - 40;
+                float playerFeetY = position.y + collisionBox.top + collisionBox.height - 25;
 
                 // check for ground collision
                 std::optional<float> closestY; // optional allows us to check if a vlaue is valid
@@ -209,7 +209,7 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                         if (playerFeetX >= boundary.X && playerFeetX <= boundary.X + boundary.Width) {
                                 if (boundary.Y >= playerFeetY) {
                                         if (!closestY || boundary.Y < *closestY) {
-                                                closestY = boundary.Y - 40;
+                                                closestY = boundary.Y - 25;
                                         }
                                 }
                         }
@@ -224,6 +224,18 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
 }
 
 void Player::Update(GameTime gameTime) {
+
+        if (isDead) {
+                ChangeAnimation(AnimationType::ANIMATION_Dead);
+                return;
+        }
+
+        if (health.getCurrentHealth() ==0 ) {
+                ChangeAnimation(AnimationType::ANIMATION_DEATH, gameTime);
+                UpdateQuads();
+                return;
+        }
+
         // DEBUG
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
                 robeLibrary = 0;
@@ -244,7 +256,7 @@ void Player::Update(GameTime gameTime) {
         acceleration = {0, 0};
 
         // Handle jumping input (actual physics applied in CalculatePhysicsState)
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isFalling && !isJumping) {
+        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))&& !isFalling && !isJumping) {
                 isJumping = true;
                 velocity.y = -JUMPING_SPEED;
                 ChangeAnimation(AnimationType::ANIMATION_JUMP_START, gameTime, true);
@@ -371,7 +383,7 @@ void Player::LateUpdate(GameTime gameTime) {
 void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
 
         // Draw shadow
-        IDraw::Draw(window, "PrgUse", 8, shadowDrawPosition);
+        IDraw::Draw(window, "PrgUse", 9, shadowDrawPosition);
 
         // Draw Robe
         window.draw(

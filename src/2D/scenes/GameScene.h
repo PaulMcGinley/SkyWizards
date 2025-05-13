@@ -23,6 +23,8 @@ public:
         void OnScene_Active() override;
         void OnScene_Deactivate() override;
 
+        void DamagePlayer(int amount);
+
 private:
         void (GameScene::*UpdateLoop)(GameTime);
         void Update_Loading(GameTime gameTime);

@@ -15,7 +15,8 @@
 #include "scenes/SplashScreen.h"
 
 void Game::Run() {
-        // Create a reference to the game manager for easy access
+        // Limit fps to 60
+        game_manager.window->setFramerateLimit(60);
 
         // All scenes are managed by the scene manager and are added here
         scene_manager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());

@@ -30,14 +30,14 @@ void GameScene::Update(const GameTime gameTime) {
         (this->*UpdateLoop)(gameTime);
 
         // DEBUG:
-        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
-                if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
-                        debugOverlayPtr->AddInfoTopLeft("Player X", std::to_string(player.position.x));
-                        debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
-                        debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
-                        debugOverlayPtr->AddInfoTopLeft("Player Velocity Y", std::to_string(player.velocity.y));
-                }
-        }
+        // if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+        //         if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
+        //                 debugOverlayPtr->AddInfoTopLeft("Player X", std::to_string(player.position.x));
+        //                 debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
+        //                 debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
+        //                 debugOverlayPtr->AddInfoTopLeft("Player Velocity Y", std::to_string(player.velocity.y));
+        //         }
+        // }
         // END DEBUG ^
 }
 
@@ -124,6 +124,9 @@ void GameScene::OnScene_Deactivate() {
                 }
         }
 }
+void GameScene::DamagePlayer(int amount) {
+        player.health.damage(amount);
+}
 void GameScene::Update_Loading(GameTime gameTime) {
         // HACK: ----------------------------------------------------
         // There is an issue with delta time while the map is loading
@@ -139,6 +142,14 @@ void GameScene::Update_Loading(GameTime gameTime) {
         // END HACK: ------------------------------------------------
 }
 void GameScene::Update_Game(GameTime gameTime) {
+
+        if (player.GetIsDead() && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+                player.health.ResetHealth(gameTime);
+                player.SetIsFalling(false);
+                player.SetIsDead(false);
+                SpawnPlayer();
+        }
+
         // Update the map objects
         for (auto const & obj: map->LevelObjects)
                 asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
@@ -283,7 +294,7 @@ void GameScene::LoadMobs() {
                                 {}); // Load all indices for the mob library
 
                 if (mob.MonsterName == "ChestMonster") {
-                        monsters.emplace_back(std::make_unique<ChestMonster>(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                        monsters.emplace_back(std::make_unique<ChestMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 }
                 // else if (mob.MonsterName == "SlimeMonster") {
                 //     slimeMonsters.emplace_back(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health);
@@ -296,7 +307,7 @@ void GameScene::LoadMobs() {
 // IDE Says this is unreachable, but it is.
 void GameScene::UpdateMobs(GameTime gameTime) {
         for (auto &monster: monsters) {
-                monster->UpdatePlayerPosition(player.position);
+                monster->UpdatePlayerPosition(player.position, gameTime);
                 monster->Update(gameTime);
         }
 }

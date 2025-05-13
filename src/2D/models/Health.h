@@ -22,6 +22,20 @@ public:
                 return static_cast<int>(std::ceil(static_cast<float>(maximum_health) / 4)); // Divide by 4 to get the number of hearts, ceil(ing) to round up
         }
 
+        [[nodiscard]] int getCurrentHealth() const {
+                return current_health;
+        }
+
+        [[nodiscard]] int getTargetHealth() const {
+                return target_health;
+        }
+
+        void ResetHealth(GameTime gameTime) {
+                current_health = 1;
+                target_health = maximum_health;
+                next_update_time = gameTime.NowAddMilliseconds(update_interval);
+        }
+
         // Apply damage
         void damage(const int amount) {
 
@@ -138,7 +152,7 @@ private:
         float scale = 1;
         sf::Vector2f position = {0, 0}; // Screen position of the health bar
 
-        float update_interval = 25;     // Time between health updates (in ms)
+        float update_interval = 250;     // Time between health updates (in ms)
 };
 
 #endif //HEALTH_H
