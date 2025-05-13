@@ -16,9 +16,10 @@
 #include "models/MapObject/WMap.h"
 
 GameScene::GameScene()
-        : IScene(),
-        map(nullptr),
-        UpdateLoop(&GameScene::Update_Loading){}
+        : IScene()
+        , UpdateLoop(&GameScene::Update_Loading)
+        , map(nullptr)
+{ /* Nothing in the constructor */}
 
 void GameScene::LoadMap(std::string name)  {
         mapName = std::move(name);
@@ -289,6 +290,9 @@ void GameScene::LoadAssets() {
         asset_manager.TextureLibraries["alpha_textures"]->LoadIndices({242}); // Stars
 }
 void GameScene::LoadMobs() {
+        // Clear exisitng mobs
+        monsters.clear();
+
         for (const auto &mob: map->Mobs) {
                 // Check if the mob library exists
                 if (!asset_manager.TextureLibraries.contains(mob.MonsterName)) {
