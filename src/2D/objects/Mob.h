@@ -18,6 +18,7 @@ public:
 
         int GetCurrentAnimationFrame();
         virtual void UpdatePlayerPosition(sf::Vector2f playerPosition, GameTime gameTime) = 0;
+        virtual void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) = 0;
 
 protected:
         virtual void DamagePlayer(int amount) = 0;

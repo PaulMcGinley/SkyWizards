@@ -11,7 +11,10 @@
 
 ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const float viewRange, const float moveSpeed, const int health)
         : Mob(player, spawnPosition, viewRange, moveSpeed, health)
-        , nextAttackTime(0) {
+        , nextAttackTime(0)
+        , canMoveLeft(false)
+        , canMoveRight(false)
+        , onGround(false) {
         sequences = {{AnimationType::ANIMATION_ATTACK, {0, 10, 100}},
                      {AnimationType::ANIMATION_ATTACK2, {10, 9, 100, nullptr, [this]() { DamagePlayer(1); }, nullptr}},
                      {AnimationType::ANIMATION_BATTLE_IDLE,
@@ -33,7 +36,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
                      {AnimationType::ANIMATION_WALK, {187, 12, 100}}};
 
         collisionBox.width = 100;
-        collisionBox.height = 100;
+        collisionBox.height = 90;
 }
 
 void ChestMonster::Update(GameTime gameTime) {
@@ -41,33 +44,23 @@ void ChestMonster::Update(GameTime gameTime) {
 
         // Walk AI
         if (currentAnimation == AnimationType::ANIMATION_WALK) {
-                // Calculate how much to move
-                const float moveDistance =  walkSpeed * gameTime.delta_time;
+                const float moveDistance = walkSpeed * gameTime.delta_time;
 
-                switch (faceDirection) {
-                        case FaceDirection::FACE_DIRECTION_LEFT:
-                                position.x -= moveDistance;
-                        break;
-                        case FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER:
-                                position.x += moveDistance;
-                        break;
-                        default: /* */;
+                if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT && canMoveLeft) {
+                        position.x -= moveDistance;
+                } else if (faceDirection == FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER && canMoveRight) {
+                        position.x += moveDistance;
                 }
         }
 
         // Run AI
         if (currentAnimation == AnimationType::ANIMATION_RUN) {
-                // Calculate how much to move
-                const float moveDistance =  walkSpeed * gameTime.delta_time;
+                const float moveDistance = walkSpeed * gameTime.delta_time;
 
-                switch (faceDirection) {
-                        case FaceDirection::FACE_DIRECTION_LEFT:
-                                position.x -= moveDistance;
-                        break;
-                        case FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER:
-                                position.x += moveDistance;
-                        break;
-                        default: /* */;
+                if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT && canMoveLeft) {
+                        position.x -= moveDistance;
+                } else if (faceDirection == FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER && canMoveRight) {
+                        position.x += moveDistance;
                 }
         }
 
@@ -88,8 +81,13 @@ void ChestMonster::LateUpdate(GameTime gameTime) {
 
 void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
-        window.draw(texQuads,
-                    &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()].texture);
+        // Shadow
+        float shadowX = collisionBox.left + (collisionBox.width/2) - asset_manager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x / 2;
+        float shadowY = position.y + 310;
+        IDraw::Draw(window, "PrgUse", 9, sf::Vector2f(shadowX, shadowY));
+
+        // Monster
+        window.draw(texQuads, &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()].texture);
 
         // Collision box
         sf::RectangleShape rect(sf::Vector2f(collisionBox.width, collisionBox.height));
@@ -109,6 +107,41 @@ void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         rightDropDetector.setPosition(rightDropDetectorPosition());
         window.draw(rightDropDetector);
         // END DEBUG ^
+}
+void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) {
+
+        // If not on ground, prevent movement and apply fall gravity
+        if (!onGround) {
+                canMoveLeft = false;
+                canMoveRight = false;
+                const float fallSpeed = 100.0f; // pixels per second
+                position.y += fallSpeed * gametime.delta_time;
+        }
+
+        // check if collision box is resting on a boundary
+        for (const auto& boundary : boundaries) {
+                sf::FloatRect boundaryRect(boundary.X, boundary.Y, boundary.Width, boundary.Height);
+                if (collisionBox.intersects(boundaryRect)) {
+                        onGround = true;
+                        break;
+                }
+        }
+
+        // check left and right drop detector positions to see if they are on a boundary
+        canMoveLeft = false;
+        canMoveRight = false;
+        sf::Vector2f leftPos = leftDropDetectorPosition();
+        sf::Vector2f rightPos = rightDropDetectorPosition();
+
+        for (const auto& boundary : boundaries) {
+                sf::FloatRect boundaryRect(boundary.X, boundary.Y, boundary.Width, boundary.Height);
+                if (boundaryRect.contains(leftPos)) {
+                        canMoveLeft = true;
+                }
+                if (boundaryRect.contains(rightPos)) {
+                        canMoveRight = true;
+                }
+        }
 
 
 }

@@ -18,17 +18,22 @@ public:
 
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
-        void Draw(sf::RenderWindow& window, GameTime gameTime)  override;
+        void Draw(sf::RenderWindow& window, GameTime gameTime) override;
+        void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) override;
 
         void UpdatePlayerPosition(sf::Vector2f playerPosition, GameTime gameTime) override;
 
-        sf::Vector2f leftDropDetectorPosition();
-        sf::Vector2f rightDropDetectorPosition();
 
 private:
+        void DamagePlayer(int amount) override;
+
         float nextAttackTime;
 
-        void DamagePlayer(int amount) override;
+        sf::Vector2f leftDropDetectorPosition();
+        sf::Vector2f rightDropDetectorPosition();
+        bool canMoveLeft;
+        bool canMoveRight;
+        bool onGround;
 };
 
 

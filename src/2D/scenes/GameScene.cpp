@@ -79,7 +79,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         DrawBehindEntities(window, gameTime);
         DrawEntities(window, gameTime);
         DrawInFrontOfEntities(window, gameTime);
-        //DEBUG_DrawMapBoundaries(window, gameTime);
+        DEBUG_DrawMapBoundaries(window, gameTime);
 
         // Draw the UI
         window.setView(window.getDefaultView());
@@ -184,7 +184,12 @@ void GameScene::Update_Game(GameTime gameTime) {
                 scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
-        UpdateMobs(gameTime);
+        //UpdateMobs(gameTime);
+        for (auto &monster: monsters) {
+                monster->CalculatePhysicsState(getLocalBoundaries(), gameTime);
+                monster->UpdatePlayerPosition(player.position, gameTime);
+                monster->Update(gameTime);
+        }
 }
 void GameScene::ValidateMap() {
         // Check if the map exists in the asset manager
@@ -306,10 +311,7 @@ void GameScene::LoadMobs() {
 }
 // IDE Says this is unreachable, but it is.
 void GameScene::UpdateMobs(GameTime gameTime) {
-        for (auto &monster: monsters) {
-                monster->UpdatePlayerPosition(player.position, gameTime);
-                monster->Update(gameTime);
-        }
+
 }
 // TODO: Split the sky and mountain
 void GameScene::CalculateParallaxBackground() {
