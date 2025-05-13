@@ -79,7 +79,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         DrawBehindEntities(window, gameTime);
         DrawEntities(window, gameTime);
         DrawInFrontOfEntities(window, gameTime);
-        DEBUG_DrawMapBoundaries(window, gameTime);
+        // DEBUG_DrawMapBoundaries(window, gameTime);
 
         // Draw the UI
         window.setView(window.getDefaultView());

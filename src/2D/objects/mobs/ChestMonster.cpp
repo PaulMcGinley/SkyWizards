@@ -89,24 +89,24 @@ void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Monster
         window.draw(texQuads, &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()].texture);
 
-        // Collision box
-        sf::RectangleShape rect(sf::Vector2f(collisionBox.width, collisionBox.height));
-        rect.setPosition(collisionBox.left, collisionBox.top);
-        rect.setFillColor(sf::Color(0, 0, 255, 128));
-        rect.setOutlineColor(sf::Color::Black);
-        rect.setOutlineThickness(1.0f);
-        window.draw(rect);
-
-        // DEBUG: Draw detector circles
-        sf::CircleShape leftDropDetector(5);
-        leftDropDetector.setFillColor(sf::Color::Green);
-        leftDropDetector.setPosition(leftDropDetectorPosition());
-        window.draw(leftDropDetector);
-        sf::CircleShape rightDropDetector(5);
-        rightDropDetector.setFillColor(sf::Color::Red);
-        rightDropDetector.setPosition(rightDropDetectorPosition());
-        window.draw(rightDropDetector);
-        // END DEBUG ^
+        // // Collision box
+        // sf::RectangleShape rect(sf::Vector2f(collisionBox.width, collisionBox.height));
+        // rect.setPosition(collisionBox.left, collisionBox.top);
+        // rect.setFillColor(sf::Color(0, 0, 255, 128));
+        // rect.setOutlineColor(sf::Color::Black);
+        // rect.setOutlineThickness(1.0f);
+        // window.draw(rect);
+        //
+        // // DEBUG: Draw detector circles
+        // sf::CircleShape leftDropDetector(5);
+        // leftDropDetector.setFillColor(sf::Color::Green);
+        // leftDropDetector.setPosition(leftDropDetectorPosition());
+        // window.draw(leftDropDetector);
+        // sf::CircleShape rightDropDetector(5);
+        // rightDropDetector.setFillColor(sf::Color::Red);
+        // rightDropDetector.setPosition(rightDropDetectorPosition());
+        // window.draw(rightDropDetector);
+        // // END DEBUG ^
 }
 void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) {
 
