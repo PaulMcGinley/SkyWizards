@@ -7,6 +7,7 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <iostream>
 #include "managers/AssetManager.h"
 #include "models/GameTime.h"
 
@@ -21,13 +22,17 @@ public:
         void Draw(sf::RenderWindow& window, const std::string& textureLibraryName, const int index, const sf::Vector2f position) const {
                 // Get the texture library map entry
                 auto lib = asset_manager.TextureLibraries.find(textureLibraryName);
-                if (lib == asset_manager.TextureLibraries.end())
+                if (lib == asset_manager.TextureLibraries.end()) {
+                        std::cerr << "Tried to draw a texture from a non-existent library: " << textureLibraryName << std::endl;
                         return; // Texture library not found
+                }
 
                 // Get the texture library
                 const auto* textureLib = lib->second.get();
-                if (index < 0 || index >= textureLib->entryCount)
+                if (index < 0 || index >= textureLib->entryCount) {
+                        std::cerr << "Tried to draw a texture from lib " << textureLibraryName << " with an index out of bounds: " << index << std::endl;
                         return; // Index out of bounds
+                }
 
                 const auto& entry = textureLib->entries[index]; // Get the texture entry
                 const auto& texture = entry.texture; // Get the texture
