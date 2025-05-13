@@ -19,13 +19,13 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
 {
         // Define the animation sequences for the ChestMonster
         sequences = {
-                {AnimationType::ANIMATION_ATTACK, {0, 10, 90, nullptr, [this](){BitePlayer();}, nullptr}},
-                {AnimationType::ANIMATION_ATTACK2, {10, 9, 100,nullptr, [this](){SmackPlayer();}, nullptr}},
+                {AnimationType::ANIMATION_ATTACK, {0, 10, 90, nullptr, [this](){ BitePlayer(); }, nullptr}},
+                {AnimationType::ANIMATION_ATTACK2, {10, 9, 100, nullptr, [this](){ SmackPlayer(); }, nullptr}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
                 {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
                 {AnimationType::ANIMATION_DEATH, {35, 12, 100}},
                 {AnimationType::ANIMATION_DIZZY, {47, 16, 100}},
-                {AnimationType::ANIMATION_IDLE, {63, 16, 60 }},
+                {AnimationType::ANIMATION_IDLE, {63, 16, 60}},
                 {AnimationType::ANIMATION_STATIC, {79, 1, 100}},
                 {AnimationType::ANIMATION_RUN, {87, 7, 100}},
                 {AnimationType::ANIMATION_SENSE_SOMETHING, {95, 56, 100}},
@@ -40,7 +40,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
 }
 void ChestMonster::Update(GameTime gameTime) {
         // Get a reference to the player to save on dereferencing calls
-        const Player& player = *this->player;
+        Player& player = *this->player;
 
         // Check if the player is dead
         if (player.GetIsDead()) {
@@ -175,7 +175,7 @@ void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
 }
 void ChestMonster::BitePlayer() {
         // Get a reference to the player to save on dereferencing calls
-        const Player& player = *this->player;
+        Player& player = *this->player;
 
         // Check if the player is dead
         if (player.GetIsDead())
@@ -187,13 +187,13 @@ void ChestMonster::BitePlayer() {
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
         // Check if the player is within bite range to deal damage
-        if (distance < biteDistance) {
+        if (distance < (biteDistance*2.f)) {
                 DamagePlayer(1);
         }
 }
 void ChestMonster::SmackPlayer() {
         // Get a reference to the player to save on dereferencing calls
-        const Player& player = *this->player;
+        Player& player = *this->player;
 
         // Check if the player is dead
         if (player.GetIsDead())
@@ -205,7 +205,7 @@ void ChestMonster::SmackPlayer() {
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
         // Check if the player is within smack range to deal damage
-        if (distance <= smackDistance) {
+        if (distance <= (smackDistance*2.f)) {
                 DamagePlayer(2);
         }
 }
