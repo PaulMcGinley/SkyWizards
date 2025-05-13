@@ -17,7 +17,7 @@ Player::Player() {
         // .OnComplete [](){currentAni = AniType::JumpEnd;}
         sequences = {
                 {AnimationType::ANIMATION_CONSUME, {0, 32, 100, nullptr /*[](){changeAnimation(AnimationType::ANIMATION_JUMP_AIR, nullptr, false);}*/, nullptr, nullptr}},
-                {AnimationType::ANIMATION_DAMAGED, {32, 13, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_DAMAGED, {32, 13, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);}, nullptr}},
                 {AnimationType::ANIMATION_DEATH, {45, 11, 100, nullptr, [this](){isDead=true;}, nullptr}},
                 {AnimationType::ANIMATION_Dead, {55, 1, 1000, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DIZZY, {56, 20, 100, nullptr, nullptr, nullptr}},
@@ -225,6 +225,9 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
 
 void Player::Update(GameTime gameTime) {
 
+
+        health.Update(gameTime);
+
         if (isDead) {
                 ChangeAnimation(AnimationType::ANIMATION_Dead);
                 return;
@@ -232,6 +235,11 @@ void Player::Update(GameTime gameTime) {
 
         if (health.getCurrentHealth() ==0 ) {
                 ChangeAnimation(AnimationType::ANIMATION_DEATH, gameTime);
+                UpdateQuads();
+                return;
+        }
+
+        if (currentAnimation == AnimationType::ANIMATION_DAMAGED) {
                 UpdateQuads();
                 return;
         }
@@ -346,7 +354,6 @@ void Player::Update(GameTime gameTime) {
         }
 
         UpdateQuads();
-        health.Update(gameTime);
 }
 
 // Update Robe and Staff texture quads (position, texture coordinates)

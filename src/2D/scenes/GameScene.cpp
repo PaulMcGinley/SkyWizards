@@ -127,6 +127,7 @@ void GameScene::OnScene_Deactivate() {
 }
 void GameScene::DamagePlayer(int amount) {
         player.health.damage(amount);
+        player.currentAnimation = AnimationType::ANIMATION_DAMAGED;
 }
 void GameScene::Update_Loading(GameTime gameTime) {
         // HACK: ----------------------------------------------------

@@ -19,7 +19,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
 {
         // Define the animation sequences for the ChestMonster
         sequences = {
-                {AnimationType::ANIMATION_ATTACK, {0, 10, 100, nullptr, [this](){BitePlayer();}, nullptr}},
+                {AnimationType::ANIMATION_ATTACK, {0, 10, 90, nullptr, [this](){BitePlayer();}, nullptr}},
                 {AnimationType::ANIMATION_ATTACK2, {10, 9, 100,nullptr, [this](){SmackPlayer();}, nullptr}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
                 {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
