@@ -25,9 +25,11 @@ enum class AnimationType {
         ANIMATION_BATTLE_IDLE = 16,
         ANIMATION_SENSE_SOMETHING = 17,
         ANIMATION_VICTORY = 18,
-        ANIMATION_Dead = 19,
+        ANIMATION_DEAD = 19,
         ANIMATION_ATTACK = 50,
         ANIMATION_ATTACK2 = 51,
+        ANIMATION_PROJECTILE = 60,
+        ANIMATION_EXPLOSION = 61,
         ANIMATION_STATIC = 255
 };
 

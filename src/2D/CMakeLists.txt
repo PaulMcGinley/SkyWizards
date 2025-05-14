@@ -75,6 +75,10 @@ add_executable(LoSW___BftS main.cpp
         objects/Mob.h
         scenes/LoadingScene.cpp
         scenes/LoadingScene.h
+        models/Projectile.h
+        models/Projectile.cpp
+        models/Projectiles/FireBall.cpp
+        models/Projectiles/FireBall.h
 )
 
 

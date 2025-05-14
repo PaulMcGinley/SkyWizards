@@ -19,7 +19,7 @@ Player::Player() {
                 {AnimationType::ANIMATION_CONSUME, {0, 32, 100, nullptr /*[](){changeAnimation(AnimationType::ANIMATION_JUMP_AIR, nullptr, false);}*/, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DAMAGED, {32, 13, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);}, nullptr}},
                 {AnimationType::ANIMATION_DEATH, {45, 11, 100, nullptr, [this](){isDead=true;}, nullptr}},
-                {AnimationType::ANIMATION_Dead, {55, 1, 1000, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_DEAD, {55, 1, 1000, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DIZZY, {56, 20, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_FIRE, {76, 16, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_IDLE, {92, 16, 100, nullptr, nullptr, nullptr}}, // Randomly play idle2
@@ -229,7 +229,7 @@ void Player::Update(GameTime gameTime) {
         health.Update(gameTime);
 
         if (isDead) {
-                ChangeAnimation(AnimationType::ANIMATION_Dead);
+                ChangeAnimation(AnimationType::ANIMATION_DEAD);
                 return;
         }
 
