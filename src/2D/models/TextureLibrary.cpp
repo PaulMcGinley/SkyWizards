@@ -169,13 +169,11 @@ void TextureLibrary::LoadIndices(const std::vector<int> &indices) {
         }
 }
 
-void TextureLibrary::UnloadIndices(const std::vector<int> &requiredIndices) {
-        for (int i = 0; i< entryCount; ++i) {
-                // Check if the current index is not in the required indices
-                if (std::find(requiredIndices.begin(), requiredIndices.end(), i) == requiredIndices.end()) {
-                        // Clear the data for unused entries
-                        entries[i].data.clear();
-                }
+void TextureLibrary::UnloadIndices(const std::vector<int> &indices) {
+        for (int idx : indices) {
+                if (idx < 0 || idx >= entryCount)
+                        continue;
+                entries[idx].texture = sf::Texture(); // Replace with a new, empty texture
         }
-        fullyLoaded = false; // Mark as not fully loaded
+        fullyLoaded = false;
 }

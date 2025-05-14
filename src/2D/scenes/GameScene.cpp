@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "LoadingScene.h"
 #include "Overlays/DebugOverlay.h"
 #include "managers/SceneManager.h"
 #include "models/LevelObject/OLibrary.h"
@@ -182,9 +183,25 @@ void GameScene::Update_Game(GameTime gameTime) {
         playerRect.height = player.collisionBox.getSize().y;
 
         if (playerRect.intersects(endPosRect)) {
-                // TODO: Implement a level transition
-                SpawnPlayer();
-                scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
+                std::vector<std::string> maps = {"Mob_Test", "02"};
+                auto it = std::find(maps.begin(), maps.end(), mapName);
+                size_t nextIndex = 0;
+                if (it != maps.end()) {
+                        nextIndex = (std::distance(maps.begin(), it) + 1) % maps.size();
+                }
+                std::string nextMap = maps[nextIndex];
+
+                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_LOADER);
+                auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
+                if (gameScene) {
+                        gameScene->BuildAssetQueue(nextMap);
+                }
+                scene_manager.ChangeScene(SceneType::SCENE_LOADER);
+
+
+                // // TODO: Implement a level transition
+                // SpawnPlayer();
+                // scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
         //UpdateMobs(gameTime);

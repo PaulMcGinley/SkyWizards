@@ -15,6 +15,8 @@
 LoadingScene::LoadingScene() { /* Nothing in the constructor */ }
 LoadingScene::~LoadingScene() { /* Nothing in the destructor */ }
 void LoadingScene::BuildAssetQueue(const std::string& mapName) {
+        nextMapName = mapName;
+
         WMap* previousMap = asset_manager.Maps[game_manager.GetLastPlayedMap()].get();
         WMap* nextMap = asset_manager.Maps[mapName].get();
 
@@ -141,7 +143,7 @@ void LoadingScene::Update(const GameTime gameTime) {
                 auto scenePtr = scene_manager.GetScene(SceneType::SCENE_GAME);
                 auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
                 if (gameScene) {
-                        gameScene->LoadMap("Mob_Test");
+                        gameScene->LoadMap(nextMapName);
                 }
 
                 // Loack framerate again

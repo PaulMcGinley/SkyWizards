@@ -174,6 +174,8 @@ void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
         }
 }
 void ChestMonster::BitePlayer() {
+        std::cout << "BitePlayer" << std::endl;
+
         // Get a reference to the player to save on dereferencing calls
         Player& player = *this->player;
 
@@ -187,7 +189,7 @@ void ChestMonster::BitePlayer() {
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
         // Check if the player is within bite range to deal damage
-        if (distance < (biteDistance*2.f)) {
+        if (distance <= (biteDistance*2.f)) {
                 DamagePlayer(1);
         }
 }

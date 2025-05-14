@@ -30,7 +30,7 @@ public:
         void OnScene_Deactivate() override;
 private:
         static constexpr int ASSET_BATCH_SIZE = 50; // Amount of assets to load at once per frame tick
-
+        std::string nextMapName; // The name of the map to load
         int nextSceneTime; // This gives us a delay before we switch scenes (helps stabilize the delta time)
         int CurrentValue = 0;
         int TargetValue = 0;
