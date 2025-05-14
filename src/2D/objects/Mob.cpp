@@ -3,6 +3,7 @@
 //
 
 #include "Mob.h"
+#include "Player.h"
 Mob::Mob(Player *player, sf::Vector2f position, float viewRange, float moveSpeed, int health)
         : position(position)
         , walkSpeed(moveSpeed)

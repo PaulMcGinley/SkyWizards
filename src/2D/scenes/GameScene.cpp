@@ -44,6 +44,11 @@ void GameScene::Update(const GameTime gameTime) {
 }
 
 void GameScene::LateUpdate(const GameTime gameTime) {
+        // Call LateUpdate for each projectile
+        for (const auto& projectile : projectiles) {
+                projectile->LateUpdate(gameTime);
+        }
+
         player.LateUpdate(gameTime);
 
         // Call LateUpdate for each Mobj
@@ -143,6 +148,12 @@ void GameScene::Update_Loading(GameTime gameTime) {
         // END HACK: ------------------------------------------------
 }
 void GameScene::Update_Game(GameTime gameTime) {
+        // Update projectiles
+        for (const auto& projectile : projectiles) {
+                projectile->Update(gameTime);
+        }
+
+
         if (player.GetIsDead() && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
                 player.health.ResetHealth(gameTime);
                 player.SetIsFalling(false);
@@ -328,6 +339,9 @@ void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
         player.Draw(window, gameTime);
         for (auto const & chestMonster : monsters) {
                 chestMonster->Draw(window, gameTime);
+        }
+        for (const auto& projectile : projectiles) {
+                projectile->Draw(window, gameTime);
         }
 }
 void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTime) {

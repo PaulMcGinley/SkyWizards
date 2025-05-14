@@ -6,6 +6,7 @@
 #define GAMESCENE_H
 #include "interfaces/IScene.h"
 #include "models/LevelObject/Boundary.h"
+#include "models/Projectile.h"
 #include "objects/Player.h"
 #include "objects/mobs/ChestMonster.h"
 
@@ -24,6 +25,10 @@ public:
         void OnScene_Deactivate() override;
 
         void DamagePlayer(int amount);
+
+        void AddProjectile(std::unique_ptr<Projectile> projectile) {
+                projectiles.push_back(std::move(projectile));
+        }
 
 private:
         void (GameScene::*UpdateLoop)(GameTime);
@@ -55,11 +60,12 @@ private:
         void DEBUG_DrawMapBoundaries(sf::RenderWindow& window, GameTime gameTime);
         std::vector<Boundary> getLocalBoundaries() const;
 
-        Player player = Player();
+        Player player = Player(this);
         void SpawnPlayer();
         sf::View viewport;
 
         std::vector<std::unique_ptr<Mob>> monsters;
+        std::vector<std::unique_ptr<Projectile>> projectiles;
 
 };
 

@@ -20,7 +20,7 @@ public:
 
         [[nodiscard]] sf::Vector2f GetCollisionPoint() const;
 
-private:
+protected:
         sf::Vector2f position;
         sf::Vector2f velocity;
         float damage;

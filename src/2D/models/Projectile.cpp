@@ -24,7 +24,8 @@ void Projectile::Update(GameTime gameTime) {
         // Decrease the lifetime
         lifetime -= gameTime.delta_time;
 }
-void Projectile::Draw(sf::RenderWindow &window, GameTime gameTime) {}
+void Projectile::Draw(sf::RenderWindow &window, GameTime gameTime) {
+}
 void Projectile::LateUpdate(GameTime gameTime) {
         // Update the animation
         TickAnimation(gameTime);

@@ -3,12 +3,14 @@
 //
 
 #include "Player.h"
+#include "scenes/GameScene.h"
 
-#include <iostream>
 #include <SFML/Window/Keyboard.hpp>
+#include <iostream>
 #include "managers/AssetManager.h"
+#include "models/Projectiles/FireBall.h"
 
-Player::Player() {
+Player::Player(GameScene* game_scene) : gameScene(game_scene) {
         // Set the animation sequences for the player
         // Note to future self:
         // Past you was an absolute genius for the animation events, but let's not forget what they are for again xD
@@ -224,8 +226,6 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
 }
 
 void Player::Update(GameTime gameTime) {
-
-
         health.Update(gameTime);
 
         if (isDead) {
@@ -243,6 +243,24 @@ void Player::Update(GameTime gameTime) {
                 UpdateQuads();
                 return;
         }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5) && gameTime.TimeElapsed(nextMagicTime)) {
+                gameScene->AddProjectile(
+                    std::make_unique<FireBall>(
+                        position - sf::Vector2f(250, 200),
+                        sf::Vector2f(32, 0),
+                        1.0f,
+                        10.0f,
+                        10000.0f
+                    )
+                );
+
+                nextMagicTime = gameTime.NowAddMilliseconds(1000);
+        }
+
+
+
+
 
         // DEBUG
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))

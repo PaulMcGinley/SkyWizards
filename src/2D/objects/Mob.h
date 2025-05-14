@@ -5,12 +5,14 @@
 #ifndef MOB_H
 #define MOB_H
 #include "Enumerators/FaceDirection.h"
-#include "Player.h"
 #include "interfaces/IAnimate.h"
 #include "interfaces/IDraw.h"
 #include "interfaces/IScene.h"
 #include "interfaces/IUpdate.h"
+#include "models/LevelObject/Boundary.h"
 
+// Forward declaration
+class Player;
 
 class Mob : public IAnimate, public IUpdate, public IDraw {
 public:

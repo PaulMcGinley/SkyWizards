@@ -76,6 +76,16 @@ void SplashScreen::Update(GameTime gameTime) {
                 return;
         }
 
+        if (!asset_manager.TextureLibraries["magic"]->fullyLoaded) {
+                //asset_manager.programUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
+                //asset_manager.programUsage.LoadIndices({});
+                asset_manager.TextureLibraries["magic"].get()->LoadIndices({});
+                // CurrentValue++;
+                // text.setString("Loading Level Objects!");
+                // text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
+                return;
+        }
+
         // Level Objects (OLibrary) XML files
         if (asset_manager.ObjectLibraries.empty()) {
                 loadLevelObjects(exeDir + "/resources/levelobjects/");

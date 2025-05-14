@@ -22,7 +22,6 @@ public:
         void OnScene_Deactivate() override;
 
 private:
-        Player player = Player();
         sf::View viewport;
 };
 

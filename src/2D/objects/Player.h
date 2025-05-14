@@ -18,10 +18,11 @@
 #include "models/TextureEntry.h"
 
 class AssetManager;
+class GameScene;
 
 class Player final : public IAnimate, public IUpdate, public IDraw {
 public:
-        Player();
+        Player(GameScene* game_scene);
 
         int robeLibrary = 2;
         sf::VertexArray robeQuad{sf::Quads, 4};
@@ -61,11 +62,14 @@ public:
         sf::Vector2f maxVelocity = {1000, 2000};
 
 private:
+        GameScene* gameScene;
         const int WALKING_SPEED = 128;
         const int RUNNING_SPEED = 800;
         const int FALLING_SPEED = 1200;
         const int JUMPING_SPEED = 700;
         const int JUMPING_HEIGHT = 20000;
+
+        float nextMagicTime = 0;
 
         bool isFalling = false;
         bool isJumping = false;
