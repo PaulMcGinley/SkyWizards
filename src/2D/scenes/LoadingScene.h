@@ -15,31 +15,29 @@ struct LibIndex {
         std::vector<int> indices;
 };
 
-class LoadingScene : public IScene {
+class LoadingScene final : public IScene {
 public:
         LoadingScene();
         ~LoadingScene();
 
         void BuildAssetQueue(const std::string& mapName);
 
-        void Update(const GameTime gameTime) override;
+        void Update(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void DestroyScene() override;
         void OnScene_Active() override;
         void OnScene_Deactivate() override;
 private:
-        int nextSceneTime;
+        static constexpr int ASSET_BATCH_SIZE = 50; // Amount of assets to load at once per frame tick
+
+        int nextSceneTime; // This gives us a delay before we switch scenes (helps stabilize the delta time)
         int CurrentValue = 0;
         int TargetValue = 0;
-        WMap* map;
         std::queue<LibIndex> AssetQueue;
-        int loadPerFrame = 50;
         sf::VertexArray backgroundQuad{sf::Quads, 4};
         sf::VertexArray frameQuad = sf::VertexArray(sf::Quads, 4);
         sf::VertexArray progressQuad = sf::VertexArray(sf::Quads, 4);
-
-
         sf::Texture frame;
         sf::Texture progress;
 };

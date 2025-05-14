@@ -177,4 +177,5 @@ void TextureLibrary::UnloadIndices(const std::vector<int> &requiredIndices) {
                         entries[i].data.clear();
                 }
         }
+        fullyLoaded = false; // Mark as not fully loaded
 }

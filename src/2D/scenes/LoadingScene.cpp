@@ -12,8 +12,8 @@
 #include "models/LevelObject/OLibrary.h"
 #include "os/GetExecutionDirectory.h"
 
-LoadingScene::LoadingScene() {}
-LoadingScene::~LoadingScene() {}
+LoadingScene::LoadingScene() { /* Nothing in the constructor */ }
+LoadingScene::~LoadingScene() { /* Nothing in the destructor */ }
 void LoadingScene::BuildAssetQueue(const std::string& mapName) {
         WMap* previousMap = asset_manager.Maps[game_manager.GetLastPlayedMap()].get();
         WMap* nextMap = asset_manager.Maps[mapName].get();
@@ -100,9 +100,9 @@ void LoadingScene::BuildAssetQueue(const std::string& mapName) {
                 // Sort the indices to ensure they are in order
                 std::sort(indices.begin(), indices.end());
                 // Split the indices into batches
-                for (size_t i = 0; i < indices.size(); i += loadPerFrame) {
+                for (size_t i = 0; i < indices.size(); i += ASSET_BATCH_SIZE) {
                         // Calculate the end index for the batch ensuring it doesn't exceed the size
-                        size_t end = std::min(i + loadPerFrame, indices.size());
+                        size_t end = std::min(i + ASSET_BATCH_SIZE, indices.size());
                         // Create the batch of indices (up to, but not including, end)
                         std::vector<int> batch(indices.begin() + i, indices.begin() + end);
                         // Add the library and batch indices to the AssetQueue
@@ -194,13 +194,13 @@ void LoadingScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.draw(progressBar);
         window.draw(frameSprite);
 }
-void LoadingScene::LateUpdate(GameTime) {}
-void LoadingScene::DestroyScene() {}
+void LoadingScene::LateUpdate(GameTime) { /* No late updates */}
+void LoadingScene::DestroyScene() {/* Nothing to destroy */}
 void LoadingScene::OnScene_Active() {
+        // Unlock framerate for faster loading
+        game_manager.window->setFramerateLimit(0);
 
         nextSceneTime = 0;
-        // Unloack framerate for faster loading
-        game_manager.window->setFramerateLimit(0);
 
         std::string exeDir = getExecutableDirectory();
         frame.loadFromFile(exeDir + "/resources/loader/frame.png");
@@ -219,7 +219,7 @@ void LoadingScene::OnScene_Active() {
         backgroundQuad[2].texCoords = sf::Vector2f(screenWidth, screenHeight);
         backgroundQuad[3].texCoords = sf::Vector2f(0, screenHeight);
 
-        //Frame needs to be centre and 300px from the bottom
+        // Progress bar frame
         float frameWidth = static_cast<float>(frame.getSize().x);
         float frameHeight = static_cast<float>(frame.getSize().y);
 
@@ -234,8 +234,7 @@ void LoadingScene::OnScene_Active() {
         frameQuad[2].texCoords = {frameWidth, frameHeight};
         frameQuad[3].texCoords = {0, frameHeight};
 
-
-        // progress bar needs to be 10px from the bottom and 10px from the left
+        // Progress bar
         float progressWidth = static_cast<float>(progress.getSize().x);
         float progressHeight = static_cast<float>(progress.getSize().y);
 
@@ -250,4 +249,4 @@ void LoadingScene::OnScene_Active() {
         progressQuad[2].texCoords = {static_cast<float>(progress.getSize().x), static_cast<float>(progress.getSize().y)};
         progressQuad[3].texCoords = {0, static_cast<float>(progress.getSize().y)};
 }
-void LoadingScene::OnScene_Deactivate() {}
+void LoadingScene::OnScene_Deactivate() { /* Nothing to deactivate */ }
