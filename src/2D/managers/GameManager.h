@@ -12,91 +12,103 @@
 
 class GameManager {
 public:
-    // Method to get the instance of the singleton
-    static GameManager& getInstance() {
-        static GameManager instance; // Guaranteed to be destroyed.
-                                     // Instantiated on first use.
-        return instance;
-    }
+        // Method to get the instance of the singleton
+        static GameManager& getInstance() {
+                static GameManager instance; // Guaranteed to be destroyed.
+                // Instantiated on first use.
+                return instance;
+        }
 
-    // Delete copy constructor and assignment operator to prevent copies
-    GameManager(const GameManager&) = delete;
-    void operator=(const GameManager&) = delete;
+        // Delete copy constructor and assignment operator to prevent copies
+        GameManager(const GameManager&) = delete;
+        void operator=(const GameManager&) = delete;
 
-    // Window title
-    const std::string game_name = "Legend of Sky Wizards - But from the side";
+        // Window title
+        const std::string game_name = "Legend of Sky Wizards - But from the side";
 
-    // Pointer to the window object
-    sf::RenderWindow* window = nullptr;
+        // Pointer to the window object
+        sf::RenderWindow* window = nullptr;
 
-    /* ===========================================================================================================================================================================================
-     * ===   RESOLUTION   ========================================================================================================================================================================
-     * ===========================================================================================================================================================================================
-    */
+        /* ===========================================================================================================================================================================================
+         * ===   RESOLUTION   ========================================================================================================================================================================
+         * ===========================================================================================================================================================================================
+        */
 
-    // ********** Getters **********
-    [[nodiscard]] bool isCustomResolution() const;
-    [[nodiscard]] float getResolutionRatio() const;
-    [[nodiscard]] sf::Vector2<unsigned int> getResolution() const;
-    [[nodiscard]] unsigned int getResolutionWidth() const;
-    [[nodiscard]] unsigned int getResolutionHeight() const;
+        // ********** Getters **********
+        [[nodiscard]] bool isCustomResolution() const;
+        [[nodiscard]] float getResolutionRatio() const;
+        [[nodiscard]] sf::Vector2<unsigned int> getResolution() const;
+        [[nodiscard]] unsigned int getResolutionWidth() const;
+        [[nodiscard]] unsigned int getResolutionHeight() const;
 
-    // ********** Setters **********
-    void setResolution(const sf::Vector2<unsigned int> new_resolution);
+        // ********** Setters **********
+        void setResolution(const sf::Vector2<unsigned int> new_resolution);
 
-    /* ===========================================================================================================================================================================================
-     * ===   FULL SCREEN   =======================================================================================================================================================================
-     * ===========================================================================================================================================================================================
-    */
+        /* ===========================================================================================================================================================================================
+         * ===   FULL SCREEN   =======================================================================================================================================================================
+         * ===========================================================================================================================================================================================
+        */
 
-    // ********** Getters **********
-    [[nodiscard]] bool isFullscreen() const;
-    [[nodiscard]] bool isExclusiveFullscreen() const;
+        // ********** Getters **********
+        [[nodiscard]] bool isFullscreen() const;
+        [[nodiscard]] bool isExclusiveFullscreen() const;
 
-    // ********** Setters **********
-    void toggleFullscreen();
-    void toggleExclusiveFullscreen();
+        // ********** Setters **********
+        void toggleFullscreen();
+        void toggleExclusiveFullscreen();
 
-    /* ===========================================================================================================================================================================================
-     * ===   VSYNC   =============================================================================================================================================================================
-     * ===========================================================================================================================================================================================
-    */
+        /* ===========================================================================================================================================================================================
+         * ===   VSYNC   =============================================================================================================================================================================
+         * ===========================================================================================================================================================================================
+        */
 
-    // ********** Getters **********
-    [[nodiscard]] bool isVSyncEnabled() const;
+        // ********** Getters **********
+        [[nodiscard]] bool isVSyncEnabled() const;
 
-    // ********** Setters **********
-    void toggleVsync();
+        // ********** Setters **********
+        void toggleVsync();
 
-    /* ===========================================================================================================================================================================================
-     * ===   SCALE   =============================================================================================================================================================================
-     * ===========================================================================================================================================================================================
-    */
+        /* ===========================================================================================================================================================================================
+         * ===   SCALE   =============================================================================================================================================================================
+         * ===========================================================================================================================================================================================
+        */
 
-    // ********** Getters **********
-    [[nodiscard]] float getUIScale() const;
+        // ********** Getters **********
+        [[nodiscard]] float getUIScale() const;
 
-    // ********** Setters **********
-    void setUIScale(float scale);
+        // ********** Setters **********
+        void setUIScale(float scale);
+
+
+
+        void SetLastPlayedMap(const std::string& mapName) {
+                lastPlayedMap = mapName;
+        }
+
+        [[nodiscard]] std::string GetLastPlayedMap() const {
+                return lastPlayedMap;
+        }
 
 
 private:
-    // Private constructor to prevent instancing
-    GameManager() = default;
+        // Private constructor to prevent instancing
+        GameManager() = default;
 
-    bool is_custom_resolution = true;
-    sf::Vector2<unsigned int> resolution = {1920, 1080};
+        bool is_custom_resolution = true;
+        sf::Vector2<unsigned int> resolution = {1920, 1080};
 
-    bool fullscreen = false;
-    bool exclusive_fullscreen = false;
-    bool vsync = true;
-    bool show_fps = false;
-    bool show_debug = false;
-    bool show_memory = false;
-    bool show_cursor = true;
+        bool fullscreen = false;
+        bool exclusive_fullscreen = false;
+        bool vsync = true;
+        bool show_fps = false;
+        bool show_debug = false;
+        bool show_memory = false;
+        bool show_cursor = true;
 
-    float scale_ui = 1.0f;
-    float scale_game = 1.0f;
+        float scale_ui = 1.0f;
+        float scale_game = 1.0f;
+
+        std::string lastPlayedMap = "";
 };
 
 #endif //GAMEMANAGER_H

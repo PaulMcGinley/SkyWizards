@@ -44,7 +44,6 @@ void GameScene::Update(const GameTime gameTime) {
 
 void GameScene::LateUpdate(const GameTime gameTime) {
         player.LateUpdate(gameTime);
-        //viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player
 
         // Call LateUpdate for each Mobj
         for (auto const & mob: monsters) {
@@ -89,7 +88,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 void GameScene::InitializeScene() {
         float screenWidth = game_manager.getResolution().x;
         float screenHeight = game_manager.getResolution().y;
-        viewport.setSize(sf::Vector2f(screenWidth, screenHeight)); // Set the view size to the window size TODO: Change this from hardcoded
+        viewport.setSize(sf::Vector2f(screenWidth, screenHeight)); // Set the view size to the window size
         //viewport.setCenter(player.position); // Center the viewport on the player
 
         IScene::InitializeScene();
@@ -105,7 +104,6 @@ void GameScene::OnScene_Active() {
                         debugOverlayPtr->AddInfoBottomLeft("Start Position Y", std::to_string(map->startPosition.y));
                         debugOverlayPtr->AddInfoBottomLeft("Start Position X", std::to_string(map->startPosition.x));
                         debugOverlayPtr->AddInfoBottomLeft("Map", mapName);
-                        //debugOverlayPtr->AddInfoBottomLeft("Map", map->FileName);
                 }
         }
 }
@@ -134,8 +132,8 @@ void GameScene::Update_Loading(GameTime gameTime) {
         // There is an issue with delta time while the map is loading
         // This caused the player to be launched down the map
         // This is a temporary fix to allow the game to load
-        // TODO: Play a level start sequence to allow for delta time
-        // to stabilize
+        // TODO: Play a level start sequence to allow for delta time to stabilize
+        // Note: This issue should now be resolved with the advent of the LoadingScene
         if (startTime == 0.f)
                 startTime = gameTime.NowAddMilliseconds(1000);
 
@@ -144,7 +142,6 @@ void GameScene::Update_Loading(GameTime gameTime) {
         // END HACK: ------------------------------------------------
 }
 void GameScene::Update_Game(GameTime gameTime) {
-
         if (player.GetIsDead() && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
                 player.health.ResetHealth(gameTime);
                 player.SetIsFalling(false);
@@ -208,13 +205,9 @@ void GameScene::ValidateMap() {
         }
 }
 void GameScene::LoadSky() {
-        // Check if the ParallaxBackgroundIndex is valid
-        if (map->ParallaxBackgroundIndex < 0 || map->ParallaxBackgroundIndex >= asset_manager.TextureLibraries["sky"]->entryCount)
-                map->ParallaxBackgroundIndex = 0; // Default to 0 if invalid
-
         // Load the parallax background texture
         auto &skyLibrary = *asset_manager.TextureLibraries["sky"];
-        skyLibrary.LoadIndices({map->ParallaxBackgroundIndex});
+        //skyLibrary.LoadIndices({map->ParallaxBackgroundIndex});
         skyBoxTexture = &skyLibrary.entries[map->ParallaxBackgroundIndex].texture;
 
         // Set the position of the skyBoxSprite to the top-left corner
@@ -222,75 +215,19 @@ void GameScene::LoadSky() {
         skyBoxSprite.setPosition(0, 0);
 }
 void GameScene::LoadMountains() {
-        if (map->MountainsBackgroundIndex < 0 || map->MountainsBackgroundIndex >= asset_manager.TextureLibraries["mountains"]->entryCount) {
-                map->MountainsBackgroundIndex = 0; // Default to 0 if invalid
-            }
-
         // Load the mountains background texture
         auto &mountainsLibrary = *asset_manager.TextureLibraries["mountains"];
-        mountainsLibrary.LoadIndices({map->MountainsBackgroundIndex});
         mountainsTexture = &mountainsLibrary.entries[map->MountainsBackgroundIndex].texture;
 
         // Set the texture for the mountains sprite
         mountainsSprite.setTexture(*mountainsTexture, true);
+        mountainsSprite.setPosition(0, 0);
 }
 void GameScene::LoadAssets() {
         ValidateMap();
         LoadSky();
         LoadMountains();
         LoadMobs();
-
-        // // Load required assets
-        // // Map from texture library name to set of unique indices
-        // std::unordered_map<std::string, std::unordered_set<int>> libraryToIndices;
-        //
-        // for (const auto &wmObject: map->LevelObjects) {
-        //         const auto &oLibraryName = wmObject.ObjectLibraryFile;
-        //
-        //         // Skip if library doesn't exist
-        //         if (!asset_manager.ObjectLibraries.contains(oLibraryName)) {
-        //                 std::cerr << "Object library " << oLibraryName << " does not exist." << std::endl;
-        //                 continue;
-        //         }
-        //
-        //         const auto &oLibrary = asset_manager.ObjectLibraries.at(oLibraryName);
-        //
-        //         for (const auto &graphic: oLibrary->Images) {
-        //                 // Skip graphics without an associated library
-        //                 if (graphic.BackImageLibrary.empty()) {
-        //                         std::cerr << "Graphic in library " << oLibraryName
-        //                                   << " has no associated BackImageLibrary." << std::endl;
-        //                         continue;
-        //                 }
-        //
-        //                 if (graphic.BackIndex < 0 ||
-        //                     graphic.BackIndex >= asset_manager.TextureLibraries[graphic.BackImageLibrary]->entryCount) {
-        //                         std::cerr << "Graphic in library " << oLibraryName << " has invalid BackIndex."
-        //                                   << std::endl;
-        //                         std::cerr << "Expected range: [0, " << oLibrary->Images.size() << "]" << std::endl;
-        //                         std::cerr << "Actual BackIndex: " << graphic.BackIndex << std::endl;
-        //                         continue;
-        //                 }
-        //
-        //                 if (graphic.BackEndIndex == -1) {
-        //                         // If BackEndIndex is -1, only add BackIndex
-        //                         libraryToIndices[graphic.BackImageLibrary].insert(graphic.BackIndex);
-        //                 } else {
-        //                         // Otherwise add the range from BackIndex to BackEndIndex
-        //                         for (int idx = graphic.BackIndex; idx <= graphic.BackEndIndex; ++idx) {
-        //                                 libraryToIndices[graphic.BackImageLibrary].insert(idx);
-        //                         }
-        //                 }
-        //         }
-        // }
-        //
-        // // Load the indices for each texture library
-        // for (const auto &[libraryName, indicesSet]: libraryToIndices) {
-        //         if (asset_manager.TextureLibraries.contains(libraryName)) {
-        //                 std::vector<int> indices(indicesSet.begin(), indicesSet.end());
-        //                 asset_manager.TextureLibraries[libraryName]->LoadIndices(indices);
-        //         }
-        // }
 
         asset_manager.TextureLibraries["alpha_textures"]->LoadIndices({242}); // Stars
 }
@@ -307,6 +244,7 @@ void GameScene::LoadMobs() {
                 asset_manager.TextureLibraries[mob.MonsterName]->LoadIndices(
                                 {}); // Load all indices for the mob library
 
+                // TODO: Convert to switch statement
                 if (mob.MonsterName == "ChestMonster") {
                         monsters.emplace_back(std::make_unique<ChestMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 }
@@ -317,10 +255,6 @@ void GameScene::LoadMobs() {
                         std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
                 }
         }
-}
-// IDE Says this is unreachable, but it is.
-void GameScene::UpdateMobs(GameTime gameTime) {
-
 }
 // TODO: Split the sky and mountain
 void GameScene::CalculateParallaxBackground() {
@@ -359,13 +293,13 @@ void GameScene::CalculateParallaxBackground() {
 }
 void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 0; layer <= 3; ++layer) {
-                // if (layer == 2) {
-                //         // Draw the background shade at 0,0
-                //         backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
-                //                                     viewport.getCenter().y - game_manager.getResolution().y / 2);
-                //         backgroundShade.setFillColor(sf::Color(0, 0, 0, 100));
-                //         window.draw(backgroundShade);
-                // }
+                if (layer == 2) {
+                        // Draw the background shade at 0,0
+                        backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
+                                                    viewport.getCenter().y - game_manager.getResolution().y / 2);
+                        backgroundShade.setFillColor(sf::Color(0, 0, 0, 100));
+                        window.draw(backgroundShade);
+                }
 
                 for (auto const & obj: map->LevelObjects)
                         for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)

@@ -47,7 +47,6 @@ private:
         void LoadMountains();
         void LoadAssets();
         void LoadMobs();
-        void UpdateMobs(GameTime game_time);
 
         void CalculateParallaxBackground();
         void DrawBehindEntities(sf::RenderWindow& window, GameTime gameTime);

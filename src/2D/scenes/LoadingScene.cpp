@@ -15,9 +15,19 @@ LoadingScene::~LoadingScene() {}
 void LoadingScene::BuildAssetQueue(const std::string& mapName) {
         WMap* map = asset_manager.Maps[mapName].get();
 
+        int skyIndex = map->ParallaxBackgroundIndex;
+        int mountainsIndex = map->MountainsBackgroundIndex;
 
-        // AssetQueue.emplace("sky", std::vector<int>{map->ParallaxBackgroundIndex});
-        // AssetQueue.emplace("mountains", std::vector<int>{map->ParallaxBackgroundIndex});
+        if (skyIndex < 0 || skyIndex >= asset_manager.TextureLibraries["sky"]->entryCount) {
+                skyIndex = 0; // Default to 0 if invalid
+        }
+
+        if (mountainsIndex < 0 || mountainsIndex >= asset_manager.TextureLibraries["mountains"]->entryCount) {
+                mountainsIndex = 0; // Default to 0 if invalid
+        }
+
+        AssetQueue.emplace(LibIndex{"sky", std::vector<int>{skyIndex}});
+        AssetQueue.emplace(LibIndex{"mountains", std::vector<int>{mountainsIndex}});
 
         std::unordered_map<std::string, std::unordered_set<int>> libraryToIndices;
 
@@ -47,7 +57,7 @@ void LoadingScene::BuildAssetQueue(const std::string& mapName) {
                                 std::cerr << "Expected range: [0, " << oLibrary->Images.size() << "]" << std::endl;
                                 std::cerr << "Actual BackIndex: " << graphic.BackIndex << std::endl;
                                 continue;
-                        }
+                            }
 
                         if (graphic.BackEndIndex == -1) {
                                 // If BackEndIndex is -1, only add BackIndex
@@ -73,6 +83,7 @@ void LoadingScene::BuildAssetQueue(const std::string& mapName) {
         }
 
         TargetValue = AssetQueue.size();
+        game_manager.SetLastPlayedMap(mapName);
 }
 void LoadingScene::Update(const GameTime gameTime) {
 
