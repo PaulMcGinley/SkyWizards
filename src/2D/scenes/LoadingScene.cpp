@@ -6,88 +6,119 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <unordered_set>
+#include <set>
 
 #include "GameScene.h"
 #include "models/LevelObject/OLibrary.h"
 #include "os/GetExecutionDirectory.h"
+
 LoadingScene::LoadingScene() {}
 LoadingScene::~LoadingScene() {}
 void LoadingScene::BuildAssetQueue(const std::string& mapName) {
-        WMap* map = asset_manager.Maps[mapName].get();
+        WMap* previousMap = asset_manager.Maps[game_manager.GetLastPlayedMap()].get();
+        WMap* nextMap = asset_manager.Maps[mapName].get();
 
-        int skyIndex = map->ParallaxBackgroundIndex;
-        int mountainsIndex = map->MountainsBackgroundIndex;
+        // Lambda function to get all the assets in a map
+        // [&] Captures all variables from the surrounding scope (BuildAssetQueue) by reference
+        auto GetMapAssets = [&](WMap* map) {
+                std::set<std::pair<std::string, int>> assets;
 
-        if (skyIndex < 0 || skyIndex >= asset_manager.TextureLibraries["sky"]->entryCount) {
-                skyIndex = 0; // Default to 0 if invalid
-        }
-
-        if (mountainsIndex < 0 || mountainsIndex >= asset_manager.TextureLibraries["mountains"]->entryCount) {
-                mountainsIndex = 0; // Default to 0 if invalid
-        }
-
-        AssetQueue.emplace(LibIndex{"sky", std::vector<int>{skyIndex}});
-        AssetQueue.emplace(LibIndex{"mountains", std::vector<int>{mountainsIndex}});
-
-        std::unordered_map<std::string, std::unordered_set<int>> libraryToIndices;
-
-        for (const auto &wmObject: map->LevelObjects) {
-                const auto &oLibraryName = wmObject.ObjectLibraryFile;
-
-                // Skip if library doesn't exist
-                if (!asset_manager.ObjectLibraries.contains(oLibraryName)) {
-                        std::cerr << "Object library " << oLibraryName << " does not exist." << std::endl;
-                        continue;
+                // Check if the map is valid
+                if (!map) {
+                        std::cerr << "GetMapAssets - Invalid map provided (nullptr)." << std::endl;
+                        return assets;
                 }
 
-                const auto &oLibrary = asset_manager.ObjectLibraries.at(oLibraryName);
+                // Parallax backgrounds
+                int skyIndex = map->ParallaxBackgroundIndex;
+                int mountainsIndex = map->MountainsBackgroundIndex;
+                if (skyIndex >= 0) assets.emplace("sky", skyIndex);
+                if (mountainsIndex >= 0) assets.emplace("mountains", mountainsIndex);
 
-                for (const auto &graphic: oLibrary->Images) {
-                        // Skip graphics without an associated library
-                        if (graphic.BackImageLibrary.empty()) {
-                                std::cerr << "Graphic in library " << oLibraryName
-                                          << " has no associated BackImageLibrary." << std::endl;
-                                continue;
-                        }
+                // Loop through all the Level Objects
+                for (const auto& wmObject : map->LevelObjects) {
+                        // Get the Object Library name
+                        const auto& oLibraryName = wmObject.ObjectLibraryFile;
+                        // Check if the library exists
+                        if (!asset_manager.ObjectLibraries.contains(oLibraryName))
+                                continue; // Library does not exist
 
-                        if (graphic.BackIndex < 0 ||
-                            graphic.BackIndex >= asset_manager.TextureLibraries[graphic.BackImageLibrary]->entryCount) {
-                                std::cerr << "Graphic in library " << oLibraryName << " has invalid BackIndex."
-                                          << std::endl;
-                                std::cerr << "Expected range: [0, " << oLibrary->Images.size() << "]" << std::endl;
-                                std::cerr << "Actual BackIndex: " << graphic.BackIndex << std::endl;
-                                continue;
-                            }
-
-                        if (graphic.BackEndIndex == -1) {
-                                // If BackEndIndex is -1, only add BackIndex
-                                libraryToIndices[graphic.BackImageLibrary].insert(graphic.BackIndex);
-                        } else {
-                                // Otherwise add the range from BackIndex to BackEndIndex
-                                for (int idx = graphic.BackIndex; idx <= graphic.BackEndIndex; ++idx) {
-                                        libraryToIndices[graphic.BackImageLibrary].insert(idx);
+                        // Get the Object Library
+                        const auto& oLibrary = asset_manager.ObjectLibraries.at(oLibraryName);
+                        // Loop through all the images in the library
+                        for (const auto& graphic : oLibrary->Images) {
+                                // Check if Library name is present
+                                if (graphic.BackImageLibrary.empty())
+                                        continue; // No library name
+                                // Check if the Image is not animated
+                                if (graphic.BackEndIndex == -1) {
+                                        assets.emplace(graphic.BackImageLibrary, graphic.BackIndex); // Add the single index
+                                } else {
+                                        // Load all indices in the range
+                                        for (int idx = graphic.BackIndex; idx <= graphic.BackEndIndex; ++idx) {
+                                                assets.emplace(graphic.BackImageLibrary, idx);
+                                        }
                                 }
                         }
                 }
+                return assets;
+        };
+
+        // Get the assets for the previous map
+        auto previousMapAssets = GetMapAssets(previousMap);
+        // Get the assets for the next map
+        auto nextMapAssets = GetMapAssets(nextMap);
+
+        // Unload assets not needed anymore
+        for (const auto& asset : previousMapAssets) {
+                // Check if the asset is not in the next map
+                if (!nextMapAssets.count(asset)) {
+                        // Get the Texture Library
+                        auto& textureLibrary = asset_manager.TextureLibraries[asset.first];
+                        if (textureLibrary) {
+                                textureLibrary->UnloadIndices({asset.second}); // Unload the asset
+                        }
+                }
         }
 
-        for (auto &[library, indicesSet]: libraryToIndices) {
-                std::vector<int> indices(indicesSet.begin(), indicesSet.end());
-                std::sort(indices.begin(), indices.end()); // for consistent order
+        // Map to hold library names and their indices
+        std::unordered_map<std::string, std::unordered_set<int>> libraryIndicesToLoad;
+        // Loop through the next map assets
+        for (const auto& asset : nextMapAssets) {
+                // Check if the asset is not in the previous map
+                if (!previousMapAssets.count(asset)) {
+                        libraryIndicesToLoad[asset.first].insert(asset.second); // Add the asset to the map
+                }
+        }
 
+        // Build the AssetQueue
+        AssetQueue = {};
+        // Loop through the library indices to load
+        for (auto& [library, indicesSet] : libraryIndicesToLoad) {
+                // Create a vector to hold indices of the library
+                std::vector<int> indices(indicesSet.begin(), indicesSet.end());
+                // Sort the indices to ensure they are in order
+                std::sort(indices.begin(), indices.end());
+                // Split the indices into batches
                 for (size_t i = 0; i < indices.size(); i += loadPerFrame) {
+                        // Calculate the end index for the batch ensuring it doesn't exceed the size
                         size_t end = std::min(i + loadPerFrame, indices.size());
+                        // Create the batch of indices (up to, but not including, end)
                         std::vector<int> batch(indices.begin() + i, indices.begin() + end);
+                        // Add the library and batch indices to the AssetQueue
                         AssetQueue.emplace(LibIndex{library, std::move(batch)});
                 }
         }
 
+        // Set the target value for progress tracking
         TargetValue = AssetQueue.size();
+
+        // Set the Last Played Map name in the game manager for the next time we need to load assets
         game_manager.SetLastPlayedMap(mapName);
 }
 void LoadingScene::Update(const GameTime gameTime) {
 
-        if (nextSceneTime ==0) {
+        if (nextSceneTime ==0 && !AssetQueue.empty()) {
                 // Load the next batch of assets
                 const auto &currentLib = AssetQueue.front();
                 auto &textureLibrary = asset_manager.TextureLibraries[currentLib.library];

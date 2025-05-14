@@ -14,12 +14,12 @@ public:
         int entryCount;
 
         void LoadIndices(const std::vector<int>& indices);
+        void UnloadIndices(const std::vector<int>& requiredIndices);
         bool fullyLoaded = false;
 
 private:
         std::string path;
         std::streampos* fat; // File Allocation Table (kinda)
-        void UnloadIndices(const std::vector<int>& requiredIndices);
 };
 
 #endif // TEXTURELIBRARY_H
