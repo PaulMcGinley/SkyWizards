@@ -45,6 +45,11 @@ void Game::Run() {
                                 game_manager.window->close();
                 }
 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) ||
+                        sf::Keyboard::isKeyPressed(sf::Keyboard::N) && sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+                        game_manager.window->close();
+                }
+
                 InputManager::getInstance().update();
 
                 game_time += (clock.restart().asSeconds());
