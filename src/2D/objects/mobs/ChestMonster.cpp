@@ -174,7 +174,6 @@ void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
         }
 }
 void ChestMonster::TickAnimation(GameTime gameTime) {
-        std::cout << "TickAnimation" << std::endl;
         if(gameTime.TimeElapsed(nextBiteTime) && currentAnimation == AnimationType::ANIMATION_ATTACK && currentAnimationFrame == 5) {
                 BitePlayer();
                 nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);

@@ -18,6 +18,8 @@ public:
         void Draw(sf::RenderWindow &window, GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
 
+        virtual int Collide();
+
         [[nodiscard]] sf::Vector2f GetCollisionPoint() const;
 
 protected:

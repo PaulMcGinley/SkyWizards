@@ -25,11 +25,17 @@ void Projectile::Update(GameTime gameTime) {
         lifetime -= gameTime.delta_time;
 }
 void Projectile::Draw(sf::RenderWindow &window, GameTime gameTime) {
+        IDraw::Draw(window, "magic", currentAnimationFrame, position);
 }
 void Projectile::LateUpdate(GameTime gameTime) {
         // Update the animation
         TickAnimation(gameTime);
 }
+int Projectile::Collide() {
+        velocity = {0, 0};
+        ChangeAnimation(AnimationType::ANIMATION_EXPLOSION, true);
+        return damage;
+}
 sf::Vector2f Projectile::GetCollisionPoint() const {
-        return facingRight ? collisionPointRight : collisionPointLeft;
+        return velocity.x > 0 ? collisionPointRight : collisionPointLeft;
 }

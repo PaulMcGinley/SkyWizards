@@ -427,10 +427,22 @@ void Player::TickAnimation(GameTime gameTime) {
 }
 void Player::CastMagic(GameTime gameTime) {
 
+        sf::Vector2f projectileVelocity = {32, 0};
+        if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT) {
+                projectileVelocity.x *= -1.f;
+        }
+
+        sf::Vector2f projectileSpawnPosition = position - sf::Vector2f(0, 200);
+        if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT) {
+                projectileSpawnPosition.x -= 500;
+        } else if (faceDirection == FaceDirection::FACE_DIRECTION_RIGHT_PLAYER) {
+                projectileSpawnPosition.x -= 250;
+        }
+
         gameScene->AddProjectile(
             std::make_unique<FireBall>(
-                position - sf::Vector2f(250, 200),
-                sf::Vector2f(32, 0),
+                projectileSpawnPosition,
+                projectileVelocity,
                 1.0f,
                 50.0f,
                 10000.0f
