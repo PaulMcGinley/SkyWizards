@@ -3,6 +3,7 @@
 //
 
 #include "FireBall.h"
+
 FireBall::FireBall(const sf::Vector2f position, const sf::Vector2f velocity, const float damage, const float speed, const float lifetime, const float collisionRadius)
         : Projectile(position, velocity, damage, speed, lifetime, {700,450}, {100,450}, collisionRadius) {
         sequences = {

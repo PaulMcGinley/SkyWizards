@@ -22,7 +22,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
                 {AnimationType::ANIMATION_ATTACK, {0, 10, 90}},
                 {AnimationType::ANIMATION_ATTACK2, {10, 9, 100,}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
-                {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
+                {AnimationType::ANIMATION_DAMAGED, {28, 7, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);},nullptr}},
                 {AnimationType::ANIMATION_DEATH, {35, 12, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
                 {AnimationType::ANIMATION_DEAD, {46, 1, 100}},
                 {AnimationType::ANIMATION_DIZZY, {47, 16, 100}},
@@ -41,7 +41,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
 }
 void ChestMonster::Update(GameTime gameTime) {
 
-        if (IsDead()) {
+        if (IsDead() || currentAnimation == AnimationType::ANIMATION_DAMAGED) {
                 UpdateQuads();
                 return;
         }
@@ -180,16 +180,24 @@ void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
         }
 }
 void ChestMonster::TickAnimation(GameTime gameTime) {
-        if(gameTime.TimeElapsed(nextBiteTime) && currentAnimation == AnimationType::ANIMATION_ATTACK && currentAnimationFrame == 5) {
+        if (gameTime.TimeElapsed(nextBiteTime) && currentAnimation == AnimationType::ANIMATION_ATTACK &&
+            currentAnimationFrame == 5) {
                 BitePlayer();
                 nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);
         }
-        if(gameTime.TimeElapsed(nextSmackTime) && currentAnimation == AnimationType::ANIMATION_ATTACK2 && currentAnimationFrame == 5) {
+        if (gameTime.TimeElapsed(nextSmackTime) && currentAnimation == AnimationType::ANIMATION_ATTACK2 &&
+            currentAnimationFrame == 5) {
                 SmackPlayer();
                 nextSmackTime = gameTime.NowAddMilliseconds(smackCooldown);
         }
 
         Mob::TickAnimation(gameTime);
+}
+void ChestMonster::Damaged(int amount) {
+        if (!IsDead() && currentAnimation != AnimationType::ANIMATION_STATIC)
+                ChangeAnimation(AnimationType::ANIMATION_DAMAGED,true);
+
+        Mob::Damaged(amount);
 }
 void ChestMonster::BitePlayer() {
         std::cout << "BitePlayer" << std::endl;
