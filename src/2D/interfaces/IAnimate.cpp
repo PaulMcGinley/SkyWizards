@@ -9,60 +9,67 @@
 // Move to the next frame in the animation sequence
 // If we reach the end of the sequence, loop back to the start
 void IAnimate::TickAnimation(const GameTime gameTime) {
-
+        // Check if the animation is ready for the next frame
         if (!gameTime.TimeElapsed(nextFrameTime))
                 return;
 
         // Increment the current frame
         currentAnimationFrame++;
 
-        // Loop back to the start of the sequence if we reach the end
+        // Check if we have reached the end of the sequence
         if (currentAnimationFrame >= sequences[currentAnimation].length) {
+                // Loop back to the start
                 currentAnimationFrame = 0;
+
                 // Call the onComplete function if it exists
                 if (sequences[currentAnimation].onComplete != nullptr) {
                         sequences[currentAnimation].onComplete();
                 }
         }
 
+        // Update the next frame time
         nextFrameTime = gameTime.NowAddMilliseconds(sequences[currentAnimation].interval);
 }
 
 // Change the current animation sequence
-bool IAnimate::ChangeAnimation(const AnimationType next_animation, const GameTime game_time, const bool force_new_animation) {
-
-        if (!game_time.TimeElapsed(nextAnimationTime) && !force_new_animation)
+bool IAnimate::ChangeAnimation(const AnimationType nextAnimation, const GameTime gameTime, const bool forceNewAnimation) {
+        // Check if the next animation should be played
+        if (!gameTime.TimeElapsed(nextAnimationTime) && !forceNewAnimation)
                 return false;
 
-        if(currentAnimation == next_animation)
+        // Check if the next animation is the same as the current one
+        if (currentAnimation == nextAnimation)
                 return false;
 
         // Change the current animation sequence
-        currentAnimation = next_animation;
+        currentAnimation = nextAnimation;
+        // Reset the current frame
         currentAnimationFrame = 0;
+        // Reset the next frame time
         nextFrameTime = 0;
 
-        const float new_next_animation_time = game_time.NowAddMilliseconds(sequences[currentAnimation].interval * sequences[currentAnimation].length);
+        // Update the next animation time
+        const float newNextAnimationTime = gameTime.NowAddMilliseconds(sequences[currentAnimation].interval * sequences[currentAnimation].length);
 
-        // if (next_animation == AnimationType::ANIMATION_ATTACK) {
-        nextAnimationTime = new_next_animation_time;
-        // }
+        // Update the next animation time
+        nextAnimationTime = newNextAnimationTime;
 
         return true;
 }
 
-bool IAnimate::ChangeAnimation(const AnimationType next_animation, bool force_new_animation) {
-        if (!force_new_animation)
+bool IAnimate::ChangeAnimation(const AnimationType nextAnimation, bool forceNewAnimation) {
+        // Check if the next animation should be played
+        if (!forceNewAnimation)
                 return false;
 
-        if(currentAnimation == next_animation)
+        // Check if the next animation is the same as the current one
+        if (currentAnimation == nextAnimation)
                 return false;
 
         // Change the current animation sequence
-        currentAnimation = next_animation;
+        currentAnimation = nextAnimation;
         currentAnimationFrame = 0;
         nextFrameTime = 0;
-
 
         return true;
 }

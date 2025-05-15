@@ -30,8 +30,8 @@ public:
         float nextAnimationTime = 0;
 
         virtual void TickAnimation(GameTime gameTime);
-        bool ChangeAnimation(AnimationType next_animation, GameTime game_time, bool force_new_animation = false);
-        bool ChangeAnimation(AnimationType next_animation, bool force_new_animation = true);
+        bool ChangeAnimation(AnimationType nextAnimation, GameTime gameTime, bool forceNewAnimation = false);
+        bool ChangeAnimation(AnimationType next_animation, bool forceNewAnimation = true);
 };
 
 #endif //IANIMATE_H

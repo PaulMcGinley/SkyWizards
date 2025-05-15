@@ -37,7 +37,7 @@ public:
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void TickAnimation(GameTime gameTime) override;
 
-        FaceDirection faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
+        FaceDirection faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_PLAYER;
         sf::Vector2f position = {0, 0};
 
         int getCurrentFrame() {

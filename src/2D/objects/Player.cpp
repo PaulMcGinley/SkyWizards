@@ -291,18 +291,19 @@ void Player::Update(GameTime gameTime) {
         float directionChangeMultiplier = 1.0f;
         const float runThreshold = WALKING_SPEED * 2.f; // Speed threshold to transition to running
 
-        if (currentAnimation != AnimationType::ANIMATION_FIRE)
+        if (currentAnimation != AnimationType::ANIMATION_FIRE) { // Prevent movement during fire animation
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
                         faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
                         isMoving = true;
                         // Always target running speed, but will take time to reach it
                         targetSpeed = -RUNNING_SPEED;
                 } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                        faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
+                        faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_PLAYER;
                         isMoving = true;
                         // Always target running speed, but will take time to reach it
                         targetSpeed = RUNNING_SPEED;
                 }
+        }
 
         // Apply acceleration or deceleration to horizontal movement
         if (isMoving) {

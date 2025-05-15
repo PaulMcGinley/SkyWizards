@@ -27,14 +27,12 @@ void Game::Run() {
         scene_manager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
         scene_manager.AddScene(SceneType::SCENE_LOADER, std::make_shared<LoadingScene>());
 
-
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes
         // The assets for this scene are kept as external files to prevent decompression delays
         scene_manager.ChangeScene(SceneType::SCENE_SPLASH);
 
-        std::shared_ptr<DebugOverlay> debugOverlay =
-                        std::dynamic_pointer_cast<DebugOverlay>(scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY));
+        std::shared_ptr<DebugOverlay> debugOverlay = std::dynamic_pointer_cast<DebugOverlay>(scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY));
 
         // Main game loop
         sf::Event windowEvent{};
@@ -44,9 +42,9 @@ void Game::Run() {
                         if (windowEvent.type == sf::Event::Closed)
                                 game_manager.window->close();
                 }
-
+                // Close window by key input
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) ||
-                        sf::Keyboard::isKeyPressed(sf::Keyboard::N) && sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+                    sf::Keyboard::isKeyPressed(sf::Keyboard::N) && sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
                         game_manager.window->close();
                 }
 
