@@ -3,7 +3,9 @@
 //
 
 #include "Projectile.h"
-Projectile::Projectile(const sf::Vector2f position, const sf::Vector2f velocity, const float damage, const float speed, const float lifetime, sf::Vector2f collisionPointRight, sf::Vector2f collisionPointLeft)
+
+#include <SFML/Graphics/CircleShape.hpp>
+Projectile::Projectile(const sf::Vector2f position, const sf::Vector2f velocity, const float damage, const float speed, const float lifetime, sf::Vector2f collisionPointRight, sf::Vector2f collisionPointLeft, float collisionRadius)
         : position(position)
         , velocity(velocity)
         , damage(damage)
@@ -11,7 +13,8 @@ Projectile::Projectile(const sf::Vector2f position, const sf::Vector2f velocity,
         , lifetime(lifetime)
         , facingRight(velocity.x > 0)
         , collisionPointLeft(collisionPointLeft)
-        , collisionPointRight(collisionPointRight) { /* Nothing in constructor */ }
+        , collisionPointRight(collisionPointRight)
+        , collisionRadius(collisionRadius) { /* Nothing in constructor */ }
 Projectile::~Projectile() = default;
 void Projectile::Update(GameTime gameTime) {
         if (lifetime <= 0) {
@@ -26,16 +29,47 @@ void Projectile::Update(GameTime gameTime) {
 }
 void Projectile::Draw(sf::RenderWindow &window, GameTime gameTime) {
         IDraw::Draw(window, "magic", sequences[currentAnimation].startFrame + currentAnimationFrame, position);
+
+        // // Draw the collision circle
+        // sf::CircleShape circle(collisionRadius);
+        // circle.setFillColor(sf::Color(0, 255, 0, 100));
+        // circle.setOrigin(collisionRadius, collisionRadius); // Center the origin
+        // circle.setPosition(GetCollisionCenter());
+        // window.draw(circle);
 }
 void Projectile::LateUpdate(GameTime gameTime) {
         // Update the animation
         TickAnimation(gameTime);
 }
-int Projectile::Collide() {
+int Projectile::Collide(sf::Vector2f collisionPoint) {
         velocity = {0, 0};
+        lifetime = 1000;
+        position = collisionPoint - sf::Vector2f(400, 350);
         ChangeAnimation(AnimationType::ANIMATION_EXPLOSION, true);
         return damage;
 }
-sf::Vector2f Projectile::GetCollisionPoint() const {
-        return velocity.x > 0 ? collisionPointRight : collisionPointLeft;
+sf::Vector2f Projectile::GetCollisionCenter() const {
+        return velocity.x > 0 ? position + collisionPointRight : position + collisionPointLeft;
+}
+
+float Projectile::GetCollisionRadius() const {
+        return collisionRadius;
+}
+bool Projectile::Intersects(const sf::FloatRect &rect) const {
+        // Get circle center
+        sf::Vector2f center = GetCollisionCenter();
+
+        // Find closest point on rectangle to circle
+        float closestX = std::max(rect.left, std::min(center.x, rect.left + rect.width));
+        float closestY = std::max(rect.top, std::min(center.y, rect.top + rect.height));
+
+        // Calculate distance between closest point and circle center
+        float distanceX = center.x - closestX;
+        float distanceY = center.y - closestY;
+
+        // Compare with circle's radius
+        return (distanceX * distanceX + distanceY * distanceY) <= (collisionRadius * collisionRadius);
+}
+bool Projectile::Expired() const {
+        return lifetime <= 0;
 }

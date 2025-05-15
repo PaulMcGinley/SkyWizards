@@ -15,3 +15,6 @@ Mob::Mob(Player *player, sf::Vector2f position, float viewRange, float moveSpeed
 int Mob::GetCurrentAnimationFrame() {
         return sequences[currentAnimation].startFrame + currentAnimationFrame + faceDirection;
 }
+sf::FloatRect Mob::GetCollisionBox() const {
+        return collisionBox;
+}

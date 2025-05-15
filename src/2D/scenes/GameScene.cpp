@@ -152,6 +152,14 @@ void GameScene::Update_Game(GameTime gameTime) {
         for (const auto& projectile : projectiles) {
                 projectile->Update(gameTime);
         }
+        // Loop through the projectiles and remove any that have expired (start at the end to avoid invalidating iterator)
+        for (int i = projectiles.size() - 1; i >= 0; --i) {
+                if (projectiles[i]->Expired()) {
+                        // Remove the projectile from the list
+                        projectiles.erase(projectiles.begin() + i);
+                }
+        }
+        CheckProjectileCollisions();
 
 
         if (player.GetIsDead() && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
@@ -262,6 +270,7 @@ void GameScene::LoadAssets() {
 void GameScene::LoadMobs() {
         // Clear exisitng mobs
         monsters.clear();
+        projectiles.clear();
 
         for (const auto &mob: map->Mobs) {
                 // Check if the mob library exists
@@ -274,13 +283,30 @@ void GameScene::LoadMobs() {
 
                 // TODO: Convert to switch statement
                 if (mob.MonsterName == "ChestMonster") {
-                        monsters.emplace_back(std::make_unique<ChestMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                        monsters.emplace_back(std::make_unique<ChestMonster>(&player, mob.Position, mob.ViewRange,
+                                                                             mob.MoveSpeed, mob.Health));
                 }
                 // else if (mob.MonsterName == "SlimeMonster") {
                 //     slimeMonsters.emplace_back(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health);
                 // }
                 else {
                         std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
+                }
+        }
+}
+void GameScene::CheckProjectileCollisions() {
+        for (const auto &projectile: projectiles) {
+                for (const auto &mob: monsters) {
+                        if (projectile->Intersects(mob->GetCollisionBox())) {
+                                // Calculate the collision point to display the explosion
+                                sf::Vector2f collisionPoint;
+                                collisionPoint.x = mob->GetCollisionBox().left + mob->GetCollisionBox().width / 2;
+                                collisionPoint.y = mob->GetCollisionBox().top + mob->GetCollisionBox().height / 2;
+
+                                // TODO: Implement the mob damage
+                                int damage = projectile->Collide(collisionPoint);
+                                //mob->TakeDamaged(damage);
+                        }
                 }
         }
 }

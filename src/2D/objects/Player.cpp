@@ -434,9 +434,9 @@ void Player::CastMagic(GameTime gameTime) {
 
         sf::Vector2f projectileSpawnPosition = position - sf::Vector2f(0, 200);
         if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT) {
-                projectileSpawnPosition.x -= 500;
+                projectileSpawnPosition.x += 50;
         } else if (faceDirection == FaceDirection::FACE_DIRECTION_RIGHT_PLAYER) {
-                projectileSpawnPosition.x -= 250;
+                projectileSpawnPosition.x -= 350;
         }
 
         gameScene->AddProjectile(
@@ -445,7 +445,8 @@ void Player::CastMagic(GameTime gameTime) {
                 projectileVelocity,
                 1.0f,
                 50.0f,
-                10000.0f
+                2000.0f,
+                20.f
             )
         );
 

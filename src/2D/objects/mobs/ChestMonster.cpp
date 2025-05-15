@@ -120,22 +120,22 @@ void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw Monster
         window.draw(texQuads, &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()].texture);
 
-        // // Collision box
+        // Collision box
         // sf::RectangleShape rect(sf::Vector2f(collisionBox.width, collisionBox.height));
         // rect.setPosition(collisionBox.left, collisionBox.top);
         // rect.setFillColor(sf::Color(0, 0, 255, 128));
         // rect.setOutlineColor(sf::Color::Black);
         // rect.setOutlineThickness(1.0f);
         // window.draw(rect);
-        //
+
         // // DEBUG: Draw detector circles
         // sf::CircleShape leftDropDetector(5);
         // leftDropDetector.setFillColor(sf::Color::Green);
-        // leftDropDetector.setPosition(leftDropDetectorPosition());
+        // leftDropDetector.setPosition(GetLeftDropDetectorPosition());
         // window.draw(leftDropDetector);
         // sf::CircleShape rightDropDetector(5);
         // rightDropDetector.setFillColor(sf::Color::Red);
-        // rightDropDetector.setPosition(rightDropDetectorPosition());
+        // rightDropDetector.setPosition(GetRightDropDetectorPosition());
         // window.draw(rightDropDetector);
         // // END DEBUG ^
 }
@@ -201,7 +201,7 @@ void ChestMonster::BitePlayer() {
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
         // Check if the player is within bite range to deal damage
-        if (distance <= (biteDistance*2.f)) {
+        if (distance <= (biteDistance*1.5f)) {
                 DamagePlayer(1);
         }
 }
@@ -219,7 +219,7 @@ void ChestMonster::SmackPlayer() {
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
         // Check if the player is within smack range to deal damage
-        if (distance <= (smackDistance*2.f)) {
+        if (distance <= smackDistance * 1.2f) {
                 DamagePlayer(2);
         }
 }

@@ -10,7 +10,7 @@
 class FireBall : public Projectile {
 public:
         FireBall() = default;
-        FireBall(sf::Vector2f position, sf::Vector2f velocity, float damage, float speed, float lifetime);
+        FireBall(sf::Vector2f position, sf::Vector2f velocity, float damage, float speed, float lifetime, float collisionRadius);
         ~FireBall() override = default;
 };
 

@@ -52,6 +52,7 @@ private:
         void LoadMountains();
         void LoadAssets();
         void LoadMobs();
+        void CheckProjectileCollisions();
 
         void CalculateParallaxBackground();
         void DrawBehindEntities(sf::RenderWindow& window, GameTime gameTime);
