@@ -76,6 +76,8 @@ private:
         bool isDead = false;
 
         sf::Vector2f shadowDrawPosition;
+
+        void CastMagic(GameTime gameTime);
 };
 
 

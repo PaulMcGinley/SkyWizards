@@ -23,7 +23,7 @@ Player::Player(GameScene* game_scene) : gameScene(game_scene) {
                 {AnimationType::ANIMATION_DEATH, {45, 11, 100, nullptr, [this](){isDead=true;}, nullptr}},
                 {AnimationType::ANIMATION_DEAD, {55, 1, 1000, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DIZZY, {56, 20, 100, nullptr, nullptr, nullptr}},
-                {AnimationType::ANIMATION_FIRE, {76, 16, 100, nullptr, nullptr, nullptr}},
+                {AnimationType::ANIMATION_FIRE, {76, 16, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);}, nullptr}},
                 {AnimationType::ANIMATION_IDLE, {92, 16, 100, nullptr, nullptr, nullptr}}, // Randomly play idle2
                 {AnimationType::ANIMATION_IDLE2, {108, 64, 100, nullptr, nullptr, nullptr}}, // once played go back to idle
                 {AnimationType::ANIMATION_INTERACT, {172, 21, 100, nullptr, nullptr, nullptr}},
@@ -244,18 +244,9 @@ void Player::Update(GameTime gameTime) {
                 return;
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5) && gameTime.TimeElapsed(nextMagicTime)) {
-                gameScene->AddProjectile(
-                    std::make_unique<FireBall>(
-                        position - sf::Vector2f(250, 200),
-                        sf::Vector2f(32, 0),
-                        1.0f,
-                        10.0f,
-                        10000.0f
-                    )
-                );
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5) && gameTime.TimeElapsed(nextMagicTime) && !isFalling && !isJumping) {
 
-                nextMagicTime = gameTime.NowAddMilliseconds(1000);
+                ChangeAnimation(AnimationType::ANIMATION_FIRE, gameTime, true);
         }
 
 
@@ -291,7 +282,7 @@ void Player::Update(GameTime gameTime) {
         // Apply gravity if falling or jumping
         if (isFalling || isJumping) {
                 acceleration.y += FALLING_SPEED;
-                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, true);
+                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
         }
 
         // Handle horizontal movement
@@ -300,17 +291,18 @@ void Player::Update(GameTime gameTime) {
         float directionChangeMultiplier = 1.0f;
         const float runThreshold = WALKING_SPEED * 2.f; // Speed threshold to transition to running
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
-                isMoving = true;
-                // Always target running speed, but will take time to reach it
-                targetSpeed = -RUNNING_SPEED;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
-                isMoving = true;
-                // Always target running speed, but will take time to reach it
-                targetSpeed = RUNNING_SPEED;
-        }
+        if (currentAnimation != AnimationType::ANIMATION_FIRE)
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                        faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
+                        isMoving = true;
+                        // Always target running speed, but will take time to reach it
+                        targetSpeed = -RUNNING_SPEED;
+                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                        faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_GENERIC;
+                        isMoving = true;
+                        // Always target running speed, but will take time to reach it
+                        targetSpeed = RUNNING_SPEED;
+                }
 
         // Apply acceleration or deceleration to horizontal movement
         if (isMoving) {
@@ -368,7 +360,8 @@ void Player::Update(GameTime gameTime) {
                         ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime, true);
                 }
         } else {
-                ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
+                if (currentAnimation != AnimationType::ANIMATION_FIRE)
+                        ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
         }
 
         UpdateQuads();
@@ -424,5 +417,25 @@ void Player::TickAnimation(GameTime gameTime) {
 
         if (sequences[currentAnimation].onFrame != nullptr)
                 sequences[currentAnimation].onFrame(currentAnimationFrame /*<< = _frame*/);
+
+        if(currentAnimation == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime)) {
+                if (currentAnimationFrame == 6) {
+                        CastMagic(gameTime);
+                }
+        }
+}
+void Player::CastMagic(GameTime gameTime) {
+
+        gameScene->AddProjectile(
+            std::make_unique<FireBall>(
+                position - sf::Vector2f(250, 200),
+                sf::Vector2f(32, 0),
+                1.0f,
+                50.0f,
+                10000.0f
+            )
+        );
+
+        nextMagicTime = gameTime.NowAddMilliseconds(1000);
 }
 
