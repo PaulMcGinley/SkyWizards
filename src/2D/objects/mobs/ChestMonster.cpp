@@ -23,7 +23,8 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
                 {AnimationType::ANIMATION_ATTACK2, {10, 9, 100,}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
                 {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
-                {AnimationType::ANIMATION_DEATH, {35, 12, 100}},
+                {AnimationType::ANIMATION_DEATH, {35, 12, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
+                {AnimationType::ANIMATION_DEAD, {46, 1, 100}},
                 {AnimationType::ANIMATION_DIZZY, {47, 16, 100}},
                 {AnimationType::ANIMATION_IDLE, {63, 16, 60}},
                 {AnimationType::ANIMATION_STATIC, {79, 1, 100}},
@@ -39,6 +40,11 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
         collisionBox.height = 90;
 }
 void ChestMonster::Update(GameTime gameTime) {
+
+        if (IsDead()) {
+                UpdateQuads();
+                return;
+        }
         // Get a reference to the player to save on dereferencing calls
         Player& player = *this->player;
 

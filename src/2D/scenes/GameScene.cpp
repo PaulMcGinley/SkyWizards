@@ -305,7 +305,7 @@ void GameScene::CheckProjectileCollisions() {
 
                                 // TODO: Implement the mob damage
                                 int damage = projectile->Collide(collisionPoint);
-                                //mob->TakeDamaged(damage);
+                                mob->Damaged(damage);
                         }
                 }
         }

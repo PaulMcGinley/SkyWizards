@@ -23,6 +23,8 @@ public:
         virtual void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) = 0;
 
         sf::FloatRect GetCollisionBox() const;
+        void Damaged(int amount);
+        bool IsDead();
 
 protected:
         virtual void DamagePlayer(int amount) = 0;
