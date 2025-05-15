@@ -19,7 +19,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
 {
         // Define the animation sequences for the ChestMonster
         sequences = {
-                {AnimationType::ANIMATION_ATTACK, {0, 10, 90, nullptr, [this](){ BitePlayer(); }, nullptr}},
+                {AnimationType::ANIMATION_ATTACK, {0, 10, 90, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_ATTACK2, {10, 9, 100, nullptr, [this](){ SmackPlayer(); }, nullptr}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
                 {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
@@ -67,7 +67,7 @@ void ChestMonster::Update(GameTime gameTime) {
         if (distance < biteDistance && gameTime.TimeElapsed(nextBiteTime)) {
                 // Player is within CQB range
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK, gameTime, true); // Bite
-                nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);
+                //nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);
         } else if (distance < smackDistance && distance >= biteDistance && gameTime.TimeElapsed(nextSmackTime)) {
                 // Player is within smack attack range
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK2, gameTime, true); // Smack off screen
@@ -172,6 +172,17 @@ void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
                         canMoveRight = true;
                 }
         }
+}
+void ChestMonster::TickAnimation(GameTime gameTime) {
+        std::cout << "TickAnimation" << std::endl;
+        if(currentAnimation == AnimationType::ANIMATION_ATTACK && gameTime.TimeElapsed(nextBiteTime)) {
+                if (currentAnimationFrame == 5) {
+                        BitePlayer();
+                        nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);
+                }
+        }
+
+        Mob::TickAnimation(gameTime);
 }
 void ChestMonster::BitePlayer() {
         std::cout << "BitePlayer" << std::endl;

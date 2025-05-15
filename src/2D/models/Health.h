@@ -152,7 +152,7 @@ private:
         float scale = 1;
         sf::Vector2f position = {0, 0}; // Screen position of the health bar
 
-        float update_interval = 125;     // Time between health updates (in ms)
+        float update_interval = 75;     // Time between health updates (in ms)
 };
 
 #endif //HEALTH_H

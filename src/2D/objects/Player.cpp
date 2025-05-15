@@ -417,7 +417,7 @@ void Player::TickAnimation(GameTime gameTime) {
         IAnimate::TickAnimation(gameTime);
 
         if (sequences[currentAnimation].onFrame != nullptr)
-                sequences[currentAnimation].onFrame(currentAnimationFrame /*<< = _frame*/);
+                sequences[currentAnimation].onFrame();
 
         if(currentAnimation == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime)) {
                 if (currentAnimationFrame == 6) {

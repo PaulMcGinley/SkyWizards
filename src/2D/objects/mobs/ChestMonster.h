@@ -20,6 +20,7 @@ public:
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) override;
+        void TickAnimation(GameTime gameTime) override;
 
 private:
         void BitePlayer();
