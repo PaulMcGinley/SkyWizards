@@ -282,7 +282,7 @@ void Player::Update(GameTime gameTime) {
         // Apply gravity if falling or jumping
         if (isFalling || isJumping) {
                 acceleration.y += FALLING_SPEED;
-                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, false);
+                ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, true);
         }
 
         // Handle horizontal movement
