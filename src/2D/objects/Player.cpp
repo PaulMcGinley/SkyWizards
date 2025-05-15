@@ -233,8 +233,8 @@ void Player::Update(GameTime gameTime) {
                 return;
         }
 
-        if (health.getCurrentHealth() ==0 ) {
-                ChangeAnimation(AnimationType::ANIMATION_DEATH, gameTime);
+        if (health.getTargetHealth() ==0 ) {
+                ChangeAnimation(AnimationType::ANIMATION_DEATH, gameTime, true);
                 UpdateQuads();
                 return;
         }
