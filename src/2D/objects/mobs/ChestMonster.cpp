@@ -19,8 +19,8 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
 {
         // Define the animation sequences for the ChestMonster
         sequences = {
-                {AnimationType::ANIMATION_ATTACK, {0, 10, 90, nullptr, nullptr, nullptr}},
-                {AnimationType::ANIMATION_ATTACK2, {10, 9, 100, nullptr, [this](){ SmackPlayer(); }, nullptr}},
+                {AnimationType::ANIMATION_ATTACK, {0, 10, 90}},
+                {AnimationType::ANIMATION_ATTACK2, {10, 9, 100,}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
                 {AnimationType::ANIMATION_DAMAGED, {28, 7, 100}},
                 {AnimationType::ANIMATION_DEATH, {35, 12, 100}},
@@ -71,7 +71,7 @@ void ChestMonster::Update(GameTime gameTime) {
         } else if (distance < smackDistance && distance >= biteDistance && gameTime.TimeElapsed(nextSmackTime)) {
                 // Player is within smack attack range
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK2, gameTime, true); // Smack off screen
-                nextSmackTime = gameTime.NowAddMilliseconds(smackCooldown);
+                //nextSmackTime = gameTime.NowAddMilliseconds(smackCooldown);
         } else if (distance > biteDistance && distance < chaseDistance) {
                 // Player is within chase range
                 ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime, false);
@@ -175,11 +175,13 @@ void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
 }
 void ChestMonster::TickAnimation(GameTime gameTime) {
         std::cout << "TickAnimation" << std::endl;
-        if(currentAnimation == AnimationType::ANIMATION_ATTACK && gameTime.TimeElapsed(nextBiteTime)) {
-                if (currentAnimationFrame == 5) {
-                        BitePlayer();
-                        nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);
-                }
+        if(gameTime.TimeElapsed(nextBiteTime) && currentAnimation == AnimationType::ANIMATION_ATTACK && currentAnimationFrame == 5) {
+                BitePlayer();
+                nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);
+        }
+        if(gameTime.TimeElapsed(nextSmackTime) && currentAnimation == AnimationType::ANIMATION_ATTACK2 && currentAnimationFrame == 5) {
+                SmackPlayer();
+                nextSmackTime = gameTime.NowAddMilliseconds(smackCooldown);
         }
 
         Mob::TickAnimation(gameTime);
