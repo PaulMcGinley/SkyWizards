@@ -7,7 +7,7 @@ FireBall::FireBall(const sf::Vector2f position, const sf::Vector2f velocity, con
         : Projectile(position, velocity, damage, speed, lifetime, {700,450}, {100,450}) {
         sequences = {
                 {AnimationType::ANIMATION_PROJECTILE_RIGHT, {0, 40, 20}},
-                {AnimationType::ANIMATION_PROJECTILE_LEFT, {40, 40, 20,nullptr, [](){std::cout<<"left";},nullptr}},
+                {AnimationType::ANIMATION_PROJECTILE_LEFT, {40, 40, 20}},
                 {AnimationType::ANIMATION_EXPLOSION, {80, 33, 80}}
         };
 

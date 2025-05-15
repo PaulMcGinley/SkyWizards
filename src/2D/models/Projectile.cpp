@@ -25,7 +25,7 @@ void Projectile::Update(GameTime gameTime) {
         lifetime -= gameTime.delta_time;
 }
 void Projectile::Draw(sf::RenderWindow &window, GameTime gameTime) {
-        IDraw::Draw(window, "magic", currentAnimationFrame, position);
+        IDraw::Draw(window, "magic", sequences[currentAnimation].startFrame + currentAnimationFrame, position);
 }
 void Projectile::LateUpdate(GameTime gameTime) {
         // Update the animation
