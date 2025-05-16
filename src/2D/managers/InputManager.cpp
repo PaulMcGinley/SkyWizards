@@ -23,9 +23,9 @@ public:
                 previous_state = current_state;
 
                 // Update keyboard state
-                constexpr int first_key = sf::Keyboard::A;
-                constexpr int last_key = sf::Keyboard::Space;
-                for (int key = first_key; key <= last_key; ++key) {
+                // constexpr int first_key = sf::Keyboard::A;
+                // constexpr int last_key = sf::Keyboard::Space;
+                for (int key = 0; key < sf::Keyboard::KeyCount; ++key) {
                         current_state[key] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(key));
                 }
 

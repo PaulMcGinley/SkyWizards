@@ -9,17 +9,18 @@
 #include "managers/InputManager.cpp"
 #include "managers/SceneManager.h"
 
-MainMenu::MainMenu() {}
+MainMenu::MainMenu()
+        :       selectedMenuIndex(0) { /* Nothing in the constructor */ }
 void MainMenu::Update(GameTime gameTime) {
         bool selectionChanged = false;
 
         // Inspired from: https://dev.to/avocoaster/how-to-wrap-around-a-range-of-numbers-with-the-modulo-cdo
         // Handle menu navigation
-        if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Down) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::S)) {
-                selectedMenuItem = (selectedMenuItem + 1) % 5;
+        if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::Down) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::S)) {
+                selectedMenuIndex = (selectedMenuIndex + 1) % 5;
                 selectionChanged = true;
-        } else if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Up) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::W)) {
-                selectedMenuItem = (selectedMenuItem + 4) % 5;
+        } else if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::Up) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::W)) {
+                selectedMenuIndex = (selectedMenuIndex + 4) % 5;
                 selectionChanged = true;
         }
 
@@ -28,9 +29,10 @@ void MainMenu::Update(GameTime gameTime) {
                 UpdateMenuSelection();
 
         // Handle confimation of selected item
-        if (InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space) || InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Num4)) {
-                switch (selectedMenuItem) {
-                        case 0: {       // Play
+        if (InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space) ||
+            InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Num4)) {
+                switch (selectedMenuIndex) {
+                        case 0: { // Play
                                 auto scenePtr = scene_manager.GetScene(SceneType::SCENE_LOADER);
                                 auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
                                 if (gameScene) {
@@ -39,31 +41,31 @@ void MainMenu::Update(GameTime gameTime) {
                                 scene_manager.ChangeScene(SceneType::SCENE_LOADER);
                                 break;
                         }
-                        case 1: {       // Level Select
+                        case 1: { // Level Select
                                 // ...
                                 break;
                         }
-                        case 2: {       // Settings
+                        case 2: { // Settings
                                 // ...
                                 break;
                         }
-                        case 3: {       // Rankings
+                        case 3: { // Rankings
                                 // ...
                                 break;
                         }
-                        case 4: {       // Leave
+                        case 4: { // Leave
                                 game_manager.window->close();
                                 break;
                         }
                 }
         }
 
-        float t = gameTime.total_game_time;     // time in seconds
-        float amplitude = 0.2f;                 // scale amplitude
-        float speed = 2.0f;                     // speed of animation
-        float offset = 0.7f;                    // offset for the second sprite (so they don't scale the same)
+        float t = gameTime.total_game_time; // time in seconds
+        float amplitude = 0.2f; // scale amplitude
+        float speed = 2.0f; // speed of animation
+        float offset = 0.7f; // offset for the second sprite (so they don't scale the same)
 
-        float scale1 = 1.0f + amplitude * std::sin(t * speed + (offset*2));
+        float scale1 = 1.0f + amplitude * std::sin(t * speed + (offset * 2));
         float scale2 = 1.0f + amplitude * std::sin(t * speed + offset);
         float scale3 = 1.0f + amplitude * std::sin(t * speed);
 
@@ -71,7 +73,7 @@ void MainMenu::Update(GameTime gameTime) {
         title2Sprite.setScale(scale2, scale2);
         title3Sprite.setScale(scale3, scale3);
 
-
+       // menuPlaySprite.setScale((scale1 + scale2 + scale3) / 3, (scale1 + scale2 + scale3) / 3);
 }
 void MainMenu::LateUpdate(GameTime gameTime) {}
 void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
@@ -165,11 +167,11 @@ void MainMenu::OnScene_Active() {
 
         UpdateMenuSelection();
 }
-void MainMenu::OnScene_Deactivate() { selectedMenuItem = 0; }
+void MainMenu::OnScene_Deactivate() { selectedMenuIndex = 0; }
 void MainMenu::UpdateMenuSelection() {
-        menuPlaySprite.setTexture(*(selectedMenuItem == 0 ? menuPlayTextures[1] : menuPlayTextures[0]), true);
-        menuLevelSelectSprite.setTexture(*(selectedMenuItem == 1 ? menuLevelSelectTextures[1] : menuLevelSelectTextures[0]), true);
-        menuSettingsSprite.setTexture(*(selectedMenuItem == 2 ? menuSettingsTextures[1] : menuSettingsTextures[0]), true);
-        menuRankingsSprite.setTexture(*(selectedMenuItem == 3 ? menuRankingsTextures[1] : menuRankingsTextures[0]), true);
-        menuLeaveSprite.setTexture(*(selectedMenuItem == 4 ? menuLeaveTextures[1] : menuLeaveTextures[0]), true);
+        menuPlaySprite.setTexture(*(selectedMenuIndex == 0 ? menuPlayTextures[1] : menuPlayTextures[0]), true);
+        menuLevelSelectSprite.setTexture(*(selectedMenuIndex == 1 ? menuLevelSelectTextures[1] : menuLevelSelectTextures[0]), true);
+        menuSettingsSprite.setTexture(*(selectedMenuIndex == 2 ? menuSettingsTextures[1] : menuSettingsTextures[0]), true);
+        menuRankingsSprite.setTexture(*(selectedMenuIndex == 3 ? menuRankingsTextures[1] : menuRankingsTextures[0]), true);
+        menuLeaveSprite.setTexture(*(selectedMenuIndex == 4 ? menuLeaveTextures[1] : menuLeaveTextures[0]), true);
 }

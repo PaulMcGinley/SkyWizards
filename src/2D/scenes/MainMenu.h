@@ -36,7 +36,7 @@ private:
         sf::Sprite title2Sprite;
         sf::Sprite title3Sprite;
 
-        int selectedMenuItem = 0;
+        int selectedMenuIndex;
 
         sf::Texture* menuPlayTextures[2];
         sf::Texture* menuLevelSelectTextures[2];
