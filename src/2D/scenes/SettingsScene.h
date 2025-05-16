@@ -25,8 +25,8 @@ public:
 private:
         bool tempIsFullscreen = false;
         bool tempIsVSync = false;
-        float tempMusicPercent = 0.0f;
-        float tempSfxPercent = 0.0f;
+        float tempMusicPercent = 1.0f;
+        float tempSfxPercent = .50f;
 
         int selectedOption = 0;
 
@@ -62,6 +62,11 @@ private:
         sf::Sprite sfxSprite;
         sf::Sprite sfxArrowLeftSprite[2];
         sf::Sprite sfxArrowRightSprite[2];
+
+        sf::Sprite musicPercentDigits[3];
+        sf::Sprite musicPercentSymbol;
+        sf::Sprite sfxPercentDigits[3];
+        sf::Sprite sfxPercentSymbol;
 };
 
 

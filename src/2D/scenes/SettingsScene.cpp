@@ -27,12 +27,46 @@ void SettingsScene::Update(GameTime gameTime) {
                         tempIsVSync = !tempIsVSync;
                 }
                 else if (selectedOption == 2) {
-                        // ...
+                        if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().isKeyPressed(sf::Keyboard::A) ) {
+                                tempMusicPercent -= 0.05f;
+                                if (tempMusicPercent < 0.0f) {
+                                        tempMusicPercent = 0.0f;
+                                }
+                        }
+                        else if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().isKeyPressed(sf::Keyboard::D)) {
+                                tempMusicPercent += 0.05f;
+                                if (tempMusicPercent > 1.0f) {
+                                        tempMusicPercent = 1.0f;
+                                }
+                        }
                 }
                 else if (selectedOption == 3) {
-                        // ...
+                        if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().isKeyPressed(sf::Keyboard::A) ) {
+                                tempSfxPercent -= 0.05f;
+                                if (tempSfxPercent < 0.0f) {
+                                        tempSfxPercent = 0.0f;
+                                }
+                        }
+                        else if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().isKeyPressed(sf::Keyboard::D)) {
+                                tempSfxPercent += 0.05f;
+                                if (tempSfxPercent > 1.0f) {
+                                        tempSfxPercent = 1.0f;
+                                }
+                        }
                 }
         }
+
+        // Update music percentage display
+        int musicPercentInt = static_cast<int>(tempMusicPercent * 100.0f);
+        musicPercentDigits[0].setTexture(*numbersTexture[musicPercentInt / 100 % 10], true);
+        musicPercentDigits[1].setTexture(*numbersTexture[musicPercentInt / 10 % 10], true);
+        musicPercentDigits[2].setTexture(*numbersTexture[musicPercentInt % 10], true);
+
+        // Update sfx percentage display
+        int sfxPercentInt = static_cast<int>(tempSfxPercent * 100.0f);
+        sfxPercentDigits[0].setTexture(*numbersTexture[sfxPercentInt / 100 % 10], true);
+        sfxPercentDigits[1].setTexture(*numbersTexture[sfxPercentInt / 10 % 10], true);
+        sfxPercentDigits[2].setTexture(*numbersTexture[sfxPercentInt % 10], true);
 }
 void SettingsScene::LateUpdate(GameTime gameTime) {}
 void SettingsScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
@@ -56,6 +90,18 @@ void SettingsScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.draw(musicArrowRightSprite[selectedOption == 2 ? 1 : 0]);
         window.draw(sfxArrowLeftSprite[selectedOption == 3 ? 1 : 0]);
         window.draw(sfxArrowRightSprite[selectedOption == 3 ? 1 : 0]);
+
+        // Draw music percentage digits and symbol
+        for (auto& digit : musicPercentDigits) {
+                window.draw(digit);
+        }
+        window.draw(musicPercentSymbol);
+
+        // Draw sfx percentage digits and symbol
+        for (auto& digit : sfxPercentDigits) {
+                window.draw(digit);
+        }
+        window.draw(sfxPercentSymbol);
 }
 void SettingsScene::OnScene_Active() {
         tempIsFullscreen = game_manager.isFullscreen();
@@ -98,8 +144,6 @@ void SettingsScene::OnScene_Active() {
         modeSprite.setTexture(*modeTexture, true);
         modeSprite.setOrigin(modeSprite.getTexture()->getSize().x + middleSpace, modeSprite.getTexture()->getSize().y / 2);
 
-
-
         vsyncSprite.setTexture(*vsyncTexture, true);
         vsyncSprite.setOrigin(vsyncSprite.getTexture()->getSize().x + middleSpace, vsyncSprite.getTexture()->getSize().y / 2);
 
@@ -132,7 +176,6 @@ void SettingsScene::OnScene_Active() {
         modeOptionArrowRightSprite[0].setOrigin(0, modeOptionArrowRightSprite[0].getTexture()->getSize().y / 2);
         modeOptionArrowRightSprite[1].setTexture(*arrowRightTexture[1], true);
         modeOptionArrowRightSprite[1].setOrigin(0, modeOptionArrowRightSprite[1].getTexture()->getSize().y / 2);
-
 
         modeOptionSprite[0].setPosition(1300, screenSize.y/2 - rowSpace);
         modeOptionSprite[1].setPosition(1300, screenSize.y/2 - rowSpace);
@@ -179,7 +222,6 @@ void SettingsScene::OnScene_Active() {
         sfxArrowRightSprite[1].setTexture(*arrowRightTexture[1], true);
         sfxArrowRightSprite[1].setOrigin(0, sfxArrowRightSprite[1].getTexture()->getSize().y / 2);
 
-
         musicArrowLeftSprite[0].setPosition(screenSize.x/2, screenSize.y/2 + rowSpace);
         musicArrowLeftSprite[1].setPosition(screenSize.x/2, screenSize.y/2 + rowSpace);
         musicArrowRightSprite[0].setPosition(screenSize.x/2 + 600, screenSize.y/2 + rowSpace);
@@ -191,6 +233,28 @@ void SettingsScene::OnScene_Active() {
         sfxArrowRightSprite[1].setPosition(screenSize.x/2 + 600, screenSize.y/2 + rowSpace*2);
 
 
+        constexpr int KERNING = 50;
+        // music percentage display
+        for (int i = 0; i < 3; i++) {
+                musicPercentDigits[i].setTexture(*numbersTexture[0], true); // Default to 0
+                musicPercentDigits[i].setOrigin(musicPercentDigits[i].getTexture()->getSize().x/2, musicPercentDigits[i].getTexture()->getSize().y/2);
+                musicPercentDigits[i].setPosition(screenSize.x/2 + 300 + (i * KERNING), screenSize.y/2 + rowSpace);
+        }
+
+        musicPercentSymbol.setTexture(*percentTexture, true);
+        musicPercentSymbol.setOrigin(musicPercentSymbol.getTexture()->getSize().x/2, musicPercentSymbol.getTexture()->getSize().y/2);
+        musicPercentSymbol.setPosition(screenSize.x/2 + 450, screenSize.y/2 + rowSpace);
+
+        // sfx percentage display
+        for (int i = 0; i < 3; i++) {
+                sfxPercentDigits[i].setTexture(*numbersTexture[0], true); // Default to 0
+                sfxPercentDigits[i].setOrigin(sfxPercentDigits[i].getTexture()->getSize().x/2, sfxPercentDigits[i].getTexture()->getSize().y/2);
+                sfxPercentDigits[i].setPosition(screenSize.x/2 + 300 + (i * KERNING), screenSize.y/2 + rowSpace*2);
+        }
+
+        sfxPercentSymbol.setTexture(*percentTexture, true);
+        sfxPercentSymbol.setOrigin(sfxPercentSymbol.getTexture()->getSize().x/2, sfxPercentSymbol.getTexture()->getSize().y/2);
+        sfxPercentSymbol.setPosition(screenSize.x/2 + 450, screenSize.y/2 + rowSpace*2);
 
 }
 void SettingsScene::OnScene_Deactivate() {}
