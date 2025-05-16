@@ -16,6 +16,7 @@ public:
         void LoadIndices(const std::vector<int>& indices);
         void UnloadIndices(const std::vector<int>& requiredIndices);
         bool fullyLoaded = false;
+        bool allowUnload = true; // This flag will allow us to use sprites from required libraries without them being unloaded on scene change
 
 private:
         std::string path;

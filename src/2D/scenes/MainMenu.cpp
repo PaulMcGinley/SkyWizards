@@ -147,6 +147,17 @@ void MainMenu::OnScene_Active() {
         menuLeaveTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[18].texture;
         menuLeaveTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[19].texture;
 
+        menuPlayTextures[0]->setSmooth(true);
+        menuPlayTextures[1]->setSmooth(true);
+        menuLevelSelectTextures[0]->setSmooth(true);
+        menuLevelSelectTextures[1]->setSmooth(true);
+        menuSettingsTextures[0]->setSmooth(true);
+        menuSettingsTextures[1]->setSmooth(true);
+        menuRankingsTextures[0]->setSmooth(true);
+        menuRankingsTextures[1]->setSmooth(true);
+        menuLeaveTextures[0]->setSmooth(true);
+        menuLeaveTextures[1]->setSmooth(true);
+
         menuPlaySprite.setTexture(*menuPlayTextures[0], true);
         menuLevelSelectSprite.setTexture(*menuLevelSelectTextures[0], true);
         menuSettingsSprite.setTexture(*menuSettingsTextures[0], true);
@@ -174,4 +185,11 @@ void MainMenu::UpdateMenuSelection() {
         menuSettingsSprite.setTexture(*(selectedMenuIndex == 2 ? menuSettingsTextures[1] : menuSettingsTextures[0]), true);
         menuRankingsSprite.setTexture(*(selectedMenuIndex == 3 ? menuRankingsTextures[1] : menuRankingsTextures[0]), true);
         menuLeaveSprite.setTexture(*(selectedMenuIndex == 4 ? menuLeaveTextures[1] : menuLeaveTextures[0]), true);
+
+        constexpr float SCALE_FACTOR = 1.1f;
+        menuPlaySprite.setScale(selectedMenuIndex == 0 ? SCALE_FACTOR : 1.0f, selectedMenuIndex == 0 ? SCALE_FACTOR : 1.0f);
+        menuLevelSelectSprite.setScale(selectedMenuIndex == 1 ? SCALE_FACTOR : 1.0f, selectedMenuIndex == 1 ? SCALE_FACTOR : 1.0f);
+        menuSettingsSprite.setScale(selectedMenuIndex == 2 ? SCALE_FACTOR : 1.0f, selectedMenuIndex == 2 ? SCALE_FACTOR : 1.0f);
+        menuRankingsSprite.setScale(selectedMenuIndex == 3 ? SCALE_FACTOR : 1.0f, selectedMenuIndex == 3 ? SCALE_FACTOR : 1.0f);
+        menuLeaveSprite.setScale(selectedMenuIndex == 4 ? SCALE_FACTOR : 1.0f, selectedMenuIndex == 4 ? SCALE_FACTOR : 1.0f);
 }

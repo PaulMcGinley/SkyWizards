@@ -170,6 +170,9 @@ void TextureLibrary::LoadIndices(const std::vector<int> &indices) {
 }
 
 void TextureLibrary::UnloadIndices(const std::vector<int> &indices) {
+        if (!allowUnload)
+                return;
+
         for (int idx : indices) {
                 if (idx < 0 || idx >= entryCount)
                         continue;
