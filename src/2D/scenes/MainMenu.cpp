@@ -46,7 +46,7 @@ void MainMenu::Update(GameTime gameTime) {
                                 break;
                         }
                         case 2: { // Settings
-                                // ...
+                                scene_manager.ChangeScene(SceneType::SCENE_OPTIONS);
                                 break;
                         }
                         case 3: { // Rankings

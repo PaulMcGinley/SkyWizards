@@ -13,6 +13,7 @@
 #include "scenes/LoadingScene.h"
 #include "scenes/MainMenu.h"
 #include "scenes/Overlays/DebugOverlay.h"
+#include "scenes/SettingsScene.h"
 #include "scenes/SplashScreen.h"
 
 void Game::Run() {
@@ -26,6 +27,7 @@ void Game::Run() {
         scene_manager.AddScene(SceneType::SCENE_GAME, std::make_shared<GameScene>());
         scene_manager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
         scene_manager.AddScene(SceneType::SCENE_LOADER, std::make_shared<LoadingScene>());
+        scene_manager.AddScene(SceneType::SCENE_OPTIONS, std::make_shared<SettingsScene>());
 
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes

@@ -80,6 +80,8 @@ add_executable(LoSW___BftS main.cpp
         models/Projectiles/FireBall.cpp
         models/Projectiles/FireBall.h
         interfaces/IDraw.cpp
+        scenes/SettingsScene.cpp
+        scenes/SettingsScene.h
 )
 
 
