@@ -57,7 +57,11 @@ private:
         sf::Sprite vsyncOptionArrowLeftSprite[2];
         sf::Sprite vsyncOptionArrowRightSprite[2];
         sf::Sprite musicSprite;
+        sf::Sprite musicArrowLeftSprite[2];
+        sf::Sprite musicArrowRightSprite[2];
         sf::Sprite sfxSprite;
+        sf::Sprite sfxArrowLeftSprite[2];
+        sf::Sprite sfxArrowRightSprite[2];
 };
 
 

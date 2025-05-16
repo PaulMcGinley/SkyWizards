@@ -51,6 +51,11 @@ void SettingsScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.draw(vsyncOptionArrowLeftSprite[selectedOption == 1 ? 1 : 0]);
         window.draw(vsyncOptionArrowRightSprite[selectedOption == 1 ? 1 : 0]);
         window.draw(tempIsVSync ? vsyncOptionSprite[0] : vsyncOptionSprite[1]);
+
+        window.draw(musicArrowLeftSprite[selectedOption == 2 ? 1 : 0]);
+        window.draw(musicArrowRightSprite[selectedOption == 2 ? 1 : 0]);
+        window.draw(sfxArrowLeftSprite[selectedOption == 3 ? 1 : 0]);
+        window.draw(sfxArrowRightSprite[selectedOption == 3 ? 1 : 0]);
 }
 void SettingsScene::OnScene_Active() {
         tempIsFullscreen = game_manager.isFullscreen();
@@ -155,6 +160,35 @@ void SettingsScene::OnScene_Active() {
         vsyncOptionArrowLeftSprite[1].setPosition(screenSize.x/2, screenSize.y/2);
         vsyncOptionArrowRightSprite[0].setPosition(screenSize.x/2 + 600, screenSize.y/2);
         vsyncOptionArrowRightSprite[1].setPosition(screenSize.x/2 + 600, screenSize.y/2);
+
+        musicArrowLeftSprite[0].setTexture(*arrowLeftTexture[0], true);
+        musicArrowLeftSprite[0].setOrigin(-middleSpace, musicArrowLeftSprite[0].getTexture()->getSize().y / 2);
+        musicArrowLeftSprite[1].setTexture(*arrowLeftTexture[1], true);
+        musicArrowLeftSprite[1].setOrigin(-middleSpace, musicArrowLeftSprite[1].getTexture()->getSize().y / 2);
+        musicArrowRightSprite[0].setTexture(*arrowRightTexture[0], true);
+        musicArrowRightSprite[0].setOrigin(0, musicArrowRightSprite[0].getTexture()->getSize().y / 2);
+        musicArrowRightSprite[1].setTexture(*arrowRightTexture[1], true);
+        musicArrowRightSprite[1].setOrigin(0, musicArrowRightSprite[1].getTexture()->getSize().y / 2);
+
+        sfxArrowLeftSprite[0].setTexture(*arrowLeftTexture[0], true);
+        sfxArrowLeftSprite[0].setOrigin(-middleSpace, sfxArrowLeftSprite[0].getTexture()->getSize().y / 2);
+        sfxArrowLeftSprite[1].setTexture(*arrowLeftTexture[1], true);
+        sfxArrowLeftSprite[1].setOrigin(-middleSpace, sfxArrowLeftSprite[1].getTexture()->getSize().y / 2);
+        sfxArrowRightSprite[0].setTexture(*arrowRightTexture[0], true);
+        sfxArrowRightSprite[0].setOrigin(0, sfxArrowRightSprite[0].getTexture()->getSize().y / 2);
+        sfxArrowRightSprite[1].setTexture(*arrowRightTexture[1], true);
+        sfxArrowRightSprite[1].setOrigin(0, sfxArrowRightSprite[1].getTexture()->getSize().y / 2);
+
+
+        musicArrowLeftSprite[0].setPosition(screenSize.x/2, screenSize.y/2 + rowSpace);
+        musicArrowLeftSprite[1].setPosition(screenSize.x/2, screenSize.y/2 + rowSpace);
+        musicArrowRightSprite[0].setPosition(screenSize.x/2 + 600, screenSize.y/2 + rowSpace);
+        musicArrowRightSprite[1].setPosition(screenSize.x/2 + 600, screenSize.y/2 + rowSpace);
+
+        sfxArrowLeftSprite[0].setPosition(screenSize.x/2, screenSize.y/2 + rowSpace*2);
+        sfxArrowLeftSprite[1].setPosition(screenSize.x/2, screenSize.y/2 + rowSpace*2);
+        sfxArrowRightSprite[0].setPosition(screenSize.x/2 + 600, screenSize.y/2 + rowSpace*2);
+        sfxArrowRightSprite[1].setPosition(screenSize.x/2 + 600, screenSize.y/2 + rowSpace*2);
 
 
 
