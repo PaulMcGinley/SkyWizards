@@ -28,26 +28,26 @@ AssetManager& AssetManager::GetInstance() {
 // Define the global reference
 AssetManager& asset_manager = AssetManager::GetInstance();
 
-// Implementation of member functions
-TextureEntry* AssetManager::getRobeFrame_ptr(int lib, int cell) {
-        return &robes[lib].entries[cell];
-}
-
-TextureEntry* AssetManager::getStaffFrame_ptr(int lib, int cell) {
-        return &staffs[lib].entries[cell];
-}
-
-TextureEntry* AssetManager::getChestMonsterFrame_ptr(int cell) {
-        return &chestMonster.entries[cell];
-}
-
-TextureEntry* AssetManager::getHeartImage_ptr(int cell) {
-        return &hearts.entries[cell];
-}
-
-TextureEntry* AssetManager::getProgramUseImage_ptr(int cell) {
-        return &programUsage.entries[cell];
-}
+// // Implementation of member functions
+// TextureEntry* AssetManager::getRobeFrame_ptr(int lib, int cell) {
+//         return &robes[lib].entries[cell];
+// }
+//
+// TextureEntry* AssetManager::getStaffFrame_ptr(int lib, int cell) {
+//         return &staffs[lib].entries[cell];
+// }
+//
+// TextureEntry* AssetManager::getChestMonsterFrame_ptr(int cell) {
+//         return &chestMonster.entries[cell];
+// }
+//
+// TextureEntry* AssetManager::getHeartImage_ptr(int cell) {
+//         return &hearts.entries[cell];
+// }
+//
+// TextureEntry* AssetManager::getProgramUseImage_ptr(int cell) {
+//         return &programUsage.entries[cell];
+// }
 
 // Loads a library to memory without the image data
 // I am creating the libraries as unique_ptrs to ensure they are deleted when the program ends ;)

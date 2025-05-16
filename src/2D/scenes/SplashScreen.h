@@ -28,13 +28,8 @@ public:
 
 private:
         // Progress bar variables
-        int TargetValue = 10;
+        int TargetValue = 11;
         int CurrentValue = 0;
-
-        // Text variables
-        sf::Font font;
-        sf::Text text;
-        int textYPosition = 857;
 
         sf::Font copyrightFont;
         sf::Text copyRightText;

@@ -30,20 +30,20 @@ public:
 
         // Method declarations only, no implementations here
         // TODO: Deprecate these in favor of the TextureLibraries map
-        TextureEntry* getRobeFrame_ptr(int lib, int cell);
-        TextureEntry* getStaffFrame_ptr(int lib, int cell);
-        TextureEntry* getChestMonsterFrame_ptr(int cell);
-        TextureEntry* getHeartImage_ptr(int cell);
-        TextureEntry* getProgramUseImage_ptr(int cell);
+        // TextureEntry* getRobeFrame_ptr(int lib, int cell);
+        // TextureEntry* getStaffFrame_ptr(int lib, int cell);
+        // TextureEntry* getChestMonsterFrame_ptr(int cell);
+        // TextureEntry* getHeartImage_ptr(int cell);
+        // TextureEntry* getProgramUseImage_ptr(int cell);
 
         // Data members
         // TODO: Deprecate these in favor of the TextureLibraries map
-        std::vector<TextureLibrary> robes;
-        std::vector<TextureLibrary> staffs;
-        TextureLibrary chestMonster = TextureLibrary("");
-        TextureLibrary hearts = TextureLibrary("");
-        TextureLibrary backgroundIslands = TextureLibrary("");
-        TextureLibrary programUsage = TextureLibrary("");
+        // std::vector<TextureLibrary> robes;
+        // std::vector<TextureLibrary> staffs;
+        // TextureLibrary chestMonster = TextureLibrary("");
+        // TextureLibrary hearts = TextureLibrary("");
+        // TextureLibrary backgroundIslands = TextureLibrary("");
+        // TextureLibrary programUsage = TextureLibrary("");
 
         // Only textures required for gameplay will be loaded
         std::map<std::string, std::unique_ptr<TextureLibrary>> TextureLibraries;

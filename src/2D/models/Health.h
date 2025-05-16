@@ -87,11 +87,10 @@ public:
         void Draw(sf::RenderWindow &window, GameTime gameTime) override {
 
                 // Calculate heart texture size, used for positioning and scaling
-                // TODO: Refactor this into the constructor
                 const sf::Vector2f heart_size = {
-                        static_cast<float> (asset_manager.getHeartImage_ptr(0)->texture.getSize().x),
-                        static_cast<float> (asset_manager.getHeartImage_ptr(0)->texture.getSize().y)
-                    };
+                        static_cast<float>(asset_manager.TextureLibraries["hearts"].get()->entries[0].texture.getSize().x),
+                        static_cast<float>(asset_manager.TextureLibraries["hearts"].get()->entries[0].texture.getSize().y)
+                };
 
                 // Do the math
                 const int heart_count = getHeartCount();
@@ -113,7 +112,7 @@ public:
                                 heart_index = 1;
 
                         sf::Sprite heart_sprite;
-                        heart_sprite.setTexture(asset_manager.getHeartImage_ptr(heart_index)->texture);
+                        heart_sprite.setTexture(asset_manager.TextureLibraries["hearts"].get()->entries[heart_index].texture);
                         heart_sprite.setScale(scale, scale);
 
                         // Apply opacity gradient only to empty hearts (heartIndex == 0)

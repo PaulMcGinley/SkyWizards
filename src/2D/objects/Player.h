@@ -24,10 +24,10 @@ class Player final : public IAnimate, public IUpdate, public IDraw {
 public:
         Player(GameScene* game_scene);
 
-        int robeLibrary = 2;
+        std::string robeLibrary = "RobeBlue";
         sf::VertexArray robeQuad{sf::Quads, 4};
 
-        int staffLibrary = 0;
+        std::string staffLibrary = "Staff1";
         sf::VertexArray staffQuad{sf::Quads, 4};
 
         void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime);

@@ -18,71 +18,64 @@ SplashScreen::SplashScreen() {
 }
 
 void SplashScreen::Update(GameTime gameTime) {
-        std::string exeDir = getExecutableDirectory();
-        unsigned int centerScreenX = game_manager.getResolutionWidth() / 2;
+        const std::string exeDir = getExecutableDirectory();
 
         // Small delay before starting the game, this allows the window to load without being a black screen
         if (!gameTime.TimeElapsed(1)) // 1 second
                 return;
 
-        // Robe Textures
-        if (asset_manager.robes.empty()) {
-                asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobeBlue.lib"));
-                asset_manager.robes[0].LoadIndices({});
-                asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobeGreen.lib"));
-                asset_manager.robes[1].LoadIndices({});
-                asset_manager.robes.push_back(TextureLibrary(exeDir + "/resources/RobePurple.lib"));
-                asset_manager.robes[2].LoadIndices({});
-
-                CurrentValue+=3;
-                text.setString("Loading Staff Textures...");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
-                return;
-        }
-
-        // Staff Textures
-        if (asset_manager.staffs.empty()) {
-                asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff1.lib"));
-                asset_manager.staffs[0].LoadIndices({});
-                asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff2.lib"));
-                asset_manager.staffs[1].LoadIndices({});
-                asset_manager.staffs.push_back(TextureLibrary(exeDir + "/resources/Staff3.lib"));
-                asset_manager.staffs[2].LoadIndices({});
-
-                CurrentValue+=3;
-                text.setString("Loading Heart Textures...");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
-                return;
-        }
-
-        // Heart Textures
-        if (asset_manager.hearts.entryCount == 0) {
-                asset_manager.hearts = TextureLibrary(exeDir + "/resources/Hearts.lib");
-                asset_manager.hearts.LoadIndices({});
+        if (!asset_manager.TextureLibraries["RobeBlue"]->fullyLoaded) {
+                asset_manager.TextureLibraries["RobeBlue"].get()->LoadIndices({});
                 CurrentValue++;
-                text.setString("Loading Game UI Elements!");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
+                return;
+        }
+
+        if (!asset_manager.TextureLibraries["RobeGreen"]->fullyLoaded) {
+                asset_manager.TextureLibraries["RobeGreen"].get()->LoadIndices({});
+                CurrentValue++;
+                return;
+        }
+
+        if (!asset_manager.TextureLibraries["RobePurple"]->fullyLoaded) {
+                asset_manager.TextureLibraries["RobePurple"].get()->LoadIndices({});
+                CurrentValue++;
+                return;
+        }
+
+        if (!asset_manager.TextureLibraries["Staff1"]->fullyLoaded) {
+                asset_manager.TextureLibraries["Staff1"].get()->LoadIndices({});
+                CurrentValue++;
+                return;
+        }
+
+        if (!asset_manager.TextureLibraries["Staff2"]->fullyLoaded) {
+                asset_manager.TextureLibraries["Staff2"].get()->LoadIndices({});
+                CurrentValue++;
+                return;
+        }
+
+        if (!asset_manager.TextureLibraries["Staff3"]->fullyLoaded) {
+                asset_manager.TextureLibraries["Staff3"].get()->LoadIndices({});
+                CurrentValue++;
+                return;
+        }
+
+        if (!asset_manager.TextureLibraries["hearts"]->fullyLoaded) {
+                asset_manager.TextureLibraries["hearts"].get()->LoadIndices({});
+                CurrentValue++;
                 return;
         }
 
         // Program Usage (PrgUse)
         if (!asset_manager.TextureLibraries["PrgUse"]->fullyLoaded) {
-                //asset_manager.programUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
-                //asset_manager.programUsage.LoadIndices({});
                 asset_manager.TextureLibraries["PrgUse"].get()->LoadIndices({});
                 CurrentValue++;
-                text.setString("Loading Level Objects!");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
         if (!asset_manager.TextureLibraries["magic"]->fullyLoaded) {
-                //asset_manager.programUsage = TextureLibrary(exeDir + "/resources/PrgUse.lib");
-                //asset_manager.programUsage.LoadIndices({});
                 asset_manager.TextureLibraries["magic"].get()->LoadIndices({});
-                // CurrentValue++;
-                // text.setString("Loading Level Objects!");
-                // text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
+                CurrentValue++;
                 return;
         }
 
@@ -90,8 +83,6 @@ void SplashScreen::Update(GameTime gameTime) {
         if (asset_manager.ObjectLibraries.empty()) {
                 loadLevelObjects(exeDir + "/resources/levelobjects/");
                 CurrentValue++;
-                text.setString("Loading Map Objects!");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -99,8 +90,6 @@ void SplashScreen::Update(GameTime gameTime) {
         if (asset_manager.Maps.empty()) {
                 loadMaps(exeDir + "/resources/maps/");
                 CurrentValue++;
-                text.setString("Loading Complete...!");
-                text.setPosition(centerScreenX - (text.getGlobalBounds().width/2), textYPosition);
                 return;
         }
 
@@ -151,25 +140,13 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
 
         window.draw(progressBar);
         window.draw(frameSprite);
-        window.draw(text);
         window.draw(copyRightText);
 }
 
 void SplashScreen::InitializeScene() {
         std::string exeDir = getExecutableDirectory();
 
-        if (!font.loadFromFile(exeDir + "/resources/fonts/Simple Santa.otf")) {
-                // Handle error
-        }
-
-        text.setFont(font);
-        text.setString("Loading Robe Textures...");
-        text.setPosition((game_manager.getResolutionWidth()/2) - (text.getGlobalBounds().width/2), textYPosition);
-        text.setCharacterSize(24);
-        text.setFillColor(sf::Color::White);
-        text.setStyle(sf::Text::Regular);
-
-        copyrightFont.loadFromFile(exeDir + "/resources/fonts/OpenSans-Bold.ttf");
+        copyrightFont = *asset_manager.Fonts["OpenSans-Bold"].get();
 
         copyRightText.setFont(copyrightFont);
         copyRightText.setString("Created by Paul McGinley on 08/10/2024.");

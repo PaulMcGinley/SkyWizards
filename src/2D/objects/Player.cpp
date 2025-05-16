@@ -253,19 +253,19 @@ void Player::Update(GameTime gameTime) {
 
 
         // DEBUG
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
-                robeLibrary = 0;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
-                robeLibrary = 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
-                robeLibrary = 2;
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-                staffLibrary = 0;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-                staffLibrary = 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-                staffLibrary = 2;
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+        //         robeLibrary = 0;
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+        //         robeLibrary = 1;
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+        //         robeLibrary = 2;
+        //
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+        //         staffLibrary = 0;
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        //         staffLibrary = 1;
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+        //         staffLibrary = 2;
         // END DEBUG
 
         // Reset acceleration
@@ -369,8 +369,11 @@ void Player::Update(GameTime gameTime) {
 
 // Update Robe and Staff texture quads (position, texture coordinates)
 void Player::UpdateQuads() {
-        TextureEntry &robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
-        TextureEntry &staff = *asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame());
+      //  TextureEntry &robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
+      //  TextureEntry &staff = *asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame());
+
+        TextureEntry &robe = asset_manager.TextureLibraries[robeLibrary]->entries[getCurrentFrame()];
+        TextureEntry &staff = asset_manager.TextureLibraries[staffLibrary]->entries[getCurrentFrame()];
 
         for (int i = 0; i < 4; ++i) {
                 robeQuad[i].texCoords = robe.texQuad[i].texCoords;
@@ -391,16 +394,18 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
         // Draw shadow
         IDraw::Draw(window, "PrgUse", 9, shadowDrawPosition);
 
+        TextureEntry &robe = asset_manager.TextureLibraries[robeLibrary]->entries[getCurrentFrame()];
+        TextureEntry &staff = asset_manager.TextureLibraries[staffLibrary]->entries[getCurrentFrame()];
         // Draw Robe
         window.draw(
                 robeQuad,
-                &asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame())->texture
+                &robe.texture
         );
 
         // Draw Staff
         window.draw(
                 staffQuad,
-                &asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame())->texture
+                &staff.texture
         );
 
         // Draw collision box
