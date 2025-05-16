@@ -264,8 +264,6 @@ void GameScene::LoadAssets() {
         LoadSky();
         LoadMountains();
         LoadMobs();
-
-        asset_manager.TextureLibraries["alpha_textures"]->LoadIndices({242}); // Stars
 }
 void GameScene::LoadMobs() {
         // Clear exisitng mobs

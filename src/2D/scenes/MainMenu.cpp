@@ -11,20 +11,51 @@
 
 MainMenu::MainMenu() {}
 void MainMenu::Update(GameTime gameTime) {
-        if (InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space)) {
-                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_LOADER);
-                auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
-                if (gameScene) {
-                        gameScene->BuildAssetQueue("Mob_Test");
-                }
-                scene_manager.ChangeScene(SceneType::SCENE_LOADER);
+        bool selectionChanged = false;
 
-                // auto scenePtr = scene_manager.GetScene(SceneType::SCENE_GAME);
-                // auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
-                // if (gameScene) {
-                //         gameScene->LoadMap("Mob_Test");
-                // }
-                // scene_manager.ChangeScene(SceneType::SCENE_GAME);
+        // Inspired from: https://dev.to/avocoaster/how-to-wrap-around-a-range-of-numbers-with-the-modulo-cdo
+        // Handle menu navigation
+        if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Down) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::S)) {
+                selectedMenuItem = (selectedMenuItem + 1) % 5;
+                selectionChanged = true;
+        } else if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Up) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::W)) {
+                selectedMenuItem = (selectedMenuItem + 4) % 5;
+                selectionChanged = true;
+        }
+
+        // If the selection has changed, update the menu item textures
+        if (selectionChanged)
+                UpdateMenuSelection();
+
+        // Handle confimation of selected item
+        if (InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space) || InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Num4)) {
+                switch (selectedMenuItem) {
+                        case 0: {       // Play
+                                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_LOADER);
+                                auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
+                                if (gameScene) {
+                                        gameScene->BuildAssetQueue("Mob_Test");
+                                }
+                                scene_manager.ChangeScene(SceneType::SCENE_LOADER);
+                                break;
+                        }
+                        case 1: {       // Level Select
+                                // ...
+                                break;
+                        }
+                        case 2: {       // Settings
+                                // ...
+                                break;
+                        }
+                        case 3: {       // Rankings
+                                // ...
+                                break;
+                        }
+                        case 4: {       // Leave
+                                game_manager.window->close();
+                                break;
+                        }
+                }
         }
 
         float t = gameTime.total_game_time;     // time in seconds
@@ -39,6 +70,8 @@ void MainMenu::Update(GameTime gameTime) {
         title1Sprite.setScale(scale1, scale1);
         title2Sprite.setScale(scale2, scale2);
         title3Sprite.setScale(scale3, scale3);
+
+
 }
 void MainMenu::LateUpdate(GameTime gameTime) {}
 void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
@@ -47,6 +80,12 @@ void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.draw(title1Sprite);
         window.draw(title2Sprite);
         window.draw(title3Sprite);
+
+        window.draw(menuPlaySprite);
+        window.draw(menuLevelSelectSprite);
+        window.draw(menuSettingsSprite);
+        window.draw(menuRankingsSprite);
+        window.draw(menuLeaveSprite);
 }
 void MainMenu::InitializeScene() {
         float screenWidth = game_manager.getResolution().x;
@@ -84,13 +123,53 @@ void MainMenu::OnScene_Active() {
         title2Sprite.setOrigin(title2Texture->getSize().x / 2, title2Texture->getSize().y / 2);
         title3Sprite.setOrigin(title3Texture->getSize().x / 2, title3Texture->getSize().y / 2);
 
-        title1Sprite.setPosition(screenWidth/2, (screenHeight/2) - 150);
-        title2Sprite.setPosition(screenWidth/2, (screenHeight/2));
-        title3Sprite.setPosition(screenWidth/2, (screenHeight/2) + 130);
+        title1Sprite.setPosition(screenWidth/2, (screenHeight/2) - 150 - 200);
+        title2Sprite.setPosition(screenWidth/2, (screenHeight/2) -200);
+        title3Sprite.setPosition(screenWidth/2, (screenHeight/2) + 130 - 200);
 
         // Set smooth textures to prevent pixelation (Bilinear filtering)
         title1Texture->setSmooth(true);
         title2Texture->setSmooth(true);
         title3Texture->setSmooth(true);
+
+
+        // Initialize menu item textures
+        menuPlayTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[10].texture;
+        menuPlayTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[11].texture;
+        menuLevelSelectTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[12].texture;
+        menuLevelSelectTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[13].texture;
+        menuSettingsTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[14].texture;
+        menuSettingsTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[15].texture;
+        menuRankingsTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[16].texture;
+        menuRankingsTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[17].texture;
+        menuLeaveTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[18].texture;
+        menuLeaveTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[19].texture;
+
+        menuPlaySprite.setTexture(*menuPlayTextures[0], true);
+        menuLevelSelectSprite.setTexture(*menuLevelSelectTextures[0], true);
+        menuSettingsSprite.setTexture(*menuSettingsTextures[0], true);
+        menuRankingsSprite.setTexture(*menuRankingsTextures[0], true);
+        menuLeaveSprite.setTexture(*menuLeaveTextures[0], true);
+
+        // Set initial positions for menu sprites
+        menuPlaySprite.setPosition(screenWidth/2, (screenHeight/2) +100);
+        menuLevelSelectSprite.setPosition(screenWidth/2, (screenHeight/2) + 190);
+        menuSettingsSprite.setPosition(screenWidth/2, (screenHeight/2) + 280);
+        menuRankingsSprite.setPosition(screenWidth/2, (screenHeight/2) + 370);
+        menuLeaveSprite.setPosition(screenWidth/2, (screenHeight/2) + 460);
+
+        // Set origin for menu sprites to center them
+        for (auto& sprite : {&menuPlaySprite, &menuLevelSelectSprite, &menuSettingsSprite, &menuRankingsSprite, &menuLeaveSprite}) {
+                sprite->setOrigin(sprite->getTexture()->getSize().x / 2, sprite->getTexture()->getSize().y / 2);
+        }
+
+        UpdateMenuSelection();
 }
-void MainMenu::OnScene_Deactivate() {}
+void MainMenu::OnScene_Deactivate() { selectedMenuItem = 0; }
+void MainMenu::UpdateMenuSelection() {
+        menuPlaySprite.setTexture(*(selectedMenuItem == 0 ? menuPlayTextures[1] : menuPlayTextures[0]), true);
+        menuLevelSelectSprite.setTexture(*(selectedMenuItem == 1 ? menuLevelSelectTextures[1] : menuLevelSelectTextures[0]), true);
+        menuSettingsSprite.setTexture(*(selectedMenuItem == 2 ? menuSettingsTextures[1] : menuSettingsTextures[0]), true);
+        menuRankingsSprite.setTexture(*(selectedMenuItem == 3 ? menuRankingsTextures[1] : menuRankingsTextures[0]), true);
+        menuLeaveSprite.setTexture(*(selectedMenuItem == 4 ? menuLeaveTextures[1] : menuLeaveTextures[0]), true);
+}

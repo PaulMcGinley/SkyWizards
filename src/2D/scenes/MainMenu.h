@@ -25,6 +25,7 @@ public:
         void OnScene_Deactivate() override;
 
 private:
+        void UpdateMenuSelection();
         sf::VertexArray backgroundQuad{sf::Quads, 4};
 
         sf::Texture* title1Texture;
@@ -34,6 +35,20 @@ private:
         sf::Sprite title1Sprite;
         sf::Sprite title2Sprite;
         sf::Sprite title3Sprite;
+
+        int selectedMenuItem = 0;
+
+        sf::Texture* menuPlayTextures[2];
+        sf::Texture* menuLevelSelectTextures[2];
+        sf::Texture* menuSettingsTextures[2];
+        sf::Texture* menuRankingsTextures[2];
+        sf::Texture* menuLeaveTextures[2];
+
+        sf::Sprite menuPlaySprite;
+        sf::Sprite menuLevelSelectSprite;
+        sf::Sprite menuSettingsSprite;
+        sf::Sprite menuRankingsSprite;
+        sf::Sprite menuLeaveSprite;
 };
 
 

@@ -245,7 +245,6 @@ void Player::Update(GameTime gameTime) {
         }
 
         if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Num5) || (sf::Keyboard::isKeyPressed(sf::Keyboard::K)) && gameTime.TimeElapsed(nextMagicTime) && !isFalling && !isJumping)) {
-
                 ChangeAnimation(AnimationType::ANIMATION_FIRE, gameTime, true);
         }
 
