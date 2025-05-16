@@ -11,10 +11,7 @@
 #include <SFML/Graphics/Font.hpp>
 #include <memory>
 
-namespace sf {
-        class Font;
-}
-// Forward declarations to avoid circular dependencies
+// Forward declarations to pointers
 class WMap;
 class OLibrary;
 
@@ -28,14 +25,16 @@ public:
         // Static method to get instance
         static AssetManager& GetInstance();
 
-        // Only textures required for gameplay will be loaded
+        // Holds all the data from the *.lib files
         std::map<std::string, std::unique_ptr<TextureLibrary>> TextureLibraries;
 
-        // As these files are tiny, all will be loaded into memory
+        // Holds all the data from the *.olx files
         std::map<std::string, std::unique_ptr<OLibrary>> ObjectLibraries;
+
+        // Holds all the data from the *.wmap files
         std::map<std::string, std::unique_ptr<WMap>> Maps;
 
-        // Fonts
+        // Holds all the fonts (*.ttf files)
         std::map<std::string, std::unique_ptr<sf::Font>> Fonts;
 
         void LoadTextureLibrary(std::string fileName);
