@@ -347,6 +347,10 @@ void Player::Update(GameTime gameTime) {
         position.x += velocity.x * gameTime.delta_time;
         position.y += velocity.y * gameTime.delta_time;
 
+        // clamp position to int
+        position.x = std::round(position.x);
+        position.y = std::round(position.y);
+
         // Update animation based on movement state
         if (isJumping && velocity.y < 0) {
                 ChangeAnimation(AnimationType::ANIMATION_JUMP_UP, gameTime, true);
