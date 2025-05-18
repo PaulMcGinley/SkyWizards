@@ -26,42 +26,49 @@ void SplashScreen::Update(GameTime gameTime) {
 
         if (!asset_manager.TextureLibraries["RobeBlue"]->fullyLoaded) {
                 asset_manager.TextureLibraries["RobeBlue"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["RobeBlue"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         if (!asset_manager.TextureLibraries["RobeGreen"]->fullyLoaded) {
                 asset_manager.TextureLibraries["RobeGreen"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["RobeGreen"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         if (!asset_manager.TextureLibraries["RobePurple"]->fullyLoaded) {
                 asset_manager.TextureLibraries["RobePurple"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["RobePurple"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         if (!asset_manager.TextureLibraries["Staff1"]->fullyLoaded) {
                 asset_manager.TextureLibraries["Staff1"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["Staff1"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         if (!asset_manager.TextureLibraries["Staff2"]->fullyLoaded) {
                 asset_manager.TextureLibraries["Staff2"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["Staff2"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         if (!asset_manager.TextureLibraries["Staff3"]->fullyLoaded) {
                 asset_manager.TextureLibraries["Staff3"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["Staff3"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         if (!asset_manager.TextureLibraries["hearts"]->fullyLoaded) {
                 asset_manager.TextureLibraries["hearts"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["hearts"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
@@ -69,12 +76,14 @@ void SplashScreen::Update(GameTime gameTime) {
         // Program Usage (PrgUse)
         if (!asset_manager.TextureLibraries["PrgUse"]->fullyLoaded) {
                 asset_manager.TextureLibraries["PrgUse"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["PrgUse"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         if (!asset_manager.TextureLibraries["magic"]->fullyLoaded) {
                 asset_manager.TextureLibraries["magic"].get()->LoadIndices({});
+                asset_manager.TextureLibraries["magic"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }

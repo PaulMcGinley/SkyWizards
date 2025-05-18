@@ -202,7 +202,7 @@ void GameScene::Update_Game(GameTime gameTime) {
         playerRect.height = player.collisionBox.getSize().y;
 
         if (playerRect.intersects(endPosRect)) {
-                std::vector<std::string> maps = {"Mob_Test", "02"};
+                std::vector<std::string> maps = {"Mob_Test", "02", "03"};
                 auto it = std::find(maps.begin(), maps.end(), mapName);
                 size_t nextIndex = 0;
                 if (it != maps.end()) {
@@ -223,11 +223,14 @@ void GameScene::Update_Game(GameTime gameTime) {
                 // scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
+        int i = 0;
         //UpdateMobs(gameTime);
         for (auto &monster: monsters) {
                 monster->CalculatePhysicsState(getLocalBoundaries(), gameTime);
                 //monster->UpdatePlayerPosition(player.position, gameTime);
                 monster->Update(gameTime);
+                std::cout << "Monster Position: " << i << " " << monster->x() << ", " << monster->y() << std::endl;
+                i++;
         }
 }
 void GameScene::ValidateMap() {
@@ -270,14 +273,17 @@ void GameScene::LoadMobs() {
         monsters.clear();
         projectiles.clear();
 
+        std::cout << "Loading mob count: " << map->Mobs.size() << std::endl;
         for (const auto &mob: map->Mobs) {
+                std::cout << "Loading mob: " << mob.MonsterName << std::endl;
                 // Check if the mob library exists
                 if (!asset_manager.TextureLibraries.contains(mob.MonsterName)) {
                         std::cerr << "Mob library " << mob.MonsterName << " does not exist." << std::endl;
                         continue;
                 }
-                asset_manager.TextureLibraries[mob.MonsterName]->LoadIndices(
-                                {}); // Load all indices for the mob library
+                if (!asset_manager.TextureLibraries[mob.MonsterName]->fullyLoaded) {
+                        asset_manager.TextureLibraries[mob.MonsterName]->LoadIndices(  {}); // Load all indices for the mob library
+                }
 
                 // TODO: Convert to switch statement
                 if (mob.MonsterName == "ChestMonster") {

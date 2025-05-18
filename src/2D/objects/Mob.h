@@ -19,12 +19,14 @@ public:
         Mob(Player* player, sf::Vector2f position, float viewRange, float moveSpeed, int health);
 
         int GetCurrentAnimationFrame();
-        //virtual void UpdatePlayerPosition(sf::Vector2f playerPosition, GameTime gameTime) = 0;
         virtual void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) = 0;
 
         sf::FloatRect GetCollisionBox() const;
         virtual void Damaged(int amount);
         bool IsDead();
+
+        float x() {return position.x;}
+        float y() {return position.y;}
 
 protected:
         virtual void DamagePlayer(int amount) = 0;
