@@ -150,34 +150,61 @@ void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
         canMoveLeft = false;
         canMoveRight = false;
 
-        // If not on ground, prevent movement and moves mob down until it rests on a boundary
-        if (!onGround) {
+        // Create a temporary elongated collision box that extends downward
+        // This it to test for collisions beneath the monster
+        sf::FloatRect tempCollisionBox = collisionBox;
+        tempCollisionBox.height = 1000; // Extend downward by 1000 pixels
 
-                // Check each boundary to see if the monster is on the ground
-                for (const auto &boundary: boundaries) {
-                        sf::FloatRect boundaryRect(boundary.X, boundary.Y, boundary.Width, boundary.Height);
-                        if (collisionBox.intersects(boundaryRect)) {
-                                onGround = true;
-                                return;
-                        }
-
-                        // Move the monster down until it rests on a boundary
-                        const float fallSpeed = 100.0f; // (Pixels per second to move down)
-                        position.y += fallSpeed * gametime.delta_time;
+        // Find all boundaries that the temp collision box intersects with
+        std::vector<Boundary*> intersectingBoundaries;
+        for (auto& boundary : boundaries) {
+                sf::FloatRect boundaryRect(boundary.X, boundary.Y, boundary.Width, boundary.Height);
+                if (tempCollisionBox.intersects(boundaryRect)) {
+                        intersectingBoundaries.push_back(&boundary);
                 }
         }
 
+        // Find the boundary with the shortest distance to the bottom of the monster's collision box
+        float shortestDistance = std::numeric_limits<float>::max(); // Initialize to the maximum possible float value
+        Boundary* closestBoundary = nullptr;
+        float collisionBoxBottom = collisionBox.top + collisionBox.height;
+
+        for (auto* boundary : intersectingBoundaries) {
+                // Only consider boundaries below the monster
+                if (boundary->Y >= collisionBoxBottom) {
+                        float distance = boundary->Y - collisionBoxBottom;
+                        if (distance < shortestDistance) {
+                                shortestDistance = distance;
+                                closestBoundary = boundary;
+                        }
+                }
+        }
+
+        // If we found a boundary below, pop the monster on it
+        // No more pseudo gravity
+        if (closestBoundary != nullptr) {
+                // Calculate adjustment needed to place monster on the boundary (top of boundary to bottom of collision box)
+                float adjustment = closestBoundary->Y - collisionBoxBottom;
+                position.y += adjustment; // add the distance to the monster's position
+                onGround = true;
+        } else {
+                onGround = false;
+        }
+
+        // Check movable directions
         for (const auto &boundary: boundaries) {
                 sf::FloatRect boundaryRect(boundary.X, boundary.Y, boundary.Width, boundary.Height);
                 if (boundaryRect.contains(GetLeftDropDetectorPosition())) {
-                        // Left drop detector is inside the boundary - can move left
                         canMoveLeft = true;
                 }
                 if (boundaryRect.contains(GetRightDropDetectorPosition())) {
-                        // Right drop detector is inside the boundary - can move right
                         canMoveRight = true;
                 }
         }
+
+        // Update collision box position
+        collisionBox.left = position.x + 250 - (collisionBox.width / 2);
+        collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 40;
 }
 void ChestMonster::TickAnimation(GameTime gameTime) {
         if (gameTime.TimeElapsed(nextBiteTime) && currentAnimation == AnimationType::ANIMATION_ATTACK &&
