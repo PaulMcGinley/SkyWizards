@@ -223,14 +223,11 @@ void GameScene::Update_Game(GameTime gameTime) {
                 // scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
-        int i = 0;
         //UpdateMobs(gameTime);
         for (auto &monster: monsters) {
                 monster->CalculatePhysicsState(getLocalBoundaries(), gameTime);
                 //monster->UpdatePlayerPosition(player.position, gameTime);
                 monster->Update(gameTime);
-                std::cout << "Monster Position: " << i << " " << monster->x() << ", " << monster->y() << std::endl;
-                i++;
         }
 }
 void GameScene::ValidateMap() {

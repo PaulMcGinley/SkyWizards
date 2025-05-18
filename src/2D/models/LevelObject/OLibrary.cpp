@@ -42,7 +42,7 @@ bool OLibrary::deserialize(const pugi::xml_document &doc) {
                                         // Then establish the link (after it's safely in the vector)
                                         Images[i].Boundaries = &BoundaryGroups.back().Boundaries;
                                         foundMatchingLayer = true;
-                                        std::cout << "Found matching layer: " << layer << std::endl;
+                                        std::cout << "Boundary Found matching layer: " << layer << std::endl;
                                         break;
                                 }
                         }

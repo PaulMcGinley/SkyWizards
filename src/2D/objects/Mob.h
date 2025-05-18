@@ -25,9 +25,6 @@ public:
         virtual void Damaged(int amount);
         bool IsDead();
 
-        float x() {return position.x;}
-        float y() {return position.y;}
-
 protected:
         virtual void DamagePlayer(int amount) = 0;
 

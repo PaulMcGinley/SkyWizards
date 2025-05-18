@@ -166,7 +166,6 @@ void SplashScreen::InitializeScene() {
 
         background.loadFromFile(exeDir + "/resources/loader/background.png");
         frame.loadFromFile(exeDir + "/resources/loader/frame.png");
-        progress.loadFromFile(exeDir + "/resources/loader/progressbar.png");
 
         backgroundQuad[0].position = {0, 0};
         backgroundQuad[1].position = {1920, 0};

@@ -101,7 +101,7 @@ bool WMap::deserialize(const pugi::xml_node &node) {
                         WMObject levelObject;
                         if (levelObject.deserialize(objectNode)) {
                                 LevelObjects.push_back(levelObject);
-                                std::cout << "Successfully deserialized a WMObject." << std::endl;
+                                std::cout << "Successfully deserialized WMObject: " << levelObject.ObjectLibraryFile << std::endl;
                         } else {
                                 std::cerr << "Error: Failed to deserialize a WMObject." << std::endl;
                                 return false;
@@ -118,7 +118,7 @@ bool WMap::deserialize(const pugi::xml_node &node) {
                         WMMob mob;
                         if (mob.deserialize(mobNode)) {
                                 Mobs.push_back(mob);
-                                std::cout << "Successfully deserialized a WMMob." << std::endl;
+                                std::cout << "Successfully deserialized a WMMob: " << mob.MonsterName << std::endl;
                         } else {
                                 std::cerr << "Error: Failed to deserialize a WMMob." << std::endl;
                                 return false;
