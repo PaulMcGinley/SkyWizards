@@ -27,7 +27,7 @@ void LoadingScene::BuildAssetQueue(const std::string& mapName) {
 
                 // Check if the map is valid
                 if (!map) {
-                        std::cerr << "GetMapAssets - Invalid map provided (nullptr)." << std::endl;
+                        std::cerr << "GetMapAssets - Invalid map provided (nullptr)." << std::endl << "This can be ignored if it is the first map loading." << std::endl;
                         return assets;
                 }
 
@@ -206,7 +206,6 @@ void LoadingScene::OnScene_Active() {
 
         std::string exeDir = getExecutableDirectory();
         frame.loadFromFile(exeDir + "/resources/loader/frame.png");
-        progress.loadFromFile(exeDir + "/resources/loader/progressbar.png");
 
         int screenWidth = game_manager.getResolution().x;
         int screenHeight = game_manager.getResolution().y;
