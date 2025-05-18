@@ -36,7 +36,7 @@ void MainMenu::Update(GameTime gameTime) {
                                 auto scenePtr = scene_manager.GetScene(SceneType::SCENE_LOADER);
                                 auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
                                 if (gameScene) {
-                                        gameScene->BuildAssetQueue("01");
+                                        gameScene->BuildAssetQueue("00");
                                 }
                                 scene_manager.ChangeScene(SceneType::SCENE_LOADER);
                                 break;

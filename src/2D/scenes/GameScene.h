@@ -52,6 +52,7 @@ private:
         void LoadMountains();
         void LoadAssets();
         void LoadMobs();
+        void LoadCollectables();
         void CheckProjectileCollisions();
 
         void CalculateParallaxBackground();
@@ -67,6 +68,7 @@ private:
 
         std::vector<std::unique_ptr<Mob>> monsters;
         std::vector<std::unique_ptr<Projectile>> projectiles;
+        std::vector<std::unique_ptr<Collectable>> collectables;
 
 };
 

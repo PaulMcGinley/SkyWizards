@@ -136,7 +136,7 @@ bool WMap::deserialize(const pugi::xml_node &node) {
                         WMCollectable collectable;
                         if (collectable.deserialize(collectableNode)) {
                                 Collectables.push_back(collectable);
-                                std::cout << "Successfully deserialized a WMCollectable: " << collectable.MonsterName << std::endl;
+                                std::cout << "Successfully deserialized a WMCollectable: " << collectable.CollectableName << std::endl;
                         } else {
                                 std::cerr << "Error: Failed to deserialize a WMCollectable." << std::endl;
                                 return false;

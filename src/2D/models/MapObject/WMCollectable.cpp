@@ -14,7 +14,7 @@ bool WMCollectable::deserialize(const pugi::xml_node &node) {
         // Deserialize ObjectLibrary
         pugi::xml_node objectLibraryNode = node.child("ObjectLibrary");
         if (objectLibraryNode) {
-                MonsterName = objectLibraryNode.text().as_string();
+                CollectableName = objectLibraryNode.text().as_string();
         } else {
                 std::cerr << "Error: Missing ObjectLibrary." << std::endl;
                 return false; // ObjectLibrary is required
@@ -60,4 +60,6 @@ bool WMCollectable::deserialize(const pugi::xml_node &node) {
                 std::cerr << "Error: Missing CollectedSound." << std::endl;
                 //return false; // CollectedSound is required
         }
+
+        return true; // Successfully deserialized
 }

@@ -15,6 +15,7 @@
 #include "scenes/Overlays/DebugOverlay.h"
 #include "scenes/SettingsScene.h"
 #include "scenes/SplashScreen.h"
+#include "models/LevelObject/Collectable.h"
 
 void Game::Run() {
         // Limit fps to 60

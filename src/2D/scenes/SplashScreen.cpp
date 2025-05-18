@@ -8,6 +8,7 @@
 #include <filesystem>
 
 #include "managers/SceneManager.h"
+#include "models/LevelObject/Collectable.h"
 #include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
 #include "os/GetExecutionDirectory.h"
@@ -98,6 +99,14 @@ void SplashScreen::Update(GameTime gameTime) {
         // Maps
         if (asset_manager.Maps.empty()) {
                 loadMaps(exeDir + "/resources/maps/");
+                CurrentValue++;
+                return;
+        }
+
+        // Collectables XML files
+        if (asset_manager.Collectables.empty()) {
+                asset_manager.TextureLibraries["coins"]->LoadIndices({});
+                loadCollectableObjects(exeDir + "/resources/levelobjects/collectables/");
                 CurrentValue++;
                 return;
         }
@@ -253,13 +262,35 @@ void SplashScreen::loadLevelObjects(const std::string &directoryPath) {
                         if (result) {
                                 OLibrary objectLibrary;
                                 if (objectLibrary.deserialize(doc)) {
-                                        asset_manager.ObjectLibraries[fileNameWithoutExtension] = std::make_unique<OLibrary>(std::move(objectLibrary));
+                                        asset_manager.ObjectLibraries[fileNameWithoutExtension] =
+                                                        std::make_unique<OLibrary>(std::move(objectLibrary));
                                 } else {
                                         std::cerr << "Failed to deserialize Olibrary: " << filePath << std::endl;
                                 }
                         } else {
                                 std::cerr << "Failed to load OLibrary: " << filePath
                                           << " Error: " << result.description() << std::endl;
+                        }
+                }
+        }
+}
+void SplashScreen::loadCollectableObjects(const std::string &directoryPath) {
+        // Load all the collectable files
+        for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
+                if (entry.is_regular_file() && entry.path().extension() == ".olx") {
+                        std::string filePath = entry.path().string();
+                        std::string fileNameWithoutExtension = entry.path().stem().string();
+
+                        pugi::xml_document doc;
+                        pugi::xml_parse_result result = doc.load_file(filePath.c_str());
+
+                        if (result) {
+                                auto collectable = std::make_unique<Collectable>();
+                                collectable->deserialize(doc);
+                                asset_manager.Collectables[fileNameWithoutExtension].push_back(std::move(collectable));
+                        } else {
+                                std::cerr << "Failed to load Collectable: " << filePath << " Error: " << result.description()
+                                          << std::endl;
                         }
                 }
         }

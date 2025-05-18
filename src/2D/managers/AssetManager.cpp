@@ -5,6 +5,7 @@
 #include "AssetManager.h"
 #include "models/MapObject/WMap.h"
 #include "models/LevelObject/OLibrary.h"
+#include "models/LevelObject/Collectable.h"
 
 #include <filesystem>
 #include <iostream>

@@ -13,6 +13,7 @@
 #include "LoadingScene.h"
 #include "Overlays/DebugOverlay.h"
 #include "managers/SceneManager.h"
+#include "models/LevelObject/Collectable.h"
 #include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
 
@@ -26,20 +27,26 @@ void GameScene::LoadMap(std::string name)  {
         mapName = std::move(name);
         LoadAssets();
         SpawnPlayer();
+
+        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+                if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
+                        debugOverlayPtr->AddInfoBottomLeft("Collectables", std::to_string(collectables.capacity()));
+                }
+        }
 }
 
 void GameScene::Update(const GameTime gameTime) {
         (this->*UpdateLoop)(gameTime);
 
         // DEBUG:
-        // if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
-        //         if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
-        //                 debugOverlayPtr->AddInfoTopLeft("Player X", std::to_string(player.position.x));
-        //                 debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
-        //                 debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
-        //                 debugOverlayPtr->AddInfoTopLeft("Player Velocity Y", std::to_string(player.velocity.y));
-        //         }
-        // }
+        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+                if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
+                        debugOverlayPtr->AddInfoTopLeft("Player X", std::to_string(player.position.x));
+                        debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
+                        debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
+                        debugOverlayPtr->AddInfoTopLeft("Player Velocity Y", std::to_string(player.velocity.y));
+                }
+        }
         // END DEBUG ^
 }
 
@@ -54,6 +61,10 @@ void GameScene::LateUpdate(const GameTime gameTime) {
         // Call LateUpdate for each Mobj
         for (auto const & mob: monsters) {
                 mob->LateUpdate(gameTime);
+        }
+
+        for (auto const & collectable: collectables) {
+                collectable->LateUpdate(gameTime);
         }
 }
 
@@ -148,6 +159,11 @@ void GameScene::Update_Loading(GameTime gameTime) {
         // END HACK: ------------------------------------------------
 }
 void GameScene::Update_Game(GameTime gameTime) {
+        // Draw the collectables
+        for (auto const & collectable: collectables) {
+                collectable->Update(gameTime);
+        }
+
         // Update projectiles
         for (const auto& projectile : projectiles) {
                 projectile->Update(gameTime);
@@ -231,6 +247,8 @@ void GameScene::Update_Game(GameTime gameTime) {
         }
 }
 void GameScene::ValidateMap() {
+        projectiles.clear();
+
         // Check if the map exists in the asset manager
         if (asset_manager.Maps.contains(mapName)) {
                 // Get the map from the asset manager
@@ -264,11 +282,11 @@ void GameScene::LoadAssets() {
         LoadSky();
         LoadMountains();
         LoadMobs();
+        LoadCollectables();
 }
 void GameScene::LoadMobs() {
         // Clear exisitng mobs
         monsters.clear();
-        projectiles.clear();
 
         std::cout << "Loading mob count: " << map->Mobs.size() << std::endl;
         for (const auto &mob: map->Mobs) {
@@ -279,7 +297,8 @@ void GameScene::LoadMobs() {
                         continue;
                 }
                 if (!asset_manager.TextureLibraries[mob.MonsterName]->fullyLoaded) {
-                        asset_manager.TextureLibraries[mob.MonsterName]->LoadIndices(  {}); // Load all indices for the mob library
+                        asset_manager.TextureLibraries[mob.MonsterName]->LoadIndices(
+                                        {}); // Load all indices for the mob library
                 }
 
                 // TODO: Convert to switch statement
@@ -292,6 +311,30 @@ void GameScene::LoadMobs() {
                 // }
                 else {
                         std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
+                }
+        }
+}
+void GameScene::LoadCollectables() {
+        collectables.clear();
+
+        std::cout << "Loading collectable count: " << map->Collectables.size() << std::endl;
+        for (const auto &collectable : map->Collectables) {
+                // Check if the collectable library exists
+                if (!asset_manager.Collectables.contains(collectable.CollectableName)) {
+                        std::cerr << "Collectable library " << collectable.CollectableName << " does not exist." << std::endl;
+                        continue;
+                }
+
+                if (!asset_manager.Collectables[collectable.CollectableName].empty()) {
+                        // Create a new Collectable by copying the template one
+                        auto newCollectable = std::make_unique<Collectable>(
+                            *asset_manager.Collectables[collectable.CollectableName].back().get());
+
+                        // Set the position
+                        newCollectable->SetPosition(collectable.Position.x, collectable.Position.y);
+
+                        // Add to our collection
+                        collectables.push_back(std::move(newCollectable));
                 }
         }
 }
@@ -370,6 +413,15 @@ void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (const auto& projectile : projectiles) {
                 projectile->Draw(window, gameTime);
         }
+        // Draw the collectables
+        for (auto const & collectable: collectables) {
+                collectable->Draw(window, gameTime);
+                // sf::RectangleShape debugRect(sf::Vector2f(20, 20));
+                // debugRect.setFillColor(sf::Color(255, 0, 255, 150));
+                // debugRect.setPosition(collectable->GetPosition().x, collectable->GetPosition().y);
+                // window.draw(debugRect);
+        }
+
 }
 void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 5; layer <= 7; ++layer)

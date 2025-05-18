@@ -14,6 +14,7 @@
 // Forward declarations to pointers
 class WMap;
 class OLibrary;
+class Collectable;
 
 class AssetManager {
 
@@ -36,6 +37,9 @@ public:
 
         // Holds all the fonts (*.ttf files)
         std::map<std::string, std::unique_ptr<sf::Font>> Fonts;
+
+        // Holds all Collectable objects
+        std::map<std::string, std::vector<std::unique_ptr<Collectable>>> Collectables;
 
         void LoadTextureLibrary(std::string fileName);
         void LoadFonts(std::string directoryPath);

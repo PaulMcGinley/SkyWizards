@@ -11,7 +11,7 @@
 
 class WMCollectable {
 public:
-        std::string MonsterName;
+        std::string CollectableName;
         sf::Vector2f Position;
         std::string Action;
         std::string CollectedSound;
