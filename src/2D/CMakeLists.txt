@@ -82,6 +82,8 @@ add_executable(LoSW___BftS main.cpp
         interfaces/IDraw.cpp
         scenes/SettingsScene.cpp
         scenes/SettingsScene.h
+        models/MapObject/WMCollectable.cpp
+        models/MapObject/WMCollectable.h
 )
 
 

@@ -44,6 +44,11 @@ public partial class MainWindow : Window
         _entityManager = new EntityManager();
         _entityManager.LoadAllEntities();
         InitializeEntityLibraryList();
+        
+        // Initialize collectable manager
+        _collectableManager = new CollectableManager();
+        _collectableManager.LoadAllCollectables();
+        InitializeCollectableLibraryList();
 
         // Load the map
         _map = new WMap();
@@ -59,6 +64,8 @@ public partial class MainWindow : Window
         SetupItemListBoxEvents();
         SetupEntitiesListBoxEvents();
         SetupEntityTabListBoxEvents();
+        SetupCollectablesListBoxEvents();
+        SetupCollectableTabListBoxEvents();
         ScrollToGuideLine(null, null);
     }
 
@@ -395,6 +402,12 @@ public partial class MainWindow : Window
                 SetupMobDragHandlers(imageControl);
             }
         }
+        
+        // Clear the dictionary of collectable images
+        _collectableImages.Clear();
+
+        // Draw collectables
+        DrawCollectables();
 
         DrawGuideLine();
     }
@@ -876,6 +889,7 @@ public partial class MainWindow : Window
         UpdateEndPositionBox();
         UpdateItemList();
         UpdateEntityList();
+        UpdateCollectableList();
         DrawScene();
 
     }
@@ -938,8 +952,6 @@ public partial class MainWindow : Window
             }
         }
     }
-
-
 
     #region Entities
 
@@ -1137,5 +1149,328 @@ public partial class MainWindow : Window
 
     #endregion
 
+#region Collectables
+
+private CollectableManager _collectableManager;
+private WMCollectable _currentlyDraggedCollectable = null;
+private Dictionary<WMCollectable, Image> _collectableImages = new Dictionary<WMCollectable, Image>();
+
+private void InitializeCollectableLibraryList()
+{
+    // Initialize collectable manager
+    _collectableManager = new CollectableManager();
+    _collectableManager.LoadAllCollectables();
+
+    // Create view models for each collectable
+    var collectableItems = new List<CollectableItemViewModel>();
+    foreach (var kvp in _collectableManager.LibraryCollectables)
+    {
+        var key = kvp.Key;
+        var lib = kvp.Value;
+        var preview = _collectableManager.CollectablePreviews.TryGetValue(key, out var p) ? p : null;
+
+        collectableItems.Add(new CollectableItemViewModel
+        {
+            Name = key,
+            Library = lib,
+            Preview = preview
+        });
+    }
+
+    CollectableTabListBox.ItemsSource = collectableItems;
+
+    // Setup search functionality
+    CollectableSearchBox.TextChanged += (s, e) =>
+    {
+        var searchText = CollectableSearchBox.Text?.ToLower() ?? "";
+
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            CollectableTabListBox.ItemsSource = collectableItems;
+        }
+        else
+        {
+            CollectableTabListBox.ItemsSource = collectableItems
+                .Where(item => item.Name.ToLower().Contains(searchText))
+                .ToList();
+        }
+    };
+}
+
+private void SetupCollectableDragHandlers(Image imageControl)
+{
+    // mouse down
+    imageControl.PointerPressed += (sender, e) =>
+    {
+        if (sender is Image image && image.Tag is WMCollectable collectable)
+        {
+            _currentlyDraggedCollectable = collectable;
+            _currentDragImage = image;
+            _dragStartPosition = e.GetPosition(DrawingCanvas);
+            _originalObjectPosition = new Point(collectable.Position[0], collectable.Position[1]);
+
+            // capture pointer for drag operation
+            e.Pointer.Capture(image);
+            e.Handled = true;
+        }
+    };
+
+    // mouse move
+    imageControl.PointerMoved += (sender, e) =>
+    {
+        if (_currentlyDraggedCollectable != null && sender is Image image)
+        {
+            var currentPosition = e.GetPosition(DrawingCanvas);
+            var delta = currentPosition - _dragStartPosition;
+
+            // update the image position
+            var newX = _originalObjectPosition.X + delta.X;
+            var newY = _originalObjectPosition.Y + delta.Y;
+
+            Canvas.SetLeft(image, newX);
+            Canvas.SetTop(image, newY);
+
+            e.Handled = true;
+        }
+    };
+
+    // mouse up
+    imageControl.PointerReleased += (sender, e) =>
+    {
+        if (_currentlyDraggedCollectable != null)
+        {
+            // update the collectable position in the map data
+            var currentPosition = e.GetPosition(DrawingCanvas);
+            var delta = currentPosition - _dragStartPosition;
+
+            _currentlyDraggedCollectable.Position[0] = (float)(_originalObjectPosition.X + delta.X);
+            _currentlyDraggedCollectable.Position[1] = (float)(_originalObjectPosition.Y + delta.Y);
+
+            // release pointer and reset
+            e.Pointer.Capture(null);
+            _currentlyDraggedCollectable = null;
+            _currentDragImage = null;
+            e.Handled = true;
+        }
+    };
+}
+
+private void UpdateCollectableList()
+{
+    if (_map == null || _map.Collectables == null || _collectableManager == null)
+    {
+        CollectablesListBox.ItemsSource = new List<ListItemViewModel>(); // Set to empty collection
+        return;
+    }
+
+    // Create view models for each collectable
+    var items = new List<ListItemViewModel>();
+
+    foreach (var collectable in _map.Collectables)
+    {
+        // Use the object library name as the key
+        string key = collectable.ObjectLibrary;
+
+        // Check if we have this library
+        if (!_collectableManager.LibraryCollectables.TryGetValue(key, out _))
+            continue;
+
+        // Get the preview for this library
+        var preview = _collectableManager.CollectablePreviews.TryGetValue(key, out var p) ? p : null;
+
+        // Create the view model
+        items.Add(new ListItemViewModel
+        {
+            Label = key,
+            Icon = preview,
+            Tag = collectable
+        });
+    }
+
+    // Set the ItemsSource
+    CollectablesListBox.ItemsSource = items;
+}
+
+private void SetupCollectablesListBoxEvents()
+{
+    // Handle selection change in the collectables list box (right panel)
+    CollectablesListBox.SelectionChanged += (sender, e) =>
+    {
+        if (CollectablesListBox.SelectedItem is ListItemViewModel selectedItem)
+        {
+            // Handle the selected item click event
+            Console.WriteLine($"Selected collectable: {selectedItem.Label}");
+
+            // Check if the selected item is a map collectable
+            if (selectedItem.Tag is WMCollectable collectable)
+            {
+                // Scroll to the position of the selected collectable
+                var x = collectable.Position[0];
+                var y = collectable.Position[1];
+                var scrollViewer = ScrollViewerContainer;
+                if (scrollViewer != null)
+                {
+                    // Scroll to the collectable's position
+                    scrollViewer.Offset = new Vector(x - (scrollViewer.Viewport.Width / 2),
+                        y - (scrollViewer.Viewport.Height / 2));
+                }
+            }
+        }
+    };
+}
+
+private void SetupCollectableTabListBoxEvents()
+{
+    // Find the collectable tab list box in the bottom panel
+    var collectablesTabListBox = this.FindControl<ListBox>("CollectableTabListBox");
+    if (collectablesTabListBox == null) return;
+
+    // Set up double-tap event to add collectables to the map
+    collectablesTabListBox.DoubleTapped += (sender, e) =>
+    {
+        if (collectablesTabListBox.SelectedItem is CollectableItemViewModel selectedCollectable)
+        {
+            // Get the current scroll position of the canvas
+            var horizontalOffset = ScrollViewerContainer.Offset.X;
+            var verticalOffset = ScrollViewerContainer.Offset.Y;
+
+            // Calculate the center of the viewport
+            var viewportWidth = ScrollViewerContainer.Viewport.Width;
+            var viewportHeight = ScrollViewerContainer.Viewport.Height;
+
+            // Position the new collectable at the center of the current view
+            float posX = (float)(horizontalOffset + (viewportWidth / 2));
+            float posY = (float)(verticalOffset + (viewportHeight / 2));
+
+            // Create the new collectable
+            var newCollectable = new WMCollectable
+            {
+                ObjectLibrary = selectedCollectable.Name,
+                Position = new float[] { posX, posY },
+                Action = "",
+                CollectedSound = ""
+            };
+
+            // Add it to the map
+            if (_map != null && _map.Collectables != null)
+            {
+                _map.Collectables.Add(newCollectable);
+
+                // Refresh the scene to show the new collectable
+                DrawScene();
+
+                // Update the CollectablesListBox to include the new collectable
+                UpdateCollectableList();
+            }
+        }
+    };
+}
+
+private void DrawCollectables()
+{
+    if (_map?.Collectables == null) return;
+
+    foreach (var collectable in _map.Collectables)
+    {
+        string key = collectable.ObjectLibrary;
+
+        // Skip if we don't have this collectable's image
+        if (!_collectableManager.CollectableImages.TryGetValue(key, out var collectableImage) || collectableImage == null)
+            continue;
+
+        // Create an Image control for the collectable
+        var imageControl = new Avalonia.Controls.Image
+        {
+            Source = collectableImage,
+            Width = collectableImage.PixelSize.Width,
+            Height = collectableImage.PixelSize.Height
+        };
+
+        // Apply the collectable position
+        Canvas.SetLeft(imageControl, collectable.Position[0]);
+        Canvas.SetTop(imageControl, collectable.Position[1]);
+
+        // Add the image to the canvas
+        DrawingCanvas.Children.Add(imageControl);
+
+        // Tag the image with its associated collectable for dragging
+        imageControl.Tag = collectable;
+
+        // Add drag event handlers to the image
+        SetupCollectableDragHandlers(imageControl);
+        
+        // Keep track of the image for this collectable
+        _collectableImages[collectable] = imageControl;
+    }
+}
+
+private void RemoveSelectedCollectable(object? sender, TappedEventArgs e)
+{
+    if (CollectablesListBox.SelectedItem is ListItemViewModel selectedItem)
+    {
+        if (selectedItem.Tag is WMCollectable collectable)
+        {
+            // Remove the collectable from the map
+            _map.Collectables.Remove(collectable);
+            
+            // Remove the visual representation if it exists
+            if (_collectableImages.TryGetValue(collectable, out var image))
+            {
+                DrawingCanvas.Children.Remove(image);
+                _collectableImages.Remove(collectable);
+            }
+            
+            // Update the UI
+            UpdateCollectableList();
+            DrawScene();
+        }
+    }
+}
+
+private void MoveCollectableUp(object? sender, TappedEventArgs e)
+{
+    if (CollectablesListBox.SelectedItem is ListItemViewModel selectedItem)
+    {
+        if (selectedItem.Tag is WMCollectable collectable)
+        {
+            int index = _map.Collectables.IndexOf(collectable);
+            if (index > 0)
+            {
+                _map.Collectables.RemoveAt(index);
+                _map.Collectables.Insert(index - 1, collectable);
+                UpdateCollectableList();
+                DrawScene();
+
+                // Set the selected item to the moved collectable
+                CollectablesListBox.SelectedItem = selectedItem;
+                CollectablesListBox.ScrollIntoView(selectedItem);
+            }
+        }
+    }
+}
+
+private void MoveCollectableDown(object? sender, TappedEventArgs e)
+{
+    if (CollectablesListBox.SelectedItem is ListItemViewModel selectedItem)
+    {
+        if (selectedItem.Tag is WMCollectable collectable)
+        {
+            int index = _map.Collectables.IndexOf(collectable);
+            if (index < _map.Collectables.Count - 1)
+            {
+                _map.Collectables.RemoveAt(index);
+                _map.Collectables.Insert(index + 1, collectable);
+                UpdateCollectableList();
+                DrawScene();
+
+                // Set the selected item to the moved collectable
+                CollectablesListBox.SelectedItem = selectedItem;
+                CollectablesListBox.ScrollIntoView(selectedItem);
+            }
+        }
+    }
+}
+
+#endregion
 
 }

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "WMCollectable.h"
 #include "WMMob.h"
 #include "WMObject.h"
 #include "interfaces/IDraw.h"
@@ -22,6 +23,7 @@ public:
         int MountainsBackgroundIndex;
         std::vector<WMObject> LevelObjects;
         std::vector<WMMob> Mobs;
+        std::vector<WMCollectable> Collectables;
         std::vector<std::string> Scripts;
         bool deserialize(const pugi::xml_node &node);
 

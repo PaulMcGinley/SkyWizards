@@ -7,6 +7,8 @@
 
 #include <unordered_set>
 
+#include "WMCollectable.h"
+
 WMap::~WMap() = default;
 
 bool WMap::deserialize(const pugi::xml_node &node) {
@@ -112,6 +114,7 @@ bool WMap::deserialize(const pugi::xml_node &node) {
                 return false; // LevelObjects are required
         }
 
+        // Deserialize Mobs
         pugi::xml_node mobsNode = root.child("Mobs");
         if (mobsNode) {
                 for (pugi::xml_node mobNode: mobsNode.children("WMMob")) {
@@ -125,6 +128,23 @@ bool WMap::deserialize(const pugi::xml_node &node) {
                         }
                 }
         }
+
+        // Deserialize Collectables
+        pugi::xml_node collectablesNode = root.child("Collectables");
+        if (collectablesNode) {
+                for (pugi::xml_node collectableNode: collectablesNode.children("WMCollectable")) {
+                        WMCollectable collectable;
+                        if (collectable.deserialize(collectableNode)) {
+                                Collectables.push_back(collectable);
+                                std::cout << "Successfully deserialized a WMCollectable: " << collectable.MonsterName << std::endl;
+                        } else {
+                                std::cerr << "Error: Failed to deserialize a WMCollectable." << std::endl;
+                                return false;
+                        }
+                }
+        }
+
+
 
         std::cout << "Successfully deserialized WMap." << std::endl;
         return true; // Successfully deserialized
