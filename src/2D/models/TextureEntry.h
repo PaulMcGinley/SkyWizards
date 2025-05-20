@@ -17,7 +17,7 @@ struct TextureEntry {
         sf::Texture texture;
         sf::VertexArray texQuad{sf::Quads, 4};
 
-        // Calculate the texture quads when using TextureEntry as a single image (mainly testing atm)
+        // Calculate the quads to position and draw the texture
         void CalculateQuads() {
                 texQuad[0].texCoords = {0, 0};
                 texQuad[1].texCoords = {static_cast<float>(texture.getSize().x), 0};

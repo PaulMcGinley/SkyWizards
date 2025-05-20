@@ -35,7 +35,6 @@ protected:
         sf::Vector2f collisionPointLeft;
         sf::Vector2f collisionPointRight;
         float collisionRadius;
-
 };
 
 #endif //PROJECTILE_H

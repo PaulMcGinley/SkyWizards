@@ -291,5 +291,5 @@ void ChestMonster::UpdateQuads() {
 }
 void ChestMonster::DamagePlayer(int amount) {
         // Apply damage to the player
-        player->health.damage(amount);
+        player->health.Damage(amount);
 }

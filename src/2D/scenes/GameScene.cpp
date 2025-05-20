@@ -143,7 +143,7 @@ void GameScene::OnScene_Deactivate() {
         }
 }
 void GameScene::DamagePlayer(int amount) {
-        player.health.damage(amount);
+        player.health.Damage(amount);
         player.ChangeAnimation(AnimationType::ANIMATION_DAMAGED, true);
 }
 void GameScene::Update_Loading(GameTime gameTime) {
