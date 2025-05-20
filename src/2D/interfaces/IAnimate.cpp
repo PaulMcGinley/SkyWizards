@@ -22,8 +22,8 @@ void IAnimate::TickAnimation(const GameTime gameTime) {
                 currentAnimationFrame = 0;
 
                 // Call the onComplete function if it exists
-                if (sequences[currentAnimation].onComplete != nullptr) {
-                        sequences[currentAnimation].onComplete();
+                if (sequences[currentAnimation].Sequence_OnComplete != nullptr) {
+                        sequences[currentAnimation].Sequence_OnComplete();
                 }
         }
 

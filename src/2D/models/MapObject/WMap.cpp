@@ -11,7 +11,7 @@
 
 WMap::~WMap() = default;
 
-bool WMap::deserialize(const pugi::xml_node &node) {
+bool WMap::Deserialize(const pugi::xml_node &node) {
         if (!node) {
                 std::cerr << "Error: Invalid XML node provided for deserialization." << std::endl;
                 return false;
@@ -101,7 +101,7 @@ bool WMap::deserialize(const pugi::xml_node &node) {
         if (levelObjectsNode) {
                 for (pugi::xml_node objectNode: levelObjectsNode.children("WMObject")) {
                         WMObject levelObject;
-                        if (levelObject.deserialize(objectNode)) {
+                        if (levelObject.Deserialize(objectNode)) {
                                 LevelObjects.push_back(levelObject);
                                 std::cout << "Successfully deserialized WMObject: " << levelObject.ObjectLibraryFile << std::endl;
                         } else {
@@ -119,7 +119,7 @@ bool WMap::deserialize(const pugi::xml_node &node) {
         if (mobsNode) {
                 for (pugi::xml_node mobNode: mobsNode.children("WMMob")) {
                         WMMob mob;
-                        if (mob.deserialize(mobNode)) {
+                        if (mob.Deserialize(mobNode)) {
                                 Mobs.push_back(mob);
                                 std::cout << "Successfully deserialized a WMMob: " << mob.MonsterName << std::endl;
                         } else {
@@ -134,7 +134,7 @@ bool WMap::deserialize(const pugi::xml_node &node) {
         if (collectablesNode) {
                 for (pugi::xml_node collectableNode: collectablesNode.children("WMCollectable")) {
                         WMCollectable collectable;
-                        if (collectable.deserialize(collectableNode)) {
+                        if (collectable.Deserialize(collectableNode)) {
                                 Collectables.push_back(collectable);
                                 std::cout << "Successfully deserialized a WMCollectable: " << collectable.CollectableName << std::endl;
                         } else {
@@ -144,21 +144,9 @@ bool WMap::deserialize(const pugi::xml_node &node) {
                 }
         }
 
-
-
         std::cout << "Successfully deserialized WMap." << std::endl;
         return true; // Successfully deserialized
 }
-void WMap::Update(GameTime gameTime) {
-        // std::unordered_set<std::string> uniqueLibraries;
-        // for (const auto& wmObject : LevelObjects) {
-        //         uniqueLibraries.insert(wmObject.ObjectLibraryFile);
-        // }
-        //
-        // // Load the libraries
-        // for (const auto& library : uniqueLibraries) {
-        //         asset_manager.ObjectLibraries[library].Update(gameTime);
-        // }
-}
-void WMap::LateUpdate(GameTime gameTime) {}
-void WMap::Draw(sf::RenderWindow &window, GameTime gameTime) { }
+void WMap::Update(GameTime gameTime) { /* Nothing to do here */  }
+void WMap::LateUpdate(GameTime gameTime) { /* Nothing to do here */  }
+void WMap::Draw(sf::RenderWindow &window, GameTime gameTime) { /* Nothing to do here */  }

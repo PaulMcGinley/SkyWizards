@@ -91,7 +91,7 @@ void ChestMonster::Update(GameTime gameTime) {
         // Movement Logic
         if (GetCurrentAnimation() == AnimationType::ANIMATION_RUN && distance > biteDistance) {
                 // Calculate the distance to move based on the speed and delta time
-                const float moveDistance = walkSpeed * gameTime.delta_time;
+                const float moveDistance = walkSpeed * gameTime.deltaTime;
 
                 if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT && canMoveLeft) {
                         // Move Left

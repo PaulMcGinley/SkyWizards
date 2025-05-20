@@ -16,7 +16,7 @@ public:
         float MoveSpeed;
         float ViewRange;
         int Health;
-        bool deserialize(const pugi::xml_node &node);
+        bool Deserialize(const pugi::xml_node &node);
 };
 
 

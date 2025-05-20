@@ -19,13 +19,13 @@ struct AnimationSequence {
         int interval;
 
         // Function to call when the animation sequence begins
-        std::function<void()> onBegin;
+        std::function<void()> Sequence_OnBegin;
 
         // Function to call when the animation sequence ends
-        std::function<void()> onComplete;
+        std::function<void()> Sequence_OnComplete;
 
         // Function to call on each frame of the animation sequence
-        std::function<void()> onFrame;
+        std::function<void()> Sequence_OnFrameTick;
 };
 
 #endif //ANISEQUENCE_H

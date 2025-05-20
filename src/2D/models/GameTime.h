@@ -6,21 +6,21 @@
 #define GAMETIME_H
 
 struct GameTime {
-        float delta_time = 0.0f;            // seconds
-        float total_game_time = 0.0f;       // seconds
+        float deltaTime = 0.0f;            // seconds
+        float totalGameTime = 0.0f;       // seconds
 
         // Used to check if a certain amount of time has passed
         // if (TimeElapsed(NextAnimationTime)) ...
         [[nodiscard]] bool TimeElapsed(const float time) const {
-                return total_game_time > time;
+                return totalGameTime > time;
         }
 
         // Used to check if a certain amount of time has passed in milliseconds
         // int nextUpdate = NowAddMilliseconds(1000);
-        [[nodiscard]] float NowAddMilliseconds (const float ms) const {
+        [[nodiscard]] float NowAddMilliseconds(const float ms) const {
 
                 // Convert the total game time to milliseconds from seconds
-                float newTime = total_game_time * 1000;
+                float newTime = totalGameTime * 1000;
 
                 // Add the delta time to the new time (in milliseconds)
                 newTime += ms;
@@ -41,10 +41,10 @@ struct GameTime {
                 GameTime result = gt;
 
                 // Set the delta time and total game time
-                result.delta_time = dt;
+                result.deltaTime = dt;
 
                 // Add the delta time to the total game time
-                result.total_game_time += dt;
+                result.totalGameTime += dt;
 
                 // Return the new GameTime object
                 return result;
@@ -55,10 +55,10 @@ struct GameTime {
         GameTime& operator+=(const float dt) {
 
                 // Set the delta time to the new value
-                this->delta_time = dt;
+                this->deltaTime = dt;
 
                 // Add the delta time to the total game time
-                this->total_game_time += dt;
+                this->totalGameTime += dt;
 
                 // Return the current GameTime object
                 return *this;

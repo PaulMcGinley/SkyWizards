@@ -83,6 +83,7 @@ add_executable(LoSW___BftS main.cpp
         models/LevelObject/Collectable.cpp
         models/LevelObject/Collectable.h
         managers/InputManager.h
+        models/Health.cpp
 )
 
 

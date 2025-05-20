@@ -15,7 +15,7 @@ public:
         sf::Vector2f Position;
         std::string Action;
         std::string CollectedSound;
-        bool deserialize(const pugi::xml_node &node);
+        bool Deserialize(const pugi::xml_node &node);
 };
 
 

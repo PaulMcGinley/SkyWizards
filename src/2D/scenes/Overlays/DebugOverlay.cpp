@@ -14,7 +14,7 @@ DebugOverlay::DebugOverlay() {
         fpsText.setPosition(1920-100, 5);
 }
 void DebugOverlay::Update(GameTime gameTime) {
-        fpsTimer += gameTime.delta_time;
+        fpsTimer += gameTime.deltaTime;
         fpsCounter++;
         if (fpsTimer >= 1.0f) {
                 currentFps = fpsCounter;

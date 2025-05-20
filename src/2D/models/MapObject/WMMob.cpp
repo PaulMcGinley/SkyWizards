@@ -5,7 +5,7 @@
 #include "WMMob.h"
 
 #include <iostream>
-bool WMMob::deserialize(const pugi::xml_node &node) {
+bool WMMob::Deserialize(const pugi::xml_node &node) {
         if (!node) {
                 std::cerr << "Error: Invalid XML node provided for deserialization." << std::endl;
                 return false; // Node is invalid

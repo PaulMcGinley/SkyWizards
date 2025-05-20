@@ -60,7 +60,7 @@ void MainMenu::Update(GameTime gameTime) {
                 }
         }
 
-        float t = gameTime.total_game_time; // time in seconds
+        float t = gameTime.totalGameTime; // time in seconds
         float amplitude = 0.2f; // scale amplitude
         float speed = 2.0f; // speed of animation
         float offset = 0.7f; // offset for the second sprite (so they don't scale the same)

@@ -308,7 +308,7 @@ void SplashScreen::loadMaps(const std::string &directoryPath) {
 
                         if (result) {
                                 auto map = std::make_unique<WMap>();
-                                if (map->deserialize(doc)) {
+                                if (map->Deserialize(doc)) {
                                         assetManager.Maps[fileNameWithoutExtension] = std::move(map);
                                 } else {
                                         std::cerr << "Failed to deserialize Map: " << filePath << std::endl;

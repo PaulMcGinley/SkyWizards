@@ -25,7 +25,7 @@ public:
         std::vector<WMMob> Mobs;
         std::vector<WMCollectable> Collectables;
         std::vector<std::string> Scripts;
-        bool deserialize(const pugi::xml_node &node);
+        bool Deserialize(const pugi::xml_node &node);
 
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;

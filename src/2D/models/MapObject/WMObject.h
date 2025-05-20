@@ -12,9 +12,8 @@
 class WMObject {
 public:
         std::string ObjectLibraryFile;
-        // OLibrary ObjectLibrary; // This will be a copy of the OLibrary for indipendant use
         sf::Vector2f Position;
-        bool deserialize(const pugi::xml_node &node);
+        bool Deserialize(const pugi::xml_node &node);
 };
 
 #endif //WMOBJECT_H

@@ -4,7 +4,7 @@
 
 #include "WMap.h"
 
-bool WMObject::deserialize(const pugi::xml_node& node) {
+bool WMObject::Deserialize(const pugi::xml_node& node) {
         if (!node) {
                 return false; // Node is invalid
         }

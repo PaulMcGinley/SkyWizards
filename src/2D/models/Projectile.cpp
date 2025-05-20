@@ -22,10 +22,10 @@ void Projectile::Update(GameTime gameTime) {
                 return;
         }
         // Update the position based on the velocity and speed
-        position += velocity * speed * gameTime.delta_time;
+        position += velocity * speed * gameTime.deltaTime;
 
         // Decrease the lifetime
-        lifetime -= gameTime.delta_time;
+        lifetime -= gameTime.deltaTime;
 }
 void Projectile::Draw(sf::RenderWindow &window, GameTime gameTime) {
         IDraw::Draw(window, "magic", GetTextureDrawIndex(), position);

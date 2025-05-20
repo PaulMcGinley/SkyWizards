@@ -48,13 +48,13 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
 
         // Store the previous position before applying velocity
         sf::FloatRect prevPlayerBox = playerBox;
-        prevPlayerBox.left -= velocity.x * gametime.delta_time;
-        prevPlayerBox.top -= velocity.y * gametime.delta_time;
+        prevPlayerBox.left -= velocity.x * gametime.deltaTime;
+        prevPlayerBox.top -= velocity.y * gametime.deltaTime;
 
         // Calculate predicted next position based on velocity
         sf::FloatRect nextPlayerBox = playerBox;
-        nextPlayerBox.left += velocity.x * gametime.delta_time;
-        nextPlayerBox.top += velocity.y * gametime.delta_time;
+        nextPlayerBox.left += velocity.x * gametime.deltaTime;
+        nextPlayerBox.top += velocity.y * gametime.deltaTime;
 
         bool onGround = false;
 
@@ -236,7 +236,7 @@ void Player::Update(GameTime gameTime) {
         // If health has just dropped to 0, play the death animation
         // Once animation is complete it switches to ANIMATION_DEAD
         // which cannot have its animation overridden by ANIMATION_DEATH
-        if (health.getTargetHealth() == 0 ) {
+        if (health.GetTargetHealth() == 0 ) {
                 ChangeAnimation(AnimationType::ANIMATION_DEATH, gameTime, true);
                 UpdateQuads();
                 return;
@@ -311,24 +311,24 @@ void Player::Update(GameTime gameTime) {
                 if (!isFalling && !isJumping) {
                         deceleration.x = 2000.0f;
                         if (velocity.x > 0) {
-                                velocity.x = std::max(0.0f, velocity.x - deceleration.x * gameTime.delta_time);
+                                velocity.x = std::max(0.0f, velocity.x - deceleration.x * gameTime.deltaTime);
                         } else if (velocity.x < 0) {
-                                velocity.x = std::min(0.0f, velocity.x + deceleration.x * gameTime.delta_time);
+                                velocity.x = std::min(0.0f, velocity.x + deceleration.x * gameTime.deltaTime);
                         }
                 }
         }
 
         // Update velocity based on acceleration
-        velocity.x += acceleration.x * gameTime.delta_time;
-        velocity.y += acceleration.y * gameTime.delta_time;
+        velocity.x += acceleration.x * gameTime.deltaTime;
+        velocity.y += acceleration.y * gameTime.deltaTime;
 
         // Clamp velocity to maximum
         velocity.x = std::max(-maxVelocity.x, std::min(velocity.x, maxVelocity.x));
         velocity.y = std::max(-maxVelocity.y, std::min(velocity.y, maxVelocity.y));
 
         // Update position based on velocity
-        position.x += velocity.x * gameTime.delta_time;
-        position.y += velocity.y * gameTime.delta_time;
+        position.x += velocity.x * gameTime.deltaTime;
+        position.y += velocity.y * gameTime.deltaTime;
 
         // clamp position to int
         position.x = std::round(position.x);
@@ -399,8 +399,8 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
 void Player::TickAnimation(GameTime gameTime) {
         IAnimate::TickAnimation(gameTime);
 
-        if (GetCurrentAnimationSequence().onFrame != nullptr)
-                GetCurrentAnimationSequence().onFrame();
+        if (GetCurrentAnimationSequence().Sequence_OnFrameTick != nullptr)
+                GetCurrentAnimationSequence().Sequence_OnFrameTick();
 
         if(GetCurrentAnimation() == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime) && GetCurrentAnimationFrame() == 6) {
                 CastMagic(gameTime);

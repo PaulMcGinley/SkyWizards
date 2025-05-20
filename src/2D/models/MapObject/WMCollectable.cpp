@@ -5,7 +5,7 @@
 #include "WMCollectable.h"
 
 #include <iostream>
-bool WMCollectable::deserialize(const pugi::xml_node &node) {
+bool WMCollectable::Deserialize(const pugi::xml_node &node) {
         if (!node) {
                 std::cerr << "Error: Invalid XML node provided for deserialization." << std::endl;
                 return false; // Node is invalid
