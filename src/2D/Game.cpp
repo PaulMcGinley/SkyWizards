@@ -15,11 +15,9 @@
 #include "scenes/Overlays/DebugOverlay.h"
 #include "scenes/SettingsScene.h"
 #include "scenes/SplashScreen.h"
-#include "models/LevelObject/Collectable.h"
 
 void Game::Run() {
-        // Limit fps to 60
-        //game_manager.window->setFramerateLimit(60);
+        game_manager.window->setVerticalSyncEnabled(true);
 
         // All scenes are managed by the scene manager and are added here
         scene_manager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());

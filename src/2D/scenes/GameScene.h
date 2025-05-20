@@ -6,6 +6,7 @@
 #define GAMESCENE_H
 #include "interfaces/IScene.h"
 #include "models/LevelObject/Boundary.h"
+#include "models/LevelObject/Collectable.h"
 #include "models/Projectile.h"
 #include "objects/Player.h"
 #include "objects/mobs/ChestMonster.h"

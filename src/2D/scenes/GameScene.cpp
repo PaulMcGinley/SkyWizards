@@ -9,7 +9,6 @@
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
-
 #include "LoadingScene.h"
 #include "Overlays/DebugOverlay.h"
 #include "managers/SceneManager.h"
@@ -218,7 +217,7 @@ void GameScene::Update_Game(GameTime gameTime) {
         playerRect.height = player.collisionBox.getSize().y;
 
         if (playerRect.intersects(endPosRect)) {
-                std::vector<std::string> maps = {"01", "02", "03"};
+                std::vector<std::string> maps = {/*"01",*/ "02", "03"};
                 auto it = std::find(maps.begin(), maps.end(), mapName);
                 size_t nextIndex = 0;
                 if (it != maps.end()) {

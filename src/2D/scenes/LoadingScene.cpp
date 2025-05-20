@@ -147,7 +147,7 @@ void LoadingScene::Update(const GameTime gameTime) {
                 }
 
                 // Loack framerate again
-                game_manager.window->setFramerateLimit(60);
+                //game_manager.window->setFramerateLimit(60);
                 scene_manager.ChangeScene(SceneType::SCENE_GAME);
         }
 }
@@ -200,7 +200,7 @@ void LoadingScene::LateUpdate(GameTime) { /* No late updates */}
 void LoadingScene::DestroyScene() {/* Nothing to destroy */}
 void LoadingScene::OnScene_Active() {
         // Unlock framerate for faster loading
-        game_manager.window->setFramerateLimit(0);
+        //game_manager.window->setFramerateLimit(0);
 
         nextSceneTime = 0;
 

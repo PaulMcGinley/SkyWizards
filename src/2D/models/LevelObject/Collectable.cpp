@@ -26,18 +26,12 @@ void Collectable::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Use the IDraw interface to draw the collectable by library name and index
         IDraw::Draw(window, Library, GetCurrentFrame(), position);
 
-
-
         // sf::RectangleShape debugRect(sf::Vector2f(25, 25));
         // debugRect.setFillColor(sf::Color(0, 0, 0, 150));
         // debugRect.setPosition(GetPosition());
         // window.draw(debugRect);
 }
-void Collectable::Update(GameTime gameTime) {
-        std::cout << "Current Animation: " << static_cast<int>(currentAnimation) << std::endl;
-        std::cout << "Current Animation Frame: " << currentAnimationFrame << std::endl;
-        std::cout << "Drawable frame index " << GetCurrentFrame() << std::endl;
-}
+void Collectable::Update(GameTime gameTime) { /* Nothing to update */ }
 void Collectable::LateUpdate(GameTime gameTime) { TickAnimation(gameTime); }
 void Collectable::deserialize(const pugi::xml_node &node) {
         // There should only be one graphic node in the XML
@@ -74,14 +68,14 @@ void Collectable::deserialize(const pugi::xml_node &node) {
                      {AnimationType::ANIMATION_STATIC, {startIndex, 1, animationTick}}};
 }
 sf::FloatRect Collectable::GetCollisionBox() const { return collisionBox; }
-void Collectable::SetPosition(float x, float y) {
+void Collectable::SetPosition(const float x, const float y) {
+        // Set the position of the collectable
         position.x = x;
         position.y = y;
 
+        // Update the collision box position
         collisionBox.left += x;
         collisionBox.top += y;
 }
 int Collectable::GetCurrentFrame() { return sequences[currentAnimation].startFrame + currentAnimationFrame; }
-sf::Vector2f Collectable::GetPosition() const {
-        return position;
-}
+sf::Vector2f Collectable::GetPosition() const { return position; }
