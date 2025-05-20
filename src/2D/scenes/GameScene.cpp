@@ -95,7 +95,10 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         DrawBehindEntities(window, gameTime);
         DrawEntities(window, gameTime);
         DrawInFrontOfEntities(window, gameTime);
-        // DEBUG_DrawMapBoundaries(window, gameTime);
+
+        if(game_manager.ShowCollisions()) {
+                // DEBUG_DrawMapBoundaries(window, gameTime);
+        }
 
         // Draw the UI
         window.setView(window.getDefaultView());
@@ -141,7 +144,7 @@ void GameScene::OnScene_Deactivate() {
 }
 void GameScene::DamagePlayer(int amount) {
         player.health.damage(amount);
-        player.currentAnimation = AnimationType::ANIMATION_DAMAGED;
+        player.ChangeAnimation(AnimationType::ANIMATION_DAMAGED, true);
 }
 void GameScene::Update_Loading(GameTime gameTime) {
         // HACK: ----------------------------------------------------

@@ -45,8 +45,6 @@ add_executable(LoSW___BftS main.cpp
         managers/IOManager.h
         IO/GameSettingsFile.cpp
         IO/GameSettingsFile.h
-        Envir/SWS.cpp
-        Envir/SWS.h
         3rdParty/pugixml/pugiconfig.hpp
         3rdParty/pugixml/pugixml.cpp
         models/LevelObject/Boundary.h

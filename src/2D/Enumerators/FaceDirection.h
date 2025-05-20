@@ -5,6 +5,8 @@
 #ifndef FACEDIRECTION_H
 #define FACEDIRECTION_H
 
+// The value of FaceDirection is used to determine the
+// offset within the texture library for that direction
 enum FaceDirection {
     FACE_DIRECTION_LEFT = 0,
     FACE_DIRECTION_RIGHT_CHESTMONSTER = 199,

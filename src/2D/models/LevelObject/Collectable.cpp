@@ -15,16 +15,13 @@ Collectable::Collectable(const Collectable &other) {
         collisionBox = other.collisionBox;
 
         // Copy the animation sequences
-        sequences = other.sequences;
-
-        // Set the current animation frame to the start index
-        currentAnimationFrame = 0;
+        SetAnimationSequences(other.GetAnimationSequences());
 
         ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
 }
 void Collectable::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Use the IDraw interface to draw the collectable by library name and index
-        IDraw::Draw(window, Library, GetCurrentFrame(), position);
+        IDraw::Draw(window, Library, GetTextureDrawIndex(), position);
 
         // sf::RectangleShape debugRect(sf::Vector2f(25, 25));
         // debugRect.setFillColor(sf::Color(0, 0, 0, 150));
@@ -63,9 +60,8 @@ void Collectable::deserialize(const pugi::xml_node &node) {
                 collisionBox.height = static_cast<float>(boundaryNode.child("Height").text().as_int());
         }
 
-        // Initialize animation sequences based on the loaded data
-        sequences = {{AnimationType::ANIMATION_IDLE, {startIndex, endIndex - startIndex, animationTick}},
-                     {AnimationType::ANIMATION_STATIC, {startIndex, 1, animationTick}}};
+        SetAnimationSequences({{AnimationType::ANIMATION_IDLE, {startIndex, endIndex - startIndex, animationTick}},
+                     {AnimationType::ANIMATION_STATIC, {startIndex, 1, animationTick}}});
 }
 sf::FloatRect Collectable::GetCollisionBox() const { return collisionBox; }
 void Collectable::SetPosition(const float x, const float y) {
@@ -77,5 +73,4 @@ void Collectable::SetPosition(const float x, const float y) {
         collisionBox.left += x;
         collisionBox.top += y;
 }
-int Collectable::GetCurrentFrame() { return sequences[currentAnimation].startFrame + currentAnimationFrame; }
 sf::Vector2f Collectable::GetPosition() const { return position; }

@@ -40,9 +40,9 @@ public:
         FaceDirection faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_PLAYER;
         sf::Vector2f position = {0, 0};
 
-        int getCurrentFrame() {
-                return sequences[currentAnimation].startFrame + currentAnimationFrame + faceDirection;
-        }
+         int DrawFrame() {
+                return GetTextureDrawIndex() + faceDirection;
+         }
 
         Health health = Health(2.0f, {25, 25});
 

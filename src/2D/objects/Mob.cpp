@@ -11,14 +11,10 @@ Mob::Mob(Player *player, sf::Vector2f position, float viewRange, float moveSpeed
         , health(health)
         , player(player)
 { /* Nothing in the constructor */}
-
-int Mob::GetCurrentAnimationFrame() {
-        return sequences[currentAnimation].startFrame + currentAnimationFrame + faceDirection;
-}
 sf::FloatRect Mob::GetCollisionBox() const { return collisionBox; }
 void Mob::Damaged(int amount) {
         // Take no damage while hiding
-        if (currentAnimation == AnimationType::ANIMATION_STATIC)
+        if (GetCurrentAnimation() == AnimationType::ANIMATION_STATIC)
                 return;
 
         // take no damage if dead

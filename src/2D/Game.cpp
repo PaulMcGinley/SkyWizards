@@ -6,8 +6,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <filesystem>
-#include "managers/InputManager.cpp"
 #include "managers/SceneManager.h"
+#include "managers/InputManager.cpp"
 #include "scenes/DevScene.h"
 #include "scenes/GameScene.h"
 #include "scenes/LoadingScene.h"
@@ -43,10 +43,19 @@ void Game::Run() {
                         if (windowEvent.type == sf::Event::Closed)
                                 game_manager.window->close();
                 }
-                // Close window by key input
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) ||
-                    sf::Keyboard::isKeyPressed(sf::Keyboard::N) && sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
                         game_manager.window->close();
+                        // TODO: Change this to an Exit to main menu system
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
+                        game_manager.ToggleDebug();
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+                        game_manager.ToggleShowCollisions();
                 }
 
                 InputManager::getInstance().update();
@@ -56,8 +65,10 @@ void Game::Run() {
                 game_manager.window->clear(sf::Color(255, 255, 255, 255));
                 scene_manager.Draw(*game_manager.window, game_time);
 
-                debugOverlay->Update(game_time);
-                debugOverlay->Draw(*game_manager.window, game_time);
+                if (game_manager.Debug()) {
+                        debugOverlay->Update(game_time);
+                        debugOverlay->Draw(*game_manager.window, game_time);
+                }
 
                 game_manager.window->display();
                 scene_manager.LateUpdate(game_time);

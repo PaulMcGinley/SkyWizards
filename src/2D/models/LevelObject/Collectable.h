@@ -27,7 +27,6 @@ public:
         void deserialize(const pugi::xml_node &node);
         [[nodiscard]] sf::FloatRect GetCollisionBox() const;
         void SetPosition(float x, float y);
-        int GetCurrentFrame();
         sf::Vector2f GetPosition() const;
 
 private:

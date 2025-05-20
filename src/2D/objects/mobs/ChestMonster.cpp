@@ -15,10 +15,9 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
         , nextBiteTime(0)
         , canMoveLeft(false)
         , canMoveRight(false)
-        , onGround(false)
-{
+        , onGround(false) {
         // Define the animation sequences for the ChestMonster
-        sequences = {
+        SetAnimationSequences( {
                 {AnimationType::ANIMATION_ATTACK, {0, 10, 90}},
                 {AnimationType::ANIMATION_ATTACK2, {10, 9, 100,}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
@@ -33,7 +32,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
                 {AnimationType::ANIMATION_TAUNT, {151, 24, 100}},
                 {AnimationType::ANIMATION_VICTORY, {185, 12, 100}},
                 {AnimationType::ANIMATION_WALK, {187, 12, 100}}
-        };
+        });
 
         // Set the size of the collision box
         collisionBox.width = 100;
@@ -41,7 +40,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
 }
 void ChestMonster::Update(GameTime gameTime) {
 
-        if (IsDead() || currentAnimation == AnimationType::ANIMATION_DAMAGED) {
+        if (IsDead() || GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED) {
                 UpdateQuads();
                 return;
         }
@@ -90,7 +89,7 @@ void ChestMonster::Update(GameTime gameTime) {
         }
 
         // Movement Logic
-        if (currentAnimation == AnimationType::ANIMATION_RUN && distance > biteDistance) {
+        if (GetCurrentAnimation() == AnimationType::ANIMATION_RUN && distance > biteDistance) {
                 // Calculate the distance to move based on the speed and delta time
                 const float moveDistance = walkSpeed * gameTime.delta_time;
 
@@ -124,26 +123,28 @@ void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         IDraw::Draw(window, "PrgUse", 9, sf::Vector2f(shadowX, shadowY));
 
         // Draw Monster
-        window.draw(texQuads, &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()].texture);
+        window.draw(texQuads, &asset_manager.TextureLibraries["ChestMonster"]->entries[GetTextureDrawIndex() + faceDirection].texture);
 
-        // Collision box
-        // sf::RectangleShape rect(sf::Vector2f(collisionBox.width, collisionBox.height));
-        // rect.setPosition(collisionBox.left, collisionBox.top);
-        // rect.setFillColor(sf::Color(0, 0, 255, 128));
-        // rect.setOutlineColor(sf::Color::Black);
-        // rect.setOutlineThickness(1.0f);
-        // window.draw(rect);
+        if (GameManager::getInstance().ShowCollisions()) {
+                // Collision box
+                sf::RectangleShape rect(sf::Vector2f(collisionBox.width, collisionBox.height));
+                rect.setPosition(collisionBox.left, collisionBox.top);
+                rect.setFillColor(sf::Color(0, 0, 255, 128));
+                rect.setOutlineColor(sf::Color::Black);
+                rect.setOutlineThickness(1.0f);
+                window.draw(rect);
 
-        // // DEBUG: Draw detector circles
-        // sf::CircleShape leftDropDetector(5);
-        // leftDropDetector.setFillColor(sf::Color::Green);
-        // leftDropDetector.setPosition(GetLeftDropDetectorPosition());
-        // window.draw(leftDropDetector);
-        // sf::CircleShape rightDropDetector(5);
-        // rightDropDetector.setFillColor(sf::Color::Red);
-        // rightDropDetector.setPosition(GetRightDropDetectorPosition());
-        // window.draw(rightDropDetector);
-        // // END DEBUG ^
+                // DEBUG: Draw detector circles
+                sf::CircleShape leftDropDetector(5);
+                leftDropDetector.setFillColor(sf::Color::Green);
+                leftDropDetector.setPosition(GetLeftDropDetectorPosition());
+                window.draw(leftDropDetector);
+                sf::CircleShape rightDropDetector(5);
+                rightDropDetector.setFillColor(sf::Color::Red);
+                rightDropDetector.setPosition(GetRightDropDetectorPosition());
+                window.draw(rightDropDetector);
+                // END DEBUG ^
+        }
 }
 void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) {
         // Default the movement flags to false
@@ -207,13 +208,13 @@ void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
         collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 40;
 }
 void ChestMonster::TickAnimation(GameTime gameTime) {
-        if (gameTime.TimeElapsed(nextBiteTime) && currentAnimation == AnimationType::ANIMATION_ATTACK &&
-            currentAnimationFrame == 5) {
+        if (gameTime.TimeElapsed(nextBiteTime) && GetCurrentAnimation() == AnimationType::ANIMATION_ATTACK &&
+            GetCurrentAnimationFrame() == 5) {
                 BitePlayer();
                 nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);
         }
-        if (gameTime.TimeElapsed(nextSmackTime) && currentAnimation == AnimationType::ANIMATION_ATTACK2 &&
-            currentAnimationFrame == 5) {
+        if (gameTime.TimeElapsed(nextSmackTime) && GetCurrentAnimation() == AnimationType::ANIMATION_ATTACK2 &&
+            GetCurrentAnimationFrame() == 5) {
                 SmackPlayer();
                 nextSmackTime = gameTime.NowAddMilliseconds(smackCooldown);
         }
@@ -221,7 +222,7 @@ void ChestMonster::TickAnimation(GameTime gameTime) {
         Mob::TickAnimation(gameTime);
 }
 void ChestMonster::Damaged(int amount) {
-        if (!IsDead() && currentAnimation != AnimationType::ANIMATION_STATIC)
+        if (!IsDead() && GetCurrentAnimation() != AnimationType::ANIMATION_STATIC)
                 ChangeAnimation(AnimationType::ANIMATION_DAMAGED,true);
 
         Mob::Damaged(amount);
@@ -280,7 +281,7 @@ sf::Vector2f ChestMonster::GetRightDropDetectorPosition() {
 }
 void ChestMonster::UpdateQuads() {
         // Get the current animation frame
-        TextureEntry* entry = &asset_manager.TextureLibraries["ChestMonster"]->entries[GetCurrentAnimationFrame()];
+        TextureEntry* entry = &asset_manager.TextureLibraries["ChestMonster"]->entries[GetTextureDrawIndex() + faceDirection];
 
         // Update the texture quads
         for (int i = 0; i < 4; ++i) {

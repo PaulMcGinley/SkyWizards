@@ -18,7 +18,6 @@ class Mob : public IAnimate, public IUpdate, public IDraw {
 public:
         Mob(Player* player, sf::Vector2f position, float viewRange, float moveSpeed, int health);
 
-        int GetCurrentAnimationFrame();
         virtual void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) = 0;
 
         sf::FloatRect GetCollisionBox() const;

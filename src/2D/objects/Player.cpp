@@ -17,7 +17,7 @@ Player::Player(GameScene* game_scene) : gameScene(game_scene) {
         // The jump ani has multiple parts to the animation based on the state of the jump
         // Once one part of the animation is complete, it can change the ani to the next part of the animation
         // .OnComplete [](){currentAni = AniType::JumpEnd;}
-        sequences = {
+        SetAnimationSequences({
                 {AnimationType::ANIMATION_CONSUME, {0, 32, 100, nullptr /*[](){changeAnimation(AnimationType::ANIMATION_JUMP_AIR, nullptr, false);}*/, nullptr, nullptr}},
                 {AnimationType::ANIMATION_DAMAGED, {32, 13, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);}, nullptr}},
                 {AnimationType::ANIMATION_DEATH, {45, 11, 100, nullptr, [this](){isDead=true;}, nullptr}},
@@ -34,7 +34,7 @@ Player::Player(GameScene* game_scene) : gameScene(game_scene) {
                 {AnimationType::ANIMATION_PICKUP, {229, 20, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_RUN, {249, 10, 80, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_WALK, {259, 16, 65, nullptr, nullptr, nullptr /*[](const int _frame){std::cout << "Walking frame: " << _frame << std::endl;}*/}} // Debug output
-        };
+        });
 }
 
 void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) {
@@ -45,8 +45,6 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
             collisionBox.width,
             collisionBox.height
         );
-
-
 
         // Store the previous position before applying velocity
         sf::FloatRect prevPlayerBox = playerBox;
@@ -239,7 +237,7 @@ void Player::Update(GameTime gameTime) {
                 return;
         }
 
-        if (currentAnimation == AnimationType::ANIMATION_DAMAGED) {
+        if (GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED) {
                 UpdateQuads();
                 return;
         }
@@ -290,7 +288,7 @@ void Player::Update(GameTime gameTime) {
         float directionChangeMultiplier = 1.0f;
         const float runThreshold = WALKING_SPEED * 2.f; // Speed threshold to transition to running
 
-        if (currentAnimation != AnimationType::ANIMATION_FIRE) { // Prevent movement during fire animation
+        if (GetCurrentAnimation() != AnimationType::ANIMATION_FIRE) { // Prevent movement during fire animation
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A) ) {
                         faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
                         isMoving = true;
@@ -364,7 +362,7 @@ void Player::Update(GameTime gameTime) {
                         ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime, true);
                 }
         } else {
-                if (currentAnimation != AnimationType::ANIMATION_FIRE)
+                if (GetCurrentAnimation() != AnimationType::ANIMATION_FIRE)
                         ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
         }
 
@@ -376,8 +374,8 @@ void Player::UpdateQuads() {
       //  TextureEntry &robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
       //  TextureEntry &staff = *asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame());
 
-        TextureEntry &robe = asset_manager.TextureLibraries[robeLibrary]->entries[getCurrentFrame()];
-        TextureEntry &staff = asset_manager.TextureLibraries[staffLibrary]->entries[getCurrentFrame()];
+        TextureEntry &robe = asset_manager.TextureLibraries[robeLibrary]->entries[GetTextureDrawIndex() + faceDirection];
+        TextureEntry &staff = asset_manager.TextureLibraries[staffLibrary]->entries[GetTextureDrawIndex() + faceDirection];
 
         for (int i = 0; i < 4; ++i) {
                 robeQuad[i].texCoords = robe.texQuad[i].texCoords;
@@ -394,12 +392,11 @@ void Player::LateUpdate(GameTime gameTime) {
 }
 
 void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
-
         // Draw shadow
         IDraw::Draw(window, "PrgUse", 9, shadowDrawPosition);
 
-        TextureEntry &robe = asset_manager.TextureLibraries[robeLibrary]->entries[getCurrentFrame()];
-        TextureEntry &staff = asset_manager.TextureLibraries[staffLibrary]->entries[getCurrentFrame()];
+        TextureEntry &robe = asset_manager.TextureLibraries[robeLibrary]->entries[DrawFrame()];
+        TextureEntry &staff = asset_manager.TextureLibraries[staffLibrary]->entries[DrawFrame()];
         // Draw Robe
         window.draw(
                 robeQuad,
@@ -412,23 +409,25 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
                 &staff.texture
         );
 
-        // Draw collision box
-        // sf::RectangleShape collisionBoxShape(sf::Vector2f(collisionBox.width, collisionBox.height));
-        // collisionBoxShape.setPosition(collisionOffset());
-        // collisionBoxShape.setFillColor(sf::Color(255, 0, 0, 100)); // Transparent fill
-        // collisionBoxShape.setOutlineThickness(1);
-        // collisionBoxShape.setOutlineColor(sf::Color::Red);
-        // window.draw(collisionBoxShape);
+        if (GameManager::getInstance().ShowCollisions()){
+                // Draw collision box
+                sf::RectangleShape collisionBoxShape(sf::Vector2f(collisionBox.width, collisionBox.height));
+                collisionBoxShape.setPosition(collisionOffset());
+                collisionBoxShape.setFillColor(sf::Color(255, 0, 0, 100)); // Transparent fill
+                collisionBoxShape.setOutlineThickness(1);
+                collisionBoxShape.setOutlineColor(sf::Color::Red);
+                window.draw(collisionBoxShape);
+        }
 }
 
 void Player::TickAnimation(GameTime gameTime) {
         IAnimate::TickAnimation(gameTime);
 
-        if (sequences[currentAnimation].onFrame != nullptr)
-                sequences[currentAnimation].onFrame();
+        if (GetCurrentAnimationSequence().onFrame != nullptr)
+                GetCurrentAnimationSequence().onFrame();
 
-        if(currentAnimation == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime)) {
-                if (currentAnimationFrame == 6) {
+        if(GetCurrentAnimation() == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime)) {
+                if (GetCurrentAnimationFrame() == 6) {
                         CastMagic(gameTime);
                 }
         }

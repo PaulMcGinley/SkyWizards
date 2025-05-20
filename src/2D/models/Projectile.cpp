@@ -28,7 +28,7 @@ void Projectile::Update(GameTime gameTime) {
         lifetime -= gameTime.delta_time;
 }
 void Projectile::Draw(sf::RenderWindow &window, GameTime gameTime) {
-        IDraw::Draw(window, "magic", sequences[currentAnimation].startFrame + currentAnimationFrame, position);
+        IDraw::Draw(window, "magic", GetTextureDrawIndex(), position);
 
         // // Draw the collision circle
         // sf::CircleShape circle(collisionRadius);

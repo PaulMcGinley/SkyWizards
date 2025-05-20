@@ -90,6 +90,13 @@ public:
         }
 
 
+        bool Debug() const { return show_debug; }
+        void ToggleDebug() { show_debug = !show_debug; }
+
+        bool ShowCollisions() const { return showCollisions; }
+        void ToggleShowCollisions() { showCollisions = !showCollisions; }
+
+
 private:
         // Private constructor to prevent instancing
         GameManager() = default;
@@ -102,6 +109,7 @@ private:
         bool vsync = true;
         bool show_fps = false;
         bool show_debug = false;
+        bool showCollisions = false;
         bool show_memory = false;
         bool show_cursor = true;
 
