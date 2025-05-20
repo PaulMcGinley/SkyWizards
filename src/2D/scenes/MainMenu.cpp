@@ -6,7 +6,7 @@
 
 #include "GameScene.h"
 #include "LoadingScene.h"
-#include "managers/InputManager.cpp"
+#include "managers/InputManager.h"
 #include "managers/SceneManager.h"
 
 MainMenu::MainMenu()

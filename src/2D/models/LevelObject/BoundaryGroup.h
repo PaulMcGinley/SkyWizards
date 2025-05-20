@@ -14,7 +14,7 @@ class BoundaryGroup {
 public:
         int Layer;
         std::vector<Boundary> Boundaries;
-        bool deserialize(const pugi::xml_node &node);
+        bool Deserialize(const pugi::xml_node &node);
 };
 
 #endif //BOUNDARYGROUP_H

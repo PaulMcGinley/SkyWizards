@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-bool OLibrary::deserialize(const pugi::xml_document &doc) {
+bool OLibrary::Deserialize(const pugi::xml_document &doc) {
         // Clear existing data
         Images.clear();
         BoundaryGroups.clear();
@@ -20,7 +20,7 @@ bool OLibrary::deserialize(const pugi::xml_document &doc) {
         // Deserialize Images
         for (pugi::xml_node imageNode: root.child("Images").children("Graphic")) {
                 Graphic graphic;
-                if (graphic.deserialize(imageNode)) {
+                if (graphic.Deserialize(imageNode)) {
                         Images.push_back(graphic);
                 } else {
                         return false; // Failed to deserialize a Graphic
@@ -30,7 +30,7 @@ bool OLibrary::deserialize(const pugi::xml_document &doc) {
         // Deserialize BoundaryGroups
         for (pugi::xml_node boundaryGroupNode: root.child("BoundaryGroups").children("BoundaryGroup")) {
                 BoundaryGroup boundaryGroup;
-                if (boundaryGroup.deserialize(boundaryGroupNode)) {
+                if (boundaryGroup.Deserialize(boundaryGroupNode)) {
                         int layer = boundaryGroup.Layer;
 
                         // Find the corresponding Image by layer index

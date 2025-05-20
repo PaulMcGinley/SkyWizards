@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Game.h"
 #include "managers/AssetManager.h"
-#include "managers/InputManager.cpp"
+#include "managers/InputManager.h"
 #include "managers/SceneManager.h"
 #include "os/GetExecutionDirectory.h"
 

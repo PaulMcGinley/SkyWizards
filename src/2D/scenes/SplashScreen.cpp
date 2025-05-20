@@ -261,7 +261,7 @@ void SplashScreen::loadLevelObjects(const std::string &directoryPath) {
 
                         if (result) {
                                 OLibrary objectLibrary;
-                                if (objectLibrary.deserialize(doc)) {
+                                if (objectLibrary.Deserialize(doc)) {
                                         assetManager.ObjectLibraries[fileNameWithoutExtension] =
                                                         std::make_unique<OLibrary>(std::move(objectLibrary));
                                 } else {
@@ -286,7 +286,7 @@ void SplashScreen::loadCollectableObjects(const std::string &directoryPath) {
 
                         if (result) {
                                 auto collectable = std::make_unique<Collectable>();
-                                collectable->deserialize(doc);
+                                collectable->Deserialize(doc);
                                 assetManager.Collectables[fileNameWithoutExtension].push_back(std::move(collectable));
                         } else {
                                 std::cerr << "Failed to load Collectable: " << filePath << " Error: " << result.description()

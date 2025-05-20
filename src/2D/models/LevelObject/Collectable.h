@@ -24,7 +24,7 @@ public:
         void Draw(sf::RenderWindow &window, GameTime gameTime) override;
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
-        void deserialize(const pugi::xml_node &node);
+        void Deserialize(const pugi::xml_node &node);
         [[nodiscard]] sf::FloatRect GetCollisionBox() const;
         void SetPosition(float x, float y);
         sf::Vector2f GetPosition() const;

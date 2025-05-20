@@ -7,7 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include <filesystem>
 #include "managers/SceneManager.h"
-#include "managers/InputManager.cpp"
+#include "managers/InputManager.h"
 #include "scenes/DevScene.h"
 #include "scenes/GameScene.h"
 #include "scenes/LoadingScene.h"

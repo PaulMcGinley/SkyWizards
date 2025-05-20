@@ -25,7 +25,7 @@ public:
 
         int currentFrame;
         float nextFrameTime;
-        bool deserialize(const pugi::xml_node &node);
+        bool Deserialize(const pugi::xml_node &node);
 
         std::vector<Boundary>* Boundaries = nullptr; // Pointer to the boundaries for this graphic
 };

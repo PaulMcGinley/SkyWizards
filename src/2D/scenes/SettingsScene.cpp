@@ -3,7 +3,7 @@
 //
 
 #include "SettingsScene.h"
-#include "managers/InputManager.cpp"
+#include "managers/InputManager.h"
 
 SettingsScene::SettingsScene() {}
 void SettingsScene::Update(GameTime gameTime) {

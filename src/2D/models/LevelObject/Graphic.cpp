@@ -4,7 +4,7 @@
 
 #include "Graphic.h"
 
-bool Graphic::deserialize(const pugi::xml_node& node) {
+bool Graphic::Deserialize(const pugi::xml_node& node) {
         if (!node) {
                 return false; // Node is invalid
         }

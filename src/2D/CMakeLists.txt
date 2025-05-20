@@ -36,7 +36,6 @@ add_executable(LoSW___BftS main.cpp
         Enumerators/SceneType.h
         os/GetExecutionDirectory.h
         os/PlatformPaths.h
-        managers/Random.cpp
         managers/InputManager.cpp
         scenes/MainMenu.cpp
         scenes/MainMenu.h
@@ -60,7 +59,6 @@ add_executable(LoSW___BftS main.cpp
         models/MapObject/WMap.cpp
         models/MapObject/WMObject.cpp
         managers/SceneManager.h
-        managers/Random.h
         managers/GameManager.h
         scenes/GameScene.cpp
         scenes/GameScene.h
@@ -84,6 +82,7 @@ add_executable(LoSW___BftS main.cpp
         models/MapObject/WMCollectable.h
         models/LevelObject/Collectable.cpp
         models/LevelObject/Collectable.h
+        managers/InputManager.h
 )
 
 

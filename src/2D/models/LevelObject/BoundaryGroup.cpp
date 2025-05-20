@@ -4,7 +4,7 @@
 
 #include "BoundaryGroup.h"
 
-bool BoundaryGroup::deserialize(const pugi::xml_node& node) {
+bool BoundaryGroup::Deserialize(const pugi::xml_node &node) {
         if (!node) {
                 return false; // Node is invalid
         }
@@ -24,9 +24,9 @@ bool BoundaryGroup::deserialize(const pugi::xml_node& node) {
         }
 
         // Iterate through the Boundary elements inside the Boundaries container
-        for (pugi::xml_node boundaryNode : boundariesNode.children("Boundary")) {
+        for (pugi::xml_node boundaryNode: boundariesNode.children("Boundary")) {
                 Boundary boundary;
-                if (boundary.deserialize(boundaryNode)) {
+                if (boundary.Deserialize(boundaryNode)) {
                         Boundaries.push_back(boundary);
                 } else {
                         return false; // Failed to deserialize a Boundary

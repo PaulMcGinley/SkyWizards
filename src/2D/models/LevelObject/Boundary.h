@@ -15,7 +15,7 @@ public:
         int Width;
         int Height;
         bool Active; // Editor only, not used in game
-        bool deserialize(const pugi::xml_node &node);
+        bool Deserialize(const pugi::xml_node &node);
         Boundary() = default;
 };
 

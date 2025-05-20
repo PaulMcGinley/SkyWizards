@@ -18,7 +18,7 @@ public:
         std::string FileName;
         std::vector<Graphic> Images;
         std::vector<BoundaryGroup> BoundaryGroups;
-        bool deserialize(const pugi::xml_document &doc);
+        bool Deserialize(const pugi::xml_document &doc);
 
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
