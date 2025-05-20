@@ -86,7 +86,7 @@ void SceneManager::ChangeScene(const SceneType name) {
         }
 
         // Activate the new scene
-        currentScene->OnScene_Active();
+        currentScene->OnScene_Activate();
 
         auto debugOverlay = GetScene(SceneType::SCENE_DEBUG_OVERLAY);
         if (debugOverlay) {

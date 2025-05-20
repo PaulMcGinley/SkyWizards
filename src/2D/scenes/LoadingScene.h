@@ -26,7 +26,7 @@ public:
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void DestroyScene() override;
-        void OnScene_Active() override;
+        void OnScene_Activate() override;
         void OnScene_Deactivate() override;
 private:
         static constexpr int ASSET_BATCH_SIZE = 50; // Amount of assets to load at once per frame tick

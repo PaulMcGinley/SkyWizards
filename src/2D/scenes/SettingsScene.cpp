@@ -7,19 +7,19 @@
 
 SettingsScene::SettingsScene() {}
 void SettingsScene::Update(GameTime gameTime) {
-        if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Num7 )|| InputManager::getInstance().isKeyPressed(sf::Keyboard::I)) {
-                scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
+        if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Num7 )|| InputManager::getInstance().IsKeyPressed(sf::Keyboard::I)) {
+                sceneManager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
         // Check if the user is pressing the up or down arrow keys to change the selected option
-        if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Up)) {
+        if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Up)) {
                 selectedOption = (selectedOption - 1 + 4) % 4; // Wrap around to the last option
-        } else if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Down)) {
+        } else if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Down)) {
                 selectedOption = (selectedOption + 1) % 4; // Wrap around to the first option
         }
 
 
-        if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().isKeyPressed(sf::Keyboard::A) || InputManager::getInstance().isKeyPressed(sf::Keyboard::D)) {
+        if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::A) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::D)) {
                 if (selectedOption == 0) {
                         tempIsFullscreen = !tempIsFullscreen;
                 }
@@ -27,13 +27,13 @@ void SettingsScene::Update(GameTime gameTime) {
                         tempIsVSync = !tempIsVSync;
                 }
                 else if (selectedOption == 2) {
-                        if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().isKeyPressed(sf::Keyboard::A) ) {
+                        if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::A) ) {
                                 tempMusicPercent -= 0.05f;
                                 if (tempMusicPercent < 0.0f) {
                                         tempMusicPercent = 0.0f;
                                 }
                         }
-                        else if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().isKeyPressed(sf::Keyboard::D)) {
+                        else if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::D)) {
                                 tempMusicPercent += 0.05f;
                                 if (tempMusicPercent > 1.0f) {
                                         tempMusicPercent = 1.0f;
@@ -41,13 +41,13 @@ void SettingsScene::Update(GameTime gameTime) {
                         }
                 }
                 else if (selectedOption == 3) {
-                        if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().isKeyPressed(sf::Keyboard::A) ) {
+                        if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::A) ) {
                                 tempSfxPercent -= 0.05f;
                                 if (tempSfxPercent < 0.0f) {
                                         tempSfxPercent = 0.0f;
                                 }
                         }
-                        else if(InputManager::getInstance().isKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().isKeyPressed(sf::Keyboard::D)) {
+                        else if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::D)) {
                                 tempSfxPercent += 0.05f;
                                 if (tempSfxPercent > 1.0f) {
                                         tempSfxPercent = 1.0f;
@@ -103,38 +103,38 @@ void SettingsScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         }
         window.draw(sfxPercentSymbol);
 }
-void SettingsScene::OnScene_Active() {
-        tempIsFullscreen = game_manager.isFullscreen();
-        tempIsVSync = game_manager.isVSyncEnabled();
+void SettingsScene::OnScene_Activate() {
+        tempIsFullscreen = gameManager.isFullscreen();
+        tempIsVSync = gameManager.isVSyncEnabled();
 
 
-        backgroundTexture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[0].texture;                // Background
-        regionTexture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[1].texture;                    // Region
+        backgroundTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[0].texture;                // Background
+        regionTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[1].texture;                    // Region
 
         backgroundSprite.setTexture(*backgroundTexture, true);
         regionSprite.setTexture(*regionTexture, true);
         regionSprite.setOrigin(regionSprite.getTexture()->getSize().x / 2, (regionSprite.getTexture()->getSize().y / 2) - 50);
         regionSprite.setColor(sf::Color(255, 255, 255, 128));
-        regionSprite.setPosition(static_cast<sf::Vector2f>(game_manager.window->getSize()) / 2.0f);
+        regionSprite.setPosition(static_cast<sf::Vector2f>(gameManager.window->getSize()) / 2.0f);
 
         for(int i = 0; i < 10; ++i) {
-                numbersTexture[i] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[32+i].texture;     // 32 is the offset for number 0 in PrgUse
+                numbersTexture[i] = &assetManager.TextureLibraries["PrgUse"].get()->entries[32+i].texture;     // 32 is the offset for number 0 in PrgUse
         }
-        percentTexture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[42].texture;                  // 42 is the offset for the percent sign in PrgUse
-        checkBoxTexture[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[21].texture;              // Off
-        checkBoxTexture[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[20].texture;              // On
-        modeTexture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[26].texture;                     // Mode
-        modeOptionTexture[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[27].texture;            // Windowed
-        modeOptionTexture[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[28].texture;            // Fullscreen (Exclusive)
-        vsyncTexture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[29].texture;                    // VSync
-        vsyncOptionTexture[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[3].texture;           // VSync (On)
-        vsyncOptionTexture[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[4].texture;           // VSync (Off)
-        musicTexture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[30].texture;                    // Music
-        sfxTexture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[31].texture;                      // SFX
-        arrowLeftTexture[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[22].texture;             // Left Arrow (Off)
-        arrowLeftTexture[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[23].texture;             // Left Arrow (On)
-        arrowRightTexture[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[24].texture;            // Right Arrow (Off)
-        arrowRightTexture[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[25].texture;            // Right Arrow (On)
+        percentTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[42].texture;                  // 42 is the offset for the percent sign in PrgUse
+        checkBoxTexture[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[21].texture;              // Off
+        checkBoxTexture[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[20].texture;              // On
+        modeTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[26].texture;                     // Mode
+        modeOptionTexture[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[27].texture;            // Windowed
+        modeOptionTexture[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[28].texture;            // Fullscreen (Exclusive)
+        vsyncTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[29].texture;                    // VSync
+        vsyncOptionTexture[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[3].texture;           // VSync (On)
+        vsyncOptionTexture[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[4].texture;           // VSync (Off)
+        musicTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[30].texture;                    // Music
+        sfxTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[31].texture;                      // SFX
+        arrowLeftTexture[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[22].texture;             // Left Arrow (Off)
+        arrowLeftTexture[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[23].texture;             // Left Arrow (On)
+        arrowRightTexture[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[24].texture;            // Right Arrow (Off)
+        arrowRightTexture[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[25].texture;            // Right Arrow (On)
 
         // Gap between left label and right values
         // Applied to both sides
@@ -154,7 +154,7 @@ void SettingsScene::OnScene_Active() {
         sfxSprite.setOrigin(sfxSprite.getTexture()->getSize().x + middleSpace, sfxSprite.getTexture()->getSize().y / 2);
 
         constexpr int rowSpace = 100;
-        sf::Vector2f screenSize = static_cast<sf::Vector2f>(game_manager.window->getSize());
+        sf::Vector2f screenSize = static_cast<sf::Vector2f>(gameManager.window->getSize());
 
         modeSprite.setPosition(screenSize.x/2, screenSize.y/2 - rowSpace);
         vsyncSprite.setPosition(screenSize.x/2, screenSize.y/2);

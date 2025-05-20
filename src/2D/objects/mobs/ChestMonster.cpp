@@ -118,12 +118,12 @@ void ChestMonster::LateUpdate(GameTime gameTime) {
 }
 void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw Shadow
-        float shadowX = collisionBox.left + (collisionBox.width/2) - asset_manager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x / 2;
+        float shadowX = collisionBox.left + (collisionBox.width/2) - assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x / 2;
         float shadowY = position.y + 310;
         IDraw::Draw(window, "PrgUse", 9, sf::Vector2f(shadowX, shadowY));
 
         // Draw Monster
-        window.draw(texQuads, &asset_manager.TextureLibraries["ChestMonster"]->entries[GetTextureDrawIndex() + faceDirection].texture);
+        window.draw(texQuads, &assetManager.TextureLibraries["ChestMonster"]->entries[GetTextureDrawIndex() + faceDirection].texture);
 
         if (GameManager::getInstance().ShowCollisions()) {
                 // Collision box
@@ -281,7 +281,7 @@ sf::Vector2f ChestMonster::GetRightDropDetectorPosition() {
 }
 void ChestMonster::UpdateQuads() {
         // Get the current animation frame
-        TextureEntry* entry = &asset_manager.TextureLibraries["ChestMonster"]->entries[GetTextureDrawIndex() + faceDirection];
+        TextureEntry* entry = &assetManager.TextureLibraries["ChestMonster"]->entries[GetTextureDrawIndex() + faceDirection];
 
         // Update the texture quads
         for (int i = 0; i < 4; ++i) {

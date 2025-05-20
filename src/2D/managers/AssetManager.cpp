@@ -25,7 +25,7 @@ AssetManager& AssetManager::GetInstance() {
 }
 
 // Define the global reference
-AssetManager& asset_manager = AssetManager::GetInstance();
+AssetManager& assetManager = AssetManager::GetInstance();
 
 // Loads a library to memory without the image data
 // I am creating the libraries as unique_ptrs to ensure they are deleted when the program ends ;)
@@ -58,7 +58,7 @@ void AssetManager::LoadFonts(std::string directoryPath) {
 
                         auto font = std::make_unique<sf::Font>();
                         if (font->loadFromFile(filePath)) {
-                                asset_manager.Fonts[fileNameWithoutExtension] = std::move(font);
+                                assetManager.Fonts[fileNameWithoutExtension] = std::move(font);
                                 std::cout << "Loaded font: " << fileNameWithoutExtension << std::endl;
                         } else {
                                 std::cerr << "Failed to load font: " << filePath << std::endl;

@@ -16,10 +16,10 @@ void MainMenu::Update(GameTime gameTime) {
 
         // Inspired from: https://dev.to/avocoaster/how-to-wrap-around-a-range-of-numbers-with-the-modulo-cdo
         // Handle menu navigation
-        if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::Down) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::S)) {
+        if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Key::Down) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::Key::S)) {
                 selectedMenuIndex = (selectedMenuIndex + 1) % 5;
                 selectionChanged = true;
-        } else if (InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::Up) || InputManager::getInstance().isKeyPressed(sf::Keyboard::Key::W)) {
+        } else if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Key::Up) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::Key::W)) {
                 selectedMenuIndex = (selectedMenuIndex + 4) % 5;
                 selectionChanged = true;
         }
@@ -29,16 +29,16 @@ void MainMenu::Update(GameTime gameTime) {
                 UpdateMenuSelection();
 
         // Handle confimation of selected item
-        if (InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Space) ||
-            InputManager::getInstance().isKeyDown(sf::Keyboard::Key::Num4)) {
+        if (InputManager::getInstance().IsKeyDown(sf::Keyboard::Key::Space) ||
+            InputManager::getInstance().IsKeyDown(sf::Keyboard::Key::Num4)) {
                 switch (selectedMenuIndex) {
                         case 0: { // Play
-                                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_LOADER);
+                                auto scenePtr = sceneManager.GetScene(SceneType::SCENE_LOADER);
                                 auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
                                 if (gameScene) {
                                         gameScene->BuildAssetQueue("00");
                                 }
-                                scene_manager.ChangeScene(SceneType::SCENE_LOADER);
+                                sceneManager.ChangeScene(SceneType::SCENE_LOADER);
                                 break;
                         }
                         case 1: { // Level Select
@@ -46,7 +46,7 @@ void MainMenu::Update(GameTime gameTime) {
                                 break;
                         }
                         case 2: { // Settings
-                                scene_manager.ChangeScene(SceneType::SCENE_OPTIONS);
+                                sceneManager.ChangeScene(SceneType::SCENE_OPTIONS);
                                 break;
                         }
                         case 3: { // Rankings
@@ -54,7 +54,7 @@ void MainMenu::Update(GameTime gameTime) {
                                 break;
                         }
                         case 4: { // Leave
-                                game_manager.window->close();
+                                gameManager.window->close();
                                 break;
                         }
                 }
@@ -77,7 +77,7 @@ void MainMenu::Update(GameTime gameTime) {
 }
 void MainMenu::LateUpdate(GameTime gameTime) {}
 void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
-        window.draw(backgroundQuad, &asset_manager.TextureLibraries["PrgUse"].get()->entries[0].texture);
+        window.draw(backgroundQuad, &assetManager.TextureLibraries["PrgUse"].get()->entries[0].texture);
 
         window.draw(title1Sprite);
         window.draw(title2Sprite);
@@ -90,8 +90,8 @@ void MainMenu::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.draw(menuLeaveSprite);
 }
 void MainMenu::InitializeScene() {
-        float screenWidth = game_manager.getResolution().x;
-        float screenHeight = game_manager.getResolution().y;
+        float screenWidth = gameManager.getResolution().x;
+        float screenHeight = gameManager.getResolution().y;
 
         // Set up the background quad to cover the entire window
         backgroundQuad[0].position = sf::Vector2f(0, 0);
@@ -107,15 +107,15 @@ void MainMenu::InitializeScene() {
         IScene::InitializeScene(); // Call the parent class to set the scene as initialized
 }
 void MainMenu::DestroyScene() {}
-void MainMenu::OnScene_Active() {
-        float screenWidth = game_manager.getResolution().x;
-        float screenHeight = game_manager.getResolution().y;
+void MainMenu::OnScene_Activate() {
+        float screenWidth = gameManager.getResolution().x;
+        float screenHeight = gameManager.getResolution().y;
 
         // TODO: Move this to the TextureLibraries map
         //title1Texture = &asset_manager.TextureLibraries["PrgUse"]->entries[7].texture;
-        title1Texture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[7].texture;
-        title2Texture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[6].texture;
-        title3Texture = &asset_manager.TextureLibraries["PrgUse"].get()->entries[5].texture;
+        title1Texture = &assetManager.TextureLibraries["PrgUse"].get()->entries[7].texture;
+        title2Texture = &assetManager.TextureLibraries["PrgUse"].get()->entries[6].texture;
+        title3Texture = &assetManager.TextureLibraries["PrgUse"].get()->entries[5].texture;
 
         title1Sprite.setTexture(*title1Texture, true);
         title2Sprite.setTexture(*title2Texture, true);
@@ -136,16 +136,16 @@ void MainMenu::OnScene_Active() {
 
 
         // Initialize menu item textures
-        menuPlayTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[10].texture;
-        menuPlayTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[11].texture;
-        menuLevelSelectTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[12].texture;
-        menuLevelSelectTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[13].texture;
-        menuSettingsTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[14].texture;
-        menuSettingsTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[15].texture;
-        menuRankingsTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[16].texture;
-        menuRankingsTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[17].texture;
-        menuLeaveTextures[0] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[18].texture;
-        menuLeaveTextures[1] = &asset_manager.TextureLibraries["PrgUse"].get()->entries[19].texture;
+        menuPlayTextures[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[10].texture;
+        menuPlayTextures[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[11].texture;
+        menuLevelSelectTextures[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[12].texture;
+        menuLevelSelectTextures[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[13].texture;
+        menuSettingsTextures[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[14].texture;
+        menuSettingsTextures[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[15].texture;
+        menuRankingsTextures[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[16].texture;
+        menuRankingsTextures[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[17].texture;
+        menuLeaveTextures[0] = &assetManager.TextureLibraries["PrgUse"].get()->entries[18].texture;
+        menuLeaveTextures[1] = &assetManager.TextureLibraries["PrgUse"].get()->entries[19].texture;
 
         menuPlayTextures[0]->setSmooth(true);
         menuPlayTextures[1]->setSmooth(true);

@@ -58,7 +58,7 @@ void Game::Run() {
                         game_manager.ToggleShowCollisions();
                 }
 
-                InputManager::getInstance().update();
+                InputManager::getInstance().Update();
 
                 game_time += (clock.restart().asSeconds());
                 scene_manager.Update(game_time);

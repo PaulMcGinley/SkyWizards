@@ -48,7 +48,7 @@ void DevScene::DestroyScene() {
     // When the scene is finished
 }
 
-void DevScene::OnScene_Active() {
+void DevScene::OnScene_Activate() {
     // When the scene starts
 }
 

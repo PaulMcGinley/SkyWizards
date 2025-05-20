@@ -27,7 +27,7 @@ void GameScene::LoadMap(std::string name)  {
         LoadAssets();
         SpawnPlayer();
 
-        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+        if (const auto debugOverlay = sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
                 if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
                         debugOverlayPtr->AddInfoBottomLeft("Collectables", std::to_string(collectables.capacity()));
                 }
@@ -38,7 +38,7 @@ void GameScene::Update(const GameTime gameTime) {
         (this->*UpdateLoop)(gameTime);
 
         // DEBUG:
-        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+        if (const auto debugOverlay = sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
                 if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
                         debugOverlayPtr->AddInfoTopLeft("Player X", std::to_string(player.position.x));
                         debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
@@ -96,7 +96,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         DrawEntities(window, gameTime);
         DrawInFrontOfEntities(window, gameTime);
 
-        if(game_manager.ShowCollisions()) {
+        if(gameManager.ShowCollisions()) {
                 // DEBUG_DrawMapBoundaries(window, gameTime);
         }
 
@@ -105,8 +105,8 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         player.health.Draw(window, gameTime);
 }
 void GameScene::InitializeScene() {
-        float screenWidth = game_manager.getResolution().x;
-        float screenHeight = game_manager.getResolution().y;
+        float screenWidth = gameManager.getResolution().x;
+        float screenHeight = gameManager.getResolution().y;
         viewport.setSize(sf::Vector2f(screenWidth, screenHeight)); // Set the view size to the window size
         //viewport.setCenter(player.position); // Center the viewport on the player
 
@@ -115,8 +115,8 @@ void GameScene::InitializeScene() {
 void GameScene::DestroyScene() {
 
 }
-void GameScene::OnScene_Active() {
-        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+void GameScene::OnScene_Activate() {
+        if (const auto debugOverlay = sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
                 if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
                         debugOverlayPtr->AddInfoBottomLeft("End Position Y", std::to_string(map->endPosition.getPosition().y));
                         debugOverlayPtr->AddInfoBottomLeft("End Position X", std::to_string(map->endPosition.getPosition().x));
@@ -127,7 +127,7 @@ void GameScene::OnScene_Active() {
         }
 }
 void GameScene::OnScene_Deactivate() {
-        if (const auto debugOverlay = scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
+        if (const auto debugOverlay = sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
                 if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
                         debugOverlayPtr->RemoveInfoBottomLeft("Map");
                         debugOverlayPtr->RemoveInfoBottomLeft("Start Position X");
@@ -189,7 +189,7 @@ void GameScene::Update_Game(GameTime gameTime) {
 
         // Update the map objects
         for (auto const & obj: map->LevelObjects)
-                asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
+                assetManager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
 
         viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player to culling logic
         // Pass boundaries to Player and calculate the physics state
@@ -228,12 +228,12 @@ void GameScene::Update_Game(GameTime gameTime) {
                 }
                 std::string nextMap = maps[nextIndex];
 
-                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_LOADER);
+                auto scenePtr = sceneManager.GetScene(SceneType::SCENE_LOADER);
                 auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
                 if (gameScene) {
                         gameScene->BuildAssetQueue(nextMap);
                 }
-                scene_manager.ChangeScene(SceneType::SCENE_LOADER);
+                sceneManager.ChangeScene(SceneType::SCENE_LOADER);
 
 
                 // // TODO: Implement a level transition
@@ -252,9 +252,9 @@ void GameScene::ValidateMap() {
         projectiles.clear();
 
         // Check if the map exists in the asset manager
-        if (asset_manager.Maps.contains(mapName)) {
+        if (assetManager.Maps.contains(mapName)) {
                 // Get the map from the asset manager
-                map = asset_manager.Maps[mapName].get();
+                map = assetManager.Maps[mapName].get();
         } else {
                 std::cerr << "Map " << mapName << " does not exist in the asset manager." << std::endl;
                 SceneManager::GetInstance().ChangeScene(SceneType::SCENE_MAIN_MENU);
@@ -262,7 +262,7 @@ void GameScene::ValidateMap() {
 }
 void GameScene::LoadSky() {
         // Load the parallax background texture
-        auto &skyLibrary = *asset_manager.TextureLibraries["sky"];
+        auto &skyLibrary = *assetManager.TextureLibraries["sky"];
         //skyLibrary.LoadIndices({map->ParallaxBackgroundIndex});
         skyBoxTexture = &skyLibrary.entries[map->ParallaxBackgroundIndex].texture;
 
@@ -272,7 +272,7 @@ void GameScene::LoadSky() {
 }
 void GameScene::LoadMountains() {
         // Load the mountains background texture
-        auto &mountainsLibrary = *asset_manager.TextureLibraries["mountains"];
+        auto &mountainsLibrary = *assetManager.TextureLibraries["mountains"];
         mountainsTexture = &mountainsLibrary.entries[map->MountainsBackgroundIndex].texture;
 
         // Set the texture for the mountains sprite
@@ -294,12 +294,12 @@ void GameScene::LoadMobs() {
         for (const auto &mob: map->Mobs) {
                 std::cout << "Loading mob: " << mob.MonsterName << std::endl;
                 // Check if the mob library exists
-                if (!asset_manager.TextureLibraries.contains(mob.MonsterName)) {
+                if (!assetManager.TextureLibraries.contains(mob.MonsterName)) {
                         std::cerr << "Mob library " << mob.MonsterName << " does not exist." << std::endl;
                         continue;
                 }
-                if (!asset_manager.TextureLibraries[mob.MonsterName]->fullyLoaded) {
-                        asset_manager.TextureLibraries[mob.MonsterName]->LoadIndices(
+                if (!assetManager.TextureLibraries[mob.MonsterName]->fullyLoaded) {
+                        assetManager.TextureLibraries[mob.MonsterName]->LoadIndices(
                                         {}); // Load all indices for the mob library
                 }
 
@@ -322,15 +322,15 @@ void GameScene::LoadCollectables() {
         std::cout << "Loading collectable count: " << map->Collectables.size() << std::endl;
         for (const auto &collectable : map->Collectables) {
                 // Check if the collectable library exists
-                if (!asset_manager.Collectables.contains(collectable.CollectableName)) {
+                if (!assetManager.Collectables.contains(collectable.CollectableName)) {
                         std::cerr << "Collectable library " << collectable.CollectableName << " does not exist." << std::endl;
                         continue;
                 }
 
-                if (!asset_manager.Collectables[collectable.CollectableName].empty()) {
+                if (!assetManager.Collectables[collectable.CollectableName].empty()) {
                         // Create a new Collectable by copying the template one
                         auto newCollectable = std::make_unique<Collectable>(
-                            *asset_manager.Collectables[collectable.CollectableName].back().get());
+                            *assetManager.Collectables[collectable.CollectableName].back().get());
 
                         // Set the position
                         newCollectable->SetPosition(collectable.Position.x, collectable.Position.y);
@@ -363,7 +363,7 @@ void GameScene::CalculateParallaxBackground() {
         float worldHeight = 10000.0f;
 
         // Get screen dimensions
-        const auto screenSize = game_manager.getResolution();
+        const auto screenSize = gameManager.getResolution();
         const float screenWidth = static_cast<float>(screenSize.x);
         const float screenHeight = static_cast<float>(screenSize.y);
 
@@ -395,14 +395,14 @@ void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) 
         for (int layer = 0; layer <= 3; ++layer) {
                 if (layer == 2) {
                         // Draw the background shade at 0,0
-                        backgroundShade.setPosition(viewport.getCenter().x - game_manager.getResolution().x / 2,
-                                                    viewport.getCenter().y - game_manager.getResolution().y / 2);
+                        backgroundShade.setPosition(viewport.getCenter().x - gameManager.getResolution().x / 2,
+                                                    viewport.getCenter().y - gameManager.getResolution().y / 2);
                         backgroundShade.setFillColor(sf::Color(0, 0, 0, 100));
                         window.draw(backgroundShade);
                 }
 
                 for (auto const & obj: map->LevelObjects)
-                        for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
+                        for (auto const &entry: assetManager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
                                 if (entry.DrawLayer == layer)
                                         IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x, obj.Position.y));
         }
@@ -428,7 +428,7 @@ void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
 void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTime) {
         for (int layer = 5; layer <= 7; ++layer)
                 for (auto const &obj: map->LevelObjects)
-                        for (auto const &entry: asset_manager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
+                        for (auto const &entry: assetManager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
                                 if (entry.DrawLayer == layer)
                                         IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame,
                                                     sf::Vector2f(obj.Position.x, obj.Position.y));
@@ -455,8 +455,8 @@ std::vector<Boundary> GameScene::getLocalBoundaries() const {
                                        viewport.getSize().y);
 
         for (const auto &obj: map->LevelObjects) {
-                const auto &objLibIt = asset_manager.ObjectLibraries.find(obj.ObjectLibraryFile);
-                if (objLibIt == asset_manager.ObjectLibraries.end())
+                const auto &objLibIt = assetManager.ObjectLibraries.find(obj.ObjectLibraryFile);
+                if (objLibIt == assetManager.ObjectLibraries.end())
                         continue;
                 const auto &images = objLibIt->second->Images;
 

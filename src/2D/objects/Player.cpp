@@ -192,7 +192,7 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                 }
         }
 
-        float shadowX = position.x +250 - asset_manager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x/2;
+        float shadowX = position.x +250 - assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x/2;
 
         if (!isFalling && !isJumping) {
                 // player on ground
@@ -224,14 +224,19 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
 }
 
 void Player::Update(GameTime gameTime) {
+        // Always update the health first
         health.Update(gameTime);
 
+        // If dead, play the static frame sequence
         if (isDead) {
                 ChangeAnimation(AnimationType::ANIMATION_DEAD);
                 return;
         }
 
-        if (health.getTargetHealth() ==0 ) {
+        // If health has just dropped to 0, play the death animation
+        // Once animation is complete it switches to ANIMATION_DEAD
+        // which cannot have its animation overridden by ANIMATION_DEATH
+        if (health.getTargetHealth() == 0 ) {
                 ChangeAnimation(AnimationType::ANIMATION_DEATH, gameTime, true);
                 UpdateQuads();
                 return;
@@ -245,26 +250,6 @@ void Player::Update(GameTime gameTime) {
         if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Num5) || (sf::Keyboard::isKeyPressed(sf::Keyboard::K)) && gameTime.TimeElapsed(nextMagicTime) && !isFalling && !isJumping)) {
                 ChangeAnimation(AnimationType::ANIMATION_FIRE, gameTime, true);
         }
-
-
-
-
-
-        // DEBUG
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
-        //         robeLibrary = 0;
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
-        //         robeLibrary = 1;
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
-        //         robeLibrary = 2;
-        //
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-        //         staffLibrary = 0;
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        //         staffLibrary = 1;
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-        //         staffLibrary = 2;
-        // END DEBUG
 
         // Reset acceleration
         acceleration = {0, 0};
@@ -371,11 +356,8 @@ void Player::Update(GameTime gameTime) {
 
 // Update Robe and Staff texture quads (position, texture coordinates)
 void Player::UpdateQuads() {
-      //  TextureEntry &robe = *asset_manager.getRobeFrame_ptr(robeLibrary, getCurrentFrame());
-      //  TextureEntry &staff = *asset_manager.getStaffFrame_ptr(staffLibrary, getCurrentFrame());
-
-        TextureEntry &robe = asset_manager.TextureLibraries[robeLibrary]->entries[GetTextureDrawIndex() + faceDirection];
-        TextureEntry &staff = asset_manager.TextureLibraries[staffLibrary]->entries[GetTextureDrawIndex() + faceDirection];
+        TextureEntry &robe = assetManager.TextureLibraries[robeLibrary]->entries[GetTextureDrawIndex() + faceDirection];
+        TextureEntry &staff = assetManager.TextureLibraries[staffLibrary]->entries[GetTextureDrawIndex() + faceDirection];
 
         for (int i = 0; i < 4; ++i) {
                 robeQuad[i].texCoords = robe.texQuad[i].texCoords;
@@ -395,22 +377,16 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
         // Draw shadow
         IDraw::Draw(window, "PrgUse", 9, shadowDrawPosition);
 
-        TextureEntry &robe = asset_manager.TextureLibraries[robeLibrary]->entries[DrawFrame()];
-        TextureEntry &staff = asset_manager.TextureLibraries[staffLibrary]->entries[DrawFrame()];
-        // Draw Robe
-        window.draw(
-                robeQuad,
-                &robe.texture
-        );
+        // Get the current animation frame for robe and staff
+        TextureEntry &robe = assetManager.TextureLibraries[robeLibrary]->entries[DrawFrame()];
+        TextureEntry &staff = assetManager.TextureLibraries[staffLibrary]->entries[DrawFrame()];
 
-        // Draw Staff
-        window.draw(
-                staffQuad,
-                &staff.texture
-        );
+        // Draw Robe and Staff
+        window.draw( robeQuad, &robe.texture );
+        window.draw( staffQuad, &staff.texture );
 
-        if (GameManager::getInstance().ShowCollisions()){
-                // Draw collision box
+        // Debug: Draw collision box
+        if (GameManager::getInstance().ShowCollisions()) {
                 sf::RectangleShape collisionBoxShape(sf::Vector2f(collisionBox.width, collisionBox.height));
                 collisionBoxShape.setPosition(collisionOffset());
                 collisionBoxShape.setFillColor(sf::Color(255, 0, 0, 100)); // Transparent fill
@@ -426,14 +402,11 @@ void Player::TickAnimation(GameTime gameTime) {
         if (GetCurrentAnimationSequence().onFrame != nullptr)
                 GetCurrentAnimationSequence().onFrame();
 
-        if(GetCurrentAnimation() == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime)) {
-                if (GetCurrentAnimationFrame() == 6) {
-                        CastMagic(gameTime);
-                }
+        if(GetCurrentAnimation() == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime) && GetCurrentAnimationFrame() == 6) {
+                CastMagic(gameTime);
         }
 }
 void Player::CastMagic(GameTime gameTime) {
-
         sf::Vector2f projectileVelocity = {32, 0};
         if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT) {
                 projectileVelocity.x *= -1.f;

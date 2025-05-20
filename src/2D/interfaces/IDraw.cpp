@@ -6,9 +6,9 @@
 
 void IDraw::Draw(sf::RenderWindow &window, const std::string &textureLibraryName, const int index,  const sf::Vector2f position) const {
         // Get the Texture Library
-        const auto library = asset_manager.TextureLibraries.find(textureLibraryName);
+        const auto library = assetManager.TextureLibraries.find(textureLibraryName);
         // Check if the library exists
-        if (library == asset_manager.TextureLibraries.end()) {
+        if (library == assetManager.TextureLibraries.end()) {
                 std::cerr << "Tried to draw a texture from a non-existent library: " << textureLibraryName << std::endl;
                 return;
         }
@@ -56,8 +56,8 @@ void IDraw::Draw(sf::RenderWindow &window, const std::string &textureLibraryName
 }
 void IDraw::DrawBlend(sf::RenderWindow &window, const std::string &textureLibraryName, const int index, const sf::Vector2f position, const sf::BlendMode &blend) const {
         // Get the Texture Library
-        const auto library = asset_manager.TextureLibraries.find(textureLibraryName);
-        if (library == asset_manager.TextureLibraries.end()) {
+        const auto library = assetManager.TextureLibraries.find(textureLibraryName);
+        if (library == assetManager.TextureLibraries.end()) {
                 std::cerr << "Tried to draw a texture from a non-existent library: " << textureLibraryName << " (blending)" << std::endl;
                 return;
         }

@@ -22,11 +22,11 @@ public:
 
         virtual void InitializeScene() { initialized = true; };
         virtual void DestroyScene() = 0;
-        virtual void OnScene_Active() = 0;
+        virtual void OnScene_Activate() = 0;
         virtual void OnScene_Deactivate() = 0;
 
-        GameManager& game_manager = GameManager::getInstance();
-        SceneManager& scene_manager = SceneManager::GetInstance();
+        GameManager& gameManager = GameManager::getInstance();
+        SceneManager& sceneManager = SceneManager::GetInstance();
 
 private:
         bool initialized = false;

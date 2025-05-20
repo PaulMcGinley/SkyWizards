@@ -17,8 +17,8 @@ LoadingScene::~LoadingScene() { /* Nothing in the destructor */ }
 void LoadingScene::BuildAssetQueue(const std::string& mapName) {
         nextMapName = mapName;
 
-        WMap* previousMap = asset_manager.Maps[game_manager.GetLastPlayedMap()].get();
-        WMap* nextMap = asset_manager.Maps[mapName].get();
+        WMap* previousMap = assetManager.Maps[gameManager.GetLastPlayedMap()].get();
+        WMap* nextMap = assetManager.Maps[mapName].get();
 
         // Lambda function to get all the assets in a map
         // [&] Captures all variables from the surrounding scope (BuildAssetQueue) by reference
@@ -42,11 +42,11 @@ void LoadingScene::BuildAssetQueue(const std::string& mapName) {
                         // Get the Object Library name
                         const auto& oLibraryName = wmObject.ObjectLibraryFile;
                         // Check if the library exists
-                        if (!asset_manager.ObjectLibraries.contains(oLibraryName))
+                        if (!assetManager.ObjectLibraries.contains(oLibraryName))
                                 continue; // Library does not exist
 
                         // Get the Object Library
-                        const auto& oLibrary = asset_manager.ObjectLibraries.at(oLibraryName);
+                        const auto& oLibrary = assetManager.ObjectLibraries.at(oLibraryName);
                         // Loop through all the images in the library
                         for (const auto& graphic : oLibrary->Images) {
                                 // Check if Library name is present
@@ -76,7 +76,7 @@ void LoadingScene::BuildAssetQueue(const std::string& mapName) {
                 // Check if the asset is not in the next map
                 if (!nextMapAssets.count(asset)) {
                         // Get the Texture Library
-                        auto& textureLibrary = asset_manager.TextureLibraries[asset.first];
+                        auto& textureLibrary = assetManager.TextureLibraries[asset.first];
                         if (textureLibrary) {
                                 textureLibrary->UnloadIndices({asset.second}); // Unload the asset
                         }
@@ -116,14 +116,14 @@ void LoadingScene::BuildAssetQueue(const std::string& mapName) {
         TargetValue = AssetQueue.size();
 
         // Set the Last Played Map name in the game manager for the next time we need to load assets
-        game_manager.SetLastPlayedMap(mapName);
+        gameManager.SetLastPlayedMap(mapName);
 }
 void LoadingScene::Update(const GameTime gameTime) {
 
         if (nextSceneTime ==0 && !AssetQueue.empty()) {
                 // Load the next batch of assets
                 const auto &currentLib = AssetQueue.front();
-                auto &textureLibrary = asset_manager.TextureLibraries[currentLib.library];
+                auto &textureLibrary = assetManager.TextureLibraries[currentLib.library];
                 if (textureLibrary) {
                         // Load the indices for the current library
                         textureLibrary->LoadIndices(currentLib.indices);
@@ -140,7 +140,7 @@ void LoadingScene::Update(const GameTime gameTime) {
 
         // Check if the loading is complete
         if (AssetQueue.empty() && nextSceneTime > 0 && gameTime.TimeElapsed(nextSceneTime)) {
-                auto scenePtr = scene_manager.GetScene(SceneType::SCENE_GAME);
+                auto scenePtr = sceneManager.GetScene(SceneType::SCENE_GAME);
                 auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
                 if (gameScene) {
                         gameScene->LoadMap(nextMapName);
@@ -148,13 +148,13 @@ void LoadingScene::Update(const GameTime gameTime) {
 
                 // Loack framerate again
                 //game_manager.window->setFramerateLimit(60);
-                scene_manager.ChangeScene(SceneType::SCENE_GAME);
+                sceneManager.ChangeScene(SceneType::SCENE_GAME);
         }
 }
 void LoadingScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
-        window.draw(backgroundQuad, &asset_manager.TextureLibraries["PrgUse"].get()->entries[0].texture);
+        window.draw(backgroundQuad, &assetManager.TextureLibraries["PrgUse"].get()->entries[0].texture);
         // Draw the loading text
-        sf::Font font = *asset_manager.Fonts["OpenSans-Bold"].get();
+        sf::Font font = *assetManager.Fonts["OpenSans-Bold"].get();
 
         std::string loadingTextStr;
         if (!AssetQueue.empty()) {
@@ -176,8 +176,8 @@ void LoadingScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
         // Frame sprite
         sf::Sprite frameSprite(frame);
-        float frameX = (game_manager.getResolutionWidth() - frameSprite.getGlobalBounds().width) / 2;
-        float frameY = game_manager.getResolutionHeight() * 0.75f;
+        float frameX = (gameManager.getResolutionWidth() - frameSprite.getGlobalBounds().width) / 2;
+        float frameY = gameManager.getResolutionHeight() * 0.75f;
         frameSprite.setPosition(frameX, frameY);
 
 
@@ -198,7 +198,7 @@ void LoadingScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 }
 void LoadingScene::LateUpdate(GameTime) { /* No late updates */}
 void LoadingScene::DestroyScene() {/* Nothing to destroy */}
-void LoadingScene::OnScene_Active() {
+void LoadingScene::OnScene_Activate() {
         // Unlock framerate for faster loading
         //game_manager.window->setFramerateLimit(0);
 
@@ -207,8 +207,8 @@ void LoadingScene::OnScene_Active() {
         std::string exeDir = getExecutableDirectory();
         frame.loadFromFile(exeDir + "/resources/loader/frame.png");
 
-        int screenWidth = game_manager.getResolution().x;
-        int screenHeight = game_manager.getResolution().y;
+        int screenWidth = gameManager.getResolution().x;
+        int screenHeight = gameManager.getResolution().y;
 
         backgroundQuad[0].position = sf::Vector2f(0, 0);
         backgroundQuad[1].position = sf::Vector2f(screenWidth, 0);

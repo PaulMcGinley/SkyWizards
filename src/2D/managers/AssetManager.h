@@ -17,7 +17,6 @@ class OLibrary;
 class Collectable;
 
 class AssetManager {
-
 public:
         // Delete copy constructor and assignment
         AssetManager(const AssetManager&) = delete;
@@ -57,6 +56,6 @@ private:
 // (actually created and initialized) in another .cpp file.
 // This allows different parts of the program to access the same single
 // instance of the AssetManager through this 'asset_manager' reference.
-extern AssetManager& asset_manager;
+extern AssetManager& assetManager;
 
 #endif //ASSETMANAGER_H

@@ -17,7 +17,7 @@ public:
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow &window, GameTime gameTime) override;
-        void OnScene_Active() override;
+        void OnScene_Activate() override;
         void OnScene_Deactivate() override;
         void DestroyScene() override;
         void InitializeScene() override;

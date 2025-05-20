@@ -25,87 +25,87 @@ void SplashScreen::Update(GameTime gameTime) {
         if (!gameTime.TimeElapsed(1)) // 1 second
                 return;
 
-        if (!asset_manager.TextureLibraries["RobeBlue"]->fullyLoaded) {
-                asset_manager.TextureLibraries["RobeBlue"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["RobeBlue"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["RobeBlue"]->fullyLoaded) {
+                assetManager.TextureLibraries["RobeBlue"].get()->LoadIndices({});
+                assetManager.TextureLibraries["RobeBlue"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
-        if (!asset_manager.TextureLibraries["RobeGreen"]->fullyLoaded) {
-                asset_manager.TextureLibraries["RobeGreen"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["RobeGreen"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["RobeGreen"]->fullyLoaded) {
+                assetManager.TextureLibraries["RobeGreen"].get()->LoadIndices({});
+                assetManager.TextureLibraries["RobeGreen"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
-        if (!asset_manager.TextureLibraries["RobePurple"]->fullyLoaded) {
-                asset_manager.TextureLibraries["RobePurple"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["RobePurple"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["RobePurple"]->fullyLoaded) {
+                assetManager.TextureLibraries["RobePurple"].get()->LoadIndices({});
+                assetManager.TextureLibraries["RobePurple"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
-        if (!asset_manager.TextureLibraries["Staff1"]->fullyLoaded) {
-                asset_manager.TextureLibraries["Staff1"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["Staff1"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["Staff1"]->fullyLoaded) {
+                assetManager.TextureLibraries["Staff1"].get()->LoadIndices({});
+                assetManager.TextureLibraries["Staff1"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
-        if (!asset_manager.TextureLibraries["Staff2"]->fullyLoaded) {
-                asset_manager.TextureLibraries["Staff2"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["Staff2"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["Staff2"]->fullyLoaded) {
+                assetManager.TextureLibraries["Staff2"].get()->LoadIndices({});
+                assetManager.TextureLibraries["Staff2"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
-        if (!asset_manager.TextureLibraries["Staff3"]->fullyLoaded) {
-                asset_manager.TextureLibraries["Staff3"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["Staff3"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["Staff3"]->fullyLoaded) {
+                assetManager.TextureLibraries["Staff3"].get()->LoadIndices({});
+                assetManager.TextureLibraries["Staff3"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
-        if (!asset_manager.TextureLibraries["hearts"]->fullyLoaded) {
-                asset_manager.TextureLibraries["hearts"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["hearts"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["hearts"]->fullyLoaded) {
+                assetManager.TextureLibraries["hearts"].get()->LoadIndices({});
+                assetManager.TextureLibraries["hearts"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         // Program Usage (PrgUse)
-        if (!asset_manager.TextureLibraries["PrgUse"]->fullyLoaded) {
-                asset_manager.TextureLibraries["PrgUse"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["PrgUse"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["PrgUse"]->fullyLoaded) {
+                assetManager.TextureLibraries["PrgUse"].get()->LoadIndices({});
+                assetManager.TextureLibraries["PrgUse"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
-        if (!asset_manager.TextureLibraries["magic"]->fullyLoaded) {
-                asset_manager.TextureLibraries["magic"].get()->LoadIndices({});
-                asset_manager.TextureLibraries["magic"]->allowUnload = false;
+        if (!assetManager.TextureLibraries["magic"]->fullyLoaded) {
+                assetManager.TextureLibraries["magic"].get()->LoadIndices({});
+                assetManager.TextureLibraries["magic"]->allowUnload = false;
                 CurrentValue++;
                 return;
         }
 
         // Level Objects (OLibrary) XML files
-        if (asset_manager.ObjectLibraries.empty()) {
+        if (assetManager.ObjectLibraries.empty()) {
                 loadLevelObjects(exeDir + "/resources/levelobjects/");
                 CurrentValue++;
                 return;
         }
 
         // Maps
-        if (asset_manager.Maps.empty()) {
+        if (assetManager.Maps.empty()) {
                 loadMaps(exeDir + "/resources/maps/");
                 CurrentValue++;
                 return;
         }
 
         // Collectables XML files
-        if (asset_manager.Collectables.empty()) {
-                asset_manager.TextureLibraries["coins"]->LoadIndices({});
+        if (assetManager.Collectables.empty()) {
+                assetManager.TextureLibraries["coins"]->LoadIndices({});
                 loadCollectableObjects(exeDir + "/resources/levelobjects/collectables/");
                 CurrentValue++;
                 return;
@@ -139,8 +139,8 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
 
         // Frame sprite
         sf::Sprite frameSprite(frame);
-        float frameX = (game_manager.getResolutionWidth() - frameSprite.getGlobalBounds().width) / 2;
-        float frameY = game_manager.getResolutionHeight() * 0.75f;
+        float frameX = (gameManager.getResolutionWidth() - frameSprite.getGlobalBounds().width) / 2;
+        float frameY = gameManager.getResolutionHeight() * 0.75f;
         frameSprite.setPosition(frameX, frameY);
 
 
@@ -164,7 +164,7 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
 void SplashScreen::InitializeScene() {
         std::string exeDir = getExecutableDirectory();
 
-        copyrightFont = *asset_manager.Fonts["OpenSans-Bold"].get();
+        copyrightFont = *assetManager.Fonts["OpenSans-Bold"].get();
 
         copyRightText.setFont(copyrightFont);
         copyRightText.setString("Created by Paul McGinley on 08/10/2024.");
@@ -223,7 +223,7 @@ void SplashScreen::DestroyScene() {
         // When the scene is finished
 }
 
-void SplashScreen::OnScene_Active() {
+void SplashScreen::OnScene_Activate() {
         // When the scene starts
 }
 
@@ -244,7 +244,7 @@ void SplashScreen::InitializeLibraries() {
                         std::string fileNameWithoutExtension = entry.path().stem().string();
 
                         // Load the library
-                        asset_manager.LoadTextureLibrary(filePath);
+                        assetManager.LoadTextureLibrary(filePath);
                 }
         }
 }
@@ -262,7 +262,7 @@ void SplashScreen::loadLevelObjects(const std::string &directoryPath) {
                         if (result) {
                                 OLibrary objectLibrary;
                                 if (objectLibrary.deserialize(doc)) {
-                                        asset_manager.ObjectLibraries[fileNameWithoutExtension] =
+                                        assetManager.ObjectLibraries[fileNameWithoutExtension] =
                                                         std::make_unique<OLibrary>(std::move(objectLibrary));
                                 } else {
                                         std::cerr << "Failed to deserialize Olibrary: " << filePath << std::endl;
@@ -287,7 +287,7 @@ void SplashScreen::loadCollectableObjects(const std::string &directoryPath) {
                         if (result) {
                                 auto collectable = std::make_unique<Collectable>();
                                 collectable->deserialize(doc);
-                                asset_manager.Collectables[fileNameWithoutExtension].push_back(std::move(collectable));
+                                assetManager.Collectables[fileNameWithoutExtension].push_back(std::move(collectable));
                         } else {
                                 std::cerr << "Failed to load Collectable: " << filePath << " Error: " << result.description()
                                           << std::endl;
@@ -309,7 +309,7 @@ void SplashScreen::loadMaps(const std::string &directoryPath) {
                         if (result) {
                                 auto map = std::make_unique<WMap>();
                                 if (map->deserialize(doc)) {
-                                        asset_manager.Maps[fileNameWithoutExtension] = std::move(map);
+                                        assetManager.Maps[fileNameWithoutExtension] = std::move(map);
                                 } else {
                                         std::cerr << "Failed to deserialize Map: " << filePath << std::endl;
                                 }

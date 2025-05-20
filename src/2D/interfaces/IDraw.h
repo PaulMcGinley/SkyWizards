@@ -26,7 +26,7 @@ public:
 
         // Get the asset manager instance
         // Anything that inherits from IDraw can access the asset manager
-        AssetManager& asset_manager = AssetManager::GetInstance();
+        AssetManager& assetManager = AssetManager::GetInstance();
 };
 
 #endif //IDRAW_H

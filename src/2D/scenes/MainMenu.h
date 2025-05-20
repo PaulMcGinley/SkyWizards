@@ -21,7 +21,7 @@ public:
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void InitializeScene() override;
         void DestroyScene() override;
-        void OnScene_Active() override;
+        void OnScene_Activate() override;
         void OnScene_Deactivate() override;
 
 private:

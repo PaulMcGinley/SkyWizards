@@ -7,7 +7,7 @@
 #include <ostream>
 
 DebugOverlay::DebugOverlay() {
-        fpsFont = asset_manager.Fonts["OpenSans-Bold"].get();
+        fpsFont = assetManager.Fonts["OpenSans-Bold"].get();
         fpsText.setFont(*fpsFont);
         fpsText.setCharacterSize(24);
         fpsText.setFillColor(sf::Color::Black);
@@ -21,7 +21,7 @@ void DebugOverlay::Update(GameTime gameTime) {
                 fpsCounter = 0;
                 fpsTimer -= 1.0f;
                 fpsText.setString("FPS: " + std::to_string(currentFps));
-                fpsText.setPosition(game_manager.getResolutionWidth() - fpsText.getGlobalBounds().width - 10, 5);
+                fpsText.setPosition(gameManager.getResolutionWidth() - fpsText.getGlobalBounds().width - 10, 5);
         }
 
         AddInfoTopRight("FPS", std::to_string(currentFps));
@@ -53,12 +53,12 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 text.setString(key + ": " + value);
                 text.setOutlineColor(sf::Color::White);
                 text.setOutlineThickness(2.f);
-                text.setPosition(game_manager.getResolutionWidth() - text.getGlobalBounds().width - 10, 10 + yOffset);
+                text.setPosition(gameManager.getResolutionWidth() - text.getGlobalBounds().width - 10, 10 + yOffset);
                 window.draw(text);
                 yOffset += 30;
         }
 
-        yOffset = game_manager.getResolutionHeight() - 30;
+        yOffset = gameManager.getResolutionHeight() - 30;
         for (const auto& [key, value] : debugInfo_BottomLeft) {
                 sf::Text text;
                 text.setFont(*fpsFont);
@@ -72,7 +72,7 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 yOffset -= 30;
         }
 
-        yOffset = game_manager.getResolutionHeight() - 30;
+        yOffset = gameManager.getResolutionHeight() - 30;
         for (const auto& [key, value] : debugInfo_BottomRight) {
                 sf::Text text;
                 text.setFont(*fpsFont);
@@ -81,12 +81,12 @@ void DebugOverlay::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 text.setString(key + ": " + value);
                 text.setOutlineColor(sf::Color::White);
                 text.setOutlineThickness(2.f);
-                text.setPosition(game_manager.getResolutionWidth() - text.getGlobalBounds().width - 10, yOffset - 30);
+                text.setPosition(gameManager.getResolutionWidth() - text.getGlobalBounds().width - 10, yOffset - 30);
                 window.draw(text);
                 yOffset -= 30;
         }
 }
 void DebugOverlay::InitializeScene() { IScene::InitializeScene(); }
 void DebugOverlay::DestroyScene() {}
-void DebugOverlay::OnScene_Active() {}
+void DebugOverlay::OnScene_Activate() {}
 void DebugOverlay::OnScene_Deactivate() {}
