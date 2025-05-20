@@ -30,7 +30,7 @@ public:
         std::string staffLibrary = "Staff1";
         sf::VertexArray staffQuad{sf::Quads, 4};
 
-        void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime);
+        void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gameTime);
         void Update(GameTime gameTime) override;
         void UpdateQuads();
         void LateUpdate(GameTime gameTime) override;

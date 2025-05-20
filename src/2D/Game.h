@@ -19,15 +19,12 @@ public:
         void Run();
 private:
         // Reference to the manager singletons for easy access
-        SceneManager & scene_manager = SceneManager::GetInstance();
-        GameManager & game_manager = GameManager::getInstance();
+        SceneManager & sceneManager = SceneManager::GetInstance();
+        GameManager & gameManager = GameManager::getInstance();
 
         // Clock and game time using for tracking the game loop time
         sf::Clock clock;        // Clock tracks delta time and feeds the data to gameTime
-        GameTime game_time;     // game_time tracks all time related data for the game
-
-        // DEBUG:
-        //DebugOverlay debugOverlay = DebugOverlay(); // Overlay for debugging
+        GameTime gameTime;      // game_time tracks all time related data for the game
 };
 
 #endif //GAME_H

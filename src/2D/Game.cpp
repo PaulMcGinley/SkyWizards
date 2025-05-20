@@ -8,7 +8,6 @@
 #include <filesystem>
 #include "managers/SceneManager.h"
 #include "managers/InputManager.h"
-#include "scenes/DevScene.h"
 #include "scenes/GameScene.h"
 #include "scenes/LoadingScene.h"
 #include "scenes/MainMenu.h"
@@ -17,60 +16,59 @@
 #include "scenes/SplashScreen.h"
 
 void Game::Run() {
-        game_manager.window->setVerticalSyncEnabled(true);
+        gameManager.window->setVerticalSyncEnabled(true);
 
         // All scenes are managed by the scene manager and are added here
-        scene_manager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());
-        scene_manager.AddScene(SceneType::SCENE_DEV, std::make_shared<DevScene>());
-        scene_manager.AddScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
-        scene_manager.AddScene(SceneType::SCENE_GAME, std::make_shared<GameScene>());
-        scene_manager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
-        scene_manager.AddScene(SceneType::SCENE_LOADER, std::make_shared<LoadingScene>());
-        scene_manager.AddScene(SceneType::SCENE_OPTIONS, std::make_shared<SettingsScene>());
+        sceneManager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());
+        sceneManager.AddScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
+        sceneManager.AddScene(SceneType::SCENE_GAME, std::make_shared<GameScene>());
+        sceneManager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
+        sceneManager.AddScene(SceneType::SCENE_LOADER, std::make_shared<LoadingScene>());
+        sceneManager.AddScene(SceneType::SCENE_OPTIONS, std::make_shared<SettingsScene>());
 
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes
         // The assets for this scene are kept as external files to prevent decompression delays
-        scene_manager.ChangeScene(SceneType::SCENE_SPLASH);
+        sceneManager.ChangeScene(SceneType::SCENE_SPLASH);
 
-        std::shared_ptr<DebugOverlay> debugOverlay = std::dynamic_pointer_cast<DebugOverlay>(scene_manager.GetScene(SceneType::SCENE_DEBUG_OVERLAY));
+        std::shared_ptr<DebugOverlay> debugOverlay = std::dynamic_pointer_cast<DebugOverlay>(sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY));
 
         // Main game loop
         sf::Event windowEvent{};
-        while (game_manager.window->isOpen()) {
-                while (game_manager.window->pollEvent(windowEvent)) {
+        while (gameManager.window->isOpen()) {
+                while (gameManager.window->pollEvent(windowEvent)) {
                         // Close window: exit
                         if (windowEvent.type == sf::Event::Closed)
-                                game_manager.window->close();
+                                gameManager.window->close();
                 }
 
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-                        game_manager.window->close();
+                        gameManager.window->close();
                         // TODO: Change this to an Exit to main menu system
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
-                        game_manager.ToggleDebug();
+                        gameManager.ToggleDebug();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
-                        game_manager.ToggleShowCollisions();
+                        gameManager.ToggleShowCollisions();
                 }
 
                 InputManager::getInstance().Update();
 
-                game_time += (clock.restart().asSeconds());
-                scene_manager.Update(game_time);
-                game_manager.window->clear(sf::Color(255, 255, 255, 255));
-                scene_manager.Draw(*game_manager.window, game_time);
+                gameTime += (clock.restart().asSeconds());
+                sceneManager.Update(gameTime);
+                gameManager.window->clear(sf::Color(255, 255, 255, 255));
+                sceneManager.Draw(*gameManager.window, gameTime);
 
-                if (game_manager.Debug()) {
-                        debugOverlay->Update(game_time);
-                        debugOverlay->Draw(*game_manager.window, game_time);
+                if (gameManager.Debug()) {
+                        debugOverlay->Update(gameTime);
+                        debugOverlay->Draw(*gameManager.window, gameTime);
                 }
 
-                game_manager.window->display();
-                scene_manager.LateUpdate(game_time);
+                gameManager.window->display();
+                sceneManager.LateUpdate(gameTime);
         }
 }

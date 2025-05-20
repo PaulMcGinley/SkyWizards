@@ -37,7 +37,7 @@ Player::Player(GameScene* game_scene) : gameScene(game_scene) {
         });
 }
 
-void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) {
+void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gameTime) {
         // Get current world position of collision box
         sf::FloatRect playerBox(
             position.x + collisionBox.left,
@@ -48,13 +48,13 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
 
         // Store the previous position before applying velocity
         sf::FloatRect prevPlayerBox = playerBox;
-        prevPlayerBox.left -= velocity.x * gametime.deltaTime;
-        prevPlayerBox.top -= velocity.y * gametime.deltaTime;
+        prevPlayerBox.left -= velocity.x * gameTime.deltaTime;
+        prevPlayerBox.top -= velocity.y * gameTime.deltaTime;
 
         // Calculate predicted next position based on velocity
         sf::FloatRect nextPlayerBox = playerBox;
-        nextPlayerBox.left += velocity.x * gametime.deltaTime;
-        nextPlayerBox.top += velocity.y * gametime.deltaTime;
+        nextPlayerBox.left += velocity.x * gameTime.deltaTime;
+        nextPlayerBox.top += velocity.y * gameTime.deltaTime;
 
         bool onGround = false;
 

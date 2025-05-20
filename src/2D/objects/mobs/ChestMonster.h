@@ -14,12 +14,12 @@
 
 class ChestMonster final : public Mob {
 public:
-        ChestMonster(Player* player, sf::Vector2f position, float viewRange, float moveSpeed, int health);
+        ChestMonster(Player* player, sf::Vector2f spawnPosition, float viewRange, float moveSpeed, int health);
 
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
-        void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) override;
+        void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gameTime) override;
         void TickAnimation(GameTime gameTime) override;
         void Damaged(int amount) override;
 
@@ -39,8 +39,8 @@ private:
         bool canMoveLeft;
         bool canMoveRight;
         bool onGround;
-        const float biteDistance = 110.0f;
-        const float smackDistance = 200.0f;
+        static constexpr float biteDistance = 110.0f;
+        static constexpr float smackDistance = 200.0f;
         const float idleDistance = viewRange;
         const float chaseDistance = viewRange/2;
 

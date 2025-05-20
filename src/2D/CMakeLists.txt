@@ -30,8 +30,6 @@ add_executable(LoSW___BftS main.cpp
         interfaces/IScene.h
         scenes/SplashScreen.cpp
         scenes/SplashScreen.h
-        scenes/DevScene.cpp
-        scenes/DevScene.h
         managers/SceneManager.cpp
         Enumerators/SceneType.h
         os/GetExecutionDirectory.h

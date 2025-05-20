@@ -97,7 +97,7 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         DrawInFrontOfEntities(window, gameTime);
 
         if(gameManager.ShowCollisions()) {
-                // DEBUG_DrawMapBoundaries(window, gameTime);
+                DEBUG_DrawMapBoundaries(window, gameTime);
         }
 
         // Draw the UI
@@ -154,7 +154,7 @@ void GameScene::Update_Loading(GameTime gameTime) {
         // TODO: Play a level start sequence to allow for delta time to stabilize
         // Note: This issue should now be resolved with the advent of the LoadingScene
         if (startTime == 0.f)
-                startTime = gameTime.NowAddMilliseconds(1000);
+                startTime = gameTime.NowAddMilliseconds(0);
 
         if (!gameTime.TimeElapsed(startTime))
                 UpdateLoop = &GameScene::Update_Game;
@@ -418,10 +418,6 @@ void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
         // Draw the collectables
         for (auto const & collectable: collectables) {
                 collectable->Draw(window, gameTime);
-                // sf::RectangleShape debugRect(sf::Vector2f(20, 20));
-                // debugRect.setFillColor(sf::Color(255, 0, 255, 150));
-                // debugRect.setPosition(collectable->GetPosition().x, collectable->GetPosition().y);
-                // window.draw(debugRect);
         }
 
 }

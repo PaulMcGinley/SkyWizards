@@ -27,7 +27,7 @@ void Collectable::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
         // Debug: Collision box
         if (GameManager::getInstance().ShowCollisions()) {
-                sf::RectangleShape debugRect(sf::Vector2f(collisionBox.getPosition().x, collisionBox.getPosition().y));
+                sf::RectangleShape debugRect(sf::Vector2f(collisionBox.width, collisionBox.height));
                 debugRect.setFillColor(sf::Color(0, 0, 0, 150));
                 debugRect.setPosition(GetPosition());
                 window.draw(debugRect);

@@ -39,18 +39,19 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
         collisionBox.height = 90;
 }
 void ChestMonster::Update(GameTime gameTime) {
-
+        // Update quads in being damaged but perform no other logic
         if (IsDead() || GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED) {
                 UpdateQuads();
                 return;
         }
-        // Get a reference to the player to save on dereferencing calls
-        Player& player = *this->player;
 
-        // Check if the player is dead
+        // Get a reference to the player to save on dereferencing calls
+        Player const & player = *this->player;
+
+        // Change animation to the static sequence if the player is dead.
         if (player.GetIsDead()) {
-                ChangeAnimation(AnimationType::ANIMATION_STATIC, gameTime, false); // Hide
-                UpdateQuads(); // Update the texture quads here because we are skipping the rest of the logic
+                ChangeAnimation(AnimationType::ANIMATION_STATIC, gameTime, false);
+                UpdateQuads(); // Update the texture quads and perform no other logic
                 return;
         }
 
@@ -72,11 +73,9 @@ void ChestMonster::Update(GameTime gameTime) {
         if (distance < biteDistance && gameTime.TimeElapsed(nextBiteTime)) {
                 // Player is within CQB range
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK, gameTime, true); // Bite
-                //nextBiteTime = gameTime.NowAddMilliseconds(biteCooldown);
         } else if (distance < smackDistance && distance >= biteDistance && gameTime.TimeElapsed(nextSmackTime)) {
                 // Player is within smack attack range
-                ChangeAnimation(AnimationType::ANIMATION_ATTACK2, gameTime, true); // Smack off screen
-                //nextSmackTime = gameTime.NowAddMilliseconds(smackCooldown);
+                ChangeAnimation(AnimationType::ANIMATION_ATTACK2, gameTime, true); // Smack
         } else if (distance > biteDistance && distance < chaseDistance) {
                 // Player is within chase range
                 ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime, false);
@@ -105,21 +104,18 @@ void ChestMonster::Update(GameTime gameTime) {
                 }
         }
 
-        // Update collision box position
+        // Update collision box position factoring the sprite offset (250)
         collisionBox.left = position.x + 250 - (collisionBox.width / 2);
-        collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 40;
+        collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 40; // +40 for better alignment
 
         UpdateQuads();
 }
 
-void ChestMonster::LateUpdate(GameTime gameTime) {
-        // Update the animation
-        TickAnimation(gameTime);
-}
+void ChestMonster::LateUpdate(GameTime gameTime) { TickAnimation(gameTime); }
 void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw Shadow
         float shadowX = collisionBox.left + (collisionBox.width/2) - assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x / 2;
-        float shadowY = position.y + 310;
+        float shadowY = position.y + 310; // +310 for better alignment
         IDraw::Draw(window, "PrgUse", 9, sf::Vector2f(shadowX, shadowY));
 
         // Draw Monster
@@ -137,13 +133,12 @@ void ChestMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 // DEBUG: Draw detector circles
                 sf::CircleShape leftDropDetector(5);
                 leftDropDetector.setFillColor(sf::Color::Green);
-                leftDropDetector.setPosition(GetLeftDropDetectorPosition());
+                leftDropDetector.setPosition(GetLeftDropDetectorPosition() - sf::Vector2f({3,0}));
                 window.draw(leftDropDetector);
                 sf::CircleShape rightDropDetector(5);
                 rightDropDetector.setFillColor(sf::Color::Red);
-                rightDropDetector.setPosition(GetRightDropDetectorPosition());
+                rightDropDetector.setPosition(GetRightDropDetectorPosition()- sf::Vector2f({3,0}));
                 window.draw(rightDropDetector);
-                // END DEBUG ^
         }
 }
 void ChestMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gametime) {
@@ -228,8 +223,6 @@ void ChestMonster::Damaged(int amount) {
         Mob::Damaged(amount);
 }
 void ChestMonster::BitePlayer() {
-        std::cout << "BitePlayer" << std::endl;
-
         // Get a reference to the player to save on dereferencing calls
         Player& player = *this->player;
 
