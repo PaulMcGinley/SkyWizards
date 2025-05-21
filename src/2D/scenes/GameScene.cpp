@@ -29,7 +29,7 @@ void GameScene::LoadMap(std::string name)  {
 
         if (const auto debugOverlay = sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
                 if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
-                        debugOverlayPtr->AddInfoBottomLeft("Collectables", std::to_string(collectables.capacity()));
+                        debugOverlayPtr->AddInfoBottomLeft("Collectables", std::to_string(collectables.size()));
                 }
         }
 }
@@ -44,6 +44,7 @@ void GameScene::Update(const GameTime gameTime) {
                         debugOverlayPtr->AddInfoTopLeft("Player Y", std::to_string(player.position.y));
                         debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
                         debugOverlayPtr->AddInfoTopLeft("Player Velocity Y", std::to_string(player.velocity.y));
+                        debugOverlayPtr->AddInfoTopLeft("Coins", std::to_string(player.GetCoins()));
                 }
         }
         // END DEBUG ^
@@ -112,9 +113,7 @@ void GameScene::InitializeScene() {
 
         IScene::InitializeScene();
 }
-void GameScene::DestroyScene() {
-
-}
+void GameScene::DestroyScene() { /* Nothing to destroy */ }
 void GameScene::OnScene_Activate() {
         if (const auto debugOverlay = sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
                 if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
@@ -170,6 +169,7 @@ void GameScene::Update_Game(GameTime gameTime) {
         for (const auto& projectile : projectiles) {
                 projectile->Update(gameTime);
         }
+
         // Loop through the projectiles and remove any that have expired (start at the end to avoid invalidating iterator)
         for (int i = projectiles.size() - 1; i >= 0; --i) {
                 if (projectiles[i]->Expired()) {
@@ -178,7 +178,6 @@ void GameScene::Update_Game(GameTime gameTime) {
                 }
         }
         CheckProjectileCollisions();
-
 
         if (player.GetIsDead() && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
                 player.health.ResetHealth(gameTime);
@@ -196,9 +195,8 @@ void GameScene::Update_Game(GameTime gameTime) {
         player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
         player.Update(gameTime);
 
-        if (player.position.y > 6000)
+        if (player.position.y > 6500)
                 SpawnPlayer();
-                //player.position = map->startPosition - sf::Vector2f(250, 0);
 
         // This is a possible fix to the tearing issue of the tiles
         int vpX = player.position.x + 250;
@@ -247,6 +245,25 @@ void GameScene::Update_Game(GameTime gameTime) {
                 //monster->UpdatePlayerPosition(player.position, gameTime);
                 monster->Update(gameTime);
         }
+
+        for (auto & collectable: collectables) {
+                if (collectable->IsCollected())
+                        continue;
+
+                sf::IntRect collider = player.collisionBox;
+                collider.left += player.position.x;
+                collider.top += player.position.y;
+                if (collider.intersects(sf::Rect<int>(collectable->GetCollisionBox()))) {
+                        collectable->Collect();
+                        player.IncrementCoins(1);
+                }
+        }
+
+        for (int i = collectables.size() - 1; i >= 0; --i) {
+                if (collectables[i]->IsCollected()) {
+                        collectables.erase(collectables.begin() + i);
+                }
+        }
 }
 void GameScene::ValidateMap() {
         projectiles.clear();
@@ -262,8 +279,7 @@ void GameScene::ValidateMap() {
 }
 void GameScene::LoadSky() {
         // Load the parallax background texture
-        auto &skyLibrary = *assetManager.TextureLibraries["sky"];
-        //skyLibrary.LoadIndices({map->ParallaxBackgroundIndex});
+        const auto &skyLibrary = *assetManager.TextureLibraries["sky"];
         skyBoxTexture = &skyLibrary.entries[map->ParallaxBackgroundIndex].texture;
 
         // Set the position of the skyBoxSprite to the top-left corner
@@ -272,7 +288,7 @@ void GameScene::LoadSky() {
 }
 void GameScene::LoadMountains() {
         // Load the mountains background texture
-        auto &mountainsLibrary = *assetManager.TextureLibraries["mountains"];
+        const auto &mountainsLibrary = *assetManager.TextureLibraries["mountains"];
         mountainsTexture = &mountainsLibrary.entries[map->MountainsBackgroundIndex].texture;
 
         // Set the texture for the mountains sprite

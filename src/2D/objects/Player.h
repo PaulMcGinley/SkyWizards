@@ -55,6 +55,10 @@ public:
         const sf::IntRect collisionBox = {225, 200, 50, 150};
         const sf::Vector2f collisionOffset() { return position + sf::Vector2f(collisionBox.left, collisionBox.top); }
         const float feetPosition() { return position.y + collisionBox.top + collisionBox.height; }
+
+        void IncrementCoins(int amount);
+        int GetCoins() const { return coins; }
+
         // Velocity
         sf::Vector2f velocity = {0, 0};
         sf::Vector2f acceleration = {0, 0};
@@ -78,6 +82,8 @@ private:
         sf::Vector2f shadowDrawPosition;
 
         void CastMagic(GameTime gameTime);
+
+        int coins = 0;
 };
 
 

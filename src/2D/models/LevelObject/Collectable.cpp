@@ -84,6 +84,7 @@ sf::Vector2f Collectable::GetPosition() const { return position; }
 void Collectable::Collect() {
         // Mark the collectable as collected
         collected = true;
+        std::cout << "Collectable collected!" << std::endl;
 }
 bool Collectable::IsCollected() {
         // Check if the collectable is collected

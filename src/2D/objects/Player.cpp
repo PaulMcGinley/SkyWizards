@@ -402,9 +402,13 @@ void Player::TickAnimation(GameTime gameTime) {
         if (GetCurrentAnimationSequence().Sequence_OnFrameTick != nullptr)
                 GetCurrentAnimationSequence().Sequence_OnFrameTick();
 
-        if(GetCurrentAnimation() == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime) && GetCurrentAnimationFrame() == 6) {
+        if (GetCurrentAnimation() == AnimationType::ANIMATION_FIRE && gameTime.TimeElapsed(nextMagicTime) &&
+            GetCurrentAnimationFrame() == 6) {
                 CastMagic(gameTime);
         }
+}
+void Player::IncrementCoins(const int amount = 1) {
+        coins += amount;
 }
 void Player::CastMagic(GameTime gameTime) {
         sf::Vector2f projectileVelocity = {32, 0};
