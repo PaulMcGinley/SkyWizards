@@ -24,10 +24,11 @@ public:
         void operator=(const GameManager&) = delete;
 
         // Window title
-        const std::string game_name = "Legend of Sky Wizards - But from the side";
+        const std::string GAME_NAME = "Legend of Sky Wizards - But from the side";
 
         // Pointer to the window object
-        sf::RenderWindow* window = nullptr;
+        // mutable to allow modification of the window in const methods
+        mutable sf::RenderWindow* window = nullptr;
 
         /* ===========================================================================================================================================================================================
          * ===   RESOLUTION   ========================================================================================================================================================================

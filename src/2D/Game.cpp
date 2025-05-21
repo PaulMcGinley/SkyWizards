@@ -17,7 +17,6 @@
 
 void Game::Run() {
         InputManager const & input = InputManager::getInstance();
-        gameManager.window->setVerticalSyncEnabled(true);
 
         // All scenes are managed by the scene manager and are added here
         sceneManager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Game.h"
+#include "IO/GameSettingsFile.h"
 #include "managers/AssetManager.h"
 #include "managers/InputManager.h"
 #include "managers/SceneManager.h"
@@ -13,34 +14,24 @@ int main(int argc, char* argv[]) {
         InputManager const& inputManager = InputManager::getInstance();
         SceneManager const& sceneManager = SceneManager::GetInstance();
 
+        // We need to load the fonts before we initialize any scene as some scenes use the fonts to draw text.
         AssetManager::LoadFonts(getExecutableDirectory() + "/resources/fonts/");
 
-        // TODO: Read settings from file
+        // Read GameSettings from file
+        GameSettingsFile settingsFile;
+        settingsFile.LoadSettings();
 
-        // If the resolution has been set by the user then use that resolution
-        if (GameManager::getInstance().isCustomResolution()) {
-                GameManager::getInstance().setResolution({1920, 1080}); // TODO: Change to read from file
-        }
-        // Else use the monitor resolution as the game resolution
-        else {
-                // Get monitor resolution
-                sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-                // Set the games resolution to the desktop resolution
-                GameManager::getInstance().setResolution({desktop.width, desktop.height});
-        }
+        // gameManager.setResolution({settingsFile.GetResolutionWidth(), settingsFile.GetResolutionHeight()});
+        // gameManager.setFrameRateLimit(settingsFile.GetFrameRateLimit());
+        // gameManager.setFullscreen(settingsFile.IsFullscreenMode());
+        // gameManager.setVSync(settingsFile.IsVsyncEnabled());
 
-        // If the game is in fullscreen mode then set the window to fullscreen
-        if (GameManager::getInstance().isFullscreen()) {
-                GameManager::getInstance().window = new sf::RenderWindow(sf::VideoMode(gameManager.getResolutionWidth(), gameManager.getResolutionHeight()), gameManager.game_name, sf::Style::Fullscreen);
-        }
-        // If the game is in exclusive fullscreen mode then set the window to exclusive fullscreen
-        else if (GameManager::getInstance().isExclusiveFullscreen()) {
-                GameManager::getInstance().window->create(sf::VideoMode(gameManager.getResolutionWidth(), gameManager.getResolutionHeight()), gameManager.game_name, sf::Style::Fullscreen);
-        }
-        // Else set the window to windowed mode
-        else {
-                GameManager::getInstance().window = new sf::RenderWindow(sf::VideoMode(gameManager.getResolutionWidth(), gameManager.getResolutionHeight()), gameManager.game_name, sf::Style::Default);
-        }
+        // Setup the window
+        gameManager.window = new sf::RenderWindow(sf::VideoMode(gameManager.getResolutionWidth(), gameManager.getResolutionHeight()), gameManager.GAME_NAME, sf::Style::Default);
+        gameManager.window->setVerticalSyncEnabled(true);
+        gameManager.window->setFramerateLimit(120); // Keep inder 600 to stop physics issues
+        gameManager.window->setMouseCursorVisible(false);
+        gameManager.window->setActive(true);
 
         // Run the game
         Game game;
