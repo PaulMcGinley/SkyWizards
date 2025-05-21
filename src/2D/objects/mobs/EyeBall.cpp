@@ -89,7 +89,7 @@ void EyeBall::TickAnimation(GameTime gameTime) { Mob::TickAnimation(gameTime); }
 void EyeBall::Damaged(int amount) { Mob::Damaged(amount); }
 void EyeBall::UpdateQuads() {
         // Get the current animation frame
-        TextureEntry* entry = &assetManager.TextureLibraries["Eye-Ball"]->entries[GetTextureDrawIndex() + faceDirection];
+        TextureEntry* entry = &assetManager.TextureLibraries["Eye-Ball"]->entries[GetTextureDrawIndex()];
 
         // Update the texture quads
         for (int i = 0; i < 4; ++i) {
