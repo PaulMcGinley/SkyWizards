@@ -9,6 +9,7 @@
 #include <iostream>
 #include "managers/AssetManager.h"
 #include "models/Projectiles/FireBall.h"
+#include <math.h>
 
 Player::Player(GameScene* game_scene) : gameScene(game_scene) {
         // Set the animation sequences for the player
@@ -192,15 +193,15 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                 }
         }
 
-        float shadowX = position.x +250 - assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x/2;
+        // float shadowX = (position.x +250) - (assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x/2);
 
         if (!isFalling && !isJumping) {
                 // player on ground
                 float shadowY = position.y + collisionBox.top + collisionBox.height - 25;
-                shadowDrawPosition = sf::Vector2f(shadowX, shadowY);
+                shadowDrawPosition = sf::Vector2f(0, shadowY);
         } else {
                 // player in ait
-                float playerFeetX = shadowX + collisionBox.left + collisionBox.width / 2;
+                float playerFeetX = 0 + collisionBox.left + collisionBox.width / 2;
                 float playerFeetY = position.y + collisionBox.top + collisionBox.height - 25;
 
                 // check for ground collision
@@ -216,9 +217,9 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                 }
 
                 if (closestY) { // we found a ground collision
-                        shadowDrawPosition = sf::Vector2f(shadowX, *closestY);
+                        shadowDrawPosition = sf::Vector2f(0, *closestY);
                 } else { // we didnt find a ground collision so send the shadow away
-                        shadowDrawPosition = sf::Vector2f(shadowX, 9001);
+                        shadowDrawPosition = sf::Vector2f(0, 9001);
                 }
         }
 }
@@ -333,6 +334,7 @@ void Player::Update(GameTime gameTime) {
         // clamp position to int
         position.x = std::round(position.x);
         position.y = std::round(position.y);
+        shadowDrawPosition.x = (position.x +250) - (assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x/2);
 
         // Update animation based on movement state
         if (isJumping && velocity.y < 0) {

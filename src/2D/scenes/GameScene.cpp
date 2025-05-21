@@ -15,12 +15,14 @@
 #include "models/LevelObject/Collectable.h"
 #include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
+#include <iomanip>
+#include <sstream>
+#include <cmath>
 
 GameScene::GameScene()
         : IScene()
         , UpdateLoop(&GameScene::Update_Loading)
-        , map(nullptr)
-{ /* Nothing in the constructor */}
+        , map(nullptr) { /* Nothing in the constructor */ }
 
 void GameScene::LoadMap(std::string name)  {
         mapName = std::move(name);
@@ -511,5 +513,25 @@ void GameScene::SpawnPlayer() {
         player.velocity = sf::Vector2f(0, 0);
         player.acceleration = sf::Vector2f(0, 0);
         player.deceleration = sf::Vector2f(0, 0);
-        viewport.setCenter(player.position + sf::Vector2f(250,0));
+        viewport.setCenter(player.position + sf::Vector2f(250, 0));
+}
+std::string GameScene::levelTime(GameTime gameTime) {
+        if (levelEndTime < levelStartTime) {
+                return "Err";
+        }
+
+        float durationMs = levelEndTime - levelStartTime;
+
+        int totalMilliseconds = static_cast<int>(durationMs);
+        int minutes = totalMilliseconds / (60 * 1000);
+        totalMilliseconds %= (60 * 1000);
+        int seconds = totalMilliseconds / 1000;
+        int milliseconds = totalMilliseconds % 1000;
+
+        std::ostringstream oss;
+        oss << std::setfill('0') << std::setw(2) << minutes << ":"
+            << std::setfill('0') << std::setw(2) << seconds << "."
+            << std::setfill('0') << std::setw(3) << milliseconds;
+
+        return oss.str();
 }

@@ -35,7 +35,7 @@ private:
         void (GameScene::*UpdateLoop)(GameTime);
         void Update_Loading(GameTime gameTime);
         void Update_Game(GameTime gameTime);
-        float startTime =0.f;
+        float startTime = 0.f;
 
         std::string mapName;
         WMap* map;
@@ -71,6 +71,9 @@ private:
         std::vector<std::unique_ptr<Projectile>> projectiles;
         std::vector<std::unique_ptr<Collectable>> collectables;
 
+        float levelStartTime = 0.f;
+        float levelEndTime = 0.f;
+        std::string levelTime(GameTime gameTime);
 };
 
 
