@@ -45,6 +45,7 @@ void GameScene::Update(const GameTime gameTime) {
                         debugOverlayPtr->AddInfoTopLeft("Player Velocity X", std::to_string(player.velocity.x));
                         debugOverlayPtr->AddInfoTopLeft("Player Velocity Y", std::to_string(player.velocity.y));
                         debugOverlayPtr->AddInfoTopLeft("Coins", std::to_string(player.GetCoins()));
+                        debugOverlayPtr->AddInfoTopLeft("Score", std::to_string(player.GetTotalScore()));
                 }
         }
         // END DEBUG ^
@@ -218,7 +219,7 @@ void GameScene::Update_Game(GameTime gameTime) {
         playerRect.height = player.collisionBox.getSize().y;
 
         if (playerRect.intersects(endPosRect)) {
-                std::vector<std::string> maps = {/*"01",*/ "02", "03"};
+                std::vector<std::string> maps = {"00", "01", "02", "03"};
                 auto it = std::find(maps.begin(), maps.end(), mapName);
                 size_t nextIndex = 0;
                 if (it != maps.end()) {
@@ -239,10 +240,12 @@ void GameScene::Update_Game(GameTime gameTime) {
                 // scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
-        //UpdateMobs(gameTime);
         for (auto &monster: monsters) {
+                if (monster->IsDead()) {
+                        player.UpdateScore(mapName, monster->AwardScore());
+                }
+
                 monster->CalculatePhysicsState(getLocalBoundaries(), gameTime);
-                //monster->UpdatePlayerPosition(player.position, gameTime);
                 monster->Update(gameTime);
         }
 
@@ -256,6 +259,7 @@ void GameScene::Update_Game(GameTime gameTime) {
                 if (collider.intersects(sf::Rect<int>(collectable->GetCollisionBox()))) {
                         collectable->Collect();
                         player.IncrementCoins(1);
+                        player.UpdateScore(mapName, 100);
                 }
         }
 
@@ -303,7 +307,7 @@ void GameScene::LoadAssets() {
         LoadCollectables();
 }
 void GameScene::LoadMobs() {
-        // Clear exisitng mobs
+        // Clear existing mobs
         monsters.clear();
 
         std::cout << "Loading mob count: " << map->Mobs.size() << std::endl;
@@ -423,7 +427,7 @@ void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) 
                                         IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x, obj.Position.y));
         }
 }
-void GameScene::DrawEntities(sf::RenderWindow &window, GameTime gameTime) {
+void GameScene::DrawEntities(sf::RenderWindow &window, const GameTime gameTime) {
         player.Draw(window, gameTime);
         for (auto const & chestMonster : monsters) {
                 chestMonster->Draw(window, gameTime);

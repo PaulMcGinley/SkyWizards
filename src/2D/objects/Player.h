@@ -40,6 +40,7 @@ public:
         FaceDirection faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_PLAYER;
         sf::Vector2f position = {0, 0};
 
+        // The player has multiple face directions so this needs to be factored in
          int DrawFrame() {
                 return GetTextureDrawIndex() + faceDirection;
          }
@@ -53,11 +54,15 @@ public:
         void SetIsDead(bool dead) { isDead = dead; }
 
         const sf::IntRect collisionBox = {225, 200, 50, 150};
-        const sf::Vector2f collisionOffset() { return position + sf::Vector2f(collisionBox.left, collisionBox.top); }
-        const float feetPosition() { return position.y + collisionBox.top + collisionBox.height; }
+        sf::Vector2f collisionOffset() const { return position + sf::Vector2f(collisionBox.left, collisionBox.top); }
+        float feetPosition() const { return position.y + collisionBox.top + collisionBox.height; }
 
         void IncrementCoins(int amount);
         int GetCoins() const { return coins; }
+
+        void UpdateScore(const std::string &levelName, int score) ;
+        int GetScore(const std::string &levelName);
+        int GetTotalScore();
 
         // Velocity
         sf::Vector2f velocity = {0, 0};
@@ -84,6 +89,7 @@ private:
         void CastMagic(GameTime gameTime);
 
         int coins = 0;
+        std::map<std::string, int> scores; // levelname, score
 };
 
 

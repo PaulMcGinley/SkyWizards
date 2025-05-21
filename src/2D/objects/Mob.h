@@ -23,6 +23,7 @@ public:
         sf::FloatRect GetCollisionBox() const;
         virtual void Damaged(int amount);
         bool IsDead();
+        int AwardScore();
 
 protected:
         virtual void DamagePlayer(int amount) = 0;
@@ -39,6 +40,9 @@ protected:
 
         IScene* gameScene;
         Player* player;
+
+        bool scoreAwarded = false;
+        int score = 1000;
 };
 
 

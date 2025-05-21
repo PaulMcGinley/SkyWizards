@@ -27,6 +27,11 @@ void Mob::Damaged(int amount) {
                 ChangeAnimation(AnimationType::ANIMATION_DEATH, true);
         }
 }
-bool Mob::IsDead() {
-        return health <= 0;
+bool Mob::IsDead() { return health <= 0; }
+int Mob::AwardScore() {
+        if (scoreAwarded)
+                return 0;
+
+        scoreAwarded = true;
+        return score;
 }

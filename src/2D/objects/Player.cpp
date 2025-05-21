@@ -368,7 +368,7 @@ void Player::UpdateQuads() {
         }
 }
 
-void Player::LateUpdate(GameTime gameTime) {
+void Player::LateUpdate(const GameTime gameTime) {
         health.LateUpdate(gameTime);
         TickAnimation(gameTime);
 }
@@ -382,8 +382,8 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
         TextureEntry &staff = assetManager.TextureLibraries[staffLibrary]->entries[DrawFrame()];
 
         // Draw Robe and Staff
-        window.draw( robeQuad, &robe.texture );
-        window.draw( staffQuad, &staff.texture );
+        window.draw(robeQuad, &robe.texture);
+        window.draw(staffQuad, &staff.texture);
 
         // Debug: Draw collision box
         if (GameManager::getInstance().ShowCollisions()) {
@@ -407,10 +407,17 @@ void Player::TickAnimation(GameTime gameTime) {
                 CastMagic(gameTime);
         }
 }
-void Player::IncrementCoins(const int amount = 1) {
-        coins += amount;
+void Player::IncrementCoins(const int amount = 1) { coins += amount; }
+void Player::UpdateScore(const std::string &levelName, const int score) { scores[levelName] += score; }
+int Player::GetScore(const std::string &levelName) { return scores[levelName]; }
+int Player::GetTotalScore() {
+        int totalScore = 0;
+        for (const auto &[level, score] : scores) {
+                totalScore += score;
+        }
+        return totalScore;
 }
-void Player::CastMagic(GameTime gameTime) {
+void Player::CastMagic(const GameTime gameTime) {
         sf::Vector2f projectileVelocity = {32, 0};
         if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT) {
                 projectileVelocity.x *= -1.f;
