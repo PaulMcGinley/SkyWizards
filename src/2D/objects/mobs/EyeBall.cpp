@@ -57,7 +57,13 @@ void EyeBall::Update(GameTime gameTime) {
                 sf::Vector2f directionToPlayer = (player.position - position) / distance;
                 position += directionToPlayer * walkSpeed * gameTime.deltaTime;
                 ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime, true);
+        } else {
+                // Stand still or do something else
+                ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
         }
+
+        if (position.y - player.position.y > 400)
+                position.y -=800;
 
 
         // Update collision box position factoring the sprite offset (375)
