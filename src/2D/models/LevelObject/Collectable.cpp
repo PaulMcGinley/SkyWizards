@@ -81,3 +81,11 @@ void Collectable::SetPosition(const float x, const float y) {
         collisionBox.top += y;
 }
 sf::Vector2f Collectable::GetPosition() const { return position; }
+void Collectable::Collect() {
+        // Mark the collectable as collected
+        collected = true;
+}
+bool Collectable::IsCollected() {
+        // Check if the collectable is collected
+        return collected;
+}

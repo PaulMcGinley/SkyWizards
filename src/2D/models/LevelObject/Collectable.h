@@ -28,6 +28,8 @@ public:
         [[nodiscard]] sf::FloatRect GetCollisionBox() const;
         void SetPosition(float x, float y);
         sf::Vector2f GetPosition() const;
+        void Collect();
+        bool IsCollected();
 
 private:
         std::string Library;
@@ -36,6 +38,7 @@ private:
         int animationTick;
         sf::Vector2f position;
         sf::FloatRect collisionBox;
+        bool collected;
 };
 
 
