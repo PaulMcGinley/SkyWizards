@@ -82,6 +82,8 @@ add_executable(LoSW___BftS main.cpp
         models/LevelObject/Collectable.h
         managers/InputManager.h
         models/Health.cpp
+        objects/mobs/EyeBall.cpp
+        objects/mobs/EyeBall.h
 )
 
 

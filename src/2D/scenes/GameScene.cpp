@@ -6,7 +6,10 @@
 
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <cmath>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <unordered_map>
 #include <unordered_set>
 #include "LoadingScene.h"
@@ -15,9 +18,8 @@
 #include "models/LevelObject/Collectable.h"
 #include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
-#include <iomanip>
-#include <sstream>
-#include <cmath>
+
+#include "objects/mobs/EyeBall.h"
 
 GameScene::GameScene()
         : IScene()
@@ -324,14 +326,21 @@ void GameScene::LoadMobs() {
                         assetManager.TextureLibraries[mob.MonsterName]->LoadIndices(
                                         {}); // Load all indices for the mob library
                 }
-
+                if (!assetManager.TextureLibraries["Eye-Ball"]->fullyLoaded)
+                        assetManager.TextureLibraries["Eye-Ball"]->LoadIndices({});
                 // TODO: Convert to switch statement
                 if (mob.MonsterName == "ChestMonster") {
-                        monsters.emplace_back(std::make_unique<ChestMonster>(&player, mob.Position, mob.ViewRange,
-                                                                             mob.MoveSpeed, mob.Health));
+                        monsters.emplace_back(std::make_unique<ChestMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                        monsters.emplace_back(std::make_unique<EyeBall>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+
+                }
+                else if (mob.MonsterName == "Eye-Ball") {
+                        monsters.emplace_back(std::make_unique<EyeBall>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                        if (!assetManager.TextureLibraries["Eye-Ball"]->fullyLoaded)
+                                assetManager.TextureLibraries["Eye-Ball"]->LoadIndices({});
                 }
                 // else if (mob.MonsterName == "SlimeMonster") {
-                //     slimeMonsters.emplace_back(mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health);
+                //     monsters.emplace_back(std::make_unique<Slime>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 // }
                 else {
                         std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
