@@ -41,7 +41,7 @@ public:
         std::map<std::string, std::vector<std::unique_ptr<Collectable>>> Collectables;
 
         void LoadTextureLibrary(std::string fileName);
-        void LoadFonts(std::string directoryPath);
+        static void LoadFonts(std::string directoryPath);
 
 private:
         // Private constructor to prevent instancing

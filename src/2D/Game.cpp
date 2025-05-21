@@ -16,6 +16,7 @@
 #include "scenes/SplashScreen.h"
 
 void Game::Run() {
+        InputManager const & input = InputManager::getInstance();
         gameManager.window->setVerticalSyncEnabled(true);
 
         // All scenes are managed by the scene manager and are added here
@@ -31,7 +32,7 @@ void Game::Run() {
         // The assets for this scene are kept as external files to prevent decompression delays
         sceneManager.ChangeScene(SceneType::SCENE_SPLASH);
 
-        std::shared_ptr<DebugOverlay> debugOverlay = std::dynamic_pointer_cast<DebugOverlay>(sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY));
+        const std::shared_ptr<DebugOverlay> debugOverlay = std::dynamic_pointer_cast<DebugOverlay>(sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY));
 
         // Main game loop
         sf::Event windowEvent{};
@@ -42,21 +43,20 @@ void Game::Run() {
                                 gameManager.window->close();
                 }
 
+                InputManager::getInstance().Update();
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+                if (input.IsKeyDown(sf::Keyboard::Num1) && input.IsKeyDown(sf::Keyboard::Num2)) {
                         gameManager.window->close();
                         // TODO: Change this to an Exit to main menu system
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
+                if (input.IsKeyDown(sf::Keyboard::Num1) && input.IsKeyPressed(sf::Keyboard::N)) {
                         gameManager.ToggleDebug();
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+                if (input.IsKeyDown(sf::Keyboard::Num1) && input.IsKeyPressed(sf::Keyboard::M)) {
                         gameManager.ToggleShowCollisions();
                 }
-
-                InputManager::getInstance().Update();
 
                 gameTime += (clock.restart().asSeconds());
                 sceneManager.Update(gameTime);

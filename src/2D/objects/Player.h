@@ -45,7 +45,7 @@ public:
                 return GetTextureDrawIndex() + faceDirection;
          }
 
-        Health health = Health(2.0f, {25, 25});
+        Health health = Health(4.0f, {25, 25});
 
         [[nodiscard]] bool IsFalling() const { return isFalling; }
         void SetIsFalling(const bool falling) { isFalling = falling; }

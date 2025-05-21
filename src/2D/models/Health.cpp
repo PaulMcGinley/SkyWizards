@@ -5,9 +5,9 @@
 #include "Health.h"
 
 Health::Health(const float scale, const sf::Vector2f position)
-        : maximumHealth(4)
-        , currentHealth(4)
-        , targetHealth(4)
+        : maximumHealth(8)
+        , currentHealth(8)
+        , targetHealth(8)
         , nextUpdateTime(0)
         , scale(scale)
         , position(position) { /* Nothing in the constructor */ }
