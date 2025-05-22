@@ -88,6 +88,8 @@ add_executable(LoSW___BftS main.cpp
         objects/mobs/HappyMushroom.h
         objects/mobs/SlimeMonster.cpp
         objects/mobs/SlimeMonster.h
+        objects/mobs/Cactus.cpp
+        objects/mobs/Cactus.h
 )
 
 

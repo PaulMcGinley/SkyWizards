@@ -18,6 +18,7 @@
 #include "models/LevelObject/Collectable.h"
 #include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
+#include "objects/mobs/Cactus.h"
 
 #include "objects/mobs/EyeBall.h"
 #include "objects/mobs/HappyMushroom.h"
@@ -339,6 +340,9 @@ void GameScene::LoadMobs() {
                 else if (mob.MonsterName == "SlimeMonster") {
                         monsters.emplace_back(std::make_unique<SlimeMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 }
+                else if (mob.MonsterName == "Cactus") {
+                        monsters.emplace_back(std::make_unique<Cactus>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                }
                 else {
                         std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
                 }
@@ -436,9 +440,18 @@ void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) 
         }
 }
 void GameScene::DrawEntities(sf::RenderWindow &window, const GameTime gameTime) {
+        // Draw dead monsters behind the player
+        for (auto const & monster : monsters) {
+                if (monster->IsDead())
+                        monster->Draw(window, gameTime);
+        }
+
         player.Draw(window, gameTime);
-        for (auto const & chestMonster : monsters) {
-                chestMonster->Draw(window, gameTime);
+
+        // Draw alive monsters in front of the player
+        for (auto const & monster : monsters) {
+                if (!monster->IsDead())
+                        monster->Draw(window, gameTime);
         }
         for (const auto& projectile : projectiles) {
                 projectile->Draw(window, gameTime);

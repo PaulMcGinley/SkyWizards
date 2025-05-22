@@ -12,13 +12,15 @@ HappyMushroom::HappyMushroom(Player *player, sf::Vector2f spawnPosition, const f
 
         SetAnimationSequences({
                 {AnimationType::ANIMATION_IDLE, {8, 15, 100}},
-                {AnimationType::ANIMATION_ATTACK, {24, 10, 20}}
+                {AnimationType::ANIMATION_ATTACK, {24, 10, 40}}
                 });
 
         collisionBox.width = 100;
         collisionBox.height = 90;
 
         ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
+
+        this->health = 0; // Kill mob so it draws behind the player
 }
 void HappyMushroom::Update(GameTime gameTime) {
         // Get a reference to the player to save on dereferencing calls
@@ -50,7 +52,7 @@ void HappyMushroom::Update(GameTime gameTime) {
 
         // Update collision box position factoring the sprite offset (250)
         collisionBox.left = position.x + 250 - (collisionBox.width / 2);
-        collisionBox.top = position.y + 250 - (collisionBox.height / 2) +0; // +40 for better alignment
+        collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 10; // +40 for better alignment
 
         UpdateQuads();
 }
