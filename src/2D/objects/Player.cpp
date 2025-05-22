@@ -414,10 +414,17 @@ void Player::UpdateScore(const std::string &levelName, const int score) { scores
 int Player::GetScore(const std::string &levelName) { return scores[levelName]; }
 int Player::GetTotalScore() {
         int totalScore = 0;
-        for (const auto &[level, score] : scores) {
+        for (const auto &[level, score]: scores) {
                 totalScore += score;
         }
         return totalScore;
+}
+void Player::BounceUp(float amount) {
+        velocity.y = -amount;
+        position.y -= 5.f; // Just to get player off ground
+        isJumping = true;
+        isFalling = false;
+        ChangeAnimation(AnimationType::ANIMATION_JUMP_START, GameTime(), true);
 }
 void Player::CastMagic(const GameTime gameTime) {
         sf::Vector2f projectileVelocity = {32, 0};

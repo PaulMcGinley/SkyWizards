@@ -84,6 +84,8 @@ add_executable(LoSW___BftS main.cpp
         models/Health.cpp
         objects/mobs/EyeBall.cpp
         objects/mobs/EyeBall.h
+        objects/mobs/HappyMushroom.cpp
+        objects/mobs/HappyMushroom.h
 )
 
 

@@ -20,6 +20,7 @@
 #include "models/MapObject/WMap.h"
 
 #include "objects/mobs/EyeBall.h"
+#include "objects/mobs/HappyMushroom.h"
 
 GameScene::GameScene()
         : IScene()
@@ -326,18 +327,13 @@ void GameScene::LoadMobs() {
                         assetManager.TextureLibraries[mob.MonsterName]->LoadIndices(
                                         {}); // Load all indices for the mob library
                 }
-                if (!assetManager.TextureLibraries["Eye-Ball"]->fullyLoaded)
-                        assetManager.TextureLibraries["Eye-Ball"]->LoadIndices({});
-                // TODO: Convert to switch statement
+
                 if (mob.MonsterName == "ChestMonster") {
                         monsters.emplace_back(std::make_unique<ChestMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                } else if (mob.MonsterName == "Eye-Ball") {
                         monsters.emplace_back(std::make_unique<EyeBall>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
-
-                }
-                else if (mob.MonsterName == "Eye-Ball") {
-                        monsters.emplace_back(std::make_unique<EyeBall>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
-                        if (!assetManager.TextureLibraries["Eye-Ball"]->fullyLoaded)
-                                assetManager.TextureLibraries["Eye-Ball"]->LoadIndices({});
+                }  else if (mob.MonsterName == "HappyMushroom") {
+                        monsters.emplace_back(std::make_unique<HappyMushroom>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 }
                 // else if (mob.MonsterName == "SlimeMonster") {
                 //     monsters.emplace_back(std::make_unique<Slime>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));

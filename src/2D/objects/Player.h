@@ -63,6 +63,7 @@ public:
         void UpdateScore(const std::string &levelName, int score) ;
         int GetScore(const std::string &levelName);
         int GetTotalScore();
+        void BounceUp(float amount);
 
         // Velocity
         sf::Vector2f velocity = {0, 0};
