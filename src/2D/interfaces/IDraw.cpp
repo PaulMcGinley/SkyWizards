@@ -14,7 +14,7 @@ void IDraw::Draw(sf::RenderWindow &window, const std::string &textureLibraryName
         }
 
         // Get the Texture Library content
-        const auto *libraryContent = library->second.get();
+        const auto * libraryContent = library->second.get();
         // Check if the library content is valid
         if (index < 0 || index >= libraryContent->entryCount) {
                 std::cerr << "Tried to draw a texture from library: " << textureLibraryName << " with an index out of bounds: " << index << std::endl;

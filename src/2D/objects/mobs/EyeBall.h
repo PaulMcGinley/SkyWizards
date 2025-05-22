@@ -4,8 +4,8 @@
 
 #ifndef EYEBALL_H
 #define EYEBALL_H
-#include "objects/Mob.h"
 
+#include "objects/Mob.h"
 
 class EyeBall final : public Mob {
 public:
@@ -26,7 +26,5 @@ private:
 
         void UpdateQuads();
 };
-
-
 
 #endif //EYEBALL_H

@@ -55,12 +55,7 @@ void ChestMonster::Update(GameTime gameTime) {
                 return;
         }
 
-        // Direction Logic
-        if (player.position.x < position.x) {
-                faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
-        } else {
-                faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER;
-        }
+        faceDirection = (player.position.x < position.x) ? FaceDirection::FACE_DIRECTION_LEFT : FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER;
 
         // Euclidean distance calculation
         // Ref: https://study.com/academy/lesson/euclidean-distance-calculation-formula-examples.html#:~:text=The%20formula%20for%20Euclidean%20distance,coordinates%20of%20the%20two%20points.
