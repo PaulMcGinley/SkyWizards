@@ -8,7 +8,9 @@
 
 EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRange, const float moveSpeed, const int health)
         : Mob(player, spawnPosition, viewRange, moveSpeed, health)
-        , nextAttackTime(0) {
+        , nextAttackTime(0)
+        , spawnPosition(spawnPosition)
+        , nextMoveTime(0) {
         // Define the animation sequences for the ChestMonster
         SetAnimationSequences( {
                         {AnimationType::ANIMATION_ATTACK, {0, 9, 90}},
@@ -16,7 +18,7 @@ EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRan
                         {AnimationType::ANIMATION_ATTACK2_REPEAT, {15, 8, 100,}},
                         {AnimationType::ANIMATION_ATTACK3, {23, 9, 90}},
                         {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
-                        {AnimationType::ANIMATION_DAMAGED, {57, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);},nullptr}},
+                        {AnimationType::ANIMATION_DAMAGED, {57, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DIZZY, true);},nullptr}},
                         {AnimationType::ANIMATION_DEATH, {32, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
                         {AnimationType::ANIMATION_DEAD, {40, 1, 100}},
                         {AnimationType::ANIMATION_DIZZY, {41, 16, 100}},
@@ -29,19 +31,19 @@ EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRan
                         {AnimationType::ANIMATION_TAUNT, {150, 12, 100}},
                         {AnimationType::ANIMATION_VICTORY, {162, 24, 100}},
                         {AnimationType::ANIMATION_WALK, {186, 11, 100}},
-                        {AnimationType::ANIMATION_FLOAT_LEFT, {197, 11, 100}},
-                        {AnimationType::ANIMATION_FLOAT_RIGHT, {208, 11, 100}},
+                        {AnimationType::ANIMATION_FLOAT_LEFT, {208, 11, 100}},
+                        {AnimationType::ANIMATION_FLOAT_RIGHT, {197, 11, 100}},
         });
 
         ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
 
         // Set the size of the collision box
-        collisionBox.width = 150;
-        collisionBox.height = 150;
+        collisionBox.width = 175;
+        collisionBox.height = 175;
 }
 void EyeBall::Update(const GameTime gameTime) {
         // Update quads in being damaged but perform no other logic
-        if (IsDead() || GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED) {
+        if (IsDead() || GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED || (GetCurrentAnimation() == AnimationType::ANIMATION_DIZZY && !gameTime.TimeElapsed(nextMoveTime))) {
                 UpdateQuads();
                 return;
         }
@@ -63,33 +65,39 @@ void EyeBall::Update(const GameTime gameTime) {
         const float distanceY = player.position.y - position.y;
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
+
         // State Logic
         if (distance > 500 && distance < viewRange) {
                 // Move to player
                 sf::Vector2f directionToPlayer = (player.position - position) / distance;
-                position += directionToPlayer * walkSpeed * gameTime.deltaTime;
-
                 if (directionToPlayer.x < 0) {
-                        faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
                         ChangeAnimation(AnimationType::ANIMATION_FLOAT_LEFT, gameTime, true);
                 } else {
-                        faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER;
                         ChangeAnimation(AnimationType::ANIMATION_FLOAT_RIGHT, gameTime, true);
                 }
-        } if (distance < 500 && gameTime.TimeElapsed(nextAttackTime)) {
-                // Teleport player
+                position += directionToPlayer * walkSpeed * gameTime.deltaTime;
+
+        } else if (distance < 500 && gameTime.TimeElapsed(nextAttackTime)) {
+                // Teleport player to last checkpoint
         } else {
-                // Stand still or do something else
-                ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
+                // Move to spawn position
+                sf::Vector2f directionToSpawn = (spawnPosition - position) / distance;
+                if (directionToSpawn.x < 0) {
+                        ChangeAnimation(AnimationType::ANIMATION_FLOAT_LEFT, gameTime, true);
+                } else {
+                        ChangeAnimation(AnimationType::ANIMATION_FLOAT_RIGHT, gameTime, true);
+                }
+                position += directionToSpawn * walkSpeed * gameTime.deltaTime;
         }
 
+        // NOTE: This may cause issues later, but we shall see
         if (position.y - player.position.y > 400)
                 position.y -=800;
 
 
         // Update collision box position factoring the sprite offset (375)
-        collisionBox.left = position.x + 375 - (collisionBox.width / 2);
-        collisionBox.top = position.y + 375 - (collisionBox.height / 2)+40;
+        collisionBox.left = position.x + 350 - (collisionBox.width / 2);
+        collisionBox.top = position.y + 350 - (collisionBox.height / 2)+40;
 
         UpdateQuads();
 }
@@ -111,7 +119,13 @@ void EyeBall::Draw(sf::RenderWindow &window, GameTime gameTime) {
 void EyeBall::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gameTime) { /* TODO: Add a shadow maybe? */ }
 void EyeBall::DamagePlayer(int amount) { /* */ }
 void EyeBall::TickAnimation(GameTime gameTime) { Mob::TickAnimation(gameTime); }
-void EyeBall::Damaged(int amount) { Mob::Damaged(amount); }
+void EyeBall::Damaged(int amount, GameTime gameTime) {
+        ChangeAnimation(AnimationType::ANIMATION_DAMAGED, true);
+        nextMoveTime = gameTime.NowAddMilliseconds(3000); // Stuntime
+
+        // Don't call base Damaged as Eye-Ball cannot take damage
+        /* Mob::Damaged(amount, gameTime); */
+}
 void EyeBall::UpdateQuads() {
         // Get the current animation frame
         TextureEntry* entry = &assetManager.TextureLibraries["Eye-Ball"]->entries[GetTextureDrawIndex()];

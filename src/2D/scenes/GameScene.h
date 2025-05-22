@@ -54,7 +54,7 @@ private:
         void LoadAssets();
         void LoadMobs();
         void LoadCollectables();
-        void CheckProjectileCollisions();
+        void CheckProjectileCollisions(GameTime gameTime);
 
         void CalculateParallaxBackground();
         void DrawBehindEntities(sf::RenderWindow& window, GameTime gameTime);

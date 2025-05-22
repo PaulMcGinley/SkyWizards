@@ -216,11 +216,11 @@ void ChestMonster::TickAnimation(GameTime gameTime) {
 
         Mob::TickAnimation(gameTime);
 }
-void ChestMonster::Damaged(int amount) {
+void ChestMonster::Damaged(int amount, GameTime gameTime) {
         if (!IsDead() && GetCurrentAnimation() != AnimationType::ANIMATION_STATIC)
                 ChangeAnimation(AnimationType::ANIMATION_DAMAGED,true);
 
-        Mob::Damaged(amount);
+        Mob::Damaged(amount, gameTime);
 }
 void ChestMonster::BitePlayer() {
         // Get a reference to the player to save on dereferencing calls

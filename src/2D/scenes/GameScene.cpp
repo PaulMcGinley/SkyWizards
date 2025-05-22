@@ -182,7 +182,7 @@ void GameScene::Update_Game(GameTime gameTime) {
                         projectiles.erase(projectiles.begin() + i);
                 }
         }
-        CheckProjectileCollisions();
+        CheckProjectileCollisions(gameTime);
 
         if (player.GetIsDead() && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
                 player.health.ResetHealth(gameTime);
@@ -371,7 +371,7 @@ void GameScene::LoadCollectables() {
                 }
         }
 }
-void GameScene::CheckProjectileCollisions() {
+void GameScene::CheckProjectileCollisions(GameTime gameTime) {
         for (const auto &projectile: projectiles) {
                 for (const auto &mob: monsters) {
                         if (projectile->Intersects(mob->GetCollisionBox())) {
@@ -382,7 +382,7 @@ void GameScene::CheckProjectileCollisions() {
 
                                 // TODO: Implement the mob damage
                                 int damage = projectile->Collide(collisionPoint);
-                                mob->Damaged(damage);
+                                mob->Damaged(damage, gameTime);
                         }
                 }
         }

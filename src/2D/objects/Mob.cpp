@@ -12,7 +12,7 @@ Mob::Mob(Player *player, sf::Vector2f position, float viewRange, float moveSpeed
         , player(player)
 { /* Nothing in the constructor */}
 sf::FloatRect Mob::GetCollisionBox() const { return collisionBox; }
-void Mob::Damaged(int amount) {
+void Mob::Damaged(int amount, GameTime gameTime) {
         // Take no damage while hiding
         if (GetCurrentAnimation() == AnimationType::ANIMATION_STATIC)
                 return;

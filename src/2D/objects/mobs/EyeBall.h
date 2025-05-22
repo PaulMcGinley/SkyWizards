@@ -17,10 +17,12 @@ public:
         void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gameTime) override;
         void DamagePlayer(int amount) override;
         void TickAnimation(GameTime gameTime) override;
-        void Damaged(int amount) override;
+        void Damaged(int amount, GameTime gameTime) override;
 
 private:
         float nextAttackTime;
+        float nextMoveTime;
+        sf::Vector2f spawnPosition;
 
         void UpdateQuads();
 };

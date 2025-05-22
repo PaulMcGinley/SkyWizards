@@ -193,15 +193,15 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                 }
         }
 
-        // float shadowX = (position.x +250) - (assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x/2);
+        float shadowX = (position.x +250) - (assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x/2);
 
         if (!isFalling && !isJumping) {
                 // player on ground
                 float shadowY = position.y + collisionBox.top + collisionBox.height - 25;
-                shadowDrawPosition = sf::Vector2f(0, shadowY);
+                shadowDrawPosition = sf::Vector2f(shadowX, shadowY);
         } else {
                 // player in ait
-                float playerFeetX = 0 + collisionBox.left + collisionBox.width / 2;
+                float playerFeetX = shadowX + collisionBox.left + collisionBox.width / 2;
                 float playerFeetY = position.y + collisionBox.top + collisionBox.height - 25;
 
                 // check for ground collision
@@ -217,9 +217,9 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
                 }
 
                 if (closestY) { // we found a ground collision
-                        shadowDrawPosition = sf::Vector2f(0, *closestY);
+                        shadowDrawPosition = sf::Vector2f(shadowX, *closestY);
                 } else { // we didnt find a ground collision so send the shadow away
-                        shadowDrawPosition = sf::Vector2f(0, 9001);
+                        shadowDrawPosition = sf::Vector2f(shadowX, 9001);
                 }
         }
 }

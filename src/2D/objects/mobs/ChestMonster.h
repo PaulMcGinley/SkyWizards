@@ -21,7 +21,7 @@ public:
         void Draw(sf::RenderWindow& window, GameTime gameTime) override;
         void CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gameTime) override;
         void TickAnimation(GameTime gameTime) override;
-        void Damaged(int amount) override;
+        void Damaged(int amount, GameTime gameTime) override;
 
 private:
         void BitePlayer();
