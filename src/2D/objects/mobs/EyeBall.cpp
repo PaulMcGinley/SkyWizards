@@ -7,11 +7,30 @@
 #include "objects/Player.h"
 
 EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRange, const float moveSpeed, const int health)
-        : Mob(player, spawnPosition, viewRange, moveSpeed, health)  {
+        : Mob(player, spawnPosition, viewRange, moveSpeed, health)
+        , nextAttackTime(0) {
         // Define the animation sequences for the ChestMonster
         SetAnimationSequences( {
-                {AnimationType::ANIMATION_IDLE, {0, 10, 60}},
-                {AnimationType::ANIMATION_WALK, {0, 10, 100}}
+                        {AnimationType::ANIMATION_ATTACK, {0, 9, 90}},
+                        {AnimationType::ANIMATION_ATTACK2_START, {9, 6, 100,}},
+                        {AnimationType::ANIMATION_ATTACK2_REPEAT, {15, 8, 100,}},
+                        {AnimationType::ANIMATION_ATTACK3, {23, 9, 90}},
+                        {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
+                        {AnimationType::ANIMATION_DAMAGED, {57, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);},nullptr}},
+                        {AnimationType::ANIMATION_DEATH, {32, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
+                        {AnimationType::ANIMATION_DEAD, {40, 1, 100}},
+                        {AnimationType::ANIMATION_DIZZY, {41, 16, 100}},
+                        {AnimationType::ANIMATION_IDLE2, {66, 8, 100}},
+                        {AnimationType::ANIMATION_IDLE, {74, 16, 60}},
+                        {AnimationType::ANIMATION_STATIC, {74, 1, 100}},
+                        {AnimationType::ANIMATION_RUN, {90, 7, 100}},
+                        {AnimationType::ANIMATION_SENSE_SOMETHING_START, {97, 9, 100}},
+                        {AnimationType::ANIMATION_SENSE_SOMETHING, {106, 44, 100}},
+                        {AnimationType::ANIMATION_TAUNT, {150, 12, 100}},
+                        {AnimationType::ANIMATION_VICTORY, {162, 24, 100}},
+                        {AnimationType::ANIMATION_WALK, {186, 11, 100}},
+                        {AnimationType::ANIMATION_FLOAT_LEFT, {197, 11, 100}},
+                        {AnimationType::ANIMATION_FLOAT_RIGHT, {208, 11, 100}},
         });
 
         ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
@@ -20,7 +39,7 @@ EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRan
         collisionBox.width = 150;
         collisionBox.height = 150;
 }
-void EyeBall::Update(GameTime gameTime) {
+void EyeBall::Update(const GameTime gameTime) {
         // Update quads in being damaged but perform no other logic
         if (IsDead() || GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED) {
                 UpdateQuads();
@@ -32,16 +51,9 @@ void EyeBall::Update(GameTime gameTime) {
 
         // Change animation to the static sequence if the player is dead.
         if (player.GetIsDead()) {
-                ChangeAnimation(AnimationType::ANIMATION_STATIC, gameTime, false);
+                ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, false);
                 UpdateQuads(); // Update the texture quads and perform no other logic
                 return;
-        }
-
-        // Direction Logic
-        if (player.position.x < position.x) {
-                faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
-        } else {
-                faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER;
         }
 
         // Euclidean distance calculation
@@ -52,11 +64,20 @@ void EyeBall::Update(GameTime gameTime) {
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
         // State Logic
-        if (distance > 500 ) {
+        if (distance > 500 && distance < viewRange) {
                 // Move to player
                 sf::Vector2f directionToPlayer = (player.position - position) / distance;
                 position += directionToPlayer * walkSpeed * gameTime.deltaTime;
-                ChangeAnimation(AnimationType::ANIMATION_WALK, gameTime, true);
+
+                if (directionToPlayer.x < 0) {
+                        faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
+                        ChangeAnimation(AnimationType::ANIMATION_FLOAT_LEFT, gameTime, true);
+                } else {
+                        faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_CHESTMONSTER;
+                        ChangeAnimation(AnimationType::ANIMATION_FLOAT_RIGHT, gameTime, true);
+                }
+        } if (distance < 500 && gameTime.TimeElapsed(nextAttackTime)) {
+                // Teleport player
         } else {
                 // Stand still or do something else
                 ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
@@ -68,11 +89,11 @@ void EyeBall::Update(GameTime gameTime) {
 
         // Update collision box position factoring the sprite offset (375)
         collisionBox.left = position.x + 375 - (collisionBox.width / 2);
-        collisionBox.top = position.y + 375 - (collisionBox.height / 2);
+        collisionBox.top = position.y + 375 - (collisionBox.height / 2)+40;
 
         UpdateQuads();
 }
-void EyeBall::LateUpdate(GameTime gameTime) { TickAnimation(gameTime); }
+void EyeBall::LateUpdate(const GameTime gameTime) { TickAnimation(gameTime); }
 void EyeBall::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw Monster
         window.draw(texQuads, &assetManager.TextureLibraries["Eye-Ball"]->entries[GetTextureDrawIndex()].texture);
@@ -87,9 +108,7 @@ void EyeBall::Draw(sf::RenderWindow &window, GameTime gameTime) {
                 window.draw(rect);
         }
 }
-void EyeBall::CalculatePhysicsState(std::vector<Boundary> boundaries,
-                                    GameTime gameTime) { /* TODO: Add a shadow maybe? */
-}
+void EyeBall::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gameTime) { /* TODO: Add a shadow maybe? */ }
 void EyeBall::DamagePlayer(int amount) { /* */ }
 void EyeBall::TickAnimation(GameTime gameTime) { Mob::TickAnimation(gameTime); }
 void EyeBall::Damaged(int amount) { Mob::Damaged(amount); }

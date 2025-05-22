@@ -20,6 +20,8 @@ public:
         void Damaged(int amount) override;
 
 private:
+        float nextAttackTime;
+
         void UpdateQuads();
 };
 
