@@ -12,7 +12,7 @@ HappyMushroom::HappyMushroom(Player *player, sf::Vector2f spawnPosition, const f
 
         SetAnimationSequences({
                 {AnimationType::ANIMATION_IDLE, {8, 15, 100}},
-                {AnimationType::ANIMATION_ATTACK, {24, 10, 50}}
+                {AnimationType::ANIMATION_ATTACK, {24, 10, 20}}
                 });
 
         collisionBox.width = 100;
@@ -132,7 +132,7 @@ void HappyMushroom::TickAnimation(GameTime gameTime) {
 
                 // Check if the player is within attack range to deal damage
                 if (distance <= 400) {
-                        player.BounceUp(1000.f);
+                        player.BounceUp(1500.f);
                         nextBounceTime = gameTime.NowAddMilliseconds(BOUNCE_COOLDOWN);
                 }
         }

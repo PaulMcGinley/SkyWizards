@@ -21,6 +21,7 @@
 
 #include "objects/mobs/EyeBall.h"
 #include "objects/mobs/HappyMushroom.h"
+#include "objects/mobs/SlimeMonster.h"
 
 GameScene::GameScene()
         : IScene()
@@ -335,9 +336,9 @@ void GameScene::LoadMobs() {
                 }  else if (mob.MonsterName == "HappyMushroom") {
                         monsters.emplace_back(std::make_unique<HappyMushroom>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 }
-                // else if (mob.MonsterName == "SlimeMonster") {
-                //     monsters.emplace_back(std::make_unique<Slime>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
-                // }
+                else if (mob.MonsterName == "SlimeMonster") {
+                        monsters.emplace_back(std::make_unique<SlimeMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                }
                 else {
                         std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
                 }

@@ -2,14 +2,14 @@
 // Created by Paul McGinley on 22/05/2025.
 //
 
-#ifndef HAPPYMUSHROOM_H
-#define HAPPYMUSHROOM_H
+#ifndef SLIMEMONSTER_H
+#define SLIMEMONSTER_H
 
 #include "objects/Mob.h"
 
-class HappyMushroom final : public Mob {
+class SlimeMonster final : public Mob {
 public:
-        HappyMushroom(Player* player, sf::Vector2f spawnPosition, float viewRange, float moveSpeed, int health);
+        SlimeMonster(Player* player, sf::Vector2f spawnPosition, float viewRange, float moveSpeed, int health);
 
         void Update(GameTime gameTime) override;
         void LateUpdate(GameTime gameTime) override;
@@ -19,13 +19,21 @@ public:
         void Damaged(int amount, GameTime gameTime) override;
 
 private:
-        bool onGround;
-        float nextBounceTime;
-        static constexpr float BOUNCE_COOLDOWN = 1500; // ms
-        const float idleDistance = viewRange;
-
         void DamagePlayer(int amount) override;
+
+        float nextMoveTime;
+        sf::Vector2f nextPosition;
+        const float MOVE_LIMIT = 200.f;
+
+        sf::Vector2f GetLeftDropDetectorPosition();
+        sf::Vector2f GetRightDropDetectorPosition();
+        bool canMoveLeft;
+        bool canMoveRight;
+        bool onGround;
+        const float idleDistance = viewRange;
+        const float chaseDistance = viewRange/2;
+
         void UpdateQuads();
 };
 
-#endif //HAPPYMUSHROOM_H
+#endif //SLIMEMONSTER_H

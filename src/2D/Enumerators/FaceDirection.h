@@ -8,9 +8,10 @@
 // The value of FaceDirection is used to determine the
 // offset within the texture library for that direction
 enum FaceDirection {
-    FACE_DIRECTION_LEFT = 0,
-    FACE_DIRECTION_RIGHT_CHESTMONSTER = 199,
-    FACE_DIRECTION_RIGHT_PLAYER = 275
+        FACE_DIRECTION_LEFT = 0,
+        FACE_DIRECTION_RIGHT_CHESTMONSTER = 199,
+        FACE_DIRECTION_RIGHT_PLAYER = 275,
+        FACE_DIRECTION_RIGHT_SLIMEMONSTER = 241,
 };
 
 #endif //FACEDIRECTION_H
