@@ -37,6 +37,8 @@ Cactus::Cactus(Player *player, sf::Vector2f spawnPosition, const float viewRange
         // Set the size of the collision box
         collisionBox.width = 100;
         collisionBox.height = 90;
+
+        score = 750;
 }
 void Cactus::Update(GameTime gameTime) {
                 // Update quads in being damaged but perform no other logic

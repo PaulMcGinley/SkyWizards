@@ -92,6 +92,8 @@ add_executable(LoSW___BftS main.cpp
         objects/mobs/Cactus.h
         objects/mobs/AngryMushroom.cpp
         objects/mobs/AngryMushroom.h
+        models/Score.h
+        models/Score.cpp
 )
 
 

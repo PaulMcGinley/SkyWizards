@@ -18,6 +18,8 @@ HappyMushroom::HappyMushroom(Player *player, sf::Vector2f spawnPosition, const f
         collisionBox.width = 100;
         collisionBox.height = 90;
 
+       // score = 100;
+
         ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
 
         this->health = 0; // Kill mob so it draws behind the player
@@ -136,6 +138,11 @@ void HappyMushroom::TickAnimation(GameTime gameTime) {
                 if (distance <= 400) {
                         player.BounceUp(1500.f);
                         nextBounceTime = gameTime.NowAddMilliseconds(BOUNCE_COOLDOWN);
+
+                        if (!scoreAwarded) {
+                                //player.UpdateScore(score);
+                                //scoreAwarded = true;
+                        }
                 }
         }
 
@@ -146,7 +153,6 @@ void HappyMushroom::DamagePlayer(int amount) { /* */ }
 void HappyMushroom::UpdateQuads() {
         // Get the current animation frame
         TextureEntry* entry = &assetManager.TextureLibraries["HappyMushroom"]->entries[GetTextureDrawIndex()];
-
 
         // Update the texture quads
         for (int i = 0; i < 4; ++i) {

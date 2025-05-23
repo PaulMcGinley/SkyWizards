@@ -54,6 +54,7 @@ void GameScene::Update(const GameTime gameTime) {
                         debugOverlayPtr->AddInfoTopLeft("Player Velocity Y", std::to_string(player.velocity.y));
                         debugOverlayPtr->AddInfoTopLeft("Coins", std::to_string(player.GetCoins()));
                         debugOverlayPtr->AddInfoTopLeft("Score", std::to_string(player.GetTotalScore()));
+                        debugOverlayPtr->AddInfoTopLeft("Time", levelTime(gameTime, true));
                 }
         }
         // END DEBUG ^
@@ -113,12 +114,25 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw the UI
         window.setView(window.getDefaultView());
         player.health.Draw(window, gameTime);
+
+        window.draw(timerText);
 }
 void GameScene::InitializeScene() {
         float screenWidth = gameManager.getResolution().x;
         float screenHeight = gameManager.getResolution().y;
         viewport.setSize(sf::Vector2f(screenWidth, screenHeight)); // Set the view size to the window size
         //viewport.setCenter(player.position); // Center the viewport on the player
+
+        timerFont = *assetManager.Fonts["OpenSans-Bold"].get();
+        timerText.setFont(timerFont);
+        timerText.setString("00:00");
+        timerText.setColor(sf::Color::White);
+        timerText.setCharacterSize(50);
+        timerText.setStyle(sf::Text::Bold);
+        timerText.setOutlineColor(sf::Color::Black);
+        timerText.setOutlineThickness(2);
+
+        timerText.setPosition((screenWidth/2)- (timerText.getGlobalBounds().width/2), 20);
 
         IScene::InitializeScene();
 }
@@ -161,14 +175,22 @@ void GameScene::Update_Loading(GameTime gameTime) {
         // This is a temporary fix to allow the game to load
         // TODO: Play a level start sequence to allow for delta time to stabilize
         // Note: This issue should now be resolved with the advent of the LoadingScene
+
         if (startTime == 0.f)
                 startTime = gameTime.NowAddMilliseconds(0);
 
-        if (!gameTime.TimeElapsed(startTime))
+        if (!gameTime.TimeElapsed(startTime)) {
                 UpdateLoop = &GameScene::Update_Game;
+
+                levelStartTime = gameTime.NowAddMilliseconds(0);
+        }
         // END HACK: ------------------------------------------------
 }
 void GameScene::Update_Game(GameTime gameTime) {
+
+        timerText.setString(levelTime(gameTime, false));
+
+
         // Draw the collectables
         for (auto const & collectable: collectables) {
                 collectable->Update(gameTime);
@@ -227,6 +249,11 @@ void GameScene::Update_Game(GameTime gameTime) {
         playerRect.height = player.collisionBox.getSize().y;
 
         if (playerRect.intersects(endPosRect)) {
+                levelEndTime = gameTime.NowAddMilliseconds(0) - levelStartTime;
+                std::cout << mapName <<": Level End Time: " << levelEndTime << std::endl;
+                startTime = 0.f;
+                UpdateLoop = &GameScene::Update_Loading;
+
                 std::vector<std::string> maps = {"00", "01", "02", "03"};
                 auto it = std::find(maps.begin(), maps.end(), mapName);
                 size_t nextIndex = 0;
@@ -534,12 +561,8 @@ void GameScene::SpawnPlayer() {
         player.deceleration = sf::Vector2f(0, 0);
         viewport.setCenter(player.position + sf::Vector2f(250, 0));
 }
-std::string GameScene::levelTime(GameTime gameTime) {
-        if (levelEndTime < levelStartTime) {
-                return "Err";
-        }
-
-        float durationMs = levelEndTime - levelStartTime;
+std::string GameScene::levelTime(GameTime gameTime, bool withMilliseconds = true) {
+        float durationMs = (gameTime.totalGameTime - levelStartTime) * 1000.f; // Convert to milliseconds
 
         int totalMilliseconds = static_cast<int>(durationMs);
         int minutes = totalMilliseconds / (60 * 1000);
@@ -549,8 +572,10 @@ std::string GameScene::levelTime(GameTime gameTime) {
 
         std::ostringstream oss;
         oss << std::setfill('0') << std::setw(2) << minutes << ":"
-            << std::setfill('0') << std::setw(2) << seconds << "."
-            << std::setfill('0') << std::setw(3) << milliseconds;
+            << std::setfill('0') << std::setw(2) << seconds;
+
+        if (withMilliseconds)
+                oss  << "." << std::setfill('0') << std::setw(3) << milliseconds;
 
         return oss.str();
 }

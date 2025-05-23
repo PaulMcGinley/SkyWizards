@@ -4,6 +4,9 @@
 
 #ifndef GAMESCENE_H
 #define GAMESCENE_H
+#include <SFML/Graphics/Text.hpp>
+
+
 #include "interfaces/IScene.h"
 #include "models/LevelObject/Boundary.h"
 #include "models/LevelObject/Collectable.h"
@@ -73,7 +76,10 @@ private:
 
         float levelStartTime = 0.f;
         float levelEndTime = 0.f;
-        std::string levelTime(GameTime gameTime);
+        std::string levelTime(GameTime gameTime, bool withMilliseconds);
+
+        sf::Text timerText;
+        sf::Font timerFont;
 };
 
 

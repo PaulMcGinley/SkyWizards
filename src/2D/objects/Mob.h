@@ -45,6 +45,4 @@ protected:
         int score = 1000;
 };
 
-
-
 #endif //MOB_H

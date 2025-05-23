@@ -40,6 +40,8 @@ EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRan
         // Set the size of the collision box
         collisionBox.width = 175;
         collisionBox.height = 175;
+
+        score = 2000;
 }
 void EyeBall::Update(const GameTime gameTime) {
         // Update quads in being damaged but perform no other logic
@@ -122,6 +124,15 @@ void EyeBall::TickAnimation(GameTime gameTime) { Mob::TickAnimation(gameTime); }
 void EyeBall::Damaged(int amount, GameTime gameTime) {
         ChangeAnimation(AnimationType::ANIMATION_DAMAGED, true);
         nextMoveTime = gameTime.NowAddMilliseconds(3000); // Stuntime
+
+        // if (!scoreAwarded) {
+        //         player->UpdateScore(1000);
+        //         score -= 1000;
+        //
+        //         if (score <= 0) {
+        //                 scoreAwarded = true;
+        //         }
+        // }
 
         // Don't call base Damaged as Eye-Ball cannot take damage
         /* Mob::Damaged(amount, gameTime); */
