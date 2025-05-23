@@ -18,6 +18,7 @@
 #include "models/LevelObject/Collectable.h"
 #include "models/LevelObject/OLibrary.h"
 #include "models/MapObject/WMap.h"
+#include "objects/mobs/AngryMushroom.h"
 #include "objects/mobs/Cactus.h"
 
 #include "objects/mobs/EyeBall.h"
@@ -336,14 +337,13 @@ void GameScene::LoadMobs() {
                         monsters.emplace_back(std::make_unique<EyeBall>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 }  else if (mob.MonsterName == "HappyMushroom") {
                         monsters.emplace_back(std::make_unique<HappyMushroom>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
-                }
-                else if (mob.MonsterName == "SlimeMonster") {
+                } else if (mob.MonsterName == "SlimeMonster") {
                         monsters.emplace_back(std::make_unique<SlimeMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
-                }
-                else if (mob.MonsterName == "Cactus") {
+                } else if (mob.MonsterName == "Cactus") {
                         monsters.emplace_back(std::make_unique<Cactus>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
-                }
-                else {
+                } else if (mob.MonsterName == "AngryMushroom") {
+                        monsters.emplace_back(std::make_unique<AngryMushroom>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
+                } else {
                         std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
                 }
         }
