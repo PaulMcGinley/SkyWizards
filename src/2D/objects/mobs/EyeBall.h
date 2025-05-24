@@ -25,6 +25,11 @@ private:
         sf::Vector2f spawnPosition;
 
         float nextGrowlTime = 0; // Time until next growl sound
+        float nextTeleportTime = 0;
+        void TeleportPlayer();
+        bool recentlyTeleported = false;
+        void BouncePlayer();
+        bool recentlyBounced = false;
 
         void UpdateQuads();
 };

@@ -13,9 +13,9 @@ EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRan
         , nextMoveTime(0) {
         // Define the animation sequences for the ChestMonster
         SetAnimationSequences( {
-                        {AnimationType::ANIMATION_ATTACK, {0, 9, 90}},
-                        {AnimationType::ANIMATION_ATTACK2_START, {9, 6, 100,}},
-                        {AnimationType::ANIMATION_ATTACK2_REPEAT, {15, 8, 100,}},
+                        {AnimationType::ANIMATION_ATTACK, {0, 9, 90,nullptr,[this](){BouncePlayer();},nullptr}},
+                        {AnimationType::ANIMATION_ATTACK2_START, {9, 6, 100, nullptr,[this](){ChangeAnimation(AnimationType::ANIMATION_ATTACK2_REPEAT, true);},nullptr}},
+                        {AnimationType::ANIMATION_ATTACK2_REPEAT, {15, 8, 120,nullptr,[this](){TeleportPlayer();},nullptr}},
                         {AnimationType::ANIMATION_ATTACK3, {23, 9, 90}},
                         {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
                         {AnimationType::ANIMATION_DAMAGED, {57, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DIZZY, true);},nullptr}},
@@ -50,6 +50,17 @@ void EyeBall::Update(const GameTime gameTime) {
                 return;
         }
 
+        // Can't pass GameTime to animation sequences, so we need to handle cooldowns manually
+        if (recentlyTeleported) {
+                recentlyTeleported = false;
+                nextTeleportTime = gameTime.NowAddMilliseconds(10000); // Set a cooldown for the next teleport
+        }
+
+        if (recentlyBounced) {
+                recentlyBounced = false;
+                nextAttackTime = gameTime.NowAddMilliseconds(1000); // Set a cooldown for the next bounce
+        }
+
         // Get a reference to the player to save on dereferencing calls
         Player const & player = *this->player;
 
@@ -73,41 +84,37 @@ void EyeBall::Update(const GameTime gameTime) {
                 nextGrowlTime = gameTime.NowAddMilliseconds(5000); // Reset growl timer
         }
 
+        bool isAttacking = false;
+        isAttacking = GetCurrentAnimation() == AnimationType::ANIMATION_ATTACK2_START || GetCurrentAnimation() == AnimationType::ANIMATION_ATTACK2_REPEAT || GetCurrentAnimation() == AnimationType::ANIMATION_ATTACK;
+
         // State Logic
-        if (distance > 500 && distance < viewRange) {
+        if (distance > 500 && distance < viewRange && !isAttacking) {
                 if (gameTime.TimeElapsed(nextGrowlTime)) {
                         assetManager.PlaySoundEffect("Eye-Ball/deep-growl", 100.f, 1.f);
                         nextGrowlTime = gameTime.NowAddMilliseconds(2000); // Reset growl timer
                 }
 
                 // Move to player
-                sf::Vector2f directionToPlayer = (player.position - position) / distance;
+                const sf::Vector2f directionToPlayer = (player.position - position) / distance;
                 if (directionToPlayer.x < 0) {
                         ChangeAnimation(AnimationType::ANIMATION_FLOAT_LEFT, gameTime, true);
                 } else {
                         ChangeAnimation(AnimationType::ANIMATION_FLOAT_RIGHT, gameTime, true);
                 }
+
                 position += directionToPlayer * walkSpeed * gameTime.deltaTime;
 
-        } else if (distance < 500 && gameTime.TimeElapsed(nextAttackTime)) {
-                // Teleport player to last checkpoint
-        } else {
-                // Move to spawn position
-                sf::Vector2f directionToSpawn = (spawnPosition - position) / distance;
-                if (directionToSpawn.x < 0) {
-                        ChangeAnimation(AnimationType::ANIMATION_FLOAT_LEFT, gameTime, true);
-                } else {
-                        ChangeAnimation(AnimationType::ANIMATION_FLOAT_RIGHT, gameTime, true);
-                }
-                position += directionToSpawn * walkSpeed * gameTime.deltaTime;
+        } else if (distance < 600 && gameTime.TimeElapsed(nextAttackTime) && !isAttacking && gameTime.TimeElapsed(nextTeleportTime)) {
+                ChangeAnimation(AnimationType::ANIMATION_ATTACK2_START, gameTime, true);
+        } else if (distance < 600 && !isAttacking && gameTime.TimeElapsed(nextAttackTime)) {
+                ChangeAnimation(AnimationType::ANIMATION_ATTACK, gameTime, true);
+                nextAttackTime = gameTime.NowAddMilliseconds(2500); // Reset attack timer
         }
-
         // NOTE: This may cause issues later, but we shall see
         if ((distance < 100) && (position.y - player.position.y > 400)) {
                 position.y -= 800;
                 assetManager.PlaySoundEffect("Eye-Ball/teleport", 100.f, 1.f);
         }
-
 
         // Update collision box position factoring the sprite offset (375)
         collisionBox.left = position.x + 350 - (collisionBox.width / 2);
@@ -148,6 +155,38 @@ void EyeBall::Damaged(int amount, GameTime gameTime) {
 
         // Don't call base Damaged as Eye-Ball cannot take damage
         /* Mob::Damaged(amount, gameTime); */
+}
+void EyeBall::TeleportPlayer() {
+        recentlyTeleported = true;
+        ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
+
+        // Get distance to player
+        Player *player = this->player;
+
+        const float distanceX = player->position.x - position.x;
+        const float distanceY = player->position.y - position.y;
+        const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
+        if (distance > 500)
+                return;
+
+        // Teleport the player to the spawn position
+        player->position = spawnPosition;
+        player->velocity = {0, 0}; // Reset velocity
+        player->BounceUp(5.f); // Bounce the player up slightly so they fall
+        assetManager.PlaySoundEffect("Eye-Ball/teleport", 100.f, 1.f);
+}
+void EyeBall::BouncePlayer() {
+        const float distanceX = player->position.x - position.x;
+        const float distanceY = player->position.y - position.y;
+        const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
+        if (distance > 1000)
+                return;
+
+
+        player->BounceUp(600.f);
+        recentlyBounced = true;
+
+        ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
 }
 void EyeBall::UpdateQuads() {
         // Get the current animation frame

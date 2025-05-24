@@ -54,7 +54,7 @@ void HappyMushroom::Update(GameTime gameTime) {
         if(distance < 1300 && gameTime.TimeElapsed(nextLaughTime)) {
                 // Play a laugh sound effect every 5 seconds
                 assetManager.PlaySoundEffect("HappyMushroom/laughing", 100.f, 1.3f);
-                nextLaughTime = gameTime.NowAddMilliseconds(5000); // Reset laugh timer
+                nextLaughTime = gameTime.NowAddMilliseconds(7500); // Reset laugh timer
         }
 
         // Update collision box position factoring the sprite offset (250)
