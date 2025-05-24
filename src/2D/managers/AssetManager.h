@@ -9,6 +9,7 @@
 #include <vector>
 #include "models/TextureLibrary.h"
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Audio/Music.hpp>
 #include <memory>
 
 // Forward declarations to pointers
@@ -37,11 +38,18 @@ public:
         // Holds all the fonts (*.ttf files)
         std::map<std::string, std::unique_ptr<sf::Font>> Fonts;
 
+        // Holds all music files
+        std::map<std::string, std::unique_ptr<sf::Music>> Music;
+
         // Holds all Collectable objects
         std::map<std::string, std::vector<std::unique_ptr<Collectable>>> Collectables;
 
         void LoadTextureLibrary(std::string fileName);
-        static void LoadFonts(std::string directoryPath);
+        static void LoadFonts(const std::string &directoryPath);
+        void LoadMusic(const std::string& directoryPath);
+        void PlayMusic(const std::string& key, bool loop = true);
+        void StopMusic(const std::string& key);
+        void SetMusicVolume(const std::string& key, float volume);
 
 private:
         // Private constructor to prevent instancing

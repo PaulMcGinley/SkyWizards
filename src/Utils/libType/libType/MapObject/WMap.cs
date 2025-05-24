@@ -22,6 +22,7 @@ public class WMap
     public float endYPos { get; set; } = 0;
     public int endWidth { get; set; } = 0;
     public int endHeight { get; set; } = 0;
+    public string song { get; set; } = string.Empty;
 
     /// <summary>
     /// Open the map from the file path specified in FilePath.
@@ -46,6 +47,7 @@ public class WMap
             ParallaxBackgroundIndex = deserializedMap.ParallaxBackgroundIndex;
             MountainsBackgroundIndex = deserializedMap.MountainsBackgroundIndex;
             LevelObjects = deserializedMap.LevelObjects;
+            Collectables = deserializedMap.Collectables;
             Mobs = deserializedMap.Mobs;
             Scripts = deserializedMap.Scripts;
             startXPos = deserializedMap.startXPos;
@@ -54,6 +56,7 @@ public class WMap
             endYPos = deserializedMap.endYPos;
             endWidth = deserializedMap.endWidth;
             endHeight = deserializedMap.endHeight;
+            song = deserializedMap.song;
         }
         catch (Exception e) when (e is TimeoutException                 // HDD Failure
                                       or AccessViolationException       // File is in use

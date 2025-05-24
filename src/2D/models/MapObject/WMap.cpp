@@ -144,6 +144,13 @@ bool WMap::Deserialize(const pugi::xml_node &node) {
                 }
         }
 
+        // Deserialize song
+        pugi::xml_node songNode = root.child("song");
+        if (songNode) {
+                song = songNode.text().as_string();
+                std::cout << "Song: " << song << std::endl;
+        }
+
         std::cout << "Successfully deserialized WMap." << std::endl;
         return true; // Successfully deserialized
 }

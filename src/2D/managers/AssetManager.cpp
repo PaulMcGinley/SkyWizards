@@ -50,7 +50,7 @@ void AssetManager::LoadTextureLibrary(std::string fileName) {
         TextureLibraries[fileName] = std::move(library); // std::move to transfer ownership
         std::cout << "Loaded library: " << fileName << std::endl;
 }
-void AssetManager::LoadFonts(std::string directoryPath) {
+void AssetManager::LoadFonts(const std::string &directoryPath) {
         for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
                 if (entry.is_regular_file() && entry.path().extension() == ".ttf") {
                         std::string filePath = entry.path().string();
@@ -64,5 +64,42 @@ void AssetManager::LoadFonts(std::string directoryPath) {
                                 std::cerr << "Failed to load font: " << filePath << std::endl;
                         }
                 }
+        }
+}
+void AssetManager::LoadMusic(const std::string& directoryPath) {
+        for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
+                if (entry.is_regular_file() && (entry.path().extension() == ".mp3" ||
+                                                entry.path().extension() == ".ogg" ||
+                                                entry.path().extension() == ".wav")) {
+                        std::string filePath = entry.path().string();
+                        std::string fileNameWithoutExtension = entry.path().stem().string();
+
+                        auto music = std::make_unique<sf::Music>();
+                        if (music->openFromFile(filePath)) {
+                                Music[fileNameWithoutExtension] = std::move(music);
+                                std::cout << "Loaded music: " << fileNameWithoutExtension << std::endl;
+                        } else {
+                                std::cerr << "Failed to load music: " << filePath << std::endl;
+                        }
+                }
+        }
+}
+void AssetManager::PlayMusic(const std::string& key, bool loop) {
+        auto song = Music.find(key);
+        if (song != Music.end()) {
+                song->second->setLoop(loop);
+                song->second->play();
+        }
+}
+void AssetManager::StopMusic(const std::string& key) {
+        auto song = Music.find(key);
+        if (song != Music.end()) {
+                song->second->stop();
+        }
+}
+void AssetManager::SetMusicVolume(const std::string& key, float volume) {
+        auto song = Music.find(key);
+        if (song != Music.end()) {
+                song->second->setVolume(volume); // 0-100
         }
 }

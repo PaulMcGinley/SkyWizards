@@ -126,7 +126,7 @@ void GameScene::InitializeScene() {
         timerFont = *assetManager.Fonts["OpenSans-Bold"].get();
         timerText.setFont(timerFont);
         timerText.setString("00:00");
-        timerText.setColor(sf::Color::White);
+        timerText.setFillColor(sf::Color(255,255,255,128));
         timerText.setCharacterSize(50);
         timerText.setStyle(sf::Text::Bold);
         timerText.setOutlineColor(sf::Color::Black);
@@ -138,6 +138,11 @@ void GameScene::InitializeScene() {
 }
 void GameScene::DestroyScene() { /* Nothing to destroy */ }
 void GameScene::OnScene_Activate() {
+        if (!map->song.empty())
+                assetManager.PlayMusic(map->song, true);
+
+        std::cout << "Playing song: " << map->song << std::endl;
+
         if (const auto debugOverlay = sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
                 if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {
                         debugOverlayPtr->AddInfoBottomLeft("End Position Y", std::to_string(map->endPosition.getPosition().y));

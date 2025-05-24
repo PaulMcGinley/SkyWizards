@@ -98,9 +98,21 @@
                     </Border>
                 </Grid>
             </Expander>
-            <Expander Header="Parallax Foreground" HorizontalAlignment="Stretch" Margin="0,0,0,2">
-                <StackPanel Margin="10">
-                    <TextBlock Text="placeholder" />
+            <Expander Header="Level" HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                <StackPanel Margin="10" Spacing="8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+            
+                        <TextBlock Grid.Column="0" Text="BGM:" 
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+            
+                        <TextBlock Grid.Column="1" x:Name="SongSelectionLabel"
+                                   Text="Please select" Foreground="Blue"
+                                   Cursor="Hand" Tapped="SelectSong_OnTapped"/>
+                    </Grid>
                 </StackPanel>
             </Expander>
         </StackPanel>

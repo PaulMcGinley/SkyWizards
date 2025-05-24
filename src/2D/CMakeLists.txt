@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 set(SFML_DIR "/opt/homebrew/opt/sfml@2/lib/cmake/SFML")
 # Find SFML package
-find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 
 add_executable(LoSW___BftS main.cpp
         Game.h
@@ -100,5 +100,5 @@ add_executable(LoSW___BftS main.cpp
 include_directories(${CMAKE_SOURCE_DIR}) # Allows me to add code from the root dir
 
 # Link SFML libraries
-target_link_libraries(LoSW___BftS sfml-graphics sfml-window sfml-system) # Add SFML libraries
+target_link_libraries(LoSW___BftS sfml-graphics sfml-window sfml-system sfml-audio) # Add SFML libraries
 

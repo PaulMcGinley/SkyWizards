@@ -16,6 +16,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Point = Avalonia.Point;
 using Avalonia.Controls.Primitives;
+using Path = System.IO.Path;
 
 namespace LevelEditor;
 
@@ -884,6 +885,9 @@ public partial class MainWindow : Window
         using var memoryStream2 = new System.IO.MemoryStream(img2.Data);
         var bitmap2 = new Avalonia.Media.Imaging.Bitmap(memoryStream2);
         MountainsPreview.Source = bitmap2;
+        
+        // Update song display
+        SongSelectionLabel.Text = string.IsNullOrEmpty(_map.song)  ? "Please select"  : Path.GetFileNameWithoutExtension(_map.song);
 
         UpdateStartPositionBox();
         UpdateEndPositionBox();
@@ -1474,4 +1478,28 @@ public partial class MainWindow : Window
 
     #endregion
 
+    private async void SelectSong_OnTapped(object? sender, TappedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = "Select Background Music",
+            Filters = new List<FileDialogFilter>
+            {
+                new FileDialogFilter { Name = "MP3 Files", Extensions = new List<string> { "mp3" } }
+            },
+            AllowMultiple = false
+        };
+
+        var result = await dialog.ShowAsync(this);
+        if (result != null && result.Length > 0)
+        {
+            string filePath = result[0];
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+        
+            // Update UI
+            SongSelectionLabel.Text = fileName;
+        
+            // Update map data
+            _map.song = fileName;
+        }    }
 }
