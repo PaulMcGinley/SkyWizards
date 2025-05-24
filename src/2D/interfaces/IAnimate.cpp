@@ -4,6 +4,9 @@
 
 #include "IAnimate.h"
 
+#include <iostream>
+#include <ostream>
+
 #include "models/TextureEntry.h"
 
 // Move to the next frame in the animation sequence
@@ -40,12 +43,19 @@ bool IAnimate::ChangeAnimation(const AnimationType nextAnimation, const GameTime
         if (currentAnimation == nextAnimation)
                 return false;
 
+
         // Change the current animation sequence
         currentAnimation = nextAnimation;
         // Reset the current frame
         currentAnimationFrame = 0;
         // Reset the next frame time
         nextFrameTime = 0;
+
+
+        if (sequences[currentAnimation].Sequence_OnBegin != nullptr) {
+                sequences[currentAnimation].Sequence_OnBegin();
+                std::cout << "IAnimate::ChangeAnimation: Animation started: " << static_cast<int>(currentAnimation) << std::endl;
+        }
 
         // Update the next animation time
         const float newNextAnimationTime = gameTime.NowAddMilliseconds(GetAnimationDuration());
@@ -69,6 +79,11 @@ bool IAnimate::ChangeAnimation(const AnimationType nextAnimation, bool forceNewA
         currentAnimation = nextAnimation;
         currentAnimationFrame = 0;
         nextFrameTime = 0;
+
+        if (sequences[currentAnimation].Sequence_OnBegin != nullptr) {
+                sequences[currentAnimation].Sequence_OnBegin();
+                std::cout << "IAnimate::ChangeAnimation: Animation started: " << static_cast<int>(currentAnimation) << std::endl;
+        }
 
         return true;
 }

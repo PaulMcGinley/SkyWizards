@@ -10,6 +10,8 @@
 #include "models/TextureLibrary.h"
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Audio/Music.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Audio/Sound.hpp>
 #include <memory>
 
 // Forward declarations to pointers
@@ -44,12 +46,21 @@ public:
         // Holds all Collectable objects
         std::map<std::string, std::vector<std::unique_ptr<Collectable>>> Collectables;
 
+        // Holds all sound buffers
+        std::map<std::string, std::unique_ptr<sf::SoundBuffer>> SoundBuffers;
+
+        // Store active sounds
+        std::vector<std::unique_ptr<sf::Sound>> ActiveSounds;
+
         void LoadTextureLibrary(std::string fileName);
         static void LoadFonts(const std::string &directoryPath);
         void LoadMusic(const std::string& directoryPath);
         void PlayMusic(const std::string& key, bool loop = true);
         void StopMusic(const std::string& key);
         void SetMusicVolume(const std::string& key, float volume);
+        void LoadSoundEffects(const std::string& directoryPath);
+        void PlaySoundEffect(const std::string& key, float volume, float pitch);
+        void CleanupFinishedSounds();
 
 private:
         // Private constructor to prevent instancing

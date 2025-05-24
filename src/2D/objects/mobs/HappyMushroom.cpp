@@ -35,7 +35,6 @@ void HappyMushroom::Update(GameTime gameTime) {
                 return;
         }
 
-
         // Euclidean distance calculation
         // Ref: https://study.com/academy/lesson/euclidean-distance-calculation-formula-examples.html#:~:text=The%20formula%20for%20Euclidean%20distance,coordinates%20of%20the%20two%20points.
         // Using multiplication instead of pow for performance but yields the same result
@@ -50,6 +49,12 @@ void HappyMushroom::Update(GameTime gameTime) {
         } else {
                 // Idle
                 ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, false);
+        }
+
+        if(distance < 1300 && gameTime.TimeElapsed(nextLaughTime)) {
+                // Play a laugh sound effect every 5 seconds
+                assetManager.PlaySoundEffect("HappyMushroom/laughing", 100.f, 1.3f);
+                nextLaughTime = gameTime.NowAddMilliseconds(5000); // Reset laugh timer
         }
 
         // Update collision box position factoring the sprite offset (250)
@@ -138,6 +143,7 @@ void HappyMushroom::TickAnimation(GameTime gameTime) {
                 if (distance <= 400) {
                         player.BounceUp(1500.f);
                         nextBounceTime = gameTime.NowAddMilliseconds(BOUNCE_COOLDOWN);
+                        assetManager.PlaySoundEffect("HappyMushroom/spring", 100.f,1.f); // Play bounce sound effect
 
                         if (!scoreAwarded) {
                                 //player.UpdateScore(score);

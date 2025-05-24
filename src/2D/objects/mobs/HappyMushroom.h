@@ -26,6 +26,8 @@ private:
 
         void DamagePlayer(int amount) override;
         void UpdateQuads();
+
+        float nextLaughTime = 0; // Time until next laugh sound
 };
 
 #endif //HAPPYMUSHROOM_H

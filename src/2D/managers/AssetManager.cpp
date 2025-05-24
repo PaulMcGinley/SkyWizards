@@ -103,3 +103,57 @@ void AssetManager::SetMusicVolume(const std::string& key, float volume) {
                 song->second->setVolume(volume); // 0-100
         }
 }
+void AssetManager::LoadSoundEffects(const std::string& directoryPath) {
+        // Get the base directory to extract relative paths
+        std::filesystem::path baseDir = std::filesystem::path(directoryPath).parent_path();
+        std::string baseDirStr = baseDir.string();
+
+        for (const auto &entry: std::filesystem::recursive_directory_iterator(directoryPath)) {
+                if (entry.is_regular_file() && (entry.path().extension() == ".wav" ||
+                                                entry.path().extension() == ".ogg" ||
+                                                entry.path().extension() == ".mp3")) {
+                        std::string filePath = entry.path().string();
+
+                        // Extract relative path without the extension
+                        std::string relativePath = filePath.substr(baseDirStr.length() + 1);
+                        std::filesystem::path relPath(relativePath);
+                        std::string keyPath = (relPath.parent_path() / relPath.stem()).string();
+
+                        // Replace backslashes with forward slashes for consistency
+                        std::replace(keyPath.begin(), keyPath.end(), '\\', '/');
+
+                        auto soundBuffer = std::make_unique<sf::SoundBuffer>();
+                        if (soundBuffer->loadFromFile(filePath)) {
+                                SoundBuffers[keyPath] = std::move(soundBuffer);
+                                std::cout << "Loaded sound effect with key: " << keyPath << std::endl;
+                        } else {
+                                std::cerr << "Failed to load sound effect: " << filePath << std::endl;
+                        }
+                }
+        }
+}
+void AssetManager::PlaySoundEffect(const std::string& key, float volume, float pitch) {
+        // Clean up any finished sounds to free space
+        CleanupFinishedSounds();
+        auto buffer = SoundBuffers.find(key);
+        if (buffer != SoundBuffers.end()) {
+                // Create a new sound object and add it to our active sounds
+                auto sound = std::make_unique<sf::Sound>();
+                sound->setBuffer(*buffer->second);
+                sound->setVolume(volume);
+                sound->setPitch(pitch);
+                sound->play();
+
+                // Add to active sounds vector
+                ActiveSounds.push_back(std::move(sound));
+        }
+}
+void AssetManager::CleanupFinishedSounds() {
+        // Remove sounds that have finished playing
+        ActiveSounds.erase(std::remove_if(ActiveSounds.begin(), ActiveSounds.end(),
+                [](const std::unique_ptr<sf::Sound>& sound) {
+                        return sound->getStatus() == sf::Sound::Stopped;
+                }),
+            ActiveSounds.end()
+        );
+}

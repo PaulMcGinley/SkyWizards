@@ -47,6 +47,7 @@ int Projectile::Collide(sf::Vector2f collisionPoint) {
         position = collisionPoint - sf::Vector2f(400, 350);     // Remove tile size offset
 
         ChangeAnimation(AnimationType::ANIMATION_EXPLOSION, true);
+        assetManager.PlaySoundEffect("Wizard/Magic/collide", 100.f, 3.f);
 
         return damage;
 }

@@ -58,6 +58,8 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
         nextPlayerBox.top += velocity.y * gameTime.deltaTime;
 
         bool onGround = false;
+        bool wasInAir = isFalling || isJumping; // Track if player was in air before collision checks
+
 
         // Check for ground collisions
         for (const auto& boundary : boundaries) {
@@ -102,6 +104,12 @@ void Player::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
 
         // Update falling/jumping state based on ground detection
         if (onGround) {
+                if (wasInAir) {
+                        std::string landSFX = oddStepSound ? "Wizard/Land/land-1" : "Wizard/Land/land-2";
+                        assetManager.PlaySoundEffect(landSFX, 20.f, 1.f);
+                        oddStepSound = !oddStepSound; // Toggle for next time
+                }
+
                 isFalling = false;
                 isJumping = false;
         } else if (velocity.y >= 0 && !isJumping) {
@@ -280,11 +288,23 @@ void Player::Update(GameTime gameTime) {
                         isMoving = true;
                         // Always target running speed, but will take time to reach it
                         targetSpeed = -RUNNING_SPEED;
+
+                        if (gameTime.TimeElapsed(nextStepSoundTime) && !isJumping && !isFalling) {
+                                nextStepSoundTime = gameTime.NowAddMilliseconds(350);
+                                assetManager.PlaySoundEffect("Wizard/step", 10.f, (oddStepSound ? 1.f : 0.9f));
+                                oddStepSound = !oddStepSound; // Toggle sound variation
+                        }
                 } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D) ) {
                         faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_PLAYER;
                         isMoving = true;
                         // Always target running speed, but will take time to reach it
                         targetSpeed = RUNNING_SPEED;
+
+                        if (gameTime.TimeElapsed(nextStepSoundTime) && !isJumping && !isFalling) {
+                                nextStepSoundTime = gameTime.NowAddMilliseconds(350);
+                                assetManager.PlaySoundEffect("Wizard/step", 10.f, (oddStepSound ? 1.f : 0.9f));
+                                oddStepSound = !oddStepSound; // Toggle sound variation
+                        }
                 }
         }
 
@@ -451,5 +471,6 @@ void Player::CastMagic(const GameTime gameTime) {
         );
 
         nextMagicTime = gameTime.NowAddMilliseconds(1000);
+        assetManager.PlaySoundEffect("Wizard/Magic/fire-cast", 50.f, 3.f); // Play fireball cast sound
 }
 

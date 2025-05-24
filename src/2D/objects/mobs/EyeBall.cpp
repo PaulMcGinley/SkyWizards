@@ -21,7 +21,7 @@ EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRan
                         {AnimationType::ANIMATION_DAMAGED, {57, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DIZZY, true);},nullptr}},
                         {AnimationType::ANIMATION_DEATH, {32, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
                         {AnimationType::ANIMATION_DEAD, {40, 1, 100}},
-                        {AnimationType::ANIMATION_DIZZY, {41, 16, 100}},
+                        {AnimationType::ANIMATION_DIZZY, {41, 16, 100, [this]() {assetManager.PlaySoundEffect("Eye-Ball/dizzy", 50.f,1.5f);},nullptr,nullptr}},
                         {AnimationType::ANIMATION_IDLE2, {66, 8, 100}},
                         {AnimationType::ANIMATION_IDLE, {74, 16, 60}},
                         {AnimationType::ANIMATION_STATIC, {74, 1, 100}},
@@ -67,9 +67,19 @@ void EyeBall::Update(const GameTime gameTime) {
         const float distanceY = player.position.y - position.y;
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
+        if (gameTime.TimeElapsed(nextGrowlTime) && (distance > viewRange * 4) && (distance < viewRange * 6)) {
+                // Play a growl sound effect every 5 seconds if the player is within view range
+                assetManager.PlaySoundEffect("Eye-Ball/growl", 100.f, 1.f);
+                nextGrowlTime = gameTime.NowAddMilliseconds(5000); // Reset growl timer
+        }
 
         // State Logic
         if (distance > 500 && distance < viewRange) {
+                if (gameTime.TimeElapsed(nextGrowlTime)) {
+                        assetManager.PlaySoundEffect("Eye-Ball/deep-growl", 100.f, 1.f);
+                        nextGrowlTime = gameTime.NowAddMilliseconds(2000); // Reset growl timer
+                }
+
                 // Move to player
                 sf::Vector2f directionToPlayer = (player.position - position) / distance;
                 if (directionToPlayer.x < 0) {
@@ -93,8 +103,10 @@ void EyeBall::Update(const GameTime gameTime) {
         }
 
         // NOTE: This may cause issues later, but we shall see
-        if (position.y - player.position.y > 400)
-                position.y -=800;
+        if ((distance < 100) && (position.y - player.position.y > 400)) {
+                position.y -= 800;
+                assetManager.PlaySoundEffect("Eye-Ball/teleport", 100.f, 1.f);
+        }
 
 
         // Update collision box position factoring the sprite offset (375)

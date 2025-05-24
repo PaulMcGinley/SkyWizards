@@ -138,8 +138,10 @@ void GameScene::InitializeScene() {
 }
 void GameScene::DestroyScene() { /* Nothing to destroy */ }
 void GameScene::OnScene_Activate() {
-        if (!map->song.empty())
+        if (!map->song.empty()) {
+                assetManager.SetMusicVolume(map->song, 20.f);
                 assetManager.PlayMusic(map->song, true);
+        }
 
         std::cout << "Playing song: " << map->song << std::endl;
 
@@ -258,6 +260,7 @@ void GameScene::Update_Game(GameTime gameTime) {
                 std::cout << mapName <<": Level End Time: " << levelEndTime << std::endl;
                 startTime = 0.f;
                 UpdateLoop = &GameScene::Update_Loading;
+                assetManager.StopMusic(map->song);
 
                 std::vector<std::string> maps = {"00", "01", "02", "03"};
                 auto it = std::find(maps.begin(), maps.end(), mapName);

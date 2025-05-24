@@ -91,6 +91,10 @@ private:
 
         int coins = 0;
         std::map<std::string, int> scores; // levelname, score
+
+        float nextStepSoundTime = 0.f;
+        bool oddStepSound = false;
+        bool oddLandStep = false;
 };
 
 

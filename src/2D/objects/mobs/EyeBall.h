@@ -24,6 +24,8 @@ private:
         float nextMoveTime;
         sf::Vector2f spawnPosition;
 
+        float nextGrowlTime = 0; // Time until next growl sound
+
         void UpdateQuads();
 };
 
