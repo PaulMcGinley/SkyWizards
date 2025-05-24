@@ -28,7 +28,7 @@ public:
 
 private:
         // Progress bar variables
-        int TargetValue = 12;
+        int TargetValue = 14;
         int CurrentValue = 0;
 
         sf::Font copyrightFont;

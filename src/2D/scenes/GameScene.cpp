@@ -61,6 +61,8 @@ void GameScene::Update(const GameTime gameTime) {
 }
 
 void GameScene::LateUpdate(const GameTime gameTime) {
+        bigCoin.LateUpdate(gameTime);
+
         // Call LateUpdate for each projectile
         for (const auto& projectile : projectiles) {
                 projectile->LateUpdate(gameTime);
@@ -107,6 +109,8 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         DrawEntities(window, gameTime);
         DrawInFrontOfEntities(window, gameTime);
 
+        bigCoin.Draw(window, gameTime);
+
         if(gameManager.ShowCollisions()) {
                 DEBUG_DrawMapBoundaries(window, gameTime);
         }
@@ -139,7 +143,7 @@ void GameScene::InitializeScene() {
 void GameScene::DestroyScene() { /* Nothing to destroy */ }
 void GameScene::OnScene_Activate() {
         if (!map->song.empty()) {
-                assetManager.SetMusicVolume(map->song, 20.f);
+                assetManager.SetMusicVolume(map->song, 100.f);
                 assetManager.PlayMusic(map->song, true);
         }
 
@@ -196,6 +200,7 @@ void GameScene::Update_Loading(GameTime gameTime) {
 void GameScene::Update_Game(GameTime gameTime) {
 
         timerText.setString(levelTime(gameTime, false));
+        bigCoin.Update(gameTime);
 
 
         // Draw the collectables
@@ -319,6 +324,8 @@ void GameScene::ValidateMap() {
         if (assetManager.Maps.contains(mapName)) {
                 // Get the map from the asset manager
                 map = assetManager.Maps[mapName].get();
+                bigCoin.SetPosition({map->endPosition.getPosition().x + map->endPosition.getSize().x / 2,
+                                    map->endPosition.getPosition().y + map->endPosition.getSize().y / 2});
         } else {
                 std::cerr << "Map " << mapName << " does not exist in the asset manager." << std::endl;
                 SceneManager::GetInstance().ChangeScene(SceneType::SCENE_MAIN_MENU);

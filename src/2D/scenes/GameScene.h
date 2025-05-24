@@ -11,6 +11,7 @@
 #include "models/LevelObject/Boundary.h"
 #include "models/LevelObject/Collectable.h"
 #include "models/Projectile.h"
+#include "objects/BigCoin.h"
 #include "objects/Player.h"
 #include "objects/mobs/ChestMonster.h"
 
@@ -42,6 +43,7 @@ private:
 
         std::string mapName;
         WMap* map;
+        BigCoin bigCoin;
 
         sf::Texture* skyBoxTexture;
         sf::Sprite skyBoxSprite;

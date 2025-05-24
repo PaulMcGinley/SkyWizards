@@ -140,6 +140,7 @@ void LoadingScene::Update(const GameTime gameTime) {
 
         // Check if the loading is complete
         if (AssetQueue.empty() && nextSceneTime > 0 && gameTime.TimeElapsed(nextSceneTime)) {
+                assetManager.StopMusic("song");
                 auto scenePtr = sceneManager.GetScene(SceneType::SCENE_GAME);
                 auto gameScene = std::dynamic_pointer_cast<GameScene>(scenePtr);
                 if (gameScene) {

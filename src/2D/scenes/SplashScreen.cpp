@@ -25,14 +25,18 @@ void SplashScreen::Update(GameTime gameTime) {
         if (!gameTime.TimeElapsed(1)) // 1 second
                 return;
 
-        if(assetManager.Music.empty()) {
+        if(assetManager.Music.size() == 1) { // song will be the only music loaded
                 std::string musicDir = exeDir + "/resources/Audio/Music/";
                 assetManager.LoadMusic(musicDir);
+                CurrentValue++;
+                return;
         }
 
         if(assetManager.SoundBuffers.empty()) {
                 std::string sfxDir = exeDir + "/resources/Audio/Sounds/";
                 assetManager.LoadSoundEffects(sfxDir);
+                CurrentValue++;
+                return;
         }
 
         if (!assetManager.TextureLibraries["RobeBlue"]->fullyLoaded) {

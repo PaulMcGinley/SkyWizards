@@ -13,6 +13,7 @@
 #include "WMObject.h"
 #include "interfaces/IDraw.h"
 #include "interfaces/IUpdate.h"
+#include "objects/BigCoin.h"
 
 class WMap : public IDraw, public IUpdate {
 public:

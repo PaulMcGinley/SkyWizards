@@ -4,7 +4,9 @@
 
 #include "EyeBall.h"
 
+#include "models/MapObject/WMap.h"
 #include "objects/Player.h"
+#include "scenes/GameScene.h"
 
 EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRange, const float moveSpeed, const int health)
         : Mob(player, spawnPosition, viewRange, moveSpeed, health)
@@ -14,8 +16,8 @@ EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRan
         // Define the animation sequences for the ChestMonster
         SetAnimationSequences( {
                         {AnimationType::ANIMATION_ATTACK, {0, 9, 90,nullptr,[this](){BouncePlayer();},nullptr}},
-                        {AnimationType::ANIMATION_ATTACK2_START, {9, 6, 100, nullptr,[this](){ChangeAnimation(AnimationType::ANIMATION_ATTACK2_REPEAT, true);},nullptr}},
-                        {AnimationType::ANIMATION_ATTACK2_REPEAT, {15, 8, 120,nullptr,[this](){TeleportPlayer();},nullptr}},
+                        {AnimationType::ANIMATION_ATTACK2_START, {9, 6, 50, nullptr,[this](){ChangeAnimation(AnimationType::ANIMATION_ATTACK2_REPEAT, true);},nullptr}},
+                        {AnimationType::ANIMATION_ATTACK2_REPEAT, {15, 8, 60,nullptr,[this](){TeleportPlayer();},nullptr}},
                         {AnimationType::ANIMATION_ATTACK3, {23, 9, 90}},
                         {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
                         {AnimationType::ANIMATION_DAMAGED, {57, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DIZZY, true);},nullptr}},
@@ -53,7 +55,7 @@ void EyeBall::Update(const GameTime gameTime) {
         // Can't pass GameTime to animation sequences, so we need to handle cooldowns manually
         if (recentlyTeleported) {
                 recentlyTeleported = false;
-                nextTeleportTime = gameTime.NowAddMilliseconds(10000); // Set a cooldown for the next teleport
+                nextTeleportTime = gameTime.NowAddMilliseconds(5000); // Set a cooldown for the next teleport
         }
 
         if (recentlyBounced) {
@@ -104,16 +106,38 @@ void EyeBall::Update(const GameTime gameTime) {
 
                 position += directionToPlayer * walkSpeed * gameTime.deltaTime;
 
-        } else if (distance < 600 && gameTime.TimeElapsed(nextAttackTime) && !isAttacking && gameTime.TimeElapsed(nextTeleportTime)) {
+        }
+        if (distance < 800 && gameTime.TimeElapsed(nextAttackTime) && !isAttacking && gameTime.TimeElapsed(nextTeleportTime)) {
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK2_START, gameTime, true);
-        } else if (distance < 600 && !isAttacking && gameTime.TimeElapsed(nextAttackTime)) {
+        }
+        if (distance < 800 && !isAttacking && gameTime.TimeElapsed(nextAttackTime)) {
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK, gameTime, true);
-                nextAttackTime = gameTime.NowAddMilliseconds(2500); // Reset attack timer
+                //nextAttackTime = gameTime.NowAddMilliseconds(2500); // Reset attack timer
         }
         // NOTE: This may cause issues later, but we shall see
         if ((distance < 100) && (position.y - player.position.y > 400)) {
                 position.y -= 800;
                 assetManager.PlaySoundEffect("Eye-Ball/teleport", 100.f, 1.f);
+        }
+
+        // Move back to spawn
+        if (distance > 900 && !isAttacking) {
+                ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
+
+                // Calculate direction to spawn position
+                sf::Vector2f directionToSpawn = spawnPosition - position;
+                float distanceToSpawn = std::sqrt(directionToSpawn.x * directionToSpawn.x + directionToSpawn.y * directionToSpawn.y);
+
+                // If we're close enough to spawn, snap to it
+                if (distanceToSpawn < walkSpeed * gameTime.deltaTime) {
+                        position = spawnPosition;
+                } else {
+                        // Otherwise move toward spawn point
+                        directionToSpawn /= distanceToSpawn;  // Normalize
+                        position += directionToSpawn * walkSpeed* gameTime.deltaTime;
+                }
+
+                nextMoveTime = gameTime.NowAddMilliseconds(1000); // Reset move timer
         }
 
         // Update collision box position factoring the sprite offset (375)
@@ -144,14 +168,15 @@ void EyeBall::Damaged(int amount, GameTime gameTime) {
         ChangeAnimation(AnimationType::ANIMATION_DAMAGED, true);
         nextMoveTime = gameTime.NowAddMilliseconds(3000); // Stuntime
 
-        // if (!scoreAwarded) {
-        //         player->UpdateScore(1000);
-        //         score -= 1000;
-        //
-        //         if (score <= 0) {
-        //                 scoreAwarded = true;
-        //         }
-        // }
+        if (!scoreAwarded) {
+                std::string mapName = GameManager::getInstance().GetLastPlayedMap();
+                player->UpdateScore(mapName, 1000);
+                score -= 1000;
+
+                if (score <= 0) {
+                        scoreAwarded = true;
+                }
+        }
 
         // Don't call base Damaged as Eye-Ball cannot take damage
         /* Mob::Damaged(amount, gameTime); */
@@ -159,9 +184,6 @@ void EyeBall::Damaged(int amount, GameTime gameTime) {
 void EyeBall::TeleportPlayer() {
         recentlyTeleported = true;
         ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
-
-        // Get distance to player
-        Player *player = this->player;
 
         const float distanceX = player->position.x - position.x;
         const float distanceY = player->position.y - position.y;

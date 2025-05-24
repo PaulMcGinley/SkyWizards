@@ -9,10 +9,14 @@
 int main(int argc, char* argv[]) {
         // Call the getInstance() method to ensure the singleton is created before the game starts
         // It is important to call this before the game starts otherwise the graphics will glitch at the start
-        AssetManager const& assetManager =  AssetManager::GetInstance();
-        GameManager const& gameManager = GameManager::getInstance();
-        InputManager const& inputManager = InputManager::getInstance();
-        SceneManager const& sceneManager = SceneManager::GetInstance();
+        AssetManager & assetManager =  AssetManager::GetInstance();
+        GameManager & gameManager = GameManager::getInstance();
+        InputManager & inputManager = InputManager::getInstance();
+        SceneManager & sceneManager = SceneManager::GetInstance();
+
+        std::string musicDir = getExecutableDirectory() + "/resources/loader/";
+        assetManager.LoadMusic(musicDir);
+        assetManager.PlayMusic("song", true); // Play the loader music
 
         // We need to load the fonts before we initialize any scene as some scenes use the fonts to draw text.
         AssetManager::LoadFonts(getExecutableDirectory() + "/resources/fonts/");
