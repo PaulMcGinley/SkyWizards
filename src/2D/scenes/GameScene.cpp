@@ -61,6 +61,7 @@ void GameScene::Update(const GameTime gameTime) {
 }
 
 void GameScene::LateUpdate(const GameTime gameTime) {
+        bigCoin.UpdatePercent(LevelScorePercent());
         bigCoin.LateUpdate(gameTime);
 
         // Call LateUpdate for each projectile
@@ -120,6 +121,9 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         player.health.Draw(window, gameTime);
 
         window.draw(timerText);
+
+        if (UpdateLoop == &GameScene::Update_EndOfLevel)
+                summaryOverlay->Draw(window, gameTime);
 }
 void GameScene::InitializeScene() {
         float screenWidth = gameManager.getResolution().x;
@@ -142,6 +146,9 @@ void GameScene::InitializeScene() {
 }
 void GameScene::DestroyScene() { /* Nothing to destroy */ }
 void GameScene::OnScene_Activate() {
+        summaryOverlay = std::dynamic_pointer_cast<EndOfLevel>(sceneManager.GetScene(SceneType::SCENE_END_OF_LEVEL));
+        UpdateLoop = &GameScene::Update_Loading;
+
         if (!map->song.empty()) {
                 assetManager.SetMusicVolume(map->song, 100.f);
                 assetManager.PlayMusic(map->song, true);
@@ -204,16 +211,17 @@ void GameScene::Update_Game(GameTime gameTime) {
 
 
         // Draw the collectables
-        for (auto const & collectable: collectables) {
+        for (auto const &collectable: collectables) {
                 collectable->Update(gameTime);
         }
 
         // Update projectiles
-        for (const auto& projectile : projectiles) {
+        for (const auto &projectile: projectiles) {
                 projectile->Update(gameTime);
         }
 
-        // Loop through the projectiles and remove any that have expired (start at the end to avoid invalidating iterator)
+        // Loop through the projectiles and remove any that have expired (start at the end to avoid invalidating
+        // iterator)
         for (int i = projectiles.size() - 1; i >= 0; --i) {
                 if (projectiles[i]->Expired()) {
                         // Remove the projectile from the list
@@ -230,10 +238,11 @@ void GameScene::Update_Game(GameTime gameTime) {
         }
 
         // Update the map objects
-        for (auto const & obj: map->LevelObjects)
+        for (auto const &obj: map->LevelObjects)
                 assetManager.ObjectLibraries[obj.ObjectLibraryFile]->Update(gameTime);
 
-        viewport.setCenter(player.position + sf::Vector2f(250,0)); // Center the viewport on the player to culling logic
+        viewport.setCenter(player.position +
+                           sf::Vector2f(250, 0)); // Center the viewport on the player to culling logic
         // Pass boundaries to Player and calculate the physics state
         player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
         player.Update(gameTime);
@@ -262,25 +271,32 @@ void GameScene::Update_Game(GameTime gameTime) {
 
         if (playerRect.intersects(endPosRect)) {
                 levelEndTime = gameTime.NowAddMilliseconds(0) - levelStartTime;
-                std::cout << mapName <<": Level End Time: " << levelEndTime << std::endl;
+                std::cout << mapName << ": Level End Time: " << levelEndTime << std::endl;
                 startTime = 0.f;
                 UpdateLoop = &GameScene::Update_Loading;
                 assetManager.StopMusic(map->song);
 
-                std::vector<std::string> maps = {"00", "01", "02", "03"};
-                auto it = std::find(maps.begin(), maps.end(), mapName);
-                size_t nextIndex = 0;
-                if (it != maps.end()) {
-                        nextIndex = (std::distance(maps.begin(), it) + 1) % maps.size();
-                }
-                std::string nextMap = maps[nextIndex];
+                UpdateLoop = &GameScene::Update_EndOfLevel;
 
-                auto scenePtr = sceneManager.GetScene(SceneType::SCENE_LOADER);
-                auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
-                if (gameScene) {
-                        gameScene->BuildAssetQueue(nextMap);
-                }
-                sceneManager.ChangeScene(SceneType::SCENE_LOADER);
+                summaryOverlay->ResetBoard();
+                summaryOverlay->SetMapName(mapName);
+
+                // TODO: Update the summary overlay with the level data
+
+                // std::vector<std::string> maps = {"00", "01", "02", "03"};
+                // auto it = std::find(maps.begin(), maps.end(), mapName);
+                // size_t nextIndex = 0;
+                // if (it != maps.end()) {
+                //         nextIndex = (std::distance(maps.begin(), it) + 1) % maps.size();
+                // }
+                // std::string nextMap = maps[nextIndex];
+                //
+                // auto scenePtr = sceneManager.GetScene(SceneType::SCENE_LOADER);
+                // auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
+                // if (gameScene) {
+                //         gameScene->BuildAssetQueue(nextMap);
+                // }
+                // sceneManager.ChangeScene(SceneType::SCENE_LOADER);
 
 
                 // // TODO: Implement a level transition
@@ -297,7 +313,7 @@ void GameScene::Update_Game(GameTime gameTime) {
                 monster->Update(gameTime);
         }
 
-        for (auto & collectable: collectables) {
+        for (auto &collectable: collectables) {
                 if (collectable->IsCollected())
                         continue;
 
@@ -316,6 +332,9 @@ void GameScene::Update_Game(GameTime gameTime) {
                         collectables.erase(collectables.begin() + i);
                 }
         }
+}
+void GameScene::Update_EndOfLevel(GameTime gameTime) {
+        summaryOverlay->Update(gameTime);
 }
 void GameScene::ValidateMap() {
         projectiles.clear();
@@ -586,11 +605,31 @@ std::string GameScene::levelTime(GameTime gameTime, bool withMilliseconds = true
         int milliseconds = totalMilliseconds % 1000;
 
         std::ostringstream oss;
-        oss << std::setfill('0') << std::setw(2) << minutes << ":"
-            << std::setfill('0') << std::setw(2) << seconds;
+        oss << std::setfill('0') << std::setw(2) << minutes << ":" << std::setfill('0') << std::setw(2) << seconds;
 
         if (withMilliseconds)
-                oss  << "." << std::setfill('0') << std::setw(3) << milliseconds;
+                oss << "." << std::setfill('0') << std::setw(3) << milliseconds;
 
         return oss.str();
+}
+float GameScene::LevelScorePercent() {
+        int totalCollectables = map->Collectables.size();
+        int remainingCollectables = collectables.size();
+
+        int totalMonsters = map->Mobs.size();
+        int remainingMonsters = std::count_if(monsters.begin(), monsters.end(),
+                [](const std::unique_ptr<Mob>& mob) { return !mob->IsDead(); });
+
+        // Calculate collected coins percentage (avoid division by zero)
+        float collectablesPercent = (totalCollectables > 0) ?
+            100.0f * (totalCollectables - remainingCollectables) / totalCollectables : 0.0f;
+
+        // Calculate killed monsters percentage (avoid division by zero)
+        float monstersPercent = (totalMonsters > 0) ?
+            100.0f * (totalMonsters - remainingMonsters) / totalMonsters : 0.0f;
+
+        // Average the two percentages
+        float overallPercent = (collectablesPercent + monstersPercent) / 2.0f;
+
+        return overallPercent;
 }

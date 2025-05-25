@@ -7,10 +7,12 @@
 
 #include <string>
 
+
+
 struct Score {
         Score();
-        Score(std::string playerName, int playerScore, int totalTimeMs);
-        Score(std::string playerName, int playerScore, int mins, int secs, int ms);
+        Score(std::string levelName, int playerScore, int totalTimeMs, float percentComplete);
+        Score(std::string levelName, int playerScore, int mins, int secs, int ms, float percentComplete);
 
         // Format time as a string (MM:SS.mmm)
         [[nodiscard]] std::string GetTimeString(int decimals) const;
@@ -22,9 +24,11 @@ struct Score {
 
         void AddToScore(int score, int timeInMilliseconds);
 
-        std::string name;
-        int score;
+
 private:
+        std::string levelName;
+        int score;
+        float percentComplete;
         int totalTimeInMilliseconds;
 };
 

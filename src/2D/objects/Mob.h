@@ -24,6 +24,7 @@ public:
         virtual void Damaged(int amount, GameTime gameTime);
         bool IsDead();
         int AwardScore();
+        bool GetScoreAwarded();
 
 protected:
         virtual void DamagePlayer(int amount) = 0;

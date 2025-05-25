@@ -28,6 +28,7 @@ void Mob::Damaged(int amount, GameTime gameTime) {
         }
 }
 bool Mob::IsDead() { return health <= 0; }
+bool Mob::GetScoreAwarded() { return scoreAwarded; }
 int Mob::AwardScore() {
         if (scoreAwarded)
                 return 0;

@@ -7,6 +7,7 @@
 #include <SFML/Graphics/Text.hpp>
 
 
+#include "Overlays/EndOfLevel.h"
 #include "interfaces/IScene.h"
 #include "models/LevelObject/Boundary.h"
 #include "models/LevelObject/Collectable.h"
@@ -39,6 +40,7 @@ private:
         void (GameScene::*UpdateLoop)(GameTime);
         void Update_Loading(GameTime gameTime);
         void Update_Game(GameTime gameTime);
+        void Update_EndOfLevel(GameTime gameTime);
         float startTime = 0.f;
 
         std::string mapName;
@@ -82,6 +84,10 @@ private:
 
         sf::Text timerText;
         sf::Font timerFont;
+
+        float LevelScorePercent();
+
+        std::shared_ptr<EndOfLevel> summaryOverlay;
 };
 
 

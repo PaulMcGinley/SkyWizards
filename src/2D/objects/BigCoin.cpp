@@ -5,7 +5,7 @@
 #include "BigCoin.h"
 BigCoin::BigCoin()
         : percent(0.f) {
-        SetAnimationSequences( {
+        SetAnimationSequences({
                 {AnimationType::ANIMATION_BRONZE_COIN, {102, 6, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_SILVER_COIN, {126, 6, 100, nullptr, nullptr, nullptr}},
                 {AnimationType::ANIMATION_GOLD_COIN, {150, 6, 100, nullptr, nullptr, nullptr}},
@@ -32,7 +32,7 @@ void BigCoin::Update(GameTime gameTime) {
 void BigCoin::LateUpdate(GameTime gameTime) { TickAnimation(gameTime); }
 void BigCoin::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw shadow
-        IDraw::Draw(window, "PrgUse", 8, position - cellMiddle + sf::Vector2f(250, 500));
+        IDraw::Draw(window, "PrgUse", 8, position - cellMiddle + sf::Vector2f(125, 400));
 
         if (percent < 50.0f)
                 IDraw::DrawBlend(window, "coins", GetTextureDrawIndex(), position - cellMiddle, sf::BlendAdd);

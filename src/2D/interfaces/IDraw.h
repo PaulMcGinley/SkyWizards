@@ -10,6 +10,7 @@
 #include <iostream>
 #include "managers/AssetManager.h"
 #include "models/GameTime.h"
+#include "Enumerators/Align.h"
 
 class IDraw {
 public:
@@ -23,6 +24,8 @@ public:
 
         // Handled draw function with blend mode: Pass in a texture library name, index, position, and blend mode to draw the texture
         void DrawBlend(sf::RenderWindow& window, const std::string& textureLibraryName, const int index, const sf::Vector2f position, const sf::BlendMode &blend) const;
+
+        void DrawText(sf::RenderWindow& window, const std::string& fontName, const std::string& text, sf::Vector2f position, Align align, unsigned int size = 30, sf::Color color = sf::Color::White, bool outline = true, float outlineThickness = 1.f) const;
 
         // Get the asset manager instance
         // Anything that inherits from IDraw can access the asset manager

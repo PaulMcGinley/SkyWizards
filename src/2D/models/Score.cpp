@@ -8,16 +8,18 @@
 #include <utility>
 
 Score::Score()
-        : name("Player")
+        : levelName("Player")
         , score(0)
         , totalTimeInMilliseconds(0) { /* Nothing in the constructor */ }
-Score::Score(std::string playerName, int playerScore, int totalTimeMs)
-        : name(std::move(playerName))
+Score::Score(std::string levelName, int playerScore, int totalTimeMs, float scorePercentage)
+        : levelName(std::move(levelName))
         , score(playerScore)
+        , percentComplete(scorePercentage)
         , totalTimeInMilliseconds(totalTimeMs) { /* Nothing in the constructor */ }
-Score::Score(std::string playerName, int playerScore, int mins, int secs, int ms)
-        : name(std::move(playerName))
-        , score(playerScore) {
+Score::Score(std::string levelName, int playerScore, int mins, int secs, int ms, float scorePercentage)
+        : levelName(std::move(levelName))
+        , score(playerScore)
+        , percentComplete(scorePercentage) {
         totalTimeInMilliseconds = (mins * 60 * 1000) + (secs * 1000) + ms;
 }
 std::string Score::GetTimeString(int decimals = 8) const {

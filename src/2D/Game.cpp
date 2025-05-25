@@ -6,12 +6,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <filesystem>
-#include "managers/SceneManager.h"
 #include "managers/InputManager.h"
+#include "managers/SceneManager.h"
 #include "scenes/GameScene.h"
 #include "scenes/LoadingScene.h"
 #include "scenes/MainMenu.h"
 #include "scenes/Overlays/DebugOverlay.h"
+#include "scenes/Overlays/EndOfLevel.h"
 #include "scenes/SettingsScene.h"
 #include "scenes/SplashScreen.h"
 
@@ -25,6 +26,7 @@ void Game::Run() {
         sceneManager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
         sceneManager.AddScene(SceneType::SCENE_LOADER, std::make_shared<LoadingScene>());
         sceneManager.AddScene(SceneType::SCENE_OPTIONS, std::make_shared<SettingsScene>());
+        sceneManager.AddScene(SceneType::SCENE_END_OF_LEVEL, std::make_shared<EndOfLevel>());
 
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes

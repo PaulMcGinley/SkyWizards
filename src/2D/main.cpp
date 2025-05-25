@@ -1,4 +1,6 @@
+#include <__filesystem/operations.h>
 #include <iostream>
+
 #include "Game.h"
 #include "IO/GameSettingsFile.h"
 #include "managers/AssetManager.h"
@@ -17,6 +19,12 @@ int main(int argc, char* argv[]) {
         std::string musicDir = getExecutableDirectory() + "/resources/loader/";
         assetManager.LoadMusic(musicDir);
         assetManager.PlayMusic("song", true); // Play the loader music
+
+        std::string leaderBoardDir = getExecutableDirectory() + "/leaderboard/";
+        // Create the leaderboard directory if it doesn't exist
+        if (!std::filesystem::exists(leaderBoardDir)) {
+                std::filesystem::create_directory(leaderBoardDir);
+        }
 
         // We need to load the fonts before we initialize any scene as some scenes use the fonts to draw text.
         AssetManager::LoadFonts(getExecutableDirectory() + "/resources/fonts/");

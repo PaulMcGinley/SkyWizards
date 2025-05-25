@@ -4,6 +4,8 @@
 
 #include "IDraw.h"
 
+#include <SFML/Graphics/Text.hpp>
+
 void IDraw::Draw(sf::RenderWindow &window, const std::string &textureLibraryName, const int index,  const sf::Vector2f position) const {
         // Get the Texture Library
         const auto library = assetManager.TextureLibraries.find(textureLibraryName);
@@ -58,13 +60,15 @@ void IDraw::DrawBlend(sf::RenderWindow &window, const std::string &textureLibrar
         // Get the Texture Library
         const auto library = assetManager.TextureLibraries.find(textureLibraryName);
         if (library == assetManager.TextureLibraries.end()) {
-                std::cerr << "Tried to draw a texture from a non-existent library: " << textureLibraryName << " (blending)" << std::endl;
+                std::cerr << "Tried to draw a texture from a non-existent library: " << textureLibraryName
+                          << " (blending)" << std::endl;
                 return;
         }
 
         const auto *libraryContent = library->second.get();
         if (index < 0 || index >= libraryContent->entryCount) {
-                std::cerr << "Tried to draw a texture from library: " << textureLibraryName << " with an index out of bounds: " << index  << " (blending)" << std::endl;
+                std::cerr << "Tried to draw a texture from library: " << textureLibraryName
+                          << " with an index out of bounds: " << index << " (blending)" << std::endl;
                 return;
         }
 
@@ -96,8 +100,41 @@ void IDraw::DrawBlend(sf::RenderWindow &window, const std::string &textureLibrar
                 return;
 
         // Draw texture with blending
-        sf::RectangleShape textureRectangle(size);      // Create a rectangle shape with the size of the texture
-        textureRectangle.setTexture(&texture);          // Set the texture of the rectangle shape
-        textureRectangle.setPosition(drawPosition);     // Set the position of the rectangle shape
-        window.draw(textureRectangle, blend);         // Draw the rectangle shape to the window with blending
+        sf::RectangleShape textureRectangle(size); // Create a rectangle shape with the size of the texture
+        textureRectangle.setTexture(&texture); // Set the texture of the rectangle shape
+        textureRectangle.setPosition(drawPosition); // Set the position of the rectangle shape
+        window.draw(textureRectangle, blend); // Draw the rectangle shape to the window with blending
+}
+void IDraw::DrawText(sf::RenderWindow &window, const std::string& fontName, const std::string& text, sf::Vector2f position, Align align, const unsigned int size, const sf::Color color, const bool outline, const float outlineThickness) const {
+        // Get the font from the asset manager
+        const auto &font = assetManager.Fonts[fontName];
+        if (!font) {
+                std::cerr << "Tried to draw with a non-existent font: " << fontName << std::endl;
+                return;
+        }
+
+        // Create a text object
+        sf::Text label(text, *font, size);
+
+        // Handle alignment
+        sf::FloatRect textBounds = label.getLocalBounds();
+        switch (align) {
+                case Align::RIGHT:
+                                position.x -= textBounds.width;
+                break;
+                case Align::CENTER:
+                                position.x -= textBounds.width / 2.0f;
+                break;
+        }
+
+        label.setPosition(position);
+        label.setFillColor(color);
+
+        // Set outline
+        if (outline) {
+                label.setOutlineColor(sf::Color::Black);
+                label.setOutlineThickness(outlineThickness);
+        }
+
+        window.draw(label);
 }

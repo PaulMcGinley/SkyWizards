@@ -96,6 +96,9 @@ add_executable(LoSW___BftS main.cpp
         models/Score.cpp
         objects/BigCoin.cpp
         objects/BigCoin.h
+        scenes/Overlays/EndOfLevel.cpp
+        scenes/Overlays/EndOfLevel.h
+        Enumerators/Align.h
 )
 
 

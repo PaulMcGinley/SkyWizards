@@ -17,6 +17,7 @@ enum class SceneType {
         SCENE_GAME_OVER = 8,
         SCENE_STATS = 9,
         SCENE_EXIT = 10,
+        SCENE_END_OF_LEVEL = 11,
         SCENE_DEBUG_OVERLAY = 254,
         SCENE_DEV = 255
 };
