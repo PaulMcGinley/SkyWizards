@@ -5,6 +5,9 @@
 #ifndef ENDOFLEVEL_H
 #define ENDOFLEVEL_H
 
+#include <SFML/Graphics/Sprite.hpp>
+
+
 #include "interfaces/IDraw.h"
 #include "interfaces/IScene.h"
 #include "interfaces/IUpdate.h"
@@ -33,6 +36,8 @@ public:
 
 private:
         std::string mapName;
+        sf::RectangleShape shade;
+        sf::Sprite rating;
 
         int slimesAvailable = 0;
         int slimesKilled = 0;
@@ -46,7 +51,6 @@ private:
         int coinsCollected = 0;
         int timeTaken = 0; // in milliseconds
         float percentComplete = 0.f; // Percentage of the level completed
-        sf::RectangleShape shade;
 };
 
 #endif //ENDOFLEVEL_H

@@ -12,14 +12,16 @@
 MainMenu::MainMenu()
         :       selectedMenuIndex(0) { /* Nothing in the constructor */ }
 void MainMenu::Update(GameTime gameTime) {
+        InputManager &input = InputManager::getInstance();
+
         bool selectionChanged = false;
 
         // Inspired from: https://dev.to/avocoaster/how-to-wrap-around-a-range-of-numbers-with-the-modulo-cdo
         // Handle menu navigation
-        if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Key::Down) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::Key::S)) {
+        if (input.IsKeyPressed(sf::Keyboard::Key::Down) || input.IsKeyPressed(sf::Keyboard::Key::S)) {
                 selectedMenuIndex = (selectedMenuIndex + 1) % 5;
                 selectionChanged = true;
-        } else if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Key::Up) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::Key::W)) {
+        } else if (input.IsKeyPressed(sf::Keyboard::Key::Up) || input.IsKeyPressed(sf::Keyboard::Key::W)) {
                 selectedMenuIndex = (selectedMenuIndex + 4) % 5;
                 selectionChanged = true;
         }
@@ -29,8 +31,7 @@ void MainMenu::Update(GameTime gameTime) {
                 UpdateMenuSelection();
 
         // Handle confimation of selected item
-        if (InputManager::getInstance().IsKeyDown(sf::Keyboard::Key::Space) ||
-            InputManager::getInstance().IsKeyDown(sf::Keyboard::Key::Num4)) {
+        if (input.IsKeyPressed(sf::Keyboard::Key::Space) || input.IsKeyPressed(sf::Keyboard::Key::Num4)) {
                 switch (selectedMenuIndex) {
                         case 0: { // Play
                                 auto scenePtr = sceneManager.GetScene(SceneType::SCENE_LOADER);

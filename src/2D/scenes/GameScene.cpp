@@ -293,6 +293,7 @@ void GameScene::Update_Game(GameTime gameTime) {
 
                 summaryOverlay->ResetBoard();
                 summaryOverlay->SetMapName(mapName);
+                summaryOverlay->CalculatePercentComplete();
                 player.visible=false;
                 bigCoin.visible=false;
                 UpdateLoop = &GameScene::Update_EndOfLevel;
