@@ -290,7 +290,6 @@ void GameScene::Update_Game(GameTime gameTime) {
                 std::cout << mapName << ": Level End Time: " << levelEndTime << std::endl;
                 startTime = 0.f;
                 UpdateLoop = &GameScene::Update_Loading;
-                assetManager.StopMusic(map->song);
 
                 summaryOverlay->ResetBoard();
                 summaryOverlay->SetMapName(mapName);

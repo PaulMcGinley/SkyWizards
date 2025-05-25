@@ -22,6 +22,8 @@ void EndOfLevel::Update(GameTime gameTime) {
                 if (gameScene) {
                         gameScene->BuildAssetQueue(nextMap);
                 }
+
+                assetManager.StopMusic(assetManager.Maps[mapName]->song);
                 sceneManager.ChangeScene(SceneType::SCENE_LOADER);
         }
 }
