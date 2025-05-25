@@ -84,46 +84,46 @@ void HappyMushroom::Draw(sf::RenderWindow &window, GameTime gameTime) {
         }
 }
 void HappyMushroom::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime gameTime) {
-        // Create a temporary elongated collision box that extends downward
-        // This it to test for collisions beneath the monster
-        sf::FloatRect tempCollisionBox = collisionBox;
-        tempCollisionBox.height = 1000; // Extend downward by 1000 pixels
+        // If not on ground, check for collisions with boundaries
+        // We only need this to place the monster on the ground
+        if (!onGround) {
+                // Create a temporary elongated collision box that extends downward
+                // This is to test for collisions beneath the monster
+                sf::FloatRect tempCollisionBox = collisionBox;
+                tempCollisionBox.height = 1000; // Extend downward by 1000 pixels
 
-        // Find all boundaries that the temp collision box intersects with
-        std::vector<Boundary *> intersectingBoundaries;
-        for (auto &boundary: boundaries) {
-                sf::FloatRect boundaryRect(boundary.X, boundary.Y, boundary.Width, boundary.Height);
-                if (tempCollisionBox.intersects(boundaryRect)) {
-                        intersectingBoundaries.push_back(&boundary);
-                }
-        }
-
-        // Find the boundary with the shortest distance to the bottom of the monster's collision box
-        float shortestDistance = std::numeric_limits<float>::max(); // Initialize to the maximum possible float value
-        Boundary *closestBoundary = nullptr;
-        float collisionBoxBottom = collisionBox.top + collisionBox.height;
-
-        for (auto *boundary: intersectingBoundaries) {
-                // Only consider boundaries below the monster
-                if (boundary->Y >= collisionBoxBottom) {
-                        float distance = boundary->Y - collisionBoxBottom;
-                        if (distance < shortestDistance) {
-                                shortestDistance = distance;
-                                closestBoundary = boundary;
+                // Find all boundaries that the temp collision box intersects with
+                std::vector<Boundary*> intersectingBoundaries;
+                for (auto& boundary : boundaries) {
+                        sf::FloatRect boundaryRect(boundary.X, boundary.Y, boundary.Width, boundary.Height);
+                        if (tempCollisionBox.intersects(boundaryRect)) {
+                                intersectingBoundaries.push_back(&boundary);
                         }
                 }
-        }
 
-        // If we found a boundary below, pop the monster on it
-        // No more pseudo gravity
-        if (closestBoundary != nullptr) {
-                // Calculate adjustment needed to place monster on the boundary (top of boundary to bottom of collision
-                // box)
-                float adjustment = closestBoundary->Y - collisionBoxBottom;
-                position.y += adjustment; // add the distance to the monster's position
-                onGround = true;
-        } else {
-                onGround = false;
+                // Find the boundary with the shortest distance to the bottom of the monster's collision box
+                float shortestDistance = std::numeric_limits<float>::max(); // Initialize to the maximum possible float value
+                Boundary const * closestBoundary = nullptr;
+                const float collisionBoxBottom = collisionBox.top + collisionBox.height;
+
+                for (auto const * boundary : intersectingBoundaries) {
+                        // Only consider boundaries below the monster
+                        if (boundary->Y >= collisionBoxBottom) {
+                                float distance = boundary->Y - collisionBoxBottom;
+                                if (distance < shortestDistance) {
+                                        shortestDistance = distance;
+                                        closestBoundary = boundary;
+                                }
+                        }
+                }
+
+                // If we found a boundary below, pop the monster on it and set onGround to true
+                if (closestBoundary != nullptr) {
+                        // Calculate adjustment needed to place monster on the boundary
+                        float adjustment = closestBoundary->Y - collisionBoxBottom;
+                        position.y += adjustment; // add the distance to the monster's position
+                        onGround = true;
+                }
         }
 }
 void HappyMushroom::TickAnimation(GameTime gameTime) {

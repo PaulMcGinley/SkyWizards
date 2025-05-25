@@ -31,6 +31,7 @@ void BigCoin::Update(GameTime gameTime) {
 }
 void BigCoin::LateUpdate(GameTime gameTime) { TickAnimation(gameTime); }
 void BigCoin::Draw(sf::RenderWindow &window, GameTime gameTime) {
+        if (!visible) return;
         // Draw shadow
         IDraw::Draw(window, "PrgUse", 8, position - cellMiddle + sf::Vector2f(125, 400));
 

@@ -396,6 +396,8 @@ void Player::LateUpdate(const GameTime gameTime) {
 }
 
 void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
+        if (!visible) return;
+
         // Draw shadow
         IDraw::Draw(window, "PrgUse", 9, shadowDrawPosition);
 

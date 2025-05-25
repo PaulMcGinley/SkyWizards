@@ -88,6 +88,9 @@ private:
         float LevelScorePercent();
 
         std::shared_ptr<EndOfLevel> summaryOverlay;
+        sf::Texture deadLine;
+        sf::Sprite deadLineSprite;
+        sf::RectangleShape blackness;
 };
 
 

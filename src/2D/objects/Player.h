@@ -71,6 +71,8 @@ public:
         sf::Vector2f deceleration = {0, 0};
         sf::Vector2f maxVelocity = {1000, 2000};
 
+        bool visible = true;
+
 private:
         GameScene* gameScene;
         const int WALKING_SPEED = 128;

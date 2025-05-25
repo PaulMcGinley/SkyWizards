@@ -107,6 +107,11 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // window.draw(backgroundShade);
 
         DrawBehindEntities(window, gameTime);
+
+        // Void
+        window.draw(deadLineSprite);
+        window.draw(blackness);
+
         DrawEntities(window, gameTime);
         DrawInFrontOfEntities(window, gameTime);
 
@@ -146,6 +151,17 @@ void GameScene::InitializeScene() {
 }
 void GameScene::DestroyScene() { /* Nothing to destroy */ }
 void GameScene::OnScene_Activate() {
+        // Init void
+        deadLine = assetManager.TextureLibraries["PrgUse"]->entries[2].texture;
+        deadLineSprite.setTexture(deadLine);
+        deadLineSprite.setPosition(-5000, 6000);
+        deadLineSprite.setScale(10000, 1.0f);
+        blackness.setSize(sf::Vector2f(105000, 3500));
+        blackness.setPosition(-5000, 6500);
+        blackness.setFillColor(sf::Color::Black);
+
+        player.visible = true;
+        bigCoin.visible = true;
         summaryOverlay = std::dynamic_pointer_cast<EndOfLevel>(sceneManager.GetScene(SceneType::SCENE_END_OF_LEVEL));
         UpdateLoop = &GameScene::Update_Loading;
 
@@ -276,10 +292,12 @@ void GameScene::Update_Game(GameTime gameTime) {
                 UpdateLoop = &GameScene::Update_Loading;
                 assetManager.StopMusic(map->song);
 
-                UpdateLoop = &GameScene::Update_EndOfLevel;
-
                 summaryOverlay->ResetBoard();
                 summaryOverlay->SetMapName(mapName);
+                player.visible=false;
+                bigCoin.visible=false;
+                UpdateLoop = &GameScene::Update_EndOfLevel;
+
 
                 // TODO: Update the summary overlay with the level data
 

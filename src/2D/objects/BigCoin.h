@@ -18,6 +18,8 @@ public:
         void UpdatePercent(float value);
         void SetPosition(const sf::Vector2f& position);
 
+        bool visible = true;
+
 private:
         sf::Vector2f position;
         const sf::Vector2f cellMiddle = {250, 250}; // Middle of the coin cell
