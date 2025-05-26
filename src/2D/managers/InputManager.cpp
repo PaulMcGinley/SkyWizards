@@ -45,19 +45,19 @@ bool InputManager::IsCancelPressed() const {
         || IsKeyPressed(sf::Keyboard::I);               // Right controls
 }
 bool InputManager::IsFirePressed() const {
-        return IsKeyDown(sf::Keyboard::LShift)       // PC
-        || IsKeyDown(sf::Keyboard::Num5)             // Left controls
-        || IsKeyDown(sf::Keyboard::Numpad5)          // Left controls
-        || IsKeyDown(sf::Keyboard::Num6)             // Left controls
-        || IsKeyDown(sf::Keyboard::Numpad6)          // Left controls
-        || IsKeyDown(sf::Keyboard::Num8)             // Left controls
-        || IsKeyDown(sf::Keyboard::Numpad8)          // Left controls
-        || IsKeyDown(sf::Keyboard::Num9)             // Left controls
-        || IsKeyDown(sf::Keyboard::Numpad9)          // Left controls
-        || IsKeyDown(sf::Keyboard::K)                // Right controls
-        || IsKeyDown(sf::Keyboard::L)                // Right controls
-        || IsKeyDown(sf::Keyboard::O)                // Right controls
-        || IsKeyDown(sf::Keyboard::P);               // Right controls
+        return IsKeyDown(sf::Keyboard::LShift)          // PC
+        || IsKeyDown(sf::Keyboard::Num5)                // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad5)             // Left controls
+        || IsKeyDown(sf::Keyboard::Num6)                // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad6)             // Left controls
+        || IsKeyDown(sf::Keyboard::Num8)                // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad8)             // Left controls
+        || IsKeyDown(sf::Keyboard::Num9)                // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad9)             // Left controls
+        || IsKeyDown(sf::Keyboard::K)                   // Right controls
+        || IsKeyDown(sf::Keyboard::L)                   // Right controls
+        || IsKeyDown(sf::Keyboard::O)                   // Right controls
+        || IsKeyDown(sf::Keyboard::P);                  // Right controls
 }
 bool InputManager::NavigateUpPressed() const {
         return IsKeyPressed(sf::Keyboard::Up)           // Left controls
@@ -81,12 +81,12 @@ bool InputManager::MainMenuPressed() const {
         || IsKeyPressed(sf::Keyboard::N);               // Right controls
 }
 bool InputManager::ShowCollisionBoxsPressed() const {
-        return IsKeyDown(sf::Keyboard::Up)
-        && IsKeyPressed(sf::Keyboard::W);
+        return IsKeyDown(sf::Keyboard::Up)              // Hold
+        && IsKeyPressed(sf::Keyboard::W);               // Press
 }
 bool InputManager::ShowDebugPressed() const {
-        return IsKeyDown(sf::Keyboard::Down)
-        && IsKeyPressed(sf::Keyboard::S);
+        return IsKeyDown(sf::Keyboard::Down)            // Hold
+        && IsKeyPressed(sf::Keyboard::S);               // Press
 }
 
 InputManager::InputManager() {
