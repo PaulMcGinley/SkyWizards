@@ -5,7 +5,6 @@
 #include "Player.h"
 #include "scenes/GameScene.h"
 
-#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include "managers/AssetManager.h"
 #include "models/Projectiles/FireBall.h"
@@ -256,7 +255,7 @@ void Player::Update(GameTime gameTime) {
                 return;
         }
 
-        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Num5) || (sf::Keyboard::isKeyPressed(sf::Keyboard::K)) && gameTime.TimeElapsed(nextMagicTime) && !isFalling && !isJumping)) {
+        if (inputManager.IsFirePressed() && gameTime.TimeElapsed(nextMagicTime) && !isFalling && !isJumping) {
                 ChangeAnimation(AnimationType::ANIMATION_FIRE, gameTime, true);
         }
 
@@ -264,7 +263,7 @@ void Player::Update(GameTime gameTime) {
         acceleration = {0, 0};
 
         // Handle jumping input (actual physics applied in CalculatePhysicsState)
-        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))&& !isFalling && !isJumping) {
+        if (inputManager.IsJumpPressed() && !isFalling && !isJumping) {
                 isJumping = true;
                 velocity.y = -JUMPING_SPEED;
                 ChangeAnimation(AnimationType::ANIMATION_JUMP_START, gameTime, true);
@@ -283,7 +282,7 @@ void Player::Update(GameTime gameTime) {
         const float runThreshold = WALKING_SPEED * 2.f; // Speed threshold to transition to running
 
         if (GetCurrentAnimation() != AnimationType::ANIMATION_FIRE) { // Prevent movement during fire animation
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A) ) {
+                if (inputManager.MoveLeftPressed()) {
                         faceDirection = FaceDirection::FACE_DIRECTION_LEFT;
                         isMoving = true;
                         // Always target running speed, but will take time to reach it
@@ -294,7 +293,7 @@ void Player::Update(GameTime gameTime) {
                                 assetManager.PlaySoundEffect("Wizard/step", 10.f, (oddStepSound ? 1.f : 0.9f));
                                 oddStepSound = !oddStepSound; // Toggle sound variation
                         }
-                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D) ) {
+                } else if (inputManager.MoveRightPressed() ) {
                         faceDirection = FaceDirection::FACE_DIRECTION_RIGHT_PLAYER;
                         isMoving = true;
                         // Always target running speed, but will take time to reach it

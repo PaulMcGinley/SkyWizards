@@ -7,14 +7,14 @@
 
 SettingsScene::SettingsScene() {}
 void SettingsScene::Update(GameTime gameTime) {
-        if (InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Num7 )|| InputManager::GetInstance().IsKeyPressed(sf::Keyboard::I)) {
+        if (inputManager.IsCancelPressed()) {
                 sceneManager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
         // Check if the user is pressing the up or down arrow keys to change the selected option
-        if (InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Up)) {
+        if (inputManager.NavigateUpPressed()) {
                 selectedOption = (selectedOption - 1 + 4) % 4; // Wrap around to the last option
-        } else if (InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Down)) {
+        } else if (inputManager.NavigateDownPressed()) {
                 selectedOption = (selectedOption + 1) % 4; // Wrap around to the first option
         }
 

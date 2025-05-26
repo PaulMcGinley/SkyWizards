@@ -32,6 +32,7 @@ public:
         // Check if a key was released (up now, but down in the previous state)
         [[nodiscard]] bool IsKeyReleased(sf::Keyboard::Key key) const;
 
+        bool IsJumpPressed() const;
         bool IsConfirmPressed() const;
         bool IsCancelPressed() const;
         bool IsFirePressed() const;

@@ -4,8 +4,6 @@
 
 #include "GameScene.h"
 
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/Mouse.hpp>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -157,7 +155,7 @@ void GameScene::OnScene_Activate() {
         deadLineSprite.setPosition(-5000, 6000);
         deadLineSprite.setScale(10000, 1.0f);
         blackness.setSize(sf::Vector2f(105000, 3500));
-        blackness.setPosition(-5000, 6500);
+        blackness.setPosition(-5000, 6400);
         blackness.setFillColor(sf::Color::Black);
 
         player.visible = true;
@@ -246,7 +244,7 @@ void GameScene::Update_Game(GameTime gameTime) {
         }
         CheckProjectileCollisions(gameTime);
 
-        if (player.GetIsDead() && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+        if (player.GetIsDead() && inputManager.IsConfirmPressed()) {
                 player.health.ResetHealth(gameTime);
                 player.SetIsFalling(false);
                 player.SetIsDead(false);

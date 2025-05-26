@@ -6,9 +6,10 @@
 
 #include "managers/InputManager.h"
 #include "scenes/LoadingScene.h"
+
 void EndOfLevel::Update(GameTime gameTime) {
         InputManager &input = InputManager::GetInstance();
-        if (input.IsKeyPressed(sf::Keyboard::Space)) {
+        if (input.IsConfirmPressed()) {
                 std::vector<std::string> maps = {"Lv_01", "Lv_02"};
                 auto it = std::find(maps.begin(), maps.end(), mapName);
 

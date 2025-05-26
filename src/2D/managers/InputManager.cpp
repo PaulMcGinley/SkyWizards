@@ -22,7 +22,15 @@ void InputManager::Update() {
 bool InputManager::IsKeyDown(const sf::Keyboard::Key key) const { return currentKeyboardState.at(key); }
 bool InputManager::IsKeyUp(const sf::Keyboard::Key key) const { return !currentKeyboardState.at(key); }
 bool InputManager::IsKeyPressed(const sf::Keyboard::Key key) const { return currentKeyboardState.at(key) && !previousKeyboardState.at(key); }
-bool InputManager::IsKeyReleased(const sf::Keyboard::Key key) const { return !currentKeyboardState.at(key) && previousKeyboardState.at(key); }
+bool InputManager::IsKeyReleased(const sf::Keyboard::Key key) const {
+        return !currentKeyboardState.at(key) && previousKeyboardState.at(key);
+}
+bool InputManager::IsJumpPressed() const {
+        return IsKeyPressed(sf::Keyboard::Space)        // PC
+        || IsKeyPressed(sf::Keyboard::Num4)             // Left controls
+        || IsKeyPressed(sf::Keyboard::Numpad4)          // Left controls
+        || IsKeyPressed(sf::Keyboard::J);               // Right controls
+}
 
 bool InputManager::IsConfirmPressed() const {
         return IsKeyPressed(sf::Keyboard::Space)        // PC
