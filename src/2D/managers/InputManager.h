@@ -32,6 +32,20 @@ public:
         // Check if a key was released (up now, but down in the previous state)
         [[nodiscard]] bool IsKeyReleased(sf::Keyboard::Key key) const;
 
+        bool IsConfirmPressed() const;
+        bool IsCancelPressed() const;
+        bool IsFirePressed() const;
+        bool NavigateUpPressed() const;
+        bool NavigateDownPressed() const;
+        bool MoveLeftPressed() const;
+        bool MoveRightPressed() const;
+        bool MainMenuPressed() const;
+
+        bool ShowCollisionBoxsPressed() const;
+        bool ShowDebugPressed() const;
+
+
+
 private:
         // Private constructor to prevent instancing
         InputManager();
