@@ -33,7 +33,7 @@ void Projectile::Draw(sf::RenderWindow &window, GameTime gameTime) {
         IDraw::Draw(window, "magic", GetTextureDrawIndex(), position);
 
         // Draw the collision circle
-        if(GameManager::getInstance().ShowCollisions()) {
+        if(GameManager::GetInstance().ShowCollisions()) {
                 sf::CircleShape circle(collisionRadius);
                 circle.setFillColor(sf::Color(255, 0, 0, 100));
                 circle.setPosition(position - sf::Vector2f(collisionRadius, collisionRadius));

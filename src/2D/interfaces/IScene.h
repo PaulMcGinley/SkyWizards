@@ -25,7 +25,7 @@ public:
         virtual void OnScene_Activate() = 0;
         virtual void OnScene_Deactivate() = 0;
 
-        GameManager& gameManager = GameManager::getInstance();
+        GameManager& gameManager = GameManager::GetInstance();
         SceneManager& sceneManager = SceneManager::GetInstance();
 
 private:

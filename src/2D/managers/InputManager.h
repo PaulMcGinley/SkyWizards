@@ -11,7 +11,7 @@
 class InputManager {
 public:
         // Method to get the instance of the singleton
-        static InputManager& getInstance();
+        static InputManager& GetInstance();
 
         // Delete copy constructor and assignment operator to prevent copies
         InputManager(const InputManager&) = delete;

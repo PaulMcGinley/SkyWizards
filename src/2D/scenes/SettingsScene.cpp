@@ -7,19 +7,19 @@
 
 SettingsScene::SettingsScene() {}
 void SettingsScene::Update(GameTime gameTime) {
-        if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Num7 )|| InputManager::getInstance().IsKeyPressed(sf::Keyboard::I)) {
+        if (InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Num7 )|| InputManager::GetInstance().IsKeyPressed(sf::Keyboard::I)) {
                 sceneManager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
         // Check if the user is pressing the up or down arrow keys to change the selected option
-        if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Up)) {
+        if (InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Up)) {
                 selectedOption = (selectedOption - 1 + 4) % 4; // Wrap around to the last option
-        } else if (InputManager::getInstance().IsKeyPressed(sf::Keyboard::Down)) {
+        } else if (InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Down)) {
                 selectedOption = (selectedOption + 1) % 4; // Wrap around to the first option
         }
 
 
-        if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::A) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::D)) {
+        if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::A) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::D)) {
                 if (selectedOption == 0) {
                         tempIsFullscreen = !tempIsFullscreen;
                 }
@@ -27,13 +27,13 @@ void SettingsScene::Update(GameTime gameTime) {
                         tempIsVSync = !tempIsVSync;
                 }
                 else if (selectedOption == 2) {
-                        if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::A) ) {
+                        if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::A) ) {
                                 tempMusicPercent -= 0.05f;
                                 if (tempMusicPercent < 0.0f) {
                                         tempMusicPercent = 0.0f;
                                 }
                         }
-                        else if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::D)) {
+                        else if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::D)) {
                                 tempMusicPercent += 0.05f;
                                 if (tempMusicPercent > 1.0f) {
                                         tempMusicPercent = 1.0f;
@@ -41,13 +41,13 @@ void SettingsScene::Update(GameTime gameTime) {
                         }
                 }
                 else if (selectedOption == 3) {
-                        if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::A) ) {
+                        if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::A) ) {
                                 tempSfxPercent -= 0.05f;
                                 if (tempSfxPercent < 0.0f) {
                                         tempSfxPercent = 0.0f;
                                 }
                         }
-                        else if(InputManager::getInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::getInstance().IsKeyPressed(sf::Keyboard::D)) {
+                        else if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::D)) {
                                 tempSfxPercent += 0.05f;
                                 if (tempSfxPercent > 1.0f) {
                                         tempSfxPercent = 1.0f;

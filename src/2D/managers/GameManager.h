@@ -13,7 +13,7 @@
 class GameManager {
 public:
         // Method to get the instance of the singleton
-        static GameManager& getInstance() {
+        static GameManager& GetInstance() {
                 static GameManager instance; // Guaranteed to be destroyed.
                 // Instantiated on first use.
                 return instance;

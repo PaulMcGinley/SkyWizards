@@ -151,7 +151,7 @@ void EyeBall::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw Monster
         window.draw(texQuads, &assetManager.TextureLibraries["Eye-Ball"]->entries[GetTextureDrawIndex()].texture);
 
-        if (GameManager::getInstance().ShowCollisions()) {
+        if (GameManager::GetInstance().ShowCollisions()) {
                 // Collision box
                 sf::RectangleShape rect(sf::Vector2f(collisionBox.width, collisionBox.height));
                 rect.setPosition(collisionBox.left, collisionBox.top);
@@ -169,7 +169,7 @@ void EyeBall::Damaged(int amount, GameTime gameTime) {
         nextMoveTime = gameTime.NowAddMilliseconds(3000); // Stuntime
 
         if (!scoreAwarded) {
-                std::string mapName = GameManager::getInstance().GetLastPlayedMap();
+                std::string mapName = GameManager::GetInstance().GetLastPlayedMap();
                 player->UpdateScore(mapName, 1000);
                 score -= 1000;
 

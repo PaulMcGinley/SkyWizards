@@ -12,7 +12,7 @@
 MainMenu::MainMenu()
         :       selectedMenuIndex(0) { /* Nothing in the constructor */ }
 void MainMenu::Update(GameTime gameTime) {
-        InputManager &input = InputManager::getInstance();
+        InputManager &input = InputManager::GetInstance();
 
         bool selectionChanged = false;
 

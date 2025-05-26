@@ -17,8 +17,6 @@
 #include "scenes/SplashScreen.h"
 
 void Game::Run() {
-        InputManager const & input = InputManager::getInstance();
-
         // All scenes are managed by the scene manager and are added here
         sceneManager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());
         sceneManager.AddScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
@@ -44,18 +42,18 @@ void Game::Run() {
                                 gameManager.window->close();
                 }
 
-                InputManager::getInstance().Update();
+                InputManager::GetInstance().Update();
 
                 if (input.IsKeyDown(sf::Keyboard::Num1) && input.IsKeyDown(sf::Keyboard::Num2)) {
                         gameManager.window->close();
                         // TODO: Change this to an Exit to main menu system
                 }
 
-                if (input.IsKeyDown(sf::Keyboard::Num1) && input.IsKeyPressed(sf::Keyboard::N)) {
+                if (input.ShowDebugPressed()) {
                         gameManager.ToggleDebug();
                 }
 
-                if (input.IsKeyDown(sf::Keyboard::Num1) && input.IsKeyPressed(sf::Keyboard::M)) {
+                if (input.ShowCollisionBoxsPressed()) {
                         gameManager.ToggleShowCollisions();
                 }
 

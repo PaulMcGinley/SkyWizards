@@ -111,7 +111,7 @@ void AngryMushroom::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw Monster
         window.draw(texQuads, &assetManager.TextureLibraries["AngryMushroom"]->entries[GetTextureDrawIndex() + faceDirection].texture);
 
-        if (GameManager::getInstance().ShowCollisions()) {
+        if (GameManager::GetInstance().ShowCollisions()) {
                 // Collision box
                 sf::RectangleShape rect(sf::Vector2f(collisionBox.width, collisionBox.height));
                 rect.setPosition(collisionBox.left, collisionBox.top);

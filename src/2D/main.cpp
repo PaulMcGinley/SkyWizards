@@ -12,8 +12,8 @@ int main(int argc, char* argv[]) {
         // Call the getInstance() method to ensure the singleton is created before the game starts
         // It is important to call this before the game starts otherwise the graphics will glitch at the start
         AssetManager & assetManager =  AssetManager::GetInstance();
-        GameManager & gameManager = GameManager::getInstance();
-        InputManager & inputManager = InputManager::getInstance();
+        GameManager & gameManager = GameManager::GetInstance();
+        InputManager & inputManager = InputManager::GetInstance();
         SceneManager & sceneManager = SceneManager::GetInstance();
 
         std::string musicDir = getExecutableDirectory() + "/resources/loader/";

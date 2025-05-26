@@ -20,7 +20,8 @@ public:
 private:
         // Reference to the manager singletons for easy access
         SceneManager & sceneManager = SceneManager::GetInstance();
-        GameManager & gameManager = GameManager::getInstance();
+        GameManager & gameManager = GameManager::GetInstance();
+        InputManager & input = InputManager::GetInstance();
 
         // Clock and game time using for tracking the game loop time
         sf::Clock clock;        // Clock tracks time and feeds the into to gameTime

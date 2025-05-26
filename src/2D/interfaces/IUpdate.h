@@ -5,14 +5,17 @@
 #ifndef IUPDATE_H
 #define IUPDATE_H
 
+#include "managers/InputManager.h"
 #include "models/GameTime.h"
 
 class IUpdate {
 public:
-    virtual ~IUpdate() = default;
+        virtual ~IUpdate() = default;
 
-    virtual void Update(GameTime gameTime) = 0;
-    virtual void LateUpdate(GameTime gameTime) = 0;
+        virtual void Update(GameTime gameTime) = 0;
+        virtual void LateUpdate(GameTime gameTime) = 0;
+
+        InputManager& inputManager = InputManager::GetInstance();
 };
 
 #endif //IUPDATE_H

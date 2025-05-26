@@ -410,7 +410,7 @@ void Player::Draw(sf::RenderWindow& window, GameTime gameTime) {
         window.draw(staffQuad, &staff.texture);
 
         // Debug: Draw collision box
-        if (GameManager::getInstance().ShowCollisions()) {
+        if (GameManager::GetInstance().ShowCollisions()) {
                 sf::RectangleShape collisionBoxShape(sf::Vector2f(collisionBox.width, collisionBox.height));
                 collisionBoxShape.setPosition(collisionOffset());
                 collisionBoxShape.setFillColor(sf::Color(255, 0, 0, 100)); // Transparent fill
