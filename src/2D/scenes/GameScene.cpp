@@ -164,11 +164,9 @@ void GameScene::OnScene_Activate() {
         UpdateLoop = &GameScene::Update_Loading;
 
         if (!map->song.empty()) {
-                assetManager.SetMusicVolume(map->song, 100.f);
+                assetManager.SetMusicVolume(map->song, 20.f);
                 assetManager.PlayMusic(map->song, true);
         }
-
-        std::cout << "Playing song: " << map->song << std::endl;
 
         if (const auto debugOverlay = sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY)) {
                 if (const auto debugOverlayPtr = std::dynamic_pointer_cast<DebugOverlay>(debugOverlay)) {

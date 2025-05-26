@@ -45,19 +45,19 @@ bool InputManager::IsCancelPressed() const {
         || IsKeyPressed(sf::Keyboard::I);               // Right controls
 }
 bool InputManager::IsFirePressed() const {
-        return IsKeyPressed(sf::Keyboard::LShift)       // PC
-        || IsKeyPressed(sf::Keyboard::Num5)             // Left controls
-        || IsKeyPressed(sf::Keyboard::Numpad5)          // Left controls
-        || IsKeyPressed(sf::Keyboard::Num6)             // Left controls
-        || IsKeyPressed(sf::Keyboard::Numpad6)          // Left controls
-        || IsKeyPressed(sf::Keyboard::Num8)             // Left controls
-        || IsKeyPressed(sf::Keyboard::Numpad8)          // Left controls
-        || IsKeyPressed(sf::Keyboard::Num9)             // Left controls
-        || IsKeyPressed(sf::Keyboard::Numpad9)          // Left controls
-        || IsKeyPressed(sf::Keyboard::K)                // Right controls
-        || IsKeyPressed(sf::Keyboard::L)                // Right controls
-        || IsKeyPressed(sf::Keyboard::O)                // Right controls
-        || IsKeyPressed(sf::Keyboard::P);               // Right controls
+        return IsKeyDown(sf::Keyboard::LShift)       // PC
+        || IsKeyDown(sf::Keyboard::Num5)             // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad5)          // Left controls
+        || IsKeyDown(sf::Keyboard::Num6)             // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad6)          // Left controls
+        || IsKeyDown(sf::Keyboard::Num8)             // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad8)          // Left controls
+        || IsKeyDown(sf::Keyboard::Num9)             // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad9)          // Left controls
+        || IsKeyDown(sf::Keyboard::K)                // Right controls
+        || IsKeyDown(sf::Keyboard::L)                // Right controls
+        || IsKeyDown(sf::Keyboard::O)                // Right controls
+        || IsKeyDown(sf::Keyboard::P);               // Right controls
 }
 bool InputManager::NavigateUpPressed() const {
         return IsKeyPressed(sf::Keyboard::Up)           // Left controls
