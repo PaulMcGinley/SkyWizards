@@ -12,15 +12,14 @@ SlimeMonster::SlimeMonster(Player *player, sf::Vector2f spawnPosition, const flo
         , canMoveLeft(false)
         , canMoveRight(false)
         , onGround(false)
-        , nextMoveTime(0)
-        , nextPosition(spawnPosition) {
+        , nextAttackTime(0) {
         // Define the animation sequences for the SlimeMonster
         SetAnimationSequences( {
-                {AnimationType::ANIMATION_ATTACK, {0, 10, 90}},
+                {AnimationType::ANIMATION_ATTACK, {0, 10, 90, nullptr,[this](){ChangeAnimation(AnimationType::ANIMATION_IDLE, true);},nullptr}},
                 {AnimationType::ANIMATION_ATTACK2, {10, 10, 90,}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {62, 10, 100}},
                 {AnimationType::ANIMATION_DAMAGED, {52, 10, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);},nullptr}},
-                {AnimationType::ANIMATION_DEATH, {20, 16, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
+                {AnimationType::ANIMATION_DEATH, {20, 16, 100, [this](){assetManager.PlaySoundEffect("SlimeMonster/die2", 100.f, 1.f);}, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
                 {AnimationType::ANIMATION_DEAD, {35, 1, 1000}},
                 {AnimationType::ANIMATION_DIZZY, {36, 16, 100}},
                 {AnimationType::ANIMATION_IDLE, {72, 20, 50}},
@@ -40,7 +39,7 @@ SlimeMonster::SlimeMonster(Player *player, sf::Vector2f spawnPosition, const flo
         score = 500;
 }
 void SlimeMonster::Update(GameTime gameTime) {
-                // Update quads in being damaged but perform no other logic
+        // Update quads in being damaged but perform no other logic
         if (IsDead() || GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED) {
                 UpdateQuads();
                 return;
@@ -66,7 +65,7 @@ void SlimeMonster::Update(GameTime gameTime) {
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
         // State Logic
-        if (distance < viewRange) {
+        if (distance < viewRange && GetCurrentAnimation() != AnimationType::ANIMATION_ATTACK) {
                 // Player is within CQB range
                 ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime, true); // Bite
         } else {
@@ -75,23 +74,21 @@ void SlimeMonster::Update(GameTime gameTime) {
         }
 
         // Movement Logic
-        if (GetCurrentAnimation() == AnimationType::ANIMATION_RUN && gameTime.TimeElapsed(nextMoveTime)) {
-                // Calculate the distance to move based on the speed and delta time
-                const float moveDistance = walkSpeed * gameTime.deltaTime;
-
+        if (GetCurrentAnimation() == AnimationType::ANIMATION_RUN && distance > 100) {
                 if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT && canMoveLeft) {
                         // Move Left
-                        position.x -= moveDistance *4;
-                        nextMoveTime = gameTime.NowAddMilliseconds(200);
+                        position.x -= walkSpeed * gameTime.deltaTime;
                 } else if (faceDirection == FaceDirection::FACE_DIRECTION_RIGHT_SLIMEMONSTER && canMoveRight) {
                         // Move Right
-                        position.x += moveDistance *4;
-                        nextMoveTime = gameTime.NowAddMilliseconds(200);
+                        position.x += walkSpeed * gameTime.deltaTime;
                 } else {
                         // Return to idle if no movement is possible
                         ChangeAnimation(AnimationType::ANIMATION_IDLE);
                 }
         }
+
+        if (distance < 120 && gameTime.TimeElapsed(nextAttackTime))
+                ChangeAnimation(AnimationType::ANIMATION_ATTACK, gameTime, true);
 
         // Update collision box position factoring the sprite offset (250)
         collisionBox.left = position.x + 250 - (collisionBox.width / 2);
@@ -99,7 +96,7 @@ void SlimeMonster::Update(GameTime gameTime) {
 
         UpdateQuads();
 }
-void SlimeMonster::LateUpdate(GameTime gameTime) { TickAnimation(gameTime);}
+void SlimeMonster::LateUpdate(GameTime gameTime) { TickAnimation(gameTime); }
 void SlimeMonster::Draw(sf::RenderWindow &window, GameTime gameTime) {
         // Draw Shadow
         float shadowX = collisionBox.left + (collisionBox.width/2) - assetManager.TextureLibraries["PrgUse"]->entries[9].texture.getSize().x / 2;
@@ -186,16 +183,29 @@ void SlimeMonster::CalculatePhysicsState(std::vector<Boundary> boundaries, GameT
         collisionBox.left = position.x + 250 - (collisionBox.width / 2);
         collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 40;
 }
-void SlimeMonster::TickAnimation(GameTime gameTime) { Mob::TickAnimation(gameTime); }
+void SlimeMonster::TickAnimation(GameTime gameTime) {
+        const float distanceX = player->position.x - position.x;
+        const float distanceY = player->position.y - position.y;
+        const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
+
+        if (GetCurrentAnimation() == AnimationType::ANIMATION_ATTACK && GetCurrentAnimationFrame() == 4 && distance < 120 && gameTime.TimeElapsed(nextAttackTime)) {
+                DamagePlayer(1);
+                assetManager.PlaySoundEffect("SlimeMonster/attack",100.f,1.f);
+                nextAttackTime = gameTime.NowAddMilliseconds(1500);
+        }
+        Mob::TickAnimation(gameTime);
+}
 void SlimeMonster::Damaged(int amount, GameTime gameTime) {
-        if (!IsDead())
+        if (!IsDead()) {
+                assetManager.PlaySoundEffect("SlimeMonster/damaged",100.f,1.f);
                 ChangeAnimation(AnimationType::ANIMATION_DAMAGED,true);
+        }
 
         Mob::Damaged(amount, gameTime);
 }
 void SlimeMonster::DamagePlayer(int amount) {
         // Apply damage to the player
-        player->health.Damage(amount);
+        player->TakeDamage(amount);
 }
 sf::Vector2f SlimeMonster::GetLeftDropDetectorPosition() {
         // Calculate the left drop detector position based on the collision box

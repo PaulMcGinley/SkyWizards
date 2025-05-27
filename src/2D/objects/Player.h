@@ -73,6 +73,8 @@ public:
 
         bool visible = true;
 
+        void TakeDamage(int amount);
+
 private:
         GameScene* gameScene;
         const int WALKING_SPEED = 128;

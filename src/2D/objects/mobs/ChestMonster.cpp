@@ -221,6 +221,9 @@ void ChestMonster::BitePlayer() {
         if (player.GetIsDead())
                 return;
 
+        if (player.GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED)
+                return;
+
         // Euclidean distance calculation
         const float distanceX = player.position.x - position.x;
         const float distanceY = player.position.y - position.y;
@@ -237,6 +240,9 @@ void ChestMonster::SmackPlayer() {
 
         // Check if the player is dead
         if (player.GetIsDead())
+                return;
+
+        if (player.GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED)
                 return;
 
         // Euclidean distance calculation
@@ -275,5 +281,5 @@ void ChestMonster::UpdateQuads() {
 }
 void ChestMonster::DamagePlayer(int amount) {
         // Apply damage to the player
-        player->health.Damage(amount);
+        player->TakeDamage(amount);
 }

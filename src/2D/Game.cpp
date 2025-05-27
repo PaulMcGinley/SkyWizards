@@ -21,9 +21,11 @@ void Game::Run() {
         sceneManager.AddScene(SceneType::SCENE_SPLASH, std::make_shared<SplashScreen>());
         sceneManager.AddScene(SceneType::SCENE_MAIN_MENU, std::make_shared<MainMenu>());
         sceneManager.AddScene(SceneType::SCENE_GAME, std::make_shared<GameScene>());
-        sceneManager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
         sceneManager.AddScene(SceneType::SCENE_LOADER, std::make_shared<LoadingScene>());
         sceneManager.AddScene(SceneType::SCENE_OPTIONS, std::make_shared<SettingsScene>());
+
+        // Overlays
+        sceneManager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
         sceneManager.AddScene(SceneType::SCENE_END_OF_LEVEL, std::make_shared<EndOfLevel>());
 
         // Set the current scene
