@@ -26,10 +26,10 @@ bool InputManager::IsKeyReleased(const sf::Keyboard::Key key) const {
         return !currentKeyboardState.at(key) && previousKeyboardState.at(key);
 }
 bool InputManager::IsJumpPressed() const {
-        return IsKeyPressed(sf::Keyboard::Space)        // PC
-        || IsKeyPressed(sf::Keyboard::Num4)             // Left controls
-        || IsKeyPressed(sf::Keyboard::Numpad4)          // Left controls
-        || IsKeyPressed(sf::Keyboard::J);               // Right controls
+        return IsKeyDown(sf::Keyboard::Space)           // PC
+        || IsKeyDown(sf::Keyboard::Num4)                // Left controls
+        || IsKeyDown(sf::Keyboard::Numpad4)             // Left controls
+        || IsKeyDown(sf::Keyboard::J);                  // Right controls
 }
 
 bool InputManager::IsConfirmPressed() const {
