@@ -222,7 +222,7 @@ void GameScene::Update_Game(GameTime gameTime) {
         bigCoin.Update(gameTime);
 
 
-        // Draw the collectables
+        // Update the collectables
         for (auto const &collectable: collectables) {
                 collectable->Update(gameTime);
         }
@@ -511,7 +511,7 @@ void GameScene::DrawBehindEntities(sf::RenderWindow &window, GameTime gameTime) 
                 for (auto const & obj: map->LevelObjects)
                         for (auto const &entry: assetManager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
                                 if (entry.DrawLayer == layer)
-                                        IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x, obj.Position.y));
+                                        IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x + entry.X, obj.Position.y + entry.Y));
         }
 }
 void GameScene::DrawEntities(sf::RenderWindow &window, const GameTime gameTime) {
@@ -542,8 +542,7 @@ void GameScene::DrawInFrontOfEntities(sf::RenderWindow &window, GameTime gameTim
                 for (auto const &obj: map->LevelObjects)
                         for (auto const &entry: assetManager.ObjectLibraries[obj.ObjectLibraryFile]->Images)
                                 if (entry.DrawLayer == layer)
-                                        IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame,
-                                                    sf::Vector2f(obj.Position.x, obj.Position.y));
+                                        IDraw::Draw(window, entry.BackImageLibrary, entry.currentFrame, sf::Vector2f(obj.Position.x + entry.X, obj.Position.y + entry.Y));
 }
 void GameScene::DEBUG_DrawMapBoundaries(sf::RenderWindow &window, GameTime gameTime) {
         auto localBoundaries = getLocalBoundaries();

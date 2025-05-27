@@ -74,7 +74,7 @@ void OLibrary::Update(GameTime gameTime) {
 
                 // Update the next frame time
                 image.currentFrame++;
-                if (image.currentFrame >= image.BackEndIndex) {
+                if (image.currentFrame > image.BackEndIndex) {
                         image.currentFrame = image.BackIndex; // Loop back to the start
                 }
 
