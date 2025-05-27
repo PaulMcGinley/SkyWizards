@@ -60,7 +60,6 @@ bool OLibrary::Deserialize(const pugi::xml_document &doc) {
         return true; // Successfully deserialized
 }
 void OLibrary::Update(GameTime gameTime) {
-        // TODO: Change to for i loop to match to boundary groups
         for (auto& image : Images) {
                 // Not animated
                 if (image.BackEndIndex == -1)
@@ -69,24 +68,16 @@ void OLibrary::Update(GameTime gameTime) {
                 // Not ready for next frame
                 if(!gameTime.TimeElapsed(image.nextFrameTime))
                         continue;
-                // if (gameTime.total_game_time < image.nextFrameTime)
-                //         continue;
 
                 // Update the next frame time
                 image.currentFrame++;
                 if (image.currentFrame > image.BackEndIndex) {
-                        image.currentFrame = image.BackIndex; // Loop back to the start
+                        image.currentFrame = image.BackIndex; // Loop back to the start if out of bounds
                 }
 
                 // Update next frame time
                 image.nextFrameTime = gameTime.totalGameTime + (static_cast<float>(image.BackAnimationSpeed) / 1000.0f);
         }
-
-        // TODO: Update the boundary groups
 }
-void OLibrary::LateUpdate(GameTime gameTime) {
-        // Not implemented
-}
-void OLibrary::Draw(sf::RenderWindow &window, GameTime gameTime) {
-
-}
+void OLibrary::LateUpdate(GameTime gameTime) { /* Nothing to update here */}
+void OLibrary::Draw(sf::RenderWindow &window, GameTime gameTime) { /* Draw handled in GameScene */ }
