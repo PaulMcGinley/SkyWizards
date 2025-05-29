@@ -21,6 +21,8 @@ public:
 private:
         void DamagePlayer(int amount) override;
 
+        float nextCryTime;
+
         float nextMoveTime;
         sf::Vector2f nextPosition;
         const float MOVE_LIMIT = 200.f;

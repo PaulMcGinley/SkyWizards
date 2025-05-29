@@ -107,10 +107,10 @@ void EyeBall::Update(const GameTime gameTime) {
                 position += directionToPlayer * walkSpeed * gameTime.deltaTime;
 
         }
-        if (distance < 800 && gameTime.TimeElapsed(nextAttackTime) && !isAttacking && gameTime.TimeElapsed(nextTeleportTime)) {
+        if (distance < viewRange && !isAttacking && gameTime.TimeElapsed(nextTeleportTime)) {
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK2_START, gameTime, true);
         }
-        if (distance < 800 && !isAttacking && gameTime.TimeElapsed(nextAttackTime)) {
+        if (distance < viewRange && !isAttacking && gameTime.TimeElapsed(nextAttackTime)) {
                 ChangeAnimation(AnimationType::ANIMATION_ATTACK, gameTime, true);
                 //nextAttackTime = gameTime.NowAddMilliseconds(2500); // Reset attack timer
         }

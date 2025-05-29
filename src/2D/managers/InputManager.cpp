@@ -22,16 +22,13 @@ void InputManager::Update() {
 bool InputManager::IsKeyDown(const sf::Keyboard::Key key) const { return currentKeyboardState.at(key); }
 bool InputManager::IsKeyUp(const sf::Keyboard::Key key) const { return !currentKeyboardState.at(key); }
 bool InputManager::IsKeyPressed(const sf::Keyboard::Key key) const { return currentKeyboardState.at(key) && !previousKeyboardState.at(key); }
-bool InputManager::IsKeyReleased(const sf::Keyboard::Key key) const {
-        return !currentKeyboardState.at(key) && previousKeyboardState.at(key);
-}
+bool InputManager::IsKeyReleased(const sf::Keyboard::Key key) const { return !currentKeyboardState.at(key) && previousKeyboardState.at(key); }
 bool InputManager::IsJumpPressed() const {
         return IsKeyDown(sf::Keyboard::Space)           // PC
         || IsKeyDown(sf::Keyboard::Num4)                // Left controls
         || IsKeyDown(sf::Keyboard::Numpad4)             // Left controls
         || IsKeyDown(sf::Keyboard::J);                  // Right controls
 }
-
 bool InputManager::IsConfirmPressed() const {
         return IsKeyPressed(sf::Keyboard::Space)        // PC
         || IsKeyPressed(sf::Keyboard::Num4)             // Left controls
@@ -39,7 +36,7 @@ bool InputManager::IsConfirmPressed() const {
         || IsKeyPressed(sf::Keyboard::J);               // Right controls
 }
 bool InputManager::IsCancelPressed() const {
-        return IsKeyPressed(sf::Keyboard::Space)        // PC
+        return IsKeyPressed(sf::Keyboard::Backspace)    // PC
         || IsKeyPressed(sf::Keyboard::Num7)             // Left controls
         || IsKeyPressed(sf::Keyboard::Numpad7)          // Left controls
         || IsKeyPressed(sf::Keyboard::I);               // Right controls
@@ -85,8 +82,8 @@ bool InputManager::ShowCollisionBoxsPressed() const {
         && IsKeyPressed(sf::Keyboard::W);               // Press
 }
 bool InputManager::ShowDebugPressed() const {
-        return IsKeyDown(sf::Keyboard::Down)            // Hold
-        && IsKeyPressed(sf::Keyboard::S);               // Press
+        return IsKeyDown(sf::Keyboard::Down) // Hold
+               && IsKeyPressed(sf::Keyboard::S); // Press
 }
 
 InputManager::InputManager() {

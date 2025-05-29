@@ -447,6 +447,13 @@ void Player::BounceUp(float amount) {
         isFalling = false;
         ChangeAnimation(AnimationType::ANIMATION_JUMP_START, GameTime(), true);
 }
+void Player::KnockBack(sf::Vector2f amount) {
+        velocity += -amount;
+        position.y -= 5.f; // Just to get player off ground
+        isJumping = true;
+        isFalling = false;
+        ChangeAnimation(AnimationType::ANIMATION_JUMP_START, GameTime(), true);
+}
 void Player::TakeDamage(int amount) {
         velocity = {0,0};
         health.Damage(amount);

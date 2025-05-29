@@ -12,14 +12,15 @@ Cactus::Cactus(Player *player, sf::Vector2f spawnPosition, const float viewRange
         , canMoveRight(false)
         , onGround(false)
         , nextMoveTime(0)
-        , nextPosition(spawnPosition) {
+        , nextPosition(spawnPosition)
+        , nextCryTime(0) {
         // Define the animation sequences for the Cactus
         SetAnimationSequences( {
                 {AnimationType::ANIMATION_ATTACK, {0, 8, 90}},
                 {AnimationType::ANIMATION_ATTACK2, {9, 10, 90,}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {62, 10, 100}},
                 {AnimationType::ANIMATION_DAMAGED, {44, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);},nullptr}},
-                {AnimationType::ANIMATION_DEATH, {19, 9, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
+                {AnimationType::ANIMATION_DEATH, {19, 9, 100, [this](){assetManager.PlaySoundEffect("Cactus/die",100.f,1.f);}, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
                 {AnimationType::ANIMATION_DEAD, {27, 1, 1000}},
                 {AnimationType::ANIMATION_DIZZY, {28, 16, 100}},
                 {AnimationType::ANIMATION_IDLE, {60, 16, 50}},
@@ -73,6 +74,14 @@ void Cactus::Update(GameTime gameTime) {
         } else {
                 // Player is out of view range
                 ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, false);
+        }
+
+        if (distance <= viewRange && gameTime.TimeElapsed(nextCryTime)) {
+                int index = static_cast<int>(player.position.x);
+                index = (index % 2) +1;
+                // Play a sound effect when the cactus is close to the player
+                assetManager.PlaySoundEffect("Cactus/cry" + std::to_string(index), 100.f, 1.f);
+                nextCryTime = gameTime.NowAddMilliseconds(4500); // Reset cry timer
         }
 
         // Movement Logic
@@ -189,8 +198,11 @@ void Cactus::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
 }
 void Cactus::TickAnimation(GameTime gameTime) { Mob::TickAnimation(gameTime); }
 void Cactus::Damaged(int amount, GameTime gameTime) {
-        if (!IsDead())
+        if (!IsDead()) {
+                int index = (static_cast<int>(position.x) % 2) + 1;
+                assetManager.PlaySoundEffect("Cactus/damaged"+std::to_string(index),100.f,1.f);
                 ChangeAnimation(AnimationType::ANIMATION_DAMAGED,true);
+        }
 
         Mob::Damaged(amount, gameTime);
 }

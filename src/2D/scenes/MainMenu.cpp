@@ -41,7 +41,8 @@ void MainMenu::Update(GameTime gameTime) {
                                 sceneManager.ChangeScene(SceneType::SCENE_LOADER);
                                 break;
                         }
-                        case 1: { // Level Select
+                        case 1: { // Level Select or Credits
+                                sceneManager.ChangeScene(SceneType::SCENE_CREDITS);
                                 // ...
                                 break;
                         }

@@ -99,6 +99,8 @@ add_executable(LoSW___BftS main.cpp
         scenes/Overlays/EndOfLevel.cpp
         scenes/Overlays/EndOfLevel.h
         Enumerators/Align.h
+        scenes/CreditsScene.cpp
+        scenes/CreditsScene.h
 )
 
 

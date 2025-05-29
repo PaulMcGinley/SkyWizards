@@ -45,8 +45,6 @@ public:
         bool ShowCollisionBoxsPressed() const;
         bool ShowDebugPressed() const;
 
-
-
 private:
         // Private constructor to prevent instancing
         InputManager();

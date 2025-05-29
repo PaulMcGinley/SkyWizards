@@ -8,6 +8,7 @@
 #include <filesystem>
 #include "managers/InputManager.h"
 #include "managers/SceneManager.h"
+#include "scenes/CreditsScene.h"
 #include "scenes/GameScene.h"
 #include "scenes/LoadingScene.h"
 #include "scenes/MainMenu.h"
@@ -23,6 +24,7 @@ void Game::Run() {
         sceneManager.AddScene(SceneType::SCENE_GAME, std::make_shared<GameScene>());
         sceneManager.AddScene(SceneType::SCENE_LOADER, std::make_shared<LoadingScene>());
         sceneManager.AddScene(SceneType::SCENE_OPTIONS, std::make_shared<SettingsScene>());
+        sceneManager.AddScene(SceneType::SCENE_CREDITS, std::make_shared<CreditsScene>());
 
         // Overlays
         sceneManager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
