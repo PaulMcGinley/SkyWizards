@@ -103,6 +103,13 @@ void SplashScreen::Update(GameTime gameTime) {
                 return;
         }
 
+        if (!assetManager.TextureLibraries["coins"]->fullyLoaded) {
+                assetManager.TextureLibraries["coins"].get()->LoadIndices({});
+                assetManager.TextureLibraries["coins"]->allowUnload = false;
+                CurrentValue++;
+                return;
+        }
+
         // Level Objects (OLibrary) XML files
         if (assetManager.ObjectLibraries.empty()) {
                 loadLevelObjects(exeDir + "/resources/levelobjects/");

@@ -53,6 +53,9 @@ public:
         bool GetIsDead() const { return isDead; }
         void SetIsDead(bool dead) { isDead = dead; }
 
+        bool GetIsScreaming() const {return isScreaming; }
+        void SetIsScreaming(bool screaming) { isScreaming = screaming; }
+
         const sf::IntRect collisionBox = {225, 200, 50, 150};
         sf::Vector2f collisionOffset() const { return position + sf::Vector2f(collisionBox.left, collisionBox.top); }
         float feetPosition() const { return position.y + collisionBox.top + collisionBox.height; }
@@ -88,6 +91,7 @@ private:
         bool isFalling = false;
         bool isJumping = false;
         bool isDead = false;
+        bool isScreaming = false;
 
         sf::Vector2f shadowDrawPosition;
 

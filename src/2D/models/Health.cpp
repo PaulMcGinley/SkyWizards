@@ -19,7 +19,7 @@ int Health::GetHeartCount() const {
 int Health::GetCurrentHealth() const { return currentHealth; }
 int Health::GetTargetHealth() const { return targetHealth; }
 // Called on player respawn
-void Health::ResetHealth(GameTime gameTime) {
+void Health::ResetHealth(const GameTime gameTime) {
         currentHealth = 1;
         targetHealth = maximumHealth;
         nextUpdateTime = gameTime.NowAddMilliseconds(UPDATE_INTERVAL);

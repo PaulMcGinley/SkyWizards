@@ -14,7 +14,7 @@
 
 class Health final : public IDraw, public IUpdate {
 public:
-        Health(float _scale, sf::Vector2f _position);
+        Health(float scale, sf::Vector2f position);
 
         [[nodiscard]] int GetHeartCount() const;
         [[nodiscard]] int GetCurrentHealth() const;

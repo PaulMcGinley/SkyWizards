@@ -22,7 +22,7 @@ ChestMonster::ChestMonster(Player *player, sf::Vector2f spawnPosition, const flo
                 {AnimationType::ANIMATION_ATTACK2, {10, 9, 100,}},
                 {AnimationType::ANIMATION_BATTLE_IDLE, {19, 9, 100}},
                 {AnimationType::ANIMATION_DAMAGED, {28, 7, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_IDLE);},nullptr}},
-                {AnimationType::ANIMATION_DEATH, {35, 12, 100, nullptr, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
+                {AnimationType::ANIMATION_DEATH, {35, 12, 100, [this](){assetManager.PlaySoundEffect("ChestMonster/die", 100.f, 1.f); }, [this](){ChangeAnimation(AnimationType::ANIMATION_DEAD);},nullptr}},
                 {AnimationType::ANIMATION_DEAD, {46, 1, 100}},
                 {AnimationType::ANIMATION_DIZZY, {47, 16, 100}},
                 {AnimationType::ANIMATION_IDLE, {63, 16, 60}},
@@ -211,6 +211,8 @@ void ChestMonster::Damaged(int amount, GameTime gameTime) {
         if (!IsDead() && GetCurrentAnimation() != AnimationType::ANIMATION_STATIC)
                 ChangeAnimation(AnimationType::ANIMATION_DAMAGED,true);
 
+        assetManager.PlaySoundEffect("ChestMonster/damaged", 100.f, 1.f);
+
         Mob::Damaged(amount, gameTime);
 }
 void ChestMonster::BitePlayer() {
@@ -223,6 +225,8 @@ void ChestMonster::BitePlayer() {
 
         if (player.GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED)
                 return;
+
+        assetManager.PlaySoundEffect("ChestMonster/bite", 100.f, 1.f);
 
         // Euclidean distance calculation
         const float distanceX = player.position.x - position.x;
@@ -244,6 +248,8 @@ void ChestMonster::SmackPlayer() {
 
         if (player.GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED)
                 return;
+
+        assetManager.PlaySoundEffect("ChestMonster/smack", 100.f, 1.f);
 
         // Euclidean distance calculation
         const float distanceX = player.position.x - position.x;

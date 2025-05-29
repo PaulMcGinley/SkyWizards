@@ -451,6 +451,7 @@ void Player::TakeDamage(int amount) {
         velocity = {0,0};
         health.Damage(amount);
         ChangeAnimation(AnimationType::ANIMATION_DAMAGED, true);
+        assetManager.PlaySoundEffect("Wizard/hurt", 100.f,1.f);
 }
 
 void Player::CastMagic(const GameTime gameTime) {

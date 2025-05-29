@@ -260,8 +260,17 @@ void GameScene::Update_Game(GameTime gameTime) {
         player.CalculatePhysicsState(getLocalBoundaries(), gameTime);
         player.Update(gameTime);
 
-        if (player.position.y > 6500)
+        if (player.position.y > 6500 && !player.GetIsScreaming()) {
+                int index = static_cast<int>(player.position.x );
+                index = index < 0 ? index * - 1 : index; // Make sure always pos
+                index = (index % 3) + 1; // Mod 3, + 1 so always between 1 - 3
+                player.SetIsScreaming(true);
+                assetManager.PlaySoundEffect("Wizard/Death/scream-"+std::to_string(index),100.f,1.f);
+        }
+        if (player.position.y > 7000) {
                 SpawnPlayer();
+                player.SetIsScreaming(false);
+        }
 
         // This is a possible fix to the tearing issue of the tiles
         int vpX = player.position.x + 250;
@@ -636,11 +645,11 @@ float GameScene::LevelScorePercent() {
 
         // Calculate collected coins percentage (avoid division by zero)
         float collectablesPercent = (totalCollectables > 0) ?
-            100.0f * (totalCollectables - remainingCollectables) / totalCollectables : 0.0f;
+            100.0f * (totalCollectables - remainingCollectables) / totalCollectables : 100.0f;
 
         // Calculate killed monsters percentage (avoid division by zero)
         float monstersPercent = (totalMonsters > 0) ?
-            100.0f * (totalMonsters - remainingMonsters) / totalMonsters : 0.0f;
+            100.0f * (totalMonsters - remainingMonsters) / totalMonsters : 100.0f;
 
         // Average the two percentages
         float overallPercent = (collectablesPercent + monstersPercent) / 2.0f;

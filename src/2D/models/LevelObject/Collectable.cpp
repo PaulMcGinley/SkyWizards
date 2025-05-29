@@ -84,7 +84,8 @@ sf::Vector2f Collectable::GetPosition() const { return position; }
 void Collectable::Collect() {
         // Mark the collectable as collected
         collected = true;
-        std::cout << "Collectable collected!" << std::endl;
+        float pitchAugment = (static_cast<int>(position.x + position.x) % 2); // Pseudo random
+        assetManager.PlaySoundEffect("coin",100.f,1.f + (pitchAugment/10));
 }
 bool Collectable::IsCollected() {
         // Check if the collectable is collected
