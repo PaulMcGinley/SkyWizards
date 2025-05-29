@@ -11,9 +11,8 @@ Cactus::Cactus(Player *player, sf::Vector2f spawnPosition, const float viewRange
         , canMoveLeft(false)
         , canMoveRight(false)
         , onGround(false)
-        , nextMoveTime(0)
-        , nextPosition(spawnPosition)
-        , nextCryTime(0) {
+        , nextCryTime(0)
+        , nextAttackTime(0) {
         // Define the animation sequences for the Cactus
         SetAnimationSequences( {
                 {AnimationType::ANIMATION_ATTACK, {0, 8, 90}},
@@ -68,7 +67,7 @@ void Cactus::Update(GameTime gameTime) {
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
 
         // State Logic
-        if (distance < viewRange) {
+        if (distance < viewRange && GetCurrentAnimation() != AnimationType::ANIMATION_ATTACK) {
                 // Player is within CQB range
                 ChangeAnimation(AnimationType::ANIMATION_RUN, gameTime, true); // Bite
         } else {
@@ -76,7 +75,7 @@ void Cactus::Update(GameTime gameTime) {
                 ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, false);
         }
 
-        if (distance <= viewRange && gameTime.TimeElapsed(nextCryTime)) {
+        if (distance <= viewRange && distance > 100 && gameTime.TimeElapsed(nextCryTime)) {
                 int index = static_cast<int>(player.position.x);
                 index = (index % 2) +1;
                 // Play a sound effect when the cactus is close to the player
@@ -84,19 +83,22 @@ void Cactus::Update(GameTime gameTime) {
                 nextCryTime = gameTime.NowAddMilliseconds(4500); // Reset cry timer
         }
 
+        if (distance <= 150 && gameTime.TimeElapsed(nextAttackTime) && GetCurrentAnimation() != AnimationType::ANIMATION_ATTACK) {
+                assetManager.PlaySoundEffect("Cactus/attack", 100.f, 1.f);
+                ChangeAnimation(AnimationType::ANIMATION_ATTACK, gameTime, true);
+        }
+
         // Movement Logic
-        if (GetCurrentAnimation() == AnimationType::ANIMATION_RUN && gameTime.TimeElapsed(nextMoveTime)) {
+        if (GetCurrentAnimation() == AnimationType::ANIMATION_RUN) {
                 // Calculate the distance to move based on the speed and delta time
                 const float moveDistance = walkSpeed * gameTime.deltaTime;
 
                 if (faceDirection == FaceDirection::FACE_DIRECTION_LEFT && canMoveLeft) {
                         // Move Left
-                        position.x -= moveDistance *4;
-                        nextMoveTime = gameTime.NowAddMilliseconds(200);
+                        position.x -= moveDistance;
                 } else if (faceDirection == FaceDirection::FACE_DIRECTION_RIGHT_CACTUS && canMoveRight) {
                         // Move Right
-                        position.x += moveDistance *4;
-                        nextMoveTime = gameTime.NowAddMilliseconds(200);
+                        position.x += moveDistance;
                 } else {
                         // Return to idle if no movement is possible
                         ChangeAnimation(AnimationType::ANIMATION_IDLE);
@@ -196,7 +198,20 @@ void Cactus::CalculatePhysicsState(std::vector<Boundary> boundaries, GameTime ga
         collisionBox.left = position.x + 250 - (collisionBox.width / 2);
         collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 40;
 }
-void Cactus::TickAnimation(GameTime gameTime) { Mob::TickAnimation(gameTime); }
+void Cactus::TickAnimation(GameTime gameTime) {
+        const float distanceX = player->position.x - position.x;
+        const float distanceY = player->position.y - position.y;
+        const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
+
+        if (distance <= 150 && GetCurrentAnimation() == AnimationType::ANIMATION_ATTACK && GetCurrentAnimationFrame() == 3  && gameTime.TimeElapsed(nextAttackTime)) {
+                player->TakeDamage(2);
+                float xKnockBack = (faceDirection == FaceDirection::FACE_DIRECTION_LEFT) ? -800.f : 800.f;
+                player->KnockBack({xKnockBack,-800});
+                nextAttackTime = gameTime.NowAddMilliseconds(1250);
+        }
+
+        Mob::TickAnimation(gameTime);
+}
 void Cactus::Damaged(int amount, GameTime gameTime) {
         if (!IsDead()) {
                 int index = (static_cast<int>(position.x) % 2) + 1;

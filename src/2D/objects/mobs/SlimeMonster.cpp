@@ -92,7 +92,7 @@ void SlimeMonster::Update(GameTime gameTime) {
 
         // Update collision box position factoring the sprite offset (250)
         collisionBox.left = position.x + 250 - (collisionBox.width / 2);
-        collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 40; // +40 for better alignment
+        collisionBox.top = position.y + 250 - (collisionBox.height / 2) + 40;
 
         UpdateQuads();
 }

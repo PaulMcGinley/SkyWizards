@@ -432,10 +432,6 @@ void GameScene::LoadMobs() {
                         std::cerr << "Unknown mob type: " << mob.MonsterName << std::endl;
                 }
         }
-
-        for (auto &mob: monsters) {
-                mob->CalculatePhysicsState(getLocalBoundaries(), GameTime());
-        }
 }
 void GameScene::LoadCollectables() {
         collectables.clear();
@@ -575,9 +571,9 @@ std::vector<Boundary> GameScene::getLocalBoundaries() const {
         std::vector<Boundary> localBoundaries;
         localBoundaries.reserve(map->LevelObjects.size());
 
-        const sf::FloatRect viewBounds(viewport.getCenter().x - viewport.getSize().x / 4,
-                                       viewport.getCenter().y - viewport.getSize().y / 4, viewport.getSize().x,
-                                       viewport.getSize().y);
+        const sf::FloatRect viewBounds(viewport.getCenter().x - viewport.getSize().x / 2,
+                                       viewport.getCenter().y - viewport.getSize().y / 2, viewport.getSize().x *2,
+                                       viewport.getSize().y*2);
 
         for (const auto &obj: map->LevelObjects) {
                 const auto &objLibIt = assetManager.ObjectLibraries.find(obj.ObjectLibraryFile);

@@ -22,10 +22,7 @@ private:
         void DamagePlayer(int amount) override;
 
         float nextCryTime;
-
-        float nextMoveTime;
-        sf::Vector2f nextPosition;
-        const float MOVE_LIMIT = 200.f;
+        float nextAttackTime;
 
         sf::Vector2f GetLeftDropDetectorPosition();
         sf::Vector2f GetRightDropDetectorPosition();
