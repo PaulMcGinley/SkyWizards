@@ -25,10 +25,7 @@ public:
 
 
         void ResetBoard();
-        void SetSlimeData(int available, int killed);
-        void SetChestMonsterData(int available, int killed);
-        void SetAngryMushroomData(int available, int killed);
-        void SetCactusMonsterData(int available, int killed);
+        void SetMobData(int available, int killed);
         void SetCoinData(int available, int collected);
         void SetTimeTaken(int timeInMilliseconds);
         void CalculatePercentComplete();
@@ -39,18 +36,12 @@ private:
         sf::RectangleShape shade;
         sf::Sprite rating;
 
-        int slimesAvailable = 0;
-        int slimesKilled = 0;
-        int chestMonstersAvailable = 0;
-        int chestMonstersKilled = 0;
-        int angryMushroomsAvailable = 0;
-        int angryMushroomsKilled = 0;
-        int cactusMonstersAvailable = 0;
-        int cactusMonstersKilled = 0;
+        int mobsAvailable = 0;
+        int mobsKilled = 0;
         int coinsAvailable = 0;
         int coinsCollected = 0;
         int timeTaken = 0; // in milliseconds
-        float percentComplete = 0.f; // Percentage of the level completed
+        int percentComplete = 0; // Percentage of the level completed
 };
 
 #endif //ENDOFLEVEL_H

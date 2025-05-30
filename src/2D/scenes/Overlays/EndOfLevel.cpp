@@ -60,45 +60,33 @@ void EndOfLevel::DestroyScene() {}
 void EndOfLevel::OnScene_Activate() {}
 void EndOfLevel::OnScene_Deactivate() {}
 void EndOfLevel::ResetBoard() {
-        slimesAvailable = 0;
-        slimesKilled = 0;
-        chestMonstersAvailable = 0;
-        chestMonstersKilled = 0;
-        angryMushroomsAvailable = 0;
-        angryMushroomsKilled = 0;
-        cactusMonstersAvailable = 0;
-        cactusMonstersKilled = 0;
+        mobsAvailable = 0;
+        mobsKilled = 0;
         coinsAvailable = 0;
         coinsCollected = 0;
         timeTaken = 0;
 }
-void EndOfLevel::SetSlimeData(int available, int killed) {}
-void EndOfLevel::SetChestMonsterData(int available, int killed) {}
-void EndOfLevel::SetAngryMushroomData(int available, int killed) {}
-void EndOfLevel::SetCactusMonsterData(int available, int killed) {}
-void EndOfLevel::SetCoinData(int available, int collected) {}
+void EndOfLevel::SetMobData(int available, int killed) {
+        mobsAvailable = available;
+        mobsKilled = killed;
+}
+void EndOfLevel::SetCoinData(int available, int collected) {
+        coinsAvailable = available;
+        coinsCollected = collected;
+}
 void EndOfLevel::SetTimeTaken(int timeInMilliseconds) { timeTaken = timeInMilliseconds; }
 void EndOfLevel::CalculatePercentComplete() {
-        float slimePercent = (slimesAvailable > 0) ? (static_cast<float>(slimesKilled) / slimesAvailable) * 100.f : 0.f;
-        float chestMonsterPercent =
-                        (chestMonstersAvailable > 0)
-                                        ? (static_cast<float>(chestMonstersKilled) / chestMonstersAvailable) * 100.f
-                                        : 0.f;
-        float angryMushroomPercent =
-                        (angryMushroomsAvailable > 0)
-                                        ? (static_cast<float>(angryMushroomsKilled) / angryMushroomsAvailable) * 100.f
-                                        : 0.f;
-        float cactusMonsterPercent =
-                        (cactusMonstersAvailable > 0)
-                                        ? (static_cast<float>(cactusMonstersKilled) / cactusMonstersAvailable) * 100.f
-                                        : 0.f;
-        float coinPercent = (coinsAvailable > 0) ? (static_cast<float>(coinsCollected) / coinsAvailable) * 100.f : 0.f;
+        bool coinComplete = false;
+        bool mobsComplete = false;
+        bool timeComplete = false;
 
-        percentComplete = (slimePercent + chestMonsterPercent + angryMushroomPercent + cactusMonsterPercent +
-                           coinPercent) /
-                          5.f;
+        coinComplete = coinsAvailable - coinsCollected <= 0;
+        mobsComplete = mobsAvailable - mobsKilled <= 0;
+        timeComplete = timeTaken <= 45; // 45 seconds in milliseconds
 
-        rating.setTexture( assetManager.TextureLibraries["PrgUse"] ->entries[46].texture, true);
+        int starIndex = 43 + coinComplete + mobsComplete + timeComplete;
+
+        rating.setTexture( assetManager.TextureLibraries["PrgUse"] ->entries[starIndex].texture, true);
         rating.setOrigin(rating.getTexture()->getSize().x / 2, rating.getTexture()->getSize().y / 2);
         rating.setPosition(gameManager.getResolutionWidth() / 2, gameManager.getResolutionHeight() / 2);
 

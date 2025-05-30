@@ -28,6 +28,9 @@ void BigCoin::Update(GameTime gameTime) {
         else if (percent > 60.f) {
                 ChangeAnimation(AnimationType::ANIMATION_SILVER_COIN, true);
         }
+        else {
+                ChangeAnimation(AnimationType::ANIMATION_BRONZE_COIN, true);
+        }
 }
 void BigCoin::LateUpdate(GameTime gameTime) { TickAnimation(gameTime); }
 void BigCoin::Draw(sf::RenderWindow &window, GameTime gameTime) {

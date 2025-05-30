@@ -14,6 +14,7 @@
 #include "models/Projectile.h"
 #include "objects/BigCoin.h"
 #include "objects/Player.h"
+#include "objects/UICoin.h"
 #include "objects/mobs/ChestMonster.h"
 
 
@@ -46,6 +47,7 @@ private:
         std::string mapName;
         WMap* map;
         BigCoin bigCoin;
+        UICoin uiCoin;
 
         sf::Texture* skyBoxTexture;
         sf::Sprite skyBoxSprite;

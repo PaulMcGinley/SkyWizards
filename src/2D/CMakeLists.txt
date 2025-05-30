@@ -93,7 +93,6 @@ add_executable(LoSW___BftS main.cpp
         objects/mobs/AngryMushroom.cpp
         objects/mobs/AngryMushroom.h
         models/Score.h
-        models/Score.cpp
         objects/BigCoin.cpp
         objects/BigCoin.h
         scenes/Overlays/EndOfLevel.cpp
@@ -101,6 +100,8 @@ add_executable(LoSW___BftS main.cpp
         Enumerators/Align.h
         scenes/CreditsScene.cpp
         scenes/CreditsScene.h
+        objects/UICoin.cpp
+        objects/UICoin.h
 )
 
 

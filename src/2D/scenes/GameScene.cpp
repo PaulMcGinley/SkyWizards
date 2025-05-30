@@ -62,6 +62,9 @@ void GameScene::LateUpdate(const GameTime gameTime) {
         bigCoin.UpdatePercent(LevelScorePercent());
         bigCoin.LateUpdate(gameTime);
 
+        uiCoin.UpdatePercent(LevelScorePercent());
+        uiCoin.LateUpdate(gameTime);
+
         // Call LateUpdate for each projectile
         for (const auto& projectile : projectiles) {
                 projectile->LateUpdate(gameTime);
@@ -123,7 +126,17 @@ void GameScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
         window.setView(window.getDefaultView());
         player.health.Draw(window, gameTime);
 
+        IDraw::Draw(window, "PrgUse", 47, sf::Vector2f((gameManager.getResolutionWidth()/2)-(assetManager.TextureLibraries["PrgUse"].get()->entries[47].texture.getSize().x/2), 10));
         window.draw(timerText);
+
+        int levelCoins = map->Collectables.size();
+        int remainingCoins = levelCoins - collectables.size();
+        int collectedCoins = levelCoins - remainingCoins;
+
+        IDraw::Draw(window, "PrgUse", 48, sf::Vector2f(gameManager.getResolutionWidth()-assetManager.TextureLibraries["PrgUse"].get()->entries[48].texture.getSize().x, 5));
+        IDraw::DrawText(window, "OpenSans-Bold", "Coins: " + std::to_string(remainingCoins) + "/" +std::to_string(levelCoins), sf::Vector2f(gameManager.getResolutionWidth() - 90, 20), Align::RIGHT, 30, sf::Color::White);
+        IDraw::DrawText(window, "OpenSans-Bold", "Score: " + std::to_string(player.GetScore(mapName)), sf::Vector2f(gameManager.getResolutionWidth() - 90, 50), Align::RIGHT, 30, sf::Color::White);
+        uiCoin.Draw(window, gameTime);
 
         if (UpdateLoop == &GameScene::Update_EndOfLevel)
                 summaryOverlay->Draw(window, gameTime);
@@ -137,11 +150,11 @@ void GameScene::InitializeScene() {
         timerFont = *assetManager.Fonts["OpenSans-Bold"].get();
         timerText.setFont(timerFont);
         timerText.setString("00:00");
-        timerText.setFillColor(sf::Color(255,255,255,128));
+        timerText.setFillColor(sf::Color(255,255,255,255));
         timerText.setCharacterSize(50);
         timerText.setStyle(sf::Text::Bold);
-        timerText.setOutlineColor(sf::Color::Black);
-        timerText.setOutlineThickness(2);
+        // timerText.setOutlineColor(sf::Color::Black);
+        // timerText.setOutlineThickness(2);
 
         timerText.setPosition((screenWidth/2)- (timerText.getGlobalBounds().width/2), 20);
 
@@ -160,6 +173,9 @@ void GameScene::OnScene_Activate() {
 
         player.visible = true;
         bigCoin.visible = true;
+        uiCoin.visible = true;
+        uiCoin.SetPosition({static_cast<float>(gameManager.getResolutionWidth() - 20), 80});
+
         summaryOverlay = std::dynamic_pointer_cast<EndOfLevel>(sceneManager.GetScene(SceneType::SCENE_END_OF_LEVEL));
         UpdateLoop = &GameScene::Update_Loading;
 
@@ -221,6 +237,7 @@ void GameScene::Update_Game(GameTime gameTime) {
 
         timerText.setString(levelTime(gameTime, false));
         bigCoin.Update(gameTime);
+        uiCoin.Update(gameTime);
 
 
         // Update the collectables
@@ -299,7 +316,20 @@ void GameScene::Update_Game(GameTime gameTime) {
 
                 summaryOverlay->ResetBoard();
                 summaryOverlay->SetMapName(mapName);
+                summaryOverlay->SetCoinData(map->Collectables.size(), map->Collectables.size() - collectables.size());
+                summaryOverlay->SetTimeTaken(levelEndTime);
+
+                int totalMobsInMap = map->Mobs.size();
+                int deadMonsters = 0;
+                for (const auto& monster : monsters) {
+                        if (monster->IsDead()) {
+                                deadMonsters++;
+                        }
+                }
+                summaryOverlay->SetMobData(totalMobsInMap, deadMonsters);
+
                 summaryOverlay->CalculatePercentComplete();
+
                 player.visible=false;
                 bigCoin.visible=false;
                 UpdateLoop = &GameScene::Update_EndOfLevel;
@@ -328,7 +358,7 @@ void GameScene::Update_Game(GameTime gameTime) {
                 // scene_manager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 
-        for (auto &monster: monsters) {
+        for (auto const &monster: monsters) {
                 if (monster->IsDead()) {
                         player.UpdateScore(mapName, monster->AwardScore());
                 }
@@ -337,7 +367,7 @@ void GameScene::Update_Game(GameTime gameTime) {
                 monster->Update(gameTime);
         }
 
-        for (auto &collectable: collectables) {
+        for (auto const &collectable: collectables) {
                 if (collectable->IsCollected())
                         continue;
 
@@ -357,7 +387,7 @@ void GameScene::Update_Game(GameTime gameTime) {
                 }
         }
 }
-void GameScene::Update_EndOfLevel(GameTime gameTime) {
+void GameScene::Update_EndOfLevel(const GameTime gameTime) {
         summaryOverlay->Update(gameTime);
 }
 void GameScene::ValidateMap() {
@@ -403,7 +433,6 @@ void GameScene::LoadMobs() {
         // Clear existing mobs
         monsters.clear();
 
-        std::cout << "Loading mob count: " << map->Mobs.size() << std::endl;
         for (const auto &mob: map->Mobs) {
                 std::cout << "Loading mob: " << mob.MonsterName << std::endl;
                 // Check if the mob library exists
@@ -411,11 +440,13 @@ void GameScene::LoadMobs() {
                         std::cerr << "Mob library " << mob.MonsterName << " does not exist." << std::endl;
                         continue;
                 }
+
+                // Load the texture library for the mob
                 if (!assetManager.TextureLibraries[mob.MonsterName]->fullyLoaded) {
-                        assetManager.TextureLibraries[mob.MonsterName]->LoadIndices(
-                                        {}); // Load all indices for the mob library
+                        assetManager.TextureLibraries[mob.MonsterName]->LoadIndices( {}); // Load all indices for the mob library
                 }
 
+                // Create the mob based on its type
                 if (mob.MonsterName == "ChestMonster") {
                         monsters.emplace_back(std::make_unique<ChestMonster>(&player, mob.Position, mob.ViewRange, mob.MoveSpeed, mob.Health));
                 } else if (mob.MonsterName == "Eye-Ball") {
@@ -466,7 +497,6 @@ void GameScene::CheckProjectileCollisions(GameTime gameTime) {
                                 collisionPoint.x = mob->GetCollisionBox().left + mob->GetCollisionBox().width / 2;
                                 collisionPoint.y = mob->GetCollisionBox().top + mob->GetCollisionBox().height / 2;
 
-                                // TODO: Implement the mob damage
                                 int damage = projectile->Collide(collisionPoint);
                                 mob->Damaged(damage, gameTime);
                         }
@@ -640,12 +670,10 @@ float GameScene::LevelScorePercent() {
         int remainingCollectables = collectables.size();
 
         int totalMonsters = map->Mobs.size();
-        int remainingMonsters = std::count_if(monsters.begin(), monsters.end(),
-                [](const std::unique_ptr<Mob>& mob) { return !mob->IsDead(); });
+        int remainingMonsters = std::count_if(monsters.begin(), monsters.end(),  [](const std::unique_ptr<Mob>& mob) { return !mob->IsDead(); });
 
         // Calculate collected coins percentage (avoid division by zero)
-        float collectablesPercent = (totalCollectables > 0) ?
-            100.0f * (totalCollectables - remainingCollectables) / totalCollectables : 100.0f;
+        float collectablesPercent = (totalCollectables > 0) ? 100.0f * (totalCollectables - remainingCollectables) / totalCollectables : 100.0f;
 
         // Calculate killed monsters percentage (avoid division by zero)
         float monstersPercent = (totalMonsters > 0) ?
