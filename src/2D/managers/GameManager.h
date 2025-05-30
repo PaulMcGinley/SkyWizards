@@ -6,9 +6,11 @@
 #define GAMEMANAGER_H
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <string>
 #include <SFML/System/Vector2.hpp>
 #include <algorithm> // Needed for std::clamp in setUIScale
+#include <string>
+
+#include "models/Leaderboard.h"
 
 class GameManager {
 public:
@@ -96,6 +98,8 @@ public:
 
         bool ShowCollisions() const { return showCollisions; }
         void ToggleShowCollisions() { showCollisions = !showCollisions; }
+
+        Leaderboard leaderboard;
 
 
 private:

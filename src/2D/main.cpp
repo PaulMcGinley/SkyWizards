@@ -33,6 +33,8 @@ int main(int argc, char* argv[]) {
         GameSettingsFile settingsFile;
         settingsFile.LoadSettings();
 
+        gameManager.leaderboard.Load();
+
         // gameManager.setResolution({settingsFile.GetResolutionWidth(), settingsFile.GetResolutionHeight()});
         // gameManager.setFrameRateLimit(settingsFile.GetFrameRateLimit());
         // gameManager.setFullscreen(settingsFile.IsFullscreenMode());

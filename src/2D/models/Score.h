@@ -8,8 +8,9 @@
 #include <string>
 
 struct Score {
-        std::string level;
+        std::string name;
         int score;
+        std::string date;
 };
 
 #endif //SCORE_H

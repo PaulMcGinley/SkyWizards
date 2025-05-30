@@ -26,6 +26,8 @@ private:
 
         int index; // Index of the character being edited
 
+        std::string GetDateTimeString();
+
 };
 
 #endif //SUBMITSCORE_H

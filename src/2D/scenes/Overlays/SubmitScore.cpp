@@ -3,15 +3,18 @@
 //
 
 #include "SubmitScore.h"
+
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 void SubmitScore::Update(GameTime gameTime) {
-        if (inputManager.MoveRightPressed()) {
+        if (inputManager.NavigateRightPressed()) {
                 index = (index + 1) % 5;
         }
 
-        if (inputManager.MoveLeftPressed()) {
+        if (inputManager.NavigateLeftPressed()) {
                 index = (index - 1 + 5) % 5;
         }
 
@@ -33,6 +36,16 @@ void SubmitScore::Update(GameTime gameTime) {
                 } else if (name[index] == ' ') {
                         name[index] = 'Z';
                 }
+        }
+
+        if (inputManager.IsConfirmPressed()) {
+                Score score;
+                score.name = std::string(name, 5); // Convert char array to string
+                score.score = player->GetTotalScore();
+                score.date = GetDateTimeString();
+                gameManager.leaderboard.AddScore(score);
+
+                sceneManager.ChangeScene(SceneType::SCENE_MAIN_MENU);
         }
 }
 void SubmitScore::LateUpdate(GameTime gameTime) {}
@@ -88,3 +101,16 @@ void SubmitScore::InitializeScene() {
 void SubmitScore::DestroyScene() {}
 void SubmitScore::OnScene_Activate() {}
 void SubmitScore::OnScene_Deactivate() {}
+void SubmitScore::SetPlayer(Player *player) {
+        this->player = player;
+}
+std::string SubmitScore::GetDateTimeString() {
+        auto now = std::chrono::system_clock::now();
+        auto time = std::chrono::system_clock::to_time_t(now);
+        std::tm timeInfo;
+        localtime_r(&time, &timeInfo);
+
+        std::stringstream stringStream;
+        stringStream << std::put_time(&timeInfo, "%Y/%m/%d %H:%M");
+        return stringStream.str();
+}

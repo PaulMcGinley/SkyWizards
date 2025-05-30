@@ -17,7 +17,10 @@ void EndOfLevel::Update(GameTime gameTime) {
                 if (it != maps.end() && (it == maps.end() - 1)) {
                         // Last level completed, return to main menu
                         assetManager.StopMusic(assetManager.Maps[mapName]->song);
-                        sceneManager.ChangeScene(SceneType::SCENE_MAIN_MENU);
+
+
+                        SceneManager::GetInstance().ChangeScene(SceneType::SCENE_SUBMIT_SCORE);
+                        //sceneManager.ChangeScene(SceneType::SCENE_MAIN_MENU);
                 } else {
                         // Not the last level, proceed to next level
                         size_t nextIndex = 0;

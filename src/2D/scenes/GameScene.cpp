@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include "LoadingScene.h"
 #include "Overlays/DebugOverlay.h"
+#include "Overlays/SubmitScore.h"
 #include "managers/SceneManager.h"
 #include "models/LevelObject/Collectable.h"
 #include "models/LevelObject/OLibrary.h"
@@ -179,6 +180,9 @@ void GameScene::OnScene_Activate() {
         uiCoin.SetPosition({static_cast<float>(gameManager.getResolutionWidth() - 20), 80});
 
         summaryOverlay = std::dynamic_pointer_cast<EndOfLevel>(sceneManager.GetScene(SceneType::SCENE_END_OF_LEVEL));
+
+        const std::shared_ptr<SubmitScore> sScore = std::dynamic_pointer_cast<SubmitScore>(sceneManager.GetScene(SceneType::SCENE_SUBMIT_SCORE));
+        sScore->SetPlayer(&player);
 
         if (!map->song.empty()) {
                 assetManager.SetMusicVolume(map->song, 20.f);
