@@ -147,7 +147,8 @@ void SplashScreen::LateUpdate(GameTime gameTime) {
         if (gameTime.TimeElapsed(loadCompletionTime)) {
                 // Load the next scene
                 std::cout << "Persistent assets loaded." << std::endl;
-                SceneManager::GetInstance().ChangeScene(SceneType::SCENE_MAIN_MENU);
+                //SceneManager::GetInstance().ChangeScene(SceneType::SCENE_MAIN_MENU);
+                SceneManager::GetInstance().ChangeScene(SceneType::SCENE_SUBMIT_SCORE);
         }
 }
 

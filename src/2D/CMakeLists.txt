@@ -102,6 +102,8 @@ add_executable(LoSW___BftS main.cpp
         scenes/CreditsScene.h
         objects/UICoin.cpp
         objects/UICoin.h
+        scenes/Overlays/SubmitScore.cpp
+        scenes/Overlays/SubmitScore.h
 )
 
 

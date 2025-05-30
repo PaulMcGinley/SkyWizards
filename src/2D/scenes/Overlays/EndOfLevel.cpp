@@ -44,8 +44,24 @@ void EndOfLevel::Draw(sf::RenderWindow &window, GameTime gameTime) {
         int screenWidth = gameManager.getResolutionWidth();
         int screenHeight = gameManager.getResolutionHeight();
 
-        IDraw::DrawText(window, "OpenSans-ExtraBold", "LEVEL COMPLETE!", sf::Vector2f(screenWidth/2,250), Align::CENTER, 50, sf::Color::White, 20);
-        IDraw::DrawText(window, "OpenSans-ExtraBold", "Press CONFIRM to continue ...", sf::Vector2f(screenWidth/2,screenHeight-250), Align::CENTER, 25, sf::Color::White, 20);
+        IDraw::DrawText(window, "OpenSans-ExtraBold", "LEVEL COMPLETE!", sf::Vector2f(screenWidth/2,150), Align::CENTER, 75, sf::Color::White, 20);
+        IDraw::DrawText(window, "OpenSans-ExtraBold", "Press CONFIRM to continue ...", sf::Vector2f(screenWidth/2,screenHeight-75), Align::CENTER, 25, sf::Color::White, 20);
+
+        int timeScore = (45000 - static_cast<int>(timeTaken)) /10;
+        // Ensure timeScore is not negative
+        if (timeScore < 0) {
+                timeScore = 0;
+        }
+
+        bool coinBonus = (coinsAvailable - coinsCollected <=0);
+        bool mobBonus = (mobsAvailable - mobsKilled <= 0);
+
+        IDraw::DrawText(window, "OpenSans-ExtraBold", "Time Bonus:", sf::Vector2f(screenWidth/2 - 50,(screenHeight - screenHeight/4)-50), Align::RIGHT, 30, sf::Color::White, 20);
+        IDraw::DrawText(window, "OpenSans-Regular", std::to_string(timeScore), sf::Vector2f(screenWidth/2 + 50,(screenHeight - screenHeight/4)-50), Align::LEFT, 30, sf::Color::White, 20);
+        IDraw::DrawText(window, "OpenSans-ExtraBold", "Monster Bonus:", sf::Vector2f(screenWidth/2 - 50,(screenHeight - screenHeight/4)), Align::RIGHT, 30, sf::Color::White, 20);
+        IDraw::DrawText(window, "OpenSans-Regular", std::to_string((mobBonus) * 5000), sf::Vector2f(screenWidth/2 + 50,(screenHeight - screenHeight/4)), Align::LEFT, 30, sf::Color::White, 20);
+        IDraw::DrawText(window, "OpenSans-ExtraBold", "Coins Bonus:", sf::Vector2f(screenWidth/2 - 50,(screenHeight - screenHeight/4)+50), Align::RIGHT, 30, sf::Color::White, 20);
+        IDraw::DrawText(window, "OpenSans-Regular", std::to_string((coinBonus) * 5000), sf::Vector2f(screenWidth/2 + 50,(screenHeight - screenHeight/4)+50), Align::LEFT, 30, sf::Color::White, 20);
 
         window.draw(rating);
 }
@@ -82,7 +98,8 @@ void EndOfLevel::CalculatePercentComplete() {
 
         coinComplete = coinsAvailable - coinsCollected <= 0;
         mobsComplete = mobsAvailable - mobsKilled <= 0;
-        timeComplete = timeTaken <= 45; // 45 seconds in milliseconds
+        timeComplete = timeTaken <= 45000; // 45 seconds in milliseconds
+
 
         int starIndex = 43 + coinComplete + mobsComplete + timeComplete;
 

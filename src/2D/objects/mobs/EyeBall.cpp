@@ -43,11 +43,12 @@ EyeBall::EyeBall(Player *player, sf::Vector2f spawnPosition, const float viewRan
         collisionBox.width = 175;
         collisionBox.height = 175;
 
-        score = 2000;
+        score = 0;
+        this->health = 0;
 }
 void EyeBall::Update(const GameTime gameTime) {
         // Update quads in being damaged but perform no other logic
-        if (IsDead() || GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED || (GetCurrentAnimation() == AnimationType::ANIMATION_DIZZY && !gameTime.TimeElapsed(nextMoveTime))) {
+        if (GetCurrentAnimation() == AnimationType::ANIMATION_DAMAGED || (GetCurrentAnimation() == AnimationType::ANIMATION_DIZZY && !gameTime.TimeElapsed(nextMoveTime))) {
                 UpdateQuads();
                 return;
         }

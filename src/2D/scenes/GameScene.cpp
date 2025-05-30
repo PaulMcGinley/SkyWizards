@@ -162,7 +162,9 @@ void GameScene::InitializeScene() {
 }
 void GameScene::DestroyScene() { /* Nothing to destroy */ }
 void GameScene::OnScene_Activate() {
-        // Init void
+        startTime = 0.f;
+        UpdateLoop = &GameScene::Update_Loading;
+
         deadLine = assetManager.TextureLibraries["PrgUse"]->entries[2].texture;
         deadLineSprite.setTexture(deadLine);
         deadLineSprite.setPosition(-5000, 6000);
@@ -177,7 +179,6 @@ void GameScene::OnScene_Activate() {
         uiCoin.SetPosition({static_cast<float>(gameManager.getResolutionWidth() - 20), 80});
 
         summaryOverlay = std::dynamic_pointer_cast<EndOfLevel>(sceneManager.GetScene(SceneType::SCENE_END_OF_LEVEL));
-        UpdateLoop = &GameScene::Update_Loading;
 
         if (!map->song.empty()) {
                 assetManager.SetMusicVolume(map->song, 20.f);
@@ -316,8 +317,18 @@ void GameScene::Update_Game(GameTime gameTime) {
 
                 summaryOverlay->ResetBoard();
                 summaryOverlay->SetMapName(mapName);
+                bool coinBonus = (map->Collectables.size() - collectables.size() <=0);
+                player.UpdateScore(mapName, coinBonus * 5000);
                 summaryOverlay->SetCoinData(map->Collectables.size(), map->Collectables.size() - collectables.size());
-                summaryOverlay->SetTimeTaken(levelEndTime);
+                summaryOverlay->SetTimeTaken(levelEndTime*1000);
+
+                // 45s - time taken in ms, divide by 10 to get a score for the remaining time
+                int timeScore = (45000 - static_cast<int>(levelEndTime * 1000)) /10;
+                // Ensure timeScore is not negative
+                if (timeScore < 0) {
+                        timeScore = 0;
+                }
+                player.UpdateScore(mapName, timeScore);
 
                 int totalMobsInMap = map->Mobs.size();
                 int deadMonsters = 0;
@@ -327,6 +338,8 @@ void GameScene::Update_Game(GameTime gameTime) {
                         }
                 }
                 summaryOverlay->SetMobData(totalMobsInMap, deadMonsters);
+                bool mobBonus = (deadMonsters == totalMobsInMap);
+                player.UpdateScore(mapName, mobBonus * 5000);
 
                 summaryOverlay->CalculatePercentComplete();
 

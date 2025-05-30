@@ -18,7 +18,7 @@ HappyMushroom::HappyMushroom(Player *player, sf::Vector2f spawnPosition, const f
         collisionBox.width = 100;
         collisionBox.height = 90;
 
-       // score = 100;
+        score = 0;
 
         ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
 

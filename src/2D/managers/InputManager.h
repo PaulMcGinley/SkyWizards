@@ -38,6 +38,8 @@ public:
         bool IsFirePressed() const;
         bool NavigateUpPressed() const;
         bool NavigateDownPressed() const;
+        bool NavigateLeftPressed() const;
+        bool NavigateRightPressed() const;
         bool MoveLeftPressed() const;
         bool MoveRightPressed() const;
         bool MainMenuPressed() const;

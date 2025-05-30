@@ -442,13 +442,13 @@ int Player::GetTotalScore() {
 }
 void Player::BounceUp(float amount) {
         velocity.y = -amount;
-        position.y -= 5.f; // Just to get player off ground
+        position.y -= 15.f; // Just to get player off ground
         isJumping = true;
         isFalling = false;
         ChangeAnimation(AnimationType::ANIMATION_JUMP_START, GameTime(), true);
 }
 void Player::KnockBack(sf::Vector2f amount) {
-        position.y -= 5.f; // Just to get player off ground
+        position.y -= 15.f; // Just to get player off ground
         velocity += amount;
         isJumping = true;
         isFalling = false;

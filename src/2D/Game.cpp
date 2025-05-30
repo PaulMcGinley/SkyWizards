@@ -14,6 +14,7 @@
 #include "scenes/MainMenu.h"
 #include "scenes/Overlays/DebugOverlay.h"
 #include "scenes/Overlays/EndOfLevel.h"
+#include "scenes/Overlays/SubmitScore.h"
 #include "scenes/SettingsScene.h"
 #include "scenes/SplashScreen.h"
 
@@ -29,6 +30,7 @@ void Game::Run() {
         // Overlays
         sceneManager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
         sceneManager.AddScene(SceneType::SCENE_END_OF_LEVEL, std::make_shared<EndOfLevel>());
+        sceneManager.AddScene(SceneType::SCENE_SUBMIT_SCORE, std::make_shared<SubmitScore>());
 
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes
