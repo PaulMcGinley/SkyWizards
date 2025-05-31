@@ -43,7 +43,6 @@ void MainMenu::Update(GameTime gameTime) {
                         }
                         case 1: { // Level Select or Credits
                                 sceneManager.ChangeScene(SceneType::SCENE_CREDITS);
-                                // ...
                                 break;
                         }
                         case 2: { // Settings
@@ -51,7 +50,7 @@ void MainMenu::Update(GameTime gameTime) {
                                 break;
                         }
                         case 3: { // Rankings
-                                // ...
+                                SceneManager::GetInstance().ChangeScene(SceneType::SCENE_LEADERBOARD);
                                 break;
                         }
                         case 4: { // Leave

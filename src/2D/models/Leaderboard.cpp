@@ -20,7 +20,7 @@ void Leaderboard::SortScores() {
         });
 }
 const std::vector<Score> &Leaderboard::GetScores() { return scores; }
-const std::vector<Score> &Leaderboard::GetTopNScores(size_t n) {
+const std::vector<Score> Leaderboard::GetTopNScores(size_t n) {
         if (n > scores.size()) {
                 n = scores.size();
         }

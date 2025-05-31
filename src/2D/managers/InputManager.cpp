@@ -27,19 +27,22 @@ bool InputManager::IsJumpPressed() const {
         return IsKeyDown(sf::Keyboard::Space)           // PC
         || IsKeyDown(sf::Keyboard::Num4)                // Left controls
         || IsKeyDown(sf::Keyboard::Numpad4)             // Left controls
-        || IsKeyDown(sf::Keyboard::J);                  // Right controls
+        || IsKeyDown(sf::Keyboard::J)                   // Right controls
+        || IsJoystickButtonDown(0);                     // Joystick controls (A)
 }
 bool InputManager::IsConfirmPressed() const {
         return IsKeyPressed(sf::Keyboard::Space)        // PC
         || IsKeyPressed(sf::Keyboard::Num4)             // Left controls
         || IsKeyPressed(sf::Keyboard::Numpad4)          // Left controls
-        || IsKeyPressed(sf::Keyboard::J);               // Right controls
+        || IsKeyPressed(sf::Keyboard::J)                // Right controls
+        || IsJoystickButtonDown(0);                     // Joystick controls (A)
 }
 bool InputManager::IsCancelPressed() const {
         return IsKeyPressed(sf::Keyboard::Backspace)    // PC
         || IsKeyPressed(sf::Keyboard::Num7)             // Left controls
         || IsKeyPressed(sf::Keyboard::Numpad7)          // Left controls
-        || IsKeyPressed(sf::Keyboard::I);               // Right controls
+        || IsKeyPressed(sf::Keyboard::I)                // Right controls
+        || IsJoystickButtonPressed(1);                  // Joystick controls (B)
 }
 bool InputManager::IsFirePressed() const {
         return IsKeyDown(sf::Keyboard::LShift)          // PC
@@ -54,11 +57,13 @@ bool InputManager::IsFirePressed() const {
         || IsKeyDown(sf::Keyboard::K)                   // Right controls
         || IsKeyDown(sf::Keyboard::L)                   // Right controls
         || IsKeyDown(sf::Keyboard::O)                   // Right controls
-        || IsKeyDown(sf::Keyboard::P);                  // Right controls
+        || IsKeyDown(sf::Keyboard::P)                   // Right controls
+        || IsJoystickButtonDown(2);                     // Joystick controls (X)
 }
 bool InputManager::NavigateUpPressed() const {
         return IsKeyPressed(sf::Keyboard::Up)           // Left controls
         || IsKeyPressed(sf::Keyboard::W);               // Right controls
+
 }
 bool InputManager::NavigateDownPressed() const {
         return IsKeyPressed(sf::Keyboard::Down)         // Left controls
@@ -93,11 +98,42 @@ bool InputManager::ShowDebugPressed() const {
         return IsKeyDown(sf::Keyboard::Down)            // Hold
                && IsKeyPressed(sf::Keyboard::S);        // Press
 }
+bool InputManager::IsJoystickConnected() const {
+        return joystickConnected;
+}
+bool InputManager::IsJoystickButtonDown(unsigned int button) const {
+        if (button < sf::Joystick::ButtonCount) {
+                return currentJoystickButtonState.at(button);
+        }
+        return false;
+}
+bool InputManager::IsJoystickButtonPressed(unsigned int button) const {
+        if (button < sf::Joystick::ButtonCount) {
+                return currentJoystickButtonState.at(button) && !previousJoystickButtonState.at(button);
+        }
+        return false;
+}
+float InputManager::GetJoystickAxisPosition(sf::Joystick::Axis axis) const {
+        if (axis < sf::Joystick::AxisCount) {
+                return joystickAxisPositions.at(axis);
+        }
+        return 0.0f;
+}
 
 InputManager::InputManager() {
         // Initialize the keyboard state
         for (int key = sf::Keyboard::A; key <= sf::Keyboard::KeyCount; ++key) {
                 currentKeyboardState[key] = false;
                 previousKeyboardState[key] = false;
+        }
+
+        joystickConnected = false;
+        for (unsigned int button = 0; button < sf::Joystick::ButtonCount; ++button) {
+                currentJoystickButtonState[button] = false;
+                previousJoystickButtonState[button] = false;
+        }
+
+        for (int axis = 0; axis < sf::Joystick::AxisCount; ++axis) {
+                joystickAxisPositions[axis] = 0.0f;
         }
 }

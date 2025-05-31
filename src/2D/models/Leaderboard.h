@@ -16,7 +16,7 @@ public:
         void AddScore(const Score& newScore);
         void SortScores();
         const std::vector<Score> & GetScores();
-        const std::vector<Score> & GetTopNScores(size_t n);
+        const std::vector<Score> GetTopNScores(size_t n);
 
         void Load();
         void Save() const;

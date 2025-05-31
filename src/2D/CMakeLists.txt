@@ -106,6 +106,8 @@ add_executable(LoSW___BftS main.cpp
         scenes/Overlays/SubmitScore.h
         models/Leaderboard.cpp
         models/Leaderboard.h
+        scenes/LeaderboardScene.cpp
+        scenes/LeaderboardScene.h
 )
 
 

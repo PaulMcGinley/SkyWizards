@@ -5,6 +5,7 @@
 #ifndef INPUTMANAGER_H
 #define INPUTMANAGER_H
 
+#include <SFML/Window/Joystick.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <unordered_map>
 
@@ -47,12 +48,22 @@ public:
         bool ShowCollisionBoxsPressed() const;
         bool ShowDebugPressed() const;
 
+        bool IsJoystickConnected() const;
+        bool IsJoystickButtonDown(unsigned int button) const;
+        bool IsJoystickButtonPressed(unsigned int button) const;
+        float GetJoystickAxisPosition(sf::Joystick::Axis axis) const;
+
 private:
         // Private constructor to prevent instancing
         InputManager();
 
         std::unordered_map<int, bool> currentKeyboardState;
         std::unordered_map<int, bool> previousKeyboardState;
+
+        bool joystickConnected;
+        std::unordered_map<int, bool> currentJoystickButtonState;
+        std::unordered_map<int, bool> previousJoystickButtonState;
+        std::unordered_map<int, float> joystickAxisPositions;
 };
 
 #endif //INPUTMANAGER_H
