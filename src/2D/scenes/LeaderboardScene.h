@@ -18,12 +18,23 @@ public:
         void OnScene_Deactivate() override;
 
 private:
-        bool autoScroll = true;
-        float currentYOffset = 0.f;
-
-        int fontSize = 70;
-
+        std::vector<Score> scores;
+        int fontSize = 40;
         sf::View viewport;
+
+        sf::Color firstPlaceColour = sf::Color(255, 215, 0);     // Gold
+        sf::Color secondPlaceColour = sf::Color(192, 192, 192);  // Silver
+        sf::Color thirdPlaceColour = sf::Color(205, 127, 50);    // Bronze
+        sf::Color defaultColour = sf::Color::White;
+
+        float titleY = 15;
+        float rankTitleX = 300;
+        float nameTitleX = 600;
+        float scoreTitleX = 1000;
+        float dateTitleX = 1500;
+
+        float fadeOutStart = 100.f;
+        float fadeOutEnd = 70.f;
 };
 
 #endif //LEADERBOARDSCENE_H

@@ -108,6 +108,8 @@ add_executable(LoSW___BftS main.cpp
         models/Leaderboard.h
         scenes/LeaderboardScene.cpp
         scenes/LeaderboardScene.h
+        scenes/Overlays/GiveUpOverlay.cpp
+        scenes/Overlays/GiveUpOverlay.h
 )
 
 
