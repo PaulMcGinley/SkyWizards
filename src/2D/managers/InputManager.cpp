@@ -5,7 +5,9 @@
 #include "InputManager.h"
 #include <SFML/Window/Joystick.hpp>
 
-InputManager& InputManager::GetInstance() {
+#include "SceneManager.h"
+
+InputManager & InputManager::GetInstance() {
         static InputManager instance;
         return instance;
 }

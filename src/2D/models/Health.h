@@ -20,6 +20,7 @@ public:
         [[nodiscard]] int GetCurrentHealth() const;
         [[nodiscard]] int GetTargetHealth() const;
         void ResetHealth(GameTime gameTime);
+        void ResetHealth();
         void Damage(int amount);
         void Heal(int amount);
 

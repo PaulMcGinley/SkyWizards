@@ -14,6 +14,14 @@ void LeaderboardScene::Update(GameTime gameTime) {
         if (inputManager.IsCancelPressed()) {
                 sceneManager.ChangeScene(SceneType::SCENE_MAIN_MENU); // Go back to the main menu
         }
+
+        if (inputManager.IsKeyPressed(sf::Keyboard::H))
+                ScrollToLatest();
+
+        float lowestY = scores.size() * fontSize - gameManager.getResolutionHeight() / 2 + fontSize;
+        if (viewport.getCenter().y > lowestY) {
+                viewport.setCenter(viewport.getCenter().x, lowestY);
+        }
 }
 void LeaderboardScene::LateUpdate(GameTime gameTime) {}
 void LeaderboardScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
@@ -33,6 +41,8 @@ void LeaderboardScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 
         // Leaderboard entries
         for (size_t i = 0; i < scores.size(); ++i) {
+
+
                 sf::Color textColour = defaultColour;
                 float entryY = i * fontSize - viewport.getCenter().y + gameManager.getResolutionHeight() / 2;
                 if (i == 0) {
@@ -41,6 +51,10 @@ void LeaderboardScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
                         textColour = secondPlaceColour;
                 } else if (i == 2) {
                         textColour = thirdPlaceColour;
+                }
+
+                if (highlightLatest && i == latestIndex) {
+                        textColour = {0,128,255}; // Highlight the latest entry
                 }
 
                 float alpha = 255.0f;
@@ -68,4 +82,25 @@ void LeaderboardScene::OnScene_Activate() {
         viewport.setSize(sf::Vector2f(gameManager.getResolutionWidth(), gameManager.getResolutionHeight()));
         viewport.setCenter(gameManager.getResolutionWidth() / 2, gameManager.getResolutionHeight() / 2 - 100); // Center the viewport on the screen
 }
-void LeaderboardScene::OnScene_Deactivate() {}
+void LeaderboardScene::OnScene_Deactivate() {
+        highlightLatest = false;
+}
+void LeaderboardScene::ScrollToTop() {
+        viewport.setCenter(gameManager.getResolutionWidth() / 2, 0);
+}
+void LeaderboardScene::ScrollToBottom() {
+        viewport.setCenter(gameManager.getResolutionWidth() / 2, scores.size() * fontSize - gameManager.getResolutionHeight() / 2 + fontSize);
+}
+void LeaderboardScene::ScrollToLatest() {
+        highlightLatest = true;
+        if (!scores.empty()) {
+                for (int i = 0; i < scores.size(); i++) {
+                        if (scores[i].date > scores[latestIndex].date) {
+                                latestIndex = i;
+                        }
+                }
+
+                // Center the viewport on the latest entry
+                viewport.setCenter(gameManager.getResolutionWidth() / 2, latestIndex * fontSize);
+        }
+}

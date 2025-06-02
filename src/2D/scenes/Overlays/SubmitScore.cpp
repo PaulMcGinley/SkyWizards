@@ -45,7 +45,7 @@ void SubmitScore::Update(GameTime gameTime) {
                 score.date = GetDateTimeString();
                 gameManager.leaderboard.AddScore(score);
 
-                sceneManager.ChangeScene(SceneType::SCENE_MAIN_MENU);
+                sceneManager.ChangeScene(SceneType::SCENE_LEADERBOARD);
         }
 }
 void SubmitScore::LateUpdate(GameTime gameTime) {}

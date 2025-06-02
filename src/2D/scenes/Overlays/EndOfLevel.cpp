@@ -10,7 +10,7 @@
 void EndOfLevel::Update(GameTime gameTime) {
         InputManager &input = InputManager::GetInstance();
         if (input.IsConfirmPressed()) {
-                std::vector<std::string> maps = {"Lv_01", "Lv_02", "00"};
+                std::vector<std::string> maps = {"Lv_01", "Lv_02", "Lv_03", "Lv_04", "Lv_05"};
                 auto it = std::find(maps.begin(), maps.end(), mapName);
 
                 // Check if current level is the last one

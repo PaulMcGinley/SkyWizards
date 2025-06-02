@@ -16,6 +16,9 @@ public:
         void DestroyScene() override;
         void OnScene_Activate() override;
         void OnScene_Deactivate() override;
+        void ScrollToTop();
+        void ScrollToBottom();
+        void ScrollToLatest();
 
 private:
         std::vector<Score> scores;
@@ -35,6 +38,9 @@ private:
 
         float fadeOutStart = 100.f;
         float fadeOutEnd = 70.f;
+
+        bool highlightLatest = false;
+        int latestIndex = -1;
 };
 
 #endif //LEADERBOARDSCENE_H

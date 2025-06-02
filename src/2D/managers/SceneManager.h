@@ -50,6 +50,15 @@ public:
         // Draw the current scene
         void Draw(sf::RenderWindow& window, GameTime game_time) override;
 
+        // Get the type of the current scene
+        SceneType GetCurrentSceneType() const {
+                for (const auto &pair: scenes) {
+                        if (pair.second == currentScene) {
+                                return pair.first;
+                        }
+                }
+        }
+
 private:
         // Private constructor to prevent instancing
         SceneManager() = default;

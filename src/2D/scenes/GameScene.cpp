@@ -217,8 +217,13 @@ void GameScene::OnScene_Deactivate() {
 }
 void GameScene::DamagePlayer(const int amount) {
         player.TakeDamage(amount);
-        //player.health.Damage(amount);
-        //player.ChangeAnimation(AnimationType::ANIMATION_DAMAGED, true);
+        // player.health.Damage(amount);
+        // player.ChangeAnimation(AnimationType::ANIMATION_DAMAGED, true);
+}
+void GameScene::MewGame() {
+        player.health.ResetHealth();
+        player.ClearScores();
+        player.ChangeAnimation(AnimationType::ANIMATION_IDLE, true);
 }
 void GameScene::Update_Loading(GameTime gameTime) {
         // HACK: ----------------------------------------------------
@@ -228,14 +233,14 @@ void GameScene::Update_Loading(GameTime gameTime) {
         // TODO: Play a level start sequence to allow for delta time to stabilize
         // Note: This issue should now be resolved with the advent of the LoadingScene
 
-        if (startTime == 0.f)
-                startTime = gameTime.NowAddMilliseconds(0);
+        //if (startTime == 0.f)
+        //        startTime = gameTime.NowAddMilliseconds(0);
 
-        if (!gameTime.TimeElapsed(startTime)) {
+        //if (!gameTime.TimeElapsed(startTime)) {
                 UpdateLoop = &GameScene::Update_Game;
 
                 levelStartTime = gameTime.NowAddMilliseconds(0);
-        }
+        //}
         // END HACK: ------------------------------------------------
 }
 void GameScene::Update_Game(GameTime gameTime) {

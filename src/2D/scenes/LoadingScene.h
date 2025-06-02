@@ -28,6 +28,7 @@ public:
         void DestroyScene() override;
         void OnScene_Activate() override;
         void OnScene_Deactivate() override;
+
 private:
         static constexpr int ASSET_BATCH_SIZE = 50; // Amount of assets to load at once per frame tick
         std::string nextMapName; // The name of the map to load

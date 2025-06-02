@@ -18,6 +18,7 @@ public:
         void OnScene_Deactivate() override;
 
         bool SetActive();
+        bool IsActive();
 
 private:
         sf::RectangleShape shade;

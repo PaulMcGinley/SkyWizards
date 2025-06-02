@@ -66,6 +66,7 @@ public:
         void UpdateScore(const std::string &levelName, int score) ;
         int GetScore(const std::string &levelName);
         int GetTotalScore();
+        void ClearScores() { scores.clear(); }
         void BounceUp(float amount);
         void KnockBack(sf::Vector2f amount);
 

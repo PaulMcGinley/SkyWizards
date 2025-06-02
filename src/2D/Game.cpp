@@ -15,6 +15,7 @@
 #include "scenes/MainMenu.h"
 #include "scenes/Overlays/DebugOverlay.h"
 #include "scenes/Overlays/EndOfLevel.h"
+#include "scenes/Overlays/GiveUpOverlay.h"
 #include "scenes/Overlays/SubmitScore.h"
 #include "scenes/SettingsScene.h"
 #include "scenes/SplashScreen.h"
@@ -33,6 +34,7 @@ void Game::Run() {
         sceneManager.AddScene(SceneType::SCENE_DEBUG_OVERLAY, std::make_shared<DebugOverlay>());
         sceneManager.AddScene(SceneType::SCENE_END_OF_LEVEL, std::make_shared<EndOfLevel>());
         sceneManager.AddScene(SceneType::SCENE_SUBMIT_SCORE, std::make_shared<SubmitScore>());
+        sceneManager.AddScene(SceneType::SCENE_PAUSE, std::make_shared<GiveUpOverlay>());
 
         // Set the current scene
         // This should always be the splash screen as this is scene it's purely for loading purposes
@@ -40,6 +42,7 @@ void Game::Run() {
         sceneManager.ChangeScene(SceneType::SCENE_SPLASH);
 
         const std::shared_ptr<DebugOverlay> debugOverlay = std::dynamic_pointer_cast<DebugOverlay>(sceneManager.GetScene(SceneType::SCENE_DEBUG_OVERLAY));
+        const std::shared_ptr<GiveUpOverlay> pauseMenu = std::dynamic_pointer_cast<GiveUpOverlay>(sceneManager.GetScene(SceneType::SCENE_PAUSE));
 
         // Main game loop
         sf::Event windowEvent{};
@@ -52,9 +55,8 @@ void Game::Run() {
 
                 InputManager::GetInstance().Update();
 
-                if (input.IsKeyDown(sf::Keyboard::Num1) && input.IsKeyDown(sf::Keyboard::Num2)) {
-                        gameManager.window->close();
-                        // TODO: Change this to an Exit to main menu system
+                if (input.MainMenuPressed() && sceneManager.GetCurrentSceneType() == SceneType::SCENE_GAME) {
+                        pauseMenu->SetActive();
                 }
 
                 if (input.ShowDebugPressed()) {
@@ -66,7 +68,10 @@ void Game::Run() {
                 }
 
                 gameTime += (clock.restart().asSeconds());
-                sceneManager.Update(gameTime);
+
+                if (!pauseMenu->IsActive())
+                        sceneManager.Update(gameTime);
+
                 gameManager.window->clear(sf::Color(255, 255, 255, 255));
                 sceneManager.Draw(*gameManager.window, gameTime);
 
@@ -75,7 +80,14 @@ void Game::Run() {
                         debugOverlay->Draw(*gameManager.window, gameTime);
                 }
 
+                if (pauseMenu->IsActive()) {
+                        pauseMenu->Update(gameTime);
+                        pauseMenu->Draw(*gameManager.window, gameTime);
+                }
+
                 gameManager.window->display();
-                sceneManager.LateUpdate(gameTime);
+
+                if (!pauseMenu->IsActive())
+                        sceneManager.LateUpdate(gameTime);
         }
 }

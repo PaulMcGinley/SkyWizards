@@ -33,9 +33,9 @@ public:
 
         void DamagePlayer(int amount);
 
-        void AddProjectile(std::unique_ptr<Projectile> projectile) {
-                projectiles.push_back(std::move(projectile));
-        }
+        void AddProjectile(std::unique_ptr<Projectile> projectile) { projectiles.push_back(std::move(projectile)); }
+
+        void MewGame();
 
 private:
         void (GameScene::*UpdateLoop)(GameTime);

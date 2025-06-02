@@ -24,6 +24,11 @@ void Health::ResetHealth(const GameTime gameTime) {
         targetHealth = maximumHealth;
         nextUpdateTime = gameTime.NowAddMilliseconds(UPDATE_INTERVAL);
 }
+void Health::ResetHealth() {
+        currentHealth = maximumHealth;
+        targetHealth = maximumHealth;
+        nextUpdateTime = 0; // Reset the update time
+}
 void Health::Damage(const int amount) {
         // Deduct the damage from the target health
         targetHealth -= amount;

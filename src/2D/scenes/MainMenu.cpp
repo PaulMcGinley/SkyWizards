@@ -33,10 +33,15 @@ void MainMenu::Update(GameTime gameTime) {
         if (inputManager.IsConfirmPressed()) {
                 switch (selectedMenuIndex) {
                         case 0: { // Play
-                                auto scenePtr = sceneManager.GetScene(SceneType::SCENE_LOADER);
-                                auto gameScene = std::dynamic_pointer_cast<LoadingScene>(scenePtr);
-                                if (gameScene) {
-                                        gameScene->BuildAssetQueue("Lv_00");
+                                auto loadingScenePtr = sceneManager.GetScene(SceneType::SCENE_LOADER);
+                                auto loadingScene = std::dynamic_pointer_cast<LoadingScene>(loadingScenePtr);
+
+                                auto gameScenePtr = sceneManager.GetScene(SceneType::SCENE_GAME);
+                                auto gameScene = std::dynamic_pointer_cast<GameScene>(gameScenePtr);
+                                gameScene->MewGame();
+
+                                if (loadingScene) {
+                                        loadingScene->BuildAssetQueue("Lv_00");
                                 }
                                 sceneManager.ChangeScene(SceneType::SCENE_LOADER);
                                 break;
