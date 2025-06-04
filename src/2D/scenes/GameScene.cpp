@@ -185,7 +185,6 @@ void GameScene::OnScene_Activate() {
         sScore->SetPlayer(&player);
 
         if (!map->song.empty()) {
-                assetManager.SetMusicVolume(map->song, 20.f);
                 assetManager.PlayMusic(map->song, true);
         }
 

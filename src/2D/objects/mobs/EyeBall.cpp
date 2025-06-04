@@ -56,7 +56,7 @@ void EyeBall::Update(const GameTime gameTime) {
         // Can't pass GameTime to animation sequences, so we need to handle cooldowns manually
         if (recentlyTeleported) {
                 recentlyTeleported = false;
-                nextTeleportTime = gameTime.NowAddMilliseconds(5000); // Set a cooldown for the next teleport
+                nextTeleportTime = gameTime.NowAddMilliseconds(30000); // Set a cooldown for the next teleport
         }
 
         if (recentlyBounced) {
@@ -122,7 +122,7 @@ void EyeBall::Update(const GameTime gameTime) {
         }
 
         // Move back to spawn
-        if (distance > 900 && !isAttacking) {
+        if (distance > 10000 && !isAttacking) {
                 ChangeAnimation(AnimationType::ANIMATION_IDLE, gameTime, true);
 
                 // Calculate direction to spawn position
@@ -202,8 +202,12 @@ void EyeBall::BouncePlayer() {
         const float distanceX = player->position.x - position.x;
         const float distanceY = player->position.y - position.y;
         const float distance = std::sqrt(distanceX * distanceX + distanceY * distanceY);
-        if (distance > 1000)
+        if (distance > viewRange)
                 return;
+
+        if (distance < 0) {
+                return;
+        }
 
 
         player->BounceUp(600.f);

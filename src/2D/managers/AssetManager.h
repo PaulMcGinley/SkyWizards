@@ -57,7 +57,7 @@ public:
         void LoadMusic(const std::string& directoryPath);
         void PlayMusic(const std::string& key, bool loop = true);
         void StopMusic(const std::string& key);
-        void SetMusicVolume(const std::string& key, float volume);
+        void SetMusicVolume(float volume);
         void LoadSoundEffects(const std::string& directoryPath);
         void PlaySoundEffect(const std::string& key, float volume, float pitch);
         void CleanupFinishedSounds();

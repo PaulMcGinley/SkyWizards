@@ -175,7 +175,7 @@ void SplashScreen::Draw(sf::RenderWindow& window, GameTime gameTime) {
 
         progressBar.setSize(sf::Vector2f(progressBarWidth * progressPercentage, progressBarHeight));
         progressBar.setPosition(progressX, progressY);
-        progressBar.setFillColor(sf::Color(50, 50, 180));
+        progressBar.setFillColor(sf::Color(0, 0, 0, 230));
 
         window.draw(progressBar);
         window.draw(frameSprite);

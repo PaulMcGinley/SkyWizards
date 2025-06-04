@@ -101,6 +101,13 @@ public:
 
         Leaderboard leaderboard;
 
+        void SetMusicVolume(float volume) { musicVolume = std::clamp(volume, 0.0f, 1.0f); }
+        [[nodiscard]] float GetMusicVolume() const { return musicVolume; }
+
+        void SetSFXVolume(float volume) { sfxVolume = std::clamp(volume, 0.0f, 1.0f); }
+        [[nodiscard]] float GetSFXVolume() const { return sfxVolume; }
+
+
 
 private:
         // Private constructor to prevent instancing
@@ -122,6 +129,9 @@ private:
         float scale_game = 1.0f;
 
         std::string lastPlayedMap = "";
+
+        float musicVolume = 0.2f;
+        float sfxVolume = 1.0f;
 };
 
 #endif //GAMEMANAGER_H

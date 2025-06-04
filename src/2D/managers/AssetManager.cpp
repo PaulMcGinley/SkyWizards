@@ -10,6 +10,8 @@
 #include <filesystem>
 #include <iostream>
 
+#include "GameManager.h"
+
 // Initialize the static member
 AssetManager *AssetManager::instance = nullptr;
 
@@ -83,6 +85,7 @@ void AssetManager::LoadMusic(const std::string& directoryPath) {
                         }
                 }
         }
+        SetMusicVolume(GameManager::GetInstance().GetMusicVolume());
 }
 void AssetManager::PlayMusic(const std::string& key, bool loop) {
         auto song = Music.find(key);
@@ -97,10 +100,9 @@ void AssetManager::StopMusic(const std::string& key) {
                 song->second->stop();
         }
 }
-void AssetManager::SetMusicVolume(const std::string& key, float volume) {
-        auto song = Music.find(key);
-        if (song != Music.end()) {
-                song->second->setVolume(volume); // 0-100
+void AssetManager::SetMusicVolume(float volume) {
+        for (auto& [_, song] : Music) {
+                song->setVolume(volume);
         }
 }
 void AssetManager::LoadSoundEffects(const std::string& directoryPath) {
@@ -140,7 +142,8 @@ void AssetManager::PlaySoundEffect(const std::string& key, float volume, float p
                 // Create a new sound object and add it to our active sounds
                 auto sound = std::make_unique<sf::Sound>();
                 sound->setBuffer(*buffer->second);
-                sound->setVolume(volume);
+                // volume depricated, useing GameManager instead
+                sound->setVolume(GameManager::GetInstance().GetSFXVolume());
                 sound->setPitch(pitch);
                 sound->play();
 

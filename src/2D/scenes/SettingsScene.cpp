@@ -14,12 +14,13 @@ void SettingsScene::Update(GameTime gameTime) {
         // Check if the user is pressing the up or down arrow keys to change the selected option
         if (inputManager.NavigateUpPressed()) {
                 selectedOption = (selectedOption - 1 + 4) % 4; // Wrap around to the last option
+
         } else if (inputManager.NavigateDownPressed()) {
                 selectedOption = (selectedOption + 1) % 4; // Wrap around to the first option
         }
 
 
-        if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::A) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::D)) {
+        if(inputManager.NavigateLeftPressed() || inputManager.NavigateRightPressed()) {
                 if (selectedOption == 0) {
                         tempIsFullscreen = !tempIsFullscreen;
                 }
@@ -27,13 +28,13 @@ void SettingsScene::Update(GameTime gameTime) {
                         tempIsVSync = !tempIsVSync;
                 }
                 else if (selectedOption == 2) {
-                        if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::A) ) {
+                        if(inputManager.NavigateLeftPressed() ) {
                                 tempMusicPercent -= 0.05f;
                                 if (tempMusicPercent < 0.0f) {
                                         tempMusicPercent = 0.0f;
                                 }
                         }
-                        else if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::D)) {
+                        else if(inputManager.NavigateRightPressed()) {
                                 tempMusicPercent += 0.05f;
                                 if (tempMusicPercent > 1.0f) {
                                         tempMusicPercent = 1.0f;
@@ -41,13 +42,13 @@ void SettingsScene::Update(GameTime gameTime) {
                         }
                 }
                 else if (selectedOption == 3) {
-                        if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Left) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::A) ) {
+                        if(inputManager.NavigateLeftPressed()) {
                                 tempSfxPercent -= 0.05f;
                                 if (tempSfxPercent < 0.0f) {
                                         tempSfxPercent = 0.0f;
                                 }
                         }
-                        else if(InputManager::GetInstance().IsKeyPressed(sf::Keyboard::Right) || InputManager::GetInstance().IsKeyPressed(sf::Keyboard::D)) {
+                        else if(inputManager.NavigateRightPressed()) {
                                 tempSfxPercent += 0.05f;
                                 if (tempSfxPercent > 1.0f) {
                                         tempSfxPercent = 1.0f;
@@ -67,6 +68,10 @@ void SettingsScene::Update(GameTime gameTime) {
         sfxPercentDigits[0].setTexture(*numbersTexture[sfxPercentInt / 100 % 10], true);
         sfxPercentDigits[1].setTexture(*numbersTexture[sfxPercentInt / 10 % 10], true);
         sfxPercentDigits[2].setTexture(*numbersTexture[sfxPercentInt % 10], true);
+
+        gameManager.SetMusicVolume(tempMusicPercent);
+        gameManager.SetSFXVolume(tempSfxPercent);
+        assetManager.SetMusicVolume(gameManager.GetMusicVolume());
 }
 void SettingsScene::LateUpdate(GameTime gameTime) {}
 void SettingsScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
@@ -106,7 +111,8 @@ void SettingsScene::Draw(sf::RenderWindow &window, GameTime gameTime) {
 void SettingsScene::OnScene_Activate() {
         tempIsFullscreen = gameManager.isFullscreen();
         tempIsVSync = gameManager.isVSyncEnabled();
-
+        tempMusicPercent = gameManager.GetMusicVolume();
+        tempSfxPercent = gameManager.GetSFXVolume();
 
         backgroundTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[0].texture;                // Background
         regionTexture = &assetManager.TextureLibraries["PrgUse"].get()->entries[1].texture;                    // Region
