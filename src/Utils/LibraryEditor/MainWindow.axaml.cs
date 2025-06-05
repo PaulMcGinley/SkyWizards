@@ -1086,5 +1086,49 @@ namespace LibraryEditor
             
             await LoadImagesFromLibrary();
         }
+
+        private async void mnuExportLibrary_Click(object? sender, RoutedEventArgs e) {
+            string libaryPath = library?.FilePath ?? string.Empty;
+            if (string.IsNullOrEmpty(libaryPath)) {
+                await MessageBox.Show(this, "No library to export!", "Error", MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
+            var dialog = new OpenFolderDialog
+            {
+                Title = "Select Export Folder"
+            };
+    
+            var folderPath = await dialog.ShowAsync(this);
+    
+            if (string.IsNullOrEmpty(folderPath)) {
+                await MessageBox.Show(this, "No folder selected!", "Error", MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
+            // Create the folder if it doesn't exist
+            if (!Directory.Exists(folderPath)) {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            int name = 0;
+            // Export each image in the library
+            foreach (var image in library.Images) {
+                if (image.Data == null || image.Data.Length == 0)
+                    continue;
+
+                // Create a unique filename for each image
+                string fileName = $"{name:0000}.png";
+                string filePath = Path.Combine(folderPath, fileName);
+
+                await using var stream = new FileStream(filePath, FileMode.Create);
+                await stream.WriteAsync(image.Data);
+
+                Console.WriteLine($"Exported image to {filePath}");
+                name++;
+            }
+    
+            await MessageBox.Show(this, $"Successfully exported {library.Images.Count} images to {folderPath}", "Export Complete", MessageBox.MessageBoxButtons.Ok);
+        }
     }
 }

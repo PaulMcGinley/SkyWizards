@@ -32,6 +32,7 @@
                 <MenuItem Header="Create Tile Array" Click="mnuCreateTileArray_OnClick" ToolTip.Tip="Convert the selected image into tiles (256x256px) and adds them to the end of the library."/>
                 <Separator/>
                 <MenuItem Header="Export Image" Click="mnuExportImage_Click"/>
+                <MenuItem Header="Export Library" Click="mnuExportLibrary_Click"/>
             </MenuItem>
             
             <MenuItem Header="Insert">
